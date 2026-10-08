@@ -14,15 +14,23 @@ export const pool = new Pool({
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+let __dirname = '';
+try {
+  if (typeof import.meta !== 'undefined' && import.meta && import.meta.url) {
+    const __filename = fileURLToPath(import.meta.url);
+    __dirname = path.dirname(__filename);
+  }
+} catch (e) {
+  // Safe fallback for Cloudflare Workers / Edge environments
+}
 
 export async function initPostgresDatabase() {
+  if (!__dirname) return;
   try {
     const client = await pool.connect();
     try {
       const sqlPath = path.join(__dirname, '../database/postgres_schema.sql');
-      if (fs.existsSync(sqlPath)) {
+      if (fs.existsSync && fs.existsSync(sqlPath)) {
         const sql = fs.readFileSync(sqlPath, 'utf8');
         await client.query(sql);
         console.log('✅ PostgreSQL database schema verified & initialized successfully.');
@@ -32,6 +40,5 @@ export async function initPostgresDatabase() {
     }
   } catch (err) {
     console.warn('⚠️ Warning: PostgreSQL auto-initialization skipped or connection error:', err.message);
-    console.warn('   (Make sure DATABASE_URL is correctly set in your environment if connecting to cloud/local PostgreSQL).');
   }
 }
