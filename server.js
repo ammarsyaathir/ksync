@@ -11,8 +11,8 @@ const app = new Hono();
 // Enable CORS for API clients
 app.use('/api/*', cors());
 
-// Root Health Check Route for Cloudflare Workers
-app.get('/', (c) => {
+// Root API Health Check Endpoint
+app.get('/api/health', (c) => {
   return c.json({
     status: 'online',
     name: 'K-Sync Malaysia API (Cloudflare Worker)',
@@ -20,6 +20,9 @@ app.get('/', (c) => {
     message: 'K-Sync API is running on Cloudflare Workers.'
   });
 });
+
+// Serve Root Homepage
+app.get('/', serveStatic({ path: './public/index.html' }));
 
 // Initialize PostgreSQL Tables safely without crashing on startup
 initPostgresDatabase().catch(err => console.warn('PostgreSQL deferred init warning:', err.message));
