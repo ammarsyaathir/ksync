@@ -243,5 +243,9 @@ app.post('/api/admin/verifications/action', async (c) => {
 app.use('/*', serveStatic({ root: './public' }));
 
 const port = Number(process.env.PORT) || 8000;
-console.log(`🚀 K-Sync JS Server running on http://localhost:${port}`);
-serve({ fetch: app.fetch, port });
+if (process.env.NODE_ENV !== 'production' && typeof process !== 'undefined' && process.release?.name === 'node') {
+    console.log(`🚀 K-Sync JS Server running on http://localhost:${port}`);
+    serve({ fetch: app.fetch, port });
+}
+
+export default app;
