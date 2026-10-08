@@ -1,12 +1,11 @@
 name = "ksync-malaysia"
 main = "server.js"
 compatibility_date = "2026-10-01"
-compatibility_flags = ["nodejs_compat"]
-
-[site]
-bucket = "./public"
 
 [vars]
 ENVIRONMENT = "production"
 
-
+# Cloudflare Hyperdrive / PostgreSQL Database binding example
+# [[hyperdrive]]
+# binding = "HYPERDRIVE"
+# id = "<your-hyperdrive-id>"

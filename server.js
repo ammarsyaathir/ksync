@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
+import { serve } from '@hono/node-server';
+import { serveStatic } from '@hono/node-server/serve-static';
 import { cors } from 'hono/cors';
-import { serveStatic } from 'hono/cloudflare-workers';
 import dotenv from 'dotenv';
 import { pool, initPostgresDatabase } from './src/db.js';
 
@@ -8,42 +9,11 @@ dotenv.config();
 
 const app = new Hono();
 
-// Global Exception & Error Handler (Replaces blank Internal Server Error with exact logs)
-app.onError((err, c) => {
-  console.error('Cloudflare Worker Error:', err);
-  return c.json({
-    status: 'error',
-    message: err.message,
-    name: err.name,
-    hint: 'Check server logs or database credentials'
-  }, 500);
-});
-
 // Enable CORS for API clients
 app.use('/api/*', cors());
 
-// Root API Health Check Endpoint
-app.get('/api/health', (c) => {
-  return c.json({
-    status: 'online',
-    name: 'K-Sync Malaysia API (Cloudflare Worker)',
-    version: '1.0.0',
-    message: 'K-Sync API is running on Cloudflare Workers.'
-  });
-});
-
-import { indexHTML, eventsHTML, loginHTML } from './src/templates.js';
-
-// Page Routes for Cloudflare Workers
-app.get('/', (c) => c.html(indexHTML));
-app.get('/index.html', (c) => c.html(indexHTML));
-app.get('/events.html', (c) => c.html(eventsHTML));
-app.get('/events', (c) => c.html(eventsHTML));
-app.get('/login.html', (c) => c.html(loginHTML));
-app.get('/login', (c) => c.html(loginHTML));
-
-// Initialize PostgreSQL Tables safely without crashing on startup
-initPostgresDatabase().catch(err => console.warn('PostgreSQL deferred init warning:', err.message));
+// Initialize PostgreSQL Tables
+initPostgresDatabase();
 
 // ----------------------------------------------------
 // 1. API: EVENT DISCOVERY & LISTINGS
@@ -127,87 +97,6 @@ app.get('/api/events/:id', async (c) => {
     return c.json({ status: 'success', data: { ...res.rows[0], is_saved: isSaved } });
   } catch (err) {
     return c.json({ status: 'error', message: err.message }, 500);
-  }
-});
-
-// POST: Toggle Event Interest Counter
-app.post('/api/events/:id/interest', async (c) => {
-  const id = c.req.param('id');
-  const body = await c.req.json().catch(() => ({}));
-  const userId = body.user_id || 1;
-
-  try {
-    // Increment interest count
-    await pool.query('UPDATE events SET interest_count = COALESCE(interest_count, 0) + 1 WHERE id = $1', [id]);
-    const res = await pool.query('SELECT interest_count FROM events WHERE id = $1', [id]);
-    const newCount = res.rows.length > 0 ? res.rows[0].interest_count : 1;
-    return c.json({ status: 'success', message: 'Interest registered successfully!', interest_count: newCount });
-  } catch (err) {
-    return c.json({ status: 'success', message: 'Interest marked!', interest_count: 1 });
-  }
-});
-
-// POST: Submit New Event
-app.post('/api/events', async (c) => {
-  const body = await c.req.json().catch(() => ({}));
-  const { event_name, artist_name, category_id, venue_name, city, event_date, start_time, end_time, poster_url, description } = body;
-
-  if (!event_name) {
-    return c.json({ status: 'error', message: 'Event name is required.' }, 400);
-  }
-
-  try {
-    const ins = `
-      INSERT INTO events (event_name, category_id, venue_name, city, event_date, start_time, end_time, poster_url, description, verification_status)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'VERIFIED')
-      RETURNING *
-    `;
-    const res = await pool.query(ins, [
-      event_name,
-      category_id || 1,
-      venue_name || 'Kuala Lumpur',
-      city || 'Kuala Lumpur',
-      event_date || new Date().toISOString().split('T')[0],
-      start_time || '19:00:00',
-      end_time || '22:00:00',
-      poster_url || '',
-      description || ''
-    ]);
-    return c.json({ status: 'success', message: 'Event submitted and verified successfully!', data: res.rows[0] });
-  } catch (err) {
-    return c.json({ status: 'success', message: 'Event submitted successfully for review!' });
-  }
-});
-
-// GET: Event Buddy Directory ("Who's Going?")
-app.get('/api/buddies', async (c) => {
-  const eventId = c.req.query('event_id');
-  try {
-    let query = `
-      SELECT u.id, u.full_name, u.username, u.profile_image, r.name as role_name, e.event_name, e.city
-      FROM users u
-      LEFT JOIN roles r ON u.role_id = r.id
-      LEFT JOIN saved_events se ON u.id = se.user_id
-      LEFT JOIN events e ON se.event_id = e.id
-    `;
-    const params = [];
-    if (eventId) {
-      params.push(eventId);
-      query += ` WHERE se.event_id = $1`;
-    }
-    query += ` LIMIT 20`;
-    const res = await pool.query(query, params);
-    return c.json({ status: 'success', data: res.rows });
-  } catch (err) {
-    // Return sample buddies if table empty
-    return c.json({
-      status: 'success',
-      data: [
-        { id: 1, full_name: 'Aina Zahra', username: 'aina_blink', role_name: 'Fan', event_name: 'BLACKPINK World Tour KL 2026', city: 'Kuala Lumpur' },
-        { id: 2, full_name: 'Danial Hakim', username: 'danial_stay', role_name: 'Fan', event_name: 'Stray Kids World Tour Malaysia', city: 'Petaling Jaya' },
-        { id: 3, full_name: 'Mei Ling', username: 'meiling_once', role_name: 'Fan', event_name: 'TWICE Ready To Be Tour KL', city: 'Subang Jaya' }
-      ]
-    });
   }
 });
 
@@ -350,23 +239,9 @@ app.post('/api/admin/verifications/action', async (c) => {
   }
 });
 
-// Serve Static Web Frontend with Safe Fallback
-app.use('/*', async (c, next) => {
-  try {
-    if (typeof __STATIC_CONTENT_MANIFEST !== 'undefined') {
-      const handler = serveStatic({ root: './', manifest: __STATIC_CONTENT_MANIFEST });
-      return await handler(c, next);
-    }
-  } catch (e) {
-    // Fallback if KV manifest is not bound
-  }
-  return c.html(indexHTML);
-});
+// Serve Static Web Frontend
+app.use('/*', serveStatic({ root: './public' }));
 
 const port = Number(process.env.PORT) || 8000;
-if (process.env.NODE_ENV !== 'production' && typeof process !== 'undefined' && process.release?.name === 'node') {
-    console.log(`🚀 K-Sync JS Server running on http://localhost:${port}`);
-    serve({ fetch: app.fetch, port });
-}
-
-export default app;
+console.log(`🚀 K-Sync JS Server running on http://localhost:${port}`);
+serve({ fetch: app.fetch, port });
