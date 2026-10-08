@@ -1,7 +1,6 @@
 import { Hono } from 'hono';
-import { serve } from '@hono/node-server';
-import { serveStatic } from '@hono/node-server/serve-static';
 import { cors } from 'hono/cors';
+import { serveStatic } from 'hono/cloudflare-workers';
 import dotenv from 'dotenv';
 import { pool, initPostgresDatabase } from './src/db.js';
 
