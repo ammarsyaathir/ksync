@@ -1,0 +1,9 @@
+*.php
+php_backup/
+admin/
+ajax/
+config/
+includes/
+organizer/
+legacy_php/
+database/ksync.db

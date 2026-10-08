@@ -262,8 +262,8 @@ app.post('/api/admin/verifications/action', async (c) => {
   }
 });
 
-// Serve Static Web Frontend
-app.use('/*', serveStatic({ root: './public' }));
+// Serve Static Web Frontend from Cloudflare Site Bucket
+app.use('/*', serveStatic({ root: './' }));
 
 const port = Number(process.env.PORT) || 8000;
 if (process.env.NODE_ENV !== 'production' && typeof process !== 'undefined' && process.release?.name === 'node') {
