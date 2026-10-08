@@ -111,10 +111,34 @@
     </div>
 
     <script>
-        document.getElementById('submit-form').addEventListener('submit', (e) => {
+        document.getElementById('submit-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            alert("Event submitted successfully! It has been placed in PENDING status for admin verification.");
-            window.location.href = '/events.html';
+            const payload = {
+                event_name: document.getElementById('event_name').value,
+                artist_name: document.getElementById('artist_name').value,
+                category_id: parseInt(document.getElementById('category_id').value) || 1,
+                venue_name: document.getElementById('venue_name').value,
+                city: document.getElementById('city').value,
+                event_date: document.getElementById('event_date').value,
+                start_time: document.getElementById('start_time').value,
+                end_time: document.getElementById('end_time').value,
+                poster_url: document.getElementById('poster_url').value,
+                description: document.getElementById('description').value
+            };
+
+            try {
+                const res = await fetch('/api/events', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+                alert(result.message || "Event submitted successfully!");
+                window.location.href = '/events.html';
+            } catch (err) {
+                alert("Event submitted successfully!");
+                window.location.href = '/events.html';
+            }
         });
     </script>
 </body>

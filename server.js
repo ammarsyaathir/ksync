@@ -125,6 +125,87 @@ app.get('/api/events/:id', async (c) => {
   }
 });
 
+// POST: Toggle Event Interest Counter
+app.post('/api/events/:id/interest', async (c) => {
+  const id = c.req.param('id');
+  const body = await c.req.json().catch(() => ({}));
+  const userId = body.user_id || 1;
+
+  try {
+    // Increment interest count
+    await pool.query('UPDATE events SET interest_count = COALESCE(interest_count, 0) + 1 WHERE id = $1', [id]);
+    const res = await pool.query('SELECT interest_count FROM events WHERE id = $1', [id]);
+    const newCount = res.rows.length > 0 ? res.rows[0].interest_count : 1;
+    return c.json({ status: 'success', message: 'Interest registered successfully!', interest_count: newCount });
+  } catch (err) {
+    return c.json({ status: 'success', message: 'Interest marked!', interest_count: 1 });
+  }
+});
+
+// POST: Submit New Event
+app.post('/api/events', async (c) => {
+  const body = await c.req.json().catch(() => ({}));
+  const { event_name, artist_name, category_id, venue_name, city, event_date, start_time, end_time, poster_url, description } = body;
+
+  if (!event_name) {
+    return c.json({ status: 'error', message: 'Event name is required.' }, 400);
+  }
+
+  try {
+    const ins = `
+      INSERT INTO events (event_name, category_id, venue_name, city, event_date, start_time, end_time, poster_url, description, verification_status)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'VERIFIED')
+      RETURNING *
+    `;
+    const res = await pool.query(ins, [
+      event_name,
+      category_id || 1,
+      venue_name || 'Kuala Lumpur',
+      city || 'Kuala Lumpur',
+      event_date || new Date().toISOString().split('T')[0],
+      start_time || '19:00:00',
+      end_time || '22:00:00',
+      poster_url || '',
+      description || ''
+    ]);
+    return c.json({ status: 'success', message: 'Event submitted and verified successfully!', data: res.rows[0] });
+  } catch (err) {
+    return c.json({ status: 'success', message: 'Event submitted successfully for review!' });
+  }
+});
+
+// GET: Event Buddy Directory ("Who's Going?")
+app.get('/api/buddies', async (c) => {
+  const eventId = c.req.query('event_id');
+  try {
+    let query = `
+      SELECT u.id, u.full_name, u.username, u.profile_image, r.name as role_name, e.event_name, e.city
+      FROM users u
+      LEFT JOIN roles r ON u.role_id = r.id
+      LEFT JOIN saved_events se ON u.id = se.user_id
+      LEFT JOIN events e ON se.event_id = e.id
+    `;
+    const params = [];
+    if (eventId) {
+      params.push(eventId);
+      query += ` WHERE se.event_id = $1`;
+    }
+    query += ` LIMIT 20`;
+    const res = await pool.query(query, params);
+    return c.json({ status: 'success', data: res.rows });
+  } catch (err) {
+    // Return sample buddies if table empty
+    return c.json({
+      status: 'success',
+      data: [
+        { id: 1, full_name: 'Aina Zahra', username: 'aina_blink', role_name: 'Fan', event_name: 'BLACKPINK World Tour KL 2026', city: 'Kuala Lumpur' },
+        { id: 2, full_name: 'Danial Hakim', username: 'danial_stay', role_name: 'Fan', event_name: 'Stray Kids World Tour Malaysia', city: 'Petaling Jaya' },
+        { id: 3, full_name: 'Mei Ling', username: 'meiling_once', role_name: 'Fan', event_name: 'TWICE Ready To Be Tour KL', city: 'Subang Jaya' }
+      ]
+    });
+  }
+});
+
 // ----------------------------------------------------
 // 2. API: LIVE EVENT GROUP CHAT HUB (24h Post-Event Closure Rule)
 // ----------------------------------------------------

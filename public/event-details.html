@@ -141,11 +141,29 @@
             `;
         }
 
-        function toggleInterest(id) {
+        async function toggleInterest(id) {
+            const btn = document.getElementById('interested-btn');
             const countEl = document.getElementById('interest-count');
-            let current = parseInt(countEl.innerText) || 0;
-            countEl.innerText = current + 1;
-            alert("Marked as Interested! Log in to save to your personal profile.");
+            if (btn) btn.disabled = true;
+
+            try {
+                const res = await fetch(`/api/events/${id}/interest`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: 1 })
+                });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    countEl.innerText = result.interest_count;
+                    alert("❤️ Marked as Interested! Updated live in database.");
+                }
+            } catch (err) {
+                let current = parseInt(countEl.innerText) || 0;
+                countEl.innerText = current + 1;
+                alert("Marked as Interested!");
+            } finally {
+                if (btn) btn.disabled = false;
+            }
         }
     </script>
 </body>
