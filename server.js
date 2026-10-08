@@ -32,8 +32,10 @@ app.get('/api/health', (c) => {
   });
 });
 
-// Serve Root Homepage
-app.get('/', serveStatic({ path: './index.html' }));
+import { indexHTML } from './src/templates.js';
+
+// Serve Root Homepage with Zero Manifest Dependency
+app.get('/', (c) => c.html(indexHTML));
 
 // Initialize PostgreSQL Tables safely without crashing on startup
 initPostgresDatabase().catch(err => console.warn('PostgreSQL deferred init warning:', err.message));
@@ -262,8 +264,18 @@ app.post('/api/admin/verifications/action', async (c) => {
   }
 });
 
-// Serve Static Web Frontend from Cloudflare Site Bucket
-app.use('/*', serveStatic({ root: './' }));
+// Serve Static Web Frontend with Safe Fallback
+app.use('/*', async (c, next) => {
+  try {
+    if (typeof __STATIC_CONTENT_MANIFEST !== 'undefined') {
+      const handler = serveStatic({ root: './', manifest: __STATIC_CONTENT_MANIFEST });
+      return await handler(c, next);
+    }
+  } catch (e) {
+    // Fallback if KV manifest is not bound
+  }
+  return c.html(indexHTML);
+});
 
 const port = Number(process.env.PORT) || 8000;
 if (process.env.NODE_ENV !== 'production' && typeof process !== 'undefined' && process.release?.name === 'node') {
