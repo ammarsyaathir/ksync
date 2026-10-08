@@ -8,6 +8,17 @@ dotenv.config();
 
 const app = new Hono();
 
+// Global Exception & Error Handler (Replaces blank Internal Server Error with exact logs)
+app.onError((err, c) => {
+  console.error('Cloudflare Worker Error:', err);
+  return c.json({
+    status: 'error',
+    message: err.message,
+    name: err.name,
+    hint: 'Check server logs or database credentials'
+  }, 500);
+});
+
 // Enable CORS for API clients
 app.use('/api/*', cors());
 
@@ -22,7 +33,7 @@ app.get('/api/health', (c) => {
 });
 
 // Serve Root Homepage
-app.get('/', serveStatic({ path: './public/index.html' }));
+app.get('/', serveStatic({ path: './index.html' }));
 
 // Initialize PostgreSQL Tables safely without crashing on startup
 initPostgresDatabase().catch(err => console.warn('PostgreSQL deferred init warning:', err.message));
