@@ -32,10 +32,15 @@ app.get('/api/health', (c) => {
   });
 });
 
-import { indexHTML } from './src/templates.js';
+import { indexHTML, eventsHTML, loginHTML } from './src/templates.js';
 
-// Serve Root Homepage with Zero Manifest Dependency
+// Page Routes for Cloudflare Workers
 app.get('/', (c) => c.html(indexHTML));
+app.get('/index.html', (c) => c.html(indexHTML));
+app.get('/events.html', (c) => c.html(eventsHTML));
+app.get('/events', (c) => c.html(eventsHTML));
+app.get('/login.html', (c) => c.html(loginHTML));
+app.get('/login', (c) => c.html(loginHTML));
 
 // Initialize PostgreSQL Tables safely without crashing on startup
 initPostgresDatabase().catch(err => console.warn('PostgreSQL deferred init warning:', err.message));

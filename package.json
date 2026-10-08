@@ -1,24 +1,27 @@
 {
   "name": "ksync-malaysia",
   "version": "1.0.0",
-  "description": "K-Sync Malaysia - K-Pop Event Information & Fanclub Verification Platform (Cloudflare & PostgreSQL)",
-  "main": "server.js",
-  "type": "module",
+  "private": true,
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js",
-    "wrangler:dev": "wrangler dev server.js",
-    "deploy": "wrangler deploy"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
-    "@hono/node-server": "^1.13.7",
     "@supabase/supabase-js": "^2.117.3",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
-    "hono": "^4.6.14",
-    "pg": "^8.23.1"
+    "lucide-react": "^0.453.0",
+    "next": "^14.2.15",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "wrangler": "^3.101.0"
+    "@types/node": "^20.17.0",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.6.3"
   }
 }
