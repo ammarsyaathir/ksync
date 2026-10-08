@@ -11,8 +11,18 @@ const app = new Hono();
 // Enable CORS for API clients
 app.use('/api/*', cors());
 
-// Initialize PostgreSQL Tables
-initPostgresDatabase();
+// Root Health Check Route for Cloudflare Workers
+app.get('/', (c) => {
+  return c.json({
+    status: 'online',
+    name: 'K-Sync Malaysia API (Cloudflare Worker)',
+    version: '1.0.0',
+    message: 'K-Sync API is running on Cloudflare Workers.'
+  });
+});
+
+// Initialize PostgreSQL Tables safely without crashing on startup
+initPostgresDatabase().catch(err => console.warn('PostgreSQL deferred init warning:', err.message));
 
 // ----------------------------------------------------
 // 1. API: EVENT DISCOVERY & LISTINGS
