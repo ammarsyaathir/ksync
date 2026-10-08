@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit K-Pop Event | K-Sync Malaysia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+    <nav class="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="/" class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-500 via-purple-500 to-indigo-600 flex items-center justify-center text-white font-black text-xl shadow-md shadow-pink-500/20">K</div>
+                    <div>
+                        <span class="text-lg font-black tracking-tight bg-gradient-to-r from-pink-600 to-indigo-600 bg-clip-text text-transparent">K-Sync</span>
+                        <span class="text-xs font-semibold text-slate-400 block -mt-1">Malaysia</span>
+                    </div>
+                </a>
+                <a href="/events.html" class="text-xs font-bold text-pink-600 hover:underline">View All Events</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-3xl mx-auto px-4 py-12 w-full">
+        <div class="bg-white p-8 rounded-3xl shadow-xl border border-slate-200">
+            <div class="text-center mb-8">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-100 text-pink-700 text-xs font-bold mb-3">
+                    ✨ Community Event Submission
+                </span>
+                <h1 class="text-2xl sm:text-3xl font-black text-slate-900">Submit a K-Pop Event</h1>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1 font-medium">Add concerts, fan meetings, cup-sleeve events, or K-dance gatherings.</p>
+            </div>
+
+            <form id="submit-form" class="space-y-6">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Event Name</label>
+                    <input type="text" id="event_name" required placeholder="e.g. SEVENTEEN Follow Tour in Kuala Lumpur 2026"
+                           class="w-full bg-slate-50 text-slate-900 px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500 text-sm font-medium">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">K-Pop Artist / Group</label>
+                        <input type="text" id="artist_name" required placeholder="e.g. SEVENTEEN / BTS / TWICE"
+                               class="w-full bg-slate-50 text-slate-900 px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500 text-sm font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Category</label>
+                        <select id="category_id" required class="w-full bg-slate-50 text-slate-900 px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500 text-sm font-medium">
+                            <option value="1">Concert / World Tour</option>
+                            <option value="2">Fan Meeting / Fan Sign</option>
+                            <option value="3">Cup-Sleeve Birthday Event</option>
+                            <option value="4">K-Dance Gathering</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Venue Name</label>
+                        <input type="text" id="venue_name" required placeholder="e.g. Axiata Arena Bukit Jalil"
+                               class="w-full bg-slate-50 text-slate-900 px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500 text-sm font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">City / State</label>
+                        <input type="text" id="city" required placeholder="e.g. Kuala Lumpur / Selangor"
+                               class="w-full bg-slate-50 text-slate-900 px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500 text-sm font-medium">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Event Date</label>
+                        <input type="date" id="event_date" required
+                               class="w-full bg-slate-50 text-slate-900 px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500 text-sm font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Start Time</label>
+                        <input type="time" id="start_time" required
+                               class="w-full bg-slate-50 text-slate-900 px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500 text-sm font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">End Time</label>
+                        <input type="time" id="end_time" required
+                               class="w-full bg-slate-50 text-slate-900 px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500 text-sm font-medium">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Poster Image URL</label>
+                    <input type="url" id="poster_url" placeholder="https://domain.com/poster.jpg"
+                           class="w-full bg-slate-50 text-slate-900 px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500 text-sm font-medium">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Description & Details</label>
+                    <textarea id="description" rows="4" placeholder="Enter event details, ticketing info URL, or rules..."
+                              class="w-full bg-slate-50 text-slate-900 px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-pink-500 text-sm font-medium"></textarea>
+                </div>
+
+                <button type="submit" class="w-full py-4 rounded-2xl bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-600 hover:from-pink-600 hover:to-indigo-700 text-white font-bold text-sm shadow-xl shadow-pink-500/20 transition-all">
+                    Submit Event For Approval
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('submit-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert("Event submitted successfully! It has been placed in PENDING status for admin verification.");
+            window.location.href = '/events.html';
+        });
+    </script>
+</body>
+</html>
