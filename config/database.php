@@ -346,7 +346,10 @@ function init_database($pdo) {
         'official_source_url' => 'TEXT',
         'agency_announcement_url' => 'TEXT',
         'multiple_posters' => 'TEXT',
-        'promotional_requests' => 'TEXT'
+        'promotional_requests' => 'TEXT',
+        'tracking_code' => 'TEXT',
+        'submitter_name' => 'TEXT',
+        'submitter_email' => 'TEXT'
     ];
     foreach ($event_cols as $col => $type) {
         try {
@@ -357,6 +360,16 @@ function init_database($pdo) {
     try { $pdo->exec("ALTER TABLE venues ADD COLUMN transit_info TEXT"); } catch (PDOException $e) {}
     try { $pdo->exec("ALTER TABLE events ADD COLUMN fan_chant_url TEXT"); } catch (PDOException $e) {}
     try { $pdo->exec("ALTER TABLE event_reports ADD COLUMN organizer_reply TEXT"); } catch (PDOException $e) {}
+
+    // Populate tracking_code for existing events if null
+    try {
+        $eventsWithoutCode = $pdo->query("SELECT id FROM events WHERE tracking_code IS NULL OR tracking_code = ''")->fetchAll();
+        $codeStmt = $pdo->prepare("UPDATE events SET tracking_code = ?, submitter_name = COALESCE(submitter_name, 'Event Organizer'), submitter_email = COALESCE(submitter_email, 'organizer@ksync.my') WHERE id = ?");
+        foreach ($eventsWithoutCode as $ev) {
+            $newCode = 'KS-2026-' . strtoupper(substr(md5($ev['id'] . 'ksync_salt'), 0, 5));
+            $codeStmt->execute([$newCode, $ev['id']]);
+        }
+    } catch (PDOException $e) {}
 
     // SEED INITIAL ROLES IF EMPTY
     $roleCount = $pdo->query("SELECT COUNT(*) FROM roles")->fetchColumn();

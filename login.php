@@ -1,8 +1,9 @@
 <?php
 // login.php - User Authentication with Firebase Google Sign-In
+ob_start();
 
-$page_title = "Log In | K-Sync Malaysia";
-require_once __DIR__ . '/includes/header.php';
+require_once __DIR__ . '/config/auth.php';
+require_once __DIR__ . '/includes/functions.php';
 
 $base_url = (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], '/ksync_malaysia') !== false) ? '/ksync_malaysia' : '';
 if (is_logged_in()) {
@@ -49,6 +50,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+$page_title = "Log In | K-Sync Malaysia";
+require_once __DIR__ . '/includes/header.php';
 ?>
 
 <div class="max-w-md mx-auto px-4 py-16">

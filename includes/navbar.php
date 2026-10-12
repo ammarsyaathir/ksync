@@ -63,6 +63,10 @@ $active_script = basename($_SERVER['SCRIPT_NAME'] ?? '');
                         <i class="fas fa-paper-plane text-xs me-1"></i>
                         <span>Submit Event</span>
                     </a>
+                    <a href="<?= $base_url ?>/check-submission.php" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1.5 cursor-pointer <?= $active_script === 'check-submission.php' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' ?>">
+                        <i class="fas fa-barcode text-xs text-purple-600"></i>
+                        <span>Track Status</span>
+                    </a>
 
                     <?php if (is_logged_in()): ?>
                         <!-- Notification Bell with Interactive Popover -->
@@ -185,6 +189,8 @@ $active_script = basename($_SERVER['SCRIPT_NAME'] ?? '');
             <?php else: ?>
                 <a href="<?= $base_url ?>/index.php" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-800 hover:bg-slate-100 cursor-pointer">Home</a>
                 <a href="<?= $base_url ?>/events.php" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-800 hover:bg-slate-100 cursor-pointer">Discover Events</a>
+                <a href="<?= $base_url ?>/submit-event.php" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-800 hover:bg-slate-100 cursor-pointer">Submit Event</a>
+                <a href="<?= $base_url ?>/check-submission.php" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-800 hover:bg-slate-100 cursor-pointer"><i class="fas fa-barcode text-purple-600 me-1.5"></i> Track Status</a>
                 <?php if (is_logged_in()): ?>
                     <a href="<?= $base_url ?>/saved-events.php" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-800 hover:bg-slate-100 cursor-pointer">Saved Events</a>
                     <a href="<?= $base_url ?>/notifications.php" class="block px-3 py-2 rounded-lg text-sm font-medium text-slate-800 hover:bg-slate-100 cursor-pointer">Notifications (<?= $unread_count ?>)</a>

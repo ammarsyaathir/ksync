@@ -1,0 +1,236 @@
+@startuml KSync_Malaysia_Use_Case_Diagram
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam monochrome false
+skinparam shadowing true
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+
+title K-Sync Malaysia: Use Case Diagram\nA Centralized Platform for K-Pop Event Information and Fan Community Discussions
+
+' ==============================================================================
+' ACTORS
+' ==============================================================================
+actor "Guest\n(Visitor)" as Guest #LightSkyBlue
+actor "Registered Fan" as Fan #DeepSkyBlue
+actor "Event Organizer\n(No Account)" as Organizer #LightPink
+actor "System Admin" as Admin #Gold
+
+' External Supporting Actors
+actor "Email Service" as Email <<System>> #LightGray
+actor "External AI Service\n(Gemini API)" as AI <<System>> #Plum
+
+' ==============================================================================
+' SYSTEM BOUNDARY
+' ==============================================================================
+rectangle "K-Sync Malaysia System" {
+
+    ' --------------------------------------------------------------------------
+    ' Package A: Account and Authentication Management
+    ' --------------------------------------------------------------------------
+    package "A. Account & Authentication Management" {
+        usecase "UC01: Register Account" as UC01
+        usecase "UC02: Verify Email / OTP" as UC02
+        usecase "UC03: Log In" as UC03
+        usecase "UC04: Log Out" as UC04
+        usecase "UC05: Manage Profile" as UC05
+        usecase "UC06: Change Password" as UC06
+        usecase "UC07: Recover Account" as UC07
+    }
+
+    ' --------------------------------------------------------------------------
+    ' Package B: Event Discovery and Information
+    ' --------------------------------------------------------------------------
+    package "B. Event Discovery & Information" {
+        usecase "UC08: Browse Events" as UC08
+        usecase "UC09: Search Events" as UC09
+        usecase "UC10: Filter Events" as UC10
+        usecase "UC11: View Event Details" as UC11
+        usecase "UC12: View Event Verification Status" as UC12
+        usecase "UC13: Save / Bookmark Event" as UC13
+        usecase "UC14: View Saved Events" as UC14
+        usecase "UC15: View Event Discussion" as UC15
+        usecase "UC16: View Event Change History" as UC16
+    }
+
+    ' --------------------------------------------------------------------------
+    ' Package C: Event Organizer Submission Without an Account (Model 2)
+    ' --------------------------------------------------------------------------
+    package "C. Public Event Submission (Without Account)" {
+        usecase "UC17: Submit Event" as UC17
+        usecase "UC18: Provide Event Details" as UC18
+        usecase "UC19: Provide Supporting Evidence" as UC19
+        usecase "UC20: Receive Submission Confirmation" as UC20
+        usecase "UC21: Check Submission Status" as UC21
+        usecase "UC22: Receive Decision Notification" as UC22
+        usecase "UC23: Correct and Resubmit Event" as UC23
+    }
+
+    ' --------------------------------------------------------------------------
+    ' Package D: Administrator Review & Verification
+    ' --------------------------------------------------------------------------
+    package "D. Administrator Review & Verification" {
+        usecase "UC24: View Pending Submissions" as UC24
+        usecase "UC25: Review Event Submission" as UC25
+        usecase "UC26: Check Supporting Evidence" as UC26
+        usecase "UC27: Approve Submission" as UC27
+        usecase "UC28: Reject Submission" as UC28
+        usecase "UC29: Record Decision Reason" as UC29
+        usecase "UC30: Publish Approved Event" as UC30
+        usecase "UC31: View Submission History" as UC31
+    }
+
+    ' --------------------------------------------------------------------------
+    ' Package E: Published Event Management
+    ' --------------------------------------------------------------------------
+    package "E. Published Event Management" {
+        usecase "UC32: Manage Published Events" as UC32
+        usecase "UC33: Edit Event Information" as UC33
+        usecase "UC34: Update Event Status" as UC34
+        usecase "UC35: Unpublish Event" as UC35
+        usecase "UC36: Archive Event" as UC36
+        usecase "UC37: Manage Artists, Venues & Categories" as UC37
+    }
+
+    ' --------------------------------------------------------------------------
+    ' Package F: Fan Community Discussions & Interaction
+    ' --------------------------------------------------------------------------
+    package "F. Fan Community Discussions & Interaction" {
+        usecase "UC38: Search Discussions" as UC38
+        usecase "UC39: Create Discussion Post" as UC39
+        usecase "UC40: Post Question" as UC40
+        usecase "UC41: Reply to Discussion" as UC41
+        usecase "UC42: Answer Question" as UC42
+        usecase "UC43: Edit Own Post" as UC43
+        usecase "UC44: Delete Own Post" as UC44
+        usecase "UC45: Report Event or Post" as UC45
+        usecase "UC46: Receive Discussion Notifications" as UC46
+    }
+
+    ' --------------------------------------------------------------------------
+    ' Package G: Reports, Moderation & Accountability
+    ' --------------------------------------------------------------------------
+    package "G. Reports, Moderation & Accountability" {
+        usecase "UC47: View Reports" as UC47
+        usecase "UC48: Investigate Report" as UC48
+        usecase "UC49: Take Action on Report" as UC49
+        usecase "UC50: Moderate Discussion Content" as UC50
+        usecase "UC51: Manage User Accounts" as UC51
+        usecase "UC52: View Audit Log" as UC52
+        usecase "UC53: Record Administrative Action" as UC53
+    }
+
+    ' --------------------------------------------------------------------------
+    ' Package H: Optional & Conditional Extensions
+    ' --------------------------------------------------------------------------
+    package "H. Optional & Conditional Extensions" {
+        usecase "UC54: Auto-Fill Event from Poster" as UC54
+        usecase "UC55: Find Event Buddy" as UC55
+        usecase "UC56: Receive Event Update Notification" as UC56
+        usecase "UC57: View Submission Status Timeline" as UC57
+        usecase "UC58: Manage Notification Preferences" as UC58
+    }
+}
+
+' ==============================================================================
+' RELATIONSHIPS: ACTOR TO USE CASE ASSOCIATIONS
+' ==============================================================================
+
+' 1. Guest Associations
+Guest --> UC01
+Guest --> UC02
+Guest --> UC07
+Guest --> UC08
+Guest --> UC09
+Guest --> UC10
+Guest --> UC11
+Guest --> UC12
+Guest --> UC15
+Guest --> UC38
+
+' 2. Registered Fan Associations
+Fan --> UC03
+Fan --> UC04
+Fan --> UC05
+Fan --> UC06
+Fan --> UC08
+Fan --> UC09
+Fan --> UC10
+Fan --> UC11
+Fan --> UC12
+Fan --> UC13
+Fan --> UC14
+Fan --> UC15
+Fan --> UC38
+Fan --> UC39
+Fan --> UC40
+Fan --> UC41
+Fan --> UC42
+Fan --> UC43
+Fan --> UC44
+Fan --> UC45
+Fan --> UC46
+Fan --> UC55
+Fan --> UC56
+Fan --> UC58
+
+' 3. Event Organizer Associations (Model 2: No account required)
+Organizer --> UC17
+Organizer --> UC21
+Organizer --> UC22
+Organizer --> UC54
+Organizer --> UC57
+
+' 4. System Admin Associations
+Admin --> UC03
+Admin --> UC04
+Admin --> UC06
+Admin --> UC16
+Admin --> UC24
+Admin --> UC25
+Admin --> UC31
+Admin --> UC32
+Admin --> UC33
+Admin --> UC34
+Admin --> UC35
+Admin --> UC36
+Admin --> UC37
+Admin --> UC47
+Admin --> UC48
+Admin --> UC51
+Admin --> UC52
+
+' 5. Supporting External Actor Associations
+Email --> UC20
+Email --> UC22
+AI --> UC54
+
+' ==============================================================================
+' UML «include» RELATIONSHIPS (Mandatory sub-flows)
+' The dashed arrow points from including use case to included use case.
+' ==============================================================================
+UC17 ..> UC18 : <<include>>
+UC17 ..> UC19 : <<include>>
+UC17 ..> UC20 : <<include>>
+
+UC25 ..> UC26 : <<include>>
+UC27 ..> UC29 : <<include>>
+UC28 ..> UC29 : <<include>>
+UC27 ..> UC30 : <<include>>
+
+UC27 ..> UC53 : <<include>>
+UC28 ..> UC53 : <<include>>
+
+UC48 ..> UC47 : <<include>>
+
+' ==============================================================================
+' UML «extend» RELATIONSHIPS (Optional / conditional flows)
+' The dashed arrow points from extending use case to base use case.
+' ==============================================================================
+UC23 ..> UC21 : <<extend>>
+UC45 ..> UC11 : <<extend>>
+UC45 ..> UC15 : <<extend>>
+UC49 ..> UC48 : <<extend>>
+UC50 ..> UC48 : <<extend>>
+
+@enduml

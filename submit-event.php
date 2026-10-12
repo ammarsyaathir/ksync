@@ -1,8 +1,12 @@
 <?php
 // submit-event.php - Public Open K-Pop Event Submission Form (Model 2: Admin Approval)
+ob_start();
 
-$page_title = "Submit K-Pop Event | K-Sync Malaysia";
-require_once __DIR__ . '/includes/header.php';
+require_once __DIR__ . '/config/auth.php';
+require_once __DIR__ . '/includes/functions.php';
+
+$base_url = (strpos($_SERVER['REQUEST_URI'], '/ksync_malaysia') !== false) ? '/ksync_malaysia' : '';
+$current_user = get_current_user_data();
 
 $error = '';
 $artists = $pdo->query("SELECT * FROM artists ORDER BY name ASC")->fetchAll();
@@ -30,21 +34,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $official_url = trim($_POST['official_url'] ?? '');
     $poster_image = trim($_POST['poster_image'] ?? '');
 
+    // Submitter Info (Model 2: Public Submission without Account)
+    $submitter_name = trim($_POST['submitter_name'] ?? '');
+    $submitter_email = trim($_POST['submitter_email'] ?? '');
+
+    if (empty($submitter_name) && !empty($current_user['full_name'])) {
+        $submitter_name = $current_user['full_name'];
+    }
+    if (empty($submitter_email) && !empty($current_user['email'])) {
+        $submitter_email = $current_user['email'];
+    }
+
     if (empty($poster_image)) {
         $poster_image = 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop';
     }
 
-    if (empty($event_name) || empty($category_id) || empty($event_date) || empty($start_time) || empty($venue_name) || empty($city)) {
-        $error = "Please fill in all mandatory fields (Event Name, Category, Date, Start Time, Venue Name, City).";
+    if (empty($event_name) || empty($category_id) || empty($event_date) || empty($start_time) || empty($venue_name) || empty($city) || empty($submitter_name) || empty($submitter_email)) {
+        $error = "Please fill in all mandatory fields (Event Name, Category, Date, Start Time, Venue Name, City, Submitter Name, Submitter Email).";
     } else {
         $organizer_id = $current_user['id'] ?? 2; // Default system organizer ID if guest
+
+        // Generate unique tracking reference code: KS-2026-XXXXX
+        $tracking_code = 'KS-2026-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 5));
 
         $stmt = $pdo->prepare("INSERT INTO events (
             organizer_id, artist_id, category_id, venue_id,
             event_name, description, event_date, start_time, end_time,
             venue_name, address, city, state, ticket_info, event_rules, official_url,
-            poster_image, event_status, verification_status
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'UPCOMING', 'PENDING')");
+            poster_image, event_status, verification_status, tracking_code, submitter_name, submitter_email
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'UPCOMING', 'PENDING', ?, ?, ?)");
 
         $stmt->execute([
             $organizer_id,
@@ -63,17 +81,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ticket_info,
             $event_rules,
             $official_url,
-            $poster_image
+            $poster_image,
+            $tracking_code,
+            $submitter_name,
+            $submitter_email
         ]);
 
         $new_event_id = $pdo->lastInsertId();
-        log_activity($organizer_id, 'SUBMIT_EVENT', 'events', $new_event_id, "Event '{$event_name}' submitted for admin review");
+        log_activity($organizer_id, 'SUBMIT_EVENT', 'events', $new_event_id, "Event '{$event_name}' [Ref: {$tracking_code}] submitted by {$submitter_name} ({$submitter_email}) for admin review");
 
-        set_flash_message('success', "Thank you! Event '{$event_name}' submitted successfully. It is now pending admin review and verification before publishing live.");
-        header("Location: {$base_url}/events.php");
+        header("Location: {$base_url}/submission-success.php?code=" . urlencode($tracking_code));
         exit;
     }
 }
+
+$page_title = "Submit K-Pop Event | K-Sync Malaysia";
+require_once __DIR__ . '/includes/header.php';
 ?>
 
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -289,6 +312,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label class="block text-xs font-extrabold text-slate-700 mb-1"><i class="fas fa-image text-emerald-500 me-1"></i> Event Poster Image URL</label>
                         <input type="url" name="poster_image" placeholder="https://image-url.com/poster.jpg"
                                class="w-full bg-slate-50 text-slate-900 px-4 py-3 rounded-2xl border border-slate-200 text-sm font-medium">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submitter Information (Model 2: Public Submission without Account) -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-black text-emerald-600 uppercase tracking-wider border-b border-slate-100 pb-2 flex items-center">
+                    <i class="fas fa-user-check me-2"></i> 5. Organizer Contact & Tracking (No Account Required)
+                </h3>
+
+                <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 flex items-start space-x-3">
+                    <i class="fas fa-shield-halved text-emerald-600 text-sm mt-0.5 shrink-0"></i>
+                    <div>
+                        <span class="font-bold">Public Submission Tracking:</span> You do not need to register an account. Upon submission, you will be assigned a unique <strong>Tracking Reference Code (e.g. KS-2026-XXXXX)</strong> to check approval status, view admin feedback, and make corrections anytime.
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-extrabold text-slate-700 mb-1">Organizer / Submitter Name *</label>
+                        <input type="text" name="submitter_name" required value="<?= htmlspecialchars($current_user['full_name'] ?? '') ?>"
+                               placeholder="e.g. Starline Events / MYCarats Fanclub / Ali"
+                               class="w-full bg-slate-50 text-slate-900 px-4 py-3 rounded-2xl border border-slate-200 text-sm font-bold">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-extrabold text-slate-700 mb-1">Contact Email Address *</label>
+                        <input type="email" name="submitter_email" required value="<?= htmlspecialchars($current_user['email'] ?? '') ?>"
+                               placeholder="e.g. organizer@example.com"
+                               class="w-full bg-slate-50 text-slate-900 px-4 py-3 rounded-2xl border border-slate-200 text-sm font-bold">
+                        <p class="text-[11px] text-slate-400 font-semibold mt-1"><i class="fas fa-info-circle me-1"></i> Used to verify tracking identity and notify you of review decisions.</p>
                     </div>
                 </div>
             </div>

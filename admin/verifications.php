@@ -1,10 +1,12 @@
 <?php
 // admin/verifications.php - Fanclub & Organizer Verification Center (Decentralized Community Model)
+ob_start();
 
-$page_title = "Fanclub & Organizer Verification | K-Sync Admin";
-require_once __DIR__ . '/../includes/header.php';
+require_once __DIR__ . '/../config/auth.php';
+require_once __DIR__ . '/../includes/functions.php';
 require_role('admin');
 
+$base_url = (strpos($_SERVER['REQUEST_URI'], '/ksync_malaysia') !== false) ? '/ksync_malaysia' : '';
 $admin_id = $current_user['id'];
 
 // Handle Fanclub Verification POST Actions
@@ -61,6 +63,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 }
+
+$page_title = "Fanclub & Organizer Verification | K-Sync Admin";
+require_once __DIR__ . '/../includes/header.php';
 
 // Fetch pending event submissions awaiting admin approval
 $pending_events = $pdo->query("
@@ -148,35 +153,52 @@ $community_reports = $pdo->query("
                 <?php foreach ($pending_events as $pe): ?>
                     <div class="glass-card p-6 rounded-3xl border border-pink-200 shadow-md space-y-4 bg-white">
                         <div class="flex items-start space-x-4">
-                            <img src="<?= htmlspecialchars($pe['poster_image']) ?>" class="w-20 h-24 object-cover rounded-2xl border border-slate-200 shrink-0">
-                            <div class="space-y-1">
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-purple-100 text-purple-700">
-                                    <?= htmlspecialchars($pe['category_name']) ?>
-                                </span>
+                            <img src="<?= htmlspecialchars($pe['poster_image']) ?>" class="w-20 h-28 object-cover rounded-2xl border border-slate-200 shrink-0">
+                            <div class="space-y-1 flex-grow">
+                                <div class="flex items-center justify-between">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-purple-100 text-purple-700">
+                                        <?= htmlspecialchars($pe['category_name']) ?>
+                                    </span>
+                                    <span class="font-mono text-[11px] font-black text-pink-600 bg-pink-50 px-2 py-0.5 rounded-lg border border-pink-200">
+                                        <i class="fas fa-barcode me-1"></i> <?= htmlspecialchars($pe['tracking_code'] ?? 'N/A') ?>
+                                    </span>
+                                </div>
                                 <h3 class="text-base font-black text-slate-900 leading-tight"><?= htmlspecialchars($pe['event_name']) ?></h3>
                                 <p class="text-xs text-pink-600 font-bold"><i class="fas fa-microphone-lines me-1"></i> <?= htmlspecialchars($pe['artist_name'] ?? 'K-Pop Group') ?></p>
                                 <p class="text-xs text-slate-500 font-semibold"><i class="far fa-calendar-alt me-1 text-purple-500"></i> <?= date('M d, Y', strtotime($pe['event_date'])) ?> &bull; <?= htmlspecialchars($pe['venue_name']) ?></p>
+                                <p class="text-[11px] text-slate-600 font-medium pt-1">
+                                    <i class="fas fa-user-circle me-1 text-slate-400"></i> Submitter: <strong class="text-slate-800"><?= htmlspecialchars($pe['submitter_name'] ?? 'Organizer') ?></strong> (<?= htmlspecialchars($pe['submitter_email'] ?? 'N/A') ?>)
+                                </p>
                             </div>
                         </div>
 
                         <?php if (!empty($pe['official_url'])): ?>
-                            <p class="text-xs text-slate-600"><strong class="text-slate-900">Official Link:</strong> <a href="<?= htmlspecialchars($pe['official_url']) ?>" target="_blank" class="text-pink-600 font-bold hover:underline"><?= htmlspecialchars($pe['official_url']) ?> &rarr;</a></p>
+                            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-xs">
+                                <strong class="text-slate-700"><i class="fas fa-link text-indigo-500 me-1"></i> Evidence & Official Source:</strong> 
+                                <a href="<?= htmlspecialchars($pe['official_url']) ?>" target="_blank" class="text-pink-600 font-bold hover:underline break-all ms-1">
+                                    <?= htmlspecialchars($pe['official_url']) ?> <i class="fas fa-external-link text-[10px] ms-0.5"></i>
+                                </a>
+                            </div>
                         <?php endif; ?>
 
-                        <div class="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100">
-                            <form method="POST" action="" onsubmit="return confirm('Reject this event submission?');">
+                        <div class="pt-2 border-t border-slate-100 space-y-3">
+                            <form method="POST" action="" class="space-y-2">
                                 <input type="hidden" name="event_id" value="<?= $pe['id'] ?>">
-                                <input type="hidden" name="action" value="reject_event">
-                                <button type="submit" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-600 font-bold text-xs">
-                                    Reject
-                                </button>
-                            </form>
-                            <form method="POST" action="" onsubmit="return confirm('Approve and publish this event live on public discovery?');">
-                                <input type="hidden" name="event_id" value="<?= $pe['id'] ?>">
-                                <input type="hidden" name="action" value="approve_event">
-                                <button type="submit" class="px-5 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 text-white font-black text-xs shadow-md shadow-pink-500/20">
-                                    <i class="fas fa-check-circle me-1"></i> Approve & Publish Live
-                                </button>
+                                
+                                <div class="flex items-center space-x-2">
+                                    <input type="text" name="reason" placeholder="Rejection reason or notes for organizer (optional)" 
+                                           class="w-full bg-slate-50 text-slate-900 px-3 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:ring-1 focus:ring-rose-400">
+                                    
+                                    <button type="submit" name="action" value="reject_event" onclick="return confirm('Reject this submission? Organizer will see your feedback in their status tracker.');"
+                                            class="px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold text-xs whitespace-nowrap border border-rose-200">
+                                        <i class="fas fa-times me-1"></i> Reject
+                                    </button>
+                                    
+                                    <button type="submit" name="action" value="approve_event" onclick="return confirm('Approve and publish this event live on public discovery?');"
+                                            class="px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-xs shadow-md shadow-emerald-500/20 whitespace-nowrap">
+                                        <i class="fas fa-check-circle me-1"></i> Approve & Publish
+                                    </button>
+                                </div>
                             </form>
                         </div>
                     </div>

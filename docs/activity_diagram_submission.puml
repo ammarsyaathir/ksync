@@ -1,0 +1,117 @@
+@startuml KSync_Activity_Diagram_Submission
+skinparam defaultFontName Arial
+skinparam shadowing true
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #333333
+skinparam ActivityDiamondBackgroundColor #FFFDE7
+skinparam ActivityDiamondBorderColor #E65100
+skinparam SwimlaneTitleFontBold true
+skinparam SwimlaneTitleFontSize 14
+
+title K-Sync Malaysia: System Activity Diagram\nEnd-to-End Public Event Submission, Verification & Publication Workflow (Model 2)
+
+|#LightPink|Event Organizer\n(Public / No Account)|
+|#LightCyan|K-Sync Web Platform\n(PHP Backend & Database)|
+|#Thistle|External AI Service\n(Gemini 1.5 Flash)|
+|#LightGoldenRodYellow|System Admin\n(Moderation Portal)|
+
+|Event Organizer|
+start
+:Open Public Submission Form\n(""submit-event.php"");
+
+if (Has Event Poster Image?) then (Yes)
+    :Paste Poster Image URL\nor Announcement Text;
+    :Click "Auto-Fill with AI";
+    
+    |External AI Service|
+    :Analyze Visual & Textual Elements;
+    :Extract Event Name, Date, Time,\nVenue & Ticket Tiers (JSON);
+    
+    |K-Sync Web Platform|
+    :Pre-fill Form Fields Automatically;
+else (No / Manual Entry)
+endif
+
+|Event Organizer|
+:Enter Mandatory Details\n(Title, Category, Date, Time, Venue);
+:Provide Official Source URL & Poster\n(Supporting Evidence - UC19);
+:Enter Contact Name & Email\n(For Status Updates);
+:Submit Event Form;
+
+|K-Sync Web Platform|
+:Validate Required Input Fields;
+if (Validation Passed?) then (No)
+    :Display Validation Error Notice;
+    |Event Organizer|
+    :Correct Form Inputs;
+    detach
+else (Yes)
+endif
+
+|K-Sync Web Platform|
+:Generate Unique Reference Tracking Code\n(e.g., ""KS-2026-A8F2K"");
+:Save Event with Status = 'PENDING';
+:Record System Audit Log\n(""SUBMIT_EVENT"");
+:Redirect to Confirmation Screen\n(""submission-success.php"");
+
+|Event Organizer|
+:Receive Submission Confirmation (UC20);
+:Save / Copy Reference Tracking Code;
+
+|K-Sync Web Platform|
+:Place Submission in Admin Review Queue;
+
+|System Admin|
+:Log in to Admin Verification Portal\n(""admin/verifications.php"");
+:Open Pending Event Submissions Queue (UC24);
+:Inspect Event Details & Date (UC25);
+:Verify Official Source URL & Evidence (UC26);
+
+if (Is Event Authentic & Details Accurate?) then (Approved)
+    :Click "Approve & Publish Live" (UC27);
+    
+    |K-Sync Web Platform|
+    :Update Event Status = 'VERIFIED';
+    :Set Publication Date = CURRENT_TIMESTAMP;
+    :Record Admin Action in Audit Log (UC53);
+    :Index Event in Public Discovery Feed\n(""events.php"" & ""index.php"");
+    
+    |Event Organizer|
+    :Check Status via Tracking Portal (UC21);\n(""check-submission.php?code=..."")
+    :Status Timeline Shows 'APPROVED & PUBLISHED' (UC57);
+    :View Live Published Event Details (UC11);
+
+else (Rejected / Needs Correction)
+    |System Admin|
+    :Record Rejection Reason & Feedback (UC28, UC29)\n(e.g., "Official ticketing link missing");
+    :Submit Rejection Decision;
+    
+    |K-Sync Web Platform|
+    :Update Event Status = 'REJECTED';
+    :Save Admin Reason in Database;
+    :Record Rejection in Audit Log (UC53);
+    
+    |Event Organizer|
+    :Check Status via Tracking Portal (UC21);\n(""check-submission.php?code=..."")
+    :View Admin Rejection Feedback (UC22);
+    
+    if (Organizer Wants to Resubmit?) then (Yes - UC23)
+        :Modify Rejected Details & Update Evidence;
+        :Click "Resubmit for Admin Verification";
+        
+        |K-Sync Web Platform|
+        :Reset Status to 'PENDING';
+        :Clear Previous Rejection Flag;
+        :Log Resubmission Action in Audit Trail;
+        detach
+    else (No)
+        :Abandon Submission;
+        stop
+    endif
+endif
+
+|K-Sync Web Platform|
+:Event Active for Public Fan Discovery,\nDiscussion & Bookmarks;
+stop
+
+@enduml
