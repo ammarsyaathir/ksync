@@ -1,0 +1,1682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>K-Sync Malaysia - Database Specification & ERD</title>
+    <!-- Mermaid CDN for Diagram Rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#fdf2f8',
+                primaryBorderColor: '#db2777',
+                primaryTextColor: '#831843',
+                lineColor: '#64748b',
+                secondaryColor: '#f5f3ff',
+                tertiaryColor: '#ffffff'
+            }
+        });
+    </script>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 15mm 15mm 15mm 15mm;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1e293b;
+            line-height: 1.5;
+            font-size: 11pt;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+        }
+
+        .cover-page {
+            page-break-after: always;
+            text-align: center;
+            padding-top: 100px;
+            padding-bottom: 60px;
+        }
+
+        .brand-pill {
+            display: inline-block;
+            background: #fdf2f8;
+            color: #db2777;
+            font-weight: 800;
+            font-size: 10pt;
+            padding: 6px 18px;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border: 1px solid #fbcfe8;
+            margin-bottom: 24px;
+        }
+
+        h1.doc-title {
+            font-size: 26pt;
+            font-weight: 900;
+            color: #0f172a;
+            margin: 0 0 16px 0;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+        }
+
+        h2.doc-subtitle {
+            font-size: 14pt;
+            font-weight: 600;
+            color: #64748b;
+            margin: 0 0 40px 0;
+        }
+
+        .meta-box {
+            display: inline-block;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 24px 36px;
+            text-align: left;
+            margin-top: 40px;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 10pt;
+        }
+
+        .meta-row:last-child {
+            border-bottom: none;
+        }
+
+        .meta-label {
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .meta-val {
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .page-break {
+            page-break-before: always;
+        }
+
+        .section-header {
+            margin-top: 24px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #0f172a;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+        }
+
+        .section-header h2 {
+            font-size: 16pt;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0;
+        }
+
+        .section-badge {
+            font-size: 9pt;
+            font-weight: 700;
+            color: #db2777;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        p {
+            margin: 0 0 12px 0;
+            font-size: 10.5pt;
+            color: #334155;
+        }
+
+        .alert-box {
+            background: #fdf2f8;
+            border-left: 4px solid #db2777;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 10pt;
+            color: #831843;
+            margin-bottom: 18px;
+        }
+
+        /* ERD Container */
+        .erd-container {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .mermaid {
+            width: 100%;
+            overflow: visible;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9pt;
+            margin-bottom: 24px;
+            page-break-inside: avoid;
+        }
+
+        table thead th {
+            background-color: #0f172a;
+            color: #ffffff;
+            text-align: left;
+            font-weight: 700;
+            padding: 8px 10px;
+            border: 1px solid #0f172a;
+            font-size: 8.5pt;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        table tbody td {
+            padding: 7px 10px;
+            border: 1px solid #e2e8f0;
+            vertical-align: top;
+            color: #334155;
+        }
+
+        table tbody tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .col-name {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .type-badge {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 8pt;
+            font-weight: 600;
+            color: #6366f1;
+            background: #eef2ff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .key-badge {
+            font-size: 8pt;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .key-pk {
+            background: #fef2f2;
+            color: #ef4444;
+            border: 1px solid #fecaca;
+        }
+
+        .key-fk {
+            background: #ecfdf5;
+            color: #059669;
+            border: 1px solid #a7f3d0;
+        }
+
+        .key-uk {
+            background: #fdf4ff;
+            color: #c026d3;
+            border: 1px solid #f5d0fe;
+        }
+
+        .table-title {
+            font-size: 12pt;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 18px 0 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .table-desc {
+            font-size: 9pt;
+            color: #64748b;
+            font-style: italic;
+            margin-bottom: 8px;
+        }
+
+        code, pre {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+
+        pre {
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 8.5pt;
+            overflow-x: auto;
+            margin-top: 8px;
+            margin-bottom: 20px;
+        }
+
+        .footer-note {
+            font-size: 8pt;
+            color: #94a3b8;
+            text-align: center;
+            margin-top: 30px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- COVER PAGE -->
+    <div class="cover-page">
+        <div class="brand-pill">Final Year Project Specification</div>
+        <h1 class="doc-title">K-Sync Malaysia<br><span style="font-weight: 700; color: #db2777; font-size: 22pt;">Database Design & Entity-Relationship Model</span></h1>
+        <h2 class="doc-subtitle">Chapter 3: System Architecture, Schema Definitions, and Relational Constraints</h2>
+
+        <div class="meta-box">
+            <div class="meta-row">
+                <span class="meta-label">System Name</span>
+                <span class="meta-val">K-Sync Malaysia (Node.js & Express)</span>
+            </div>
+            <div class="meta-row">
+                <span class="meta-label">Scope Alignment</span>
+                <span class="meta-val">FYP Chapter 1: Introduction (10 Tables)</span>
+            </div>
+            <div class="meta-row">
+                <span class="meta-label">Production Database</span>
+                <span class="meta-val">Hostinger MySQL 8.0 / MariaDB</span>
+            </div>
+            <div class="meta-row">
+                <span class="meta-label">Development Database</span>
+                <span class="meta-val">SQLite 3 (better-sqlite3)</span>
+            </div>
+            <div class="meta-row">
+                <span class="meta-label">Flagship Model Entity</span>
+                <span class="meta-val">TXT World Tour in KL (Ref: KS-2026-TXT001)</span>
+            </div>
+            <div class="meta-row">
+                <span class="meta-label">Specification Version</span>
+                <span class="meta-val">Version 1.0 (Clean Scope)</span>
+            </div>
+            <div class="meta-row">
+                <span class="meta-label">Date Generated</span>
+                <span class="meta-val">October 2026</span>
+            </div>
+        </div>
+
+        <div style="margin-top: 80px; font-size: 9pt; color: #94a3b8;">
+            Prepared for Faculty Examination, Viva Defense, and Academic Archival
+        </div>
+    </div>
+
+    <!-- SECTION 1: ARCHITECTURE OVERVIEW -->
+    <div class="page-break"></div>
+    <div class="section-header">
+        <h2>1. Database Architecture & Design Rationale</h2>
+        <span class="section-badge">Section 1.0</span>
+    </div>
+
+    <p>
+        The K-Sync Malaysia database is modeled specifically to solve the 3 core problems identified in <strong>Chapter 1: Introduction</strong>:
+        (1) Fragmented event information, (2) Unverified submissions and scalper fraud, and (3) Disorganized community event coordination.
+    </p>
+
+    <div class="alert-box">
+        <strong>Design Optimization:</strong> The schema was intentionally streamlined from 23 tables down to <strong>10 purposeful tables</strong>. 
+        Unnecessary overhead (such as separate venue lookup tables, GPS check-ins, and 1-on-1 private messaging) was eliminated, focusing 100% of system resources on centralized discovery, community discussion, and administrator verification.
+    </div>
+
+    <h3 style="font-size: 11pt; font-weight: 800; color: #0f172a; margin-top: 16px; margin-bottom: 8px;">Key Structural Architectural Decisions:</h3>
+    <ul style="font-size: 10pt; color: #334155; padding-left: 20px; margin-top: 0;">
+        <li><strong>Embedded Venue Attributes in Events:</strong> Rather than maintaining a detached <code>venues</code> lookup table that requires complex relational joins, venue attributes (<code>venue_name</code>, <code>address</code>, <code>city</code>, <code>state</code>) are natively embedded into the <code>events</code> record. This enables seamless support for both mega arenas (Axiata Arena, Zepp KL) and custom fan cupsleeve cafes.</li>
+        <li><strong>Single-Table Idol Member Biodata:</strong> Group and soloist member biodata (stage name, birth name, positions, birthday, zodiac, height, blood type, and MBTI) is stored in the <code>artists.members</code> column formatted as structured JSON. This satisfies user requirements without introducing a redundant <code>artist_members</code> child table.</li>
+        <li><strong>Dual Engine Compatibility:</strong> The data dictionary supports both <strong>Hostinger Cloud MySQL 8.0</strong> in production (via <code>mysql2/promise</code>) and <strong>SQLite 3</strong> in local development, ensuring zero deployment friction.</li>
+    </ul>
+
+    <!-- SECTION 2: ERD -->
+    <div class="section-header" style="margin-top: 32px;">
+        <h2>2. Entity-Relationship Diagram (ERD)</h2>
+        <span class="section-badge">Section 2.0</span>
+    </div>
+
+    <p>The diagram below illustrates all 10 entities, their primary/foreign key attributes, and relational multiplicities.</p>
+
+    <div class="erd-container">
+        <div class="mermaid">
+erDiagram
+    ROLES ||--o{ USERS : "1:N (has)"
+    EVENT_CATEGORIES ||--o{ EVENTS : "1:N (classifies)"
+    ARTISTS ||--o{ EVENTS : "1:N (features)"
+    USERS ||--o{ EVENTS : "1:N (organizes)"
+    
+    USERS ||--o{ SAVED_EVENTS : "1:N (bookmarks)"
+    EVENTS ||--o{ SAVED_EVENTS : "1:N (bookmarked_by)"
+    
+    EVENTS ||--o{ EVENT_CHAT_MESSAGES : "1:N (contains)"
+    USERS ||--o{ EVENT_CHAT_MESSAGES : "1:N (posts)"
+    
+    EVENTS ||--o{ REPORTS : "1:N (reported_in)"
+    USERS ||--o{ REPORTS : "1:N (submits)"
+    
+    USERS ||--o{ NOTIFICATIONS : "1:N (receives)"
+    USERS ||--o{ ACTIVITY_LOGS : "1:N (generates)"
+
+    ROLES {
+        int id PK
+        varchar name UK
+        datetime created_at
+    }
+
+    USERS {
+        int id PK
+        int role_id FK
+        varchar full_name
+        varchar username UK
+        varchar email UK
+        varchar password_hash
+        text bio
+        varchar profile_image
+        varchar organization_name
+        varchar organization_type
+        varchar social_handle
+        varchar social_url
+        varchar location
+        varchar status
+        datetime created_at
+        datetime updated_at
+    }
+
+    ARTISTS {
+        int id PK
+        varchar name
+        varchar group_type
+        varchar image_url
+        varchar agency
+        text description
+        longtext members
+        datetime created_at
+    }
+
+    EVENT_CATEGORIES {
+        int id PK
+        varchar name UK
+        varchar slug UK
+        varchar badge_color
+        text description
+        datetime created_at
+    }
+
+    EVENTS {
+        int id PK
+        int organizer_id FK
+        int artist_id FK
+        int category_id FK
+        varchar event_name
+        text description
+        date event_date
+        time start_time
+        time end_time
+        varchar venue_name
+        text address
+        varchar city
+        varchar state
+        text ticket_info
+        text event_rules
+        varchar official_url
+        varchar poster_image
+        varchar event_status
+        varchar verification_status
+        text rejection_reason
+        varchar tracking_code UK
+        varchar submitter_name
+        varchar submitter_email
+        datetime created_at
+        datetime updated_at
+    }
+
+    SAVED_EVENTS {
+        int id PK
+        int user_id FK
+        int event_id FK
+        datetime saved_at
+    }
+
+    EVENT_CHAT_MESSAGES {
+        int id PK
+        int event_id FK
+        int user_id FK
+        text message
+        datetime created_at
+    }
+
+    REPORTS {
+        int id PK
+        int user_id FK
+        int event_id FK
+        varchar report_type
+        varchar reason
+        text details
+        varchar status
+        datetime created_at
+    }
+
+    ACTIVITY_LOGS {
+        int id PK
+        int user_id FK
+        varchar action
+        varchar target_type
+        int target_id
+        text details
+        varchar ip_address
+        datetime created_at
+    }
+
+    NOTIFICATIONS {
+        int id PK
+        int user_id FK
+        varchar title
+        text message
+        varchar link
+        tinyint is_read
+        datetime created_at
+    }
+        </div>
+    </div>
+
+    <!-- SECTION 3: CARDINALITY & MULTIPLICITY MATRIX -->
+    <div class="page-break"></div>
+    <div class="section-header">
+        <h2>3. Cardinality & Multiplicity Relationship Matrix</h2>
+        <span class="section-badge">Section 3.0</span>
+    </div>
+
+    <p>This table defines the participation constraints, multiplicities, foreign key mapping, and referential integrity delete actions across all relationships.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 5%;">#</th>
+                <th style="width: 15%;">Parent Entity</th>
+                <th style="width: 15%;">Child Entity</th>
+                <th style="width: 18%;">Foreign Key Column</th>
+                <th style="width: 12%;">Cardinality</th>
+                <th style="width: 25%;">Business Relationship Rule</th>
+                <th style="width: 10%;">ON DELETE</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td><strong>roles</strong></td>
+                <td><strong>users</strong></td>
+                <td><code>users.role_id</code></td>
+                <td><strong>1 : N</strong></td>
+                <td>One role is assigned to zero or many users. A user must have exactly 1 role.</td>
+                <td><code>RESTRICT</code></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td><strong>event_categories</strong></td>
+                <td><strong>events</strong></td>
+                <td><code>events.category_id</code></td>
+                <td><strong>1 : N</strong></td>
+                <td>One category classifies zero or many events. An event belongs to exactly 1 category.</td>
+                <td><code>RESTRICT</code></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td><strong>artists</strong></td>
+                <td><strong>events</strong></td>
+                <td><code>events.artist_id</code></td>
+                <td><strong>1 : N</strong></td>
+                <td>One artist performs in zero or many events. An event features zero or one artist.</td>
+                <td><code>SET NULL</code></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td><strong>users</strong></td>
+                <td><strong>events</strong></td>
+                <td><code>events.organizer_id</code></td>
+                <td><strong>1 : N</strong></td>
+                <td>One organizer manages zero or many events. An event has 1 organizer account.</td>
+                <td><code>RESTRICT</code></td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td><strong>users & events</strong></td>
+                <td><strong>saved_events</strong></td>
+                <td><code>user_id, event_id</code></td>
+                <td><strong>M : N</strong></td>
+                <td>Many-to-Many resolved by associative table. Fans bookmark multiple events.</td>
+                <td><code>CASCADE</code></td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td><strong>events</strong></td>
+                <td><strong>event_chat_messages</strong></td>
+                <td><code>event_id</code></td>
+                <td><strong>1 : N</strong></td>
+                <td>One event hub contains zero or many community chat messages.</td>
+                <td><code>CASCADE</code></td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td><strong>users</strong></td>
+                <td><strong>event_chat_messages</strong></td>
+                <td><code>user_id</code></td>
+                <td><strong>1 : N</strong></td>
+                <td>One registered fan authors zero or many chat messages.</td>
+                <td><code>CASCADE</code></td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td><strong>events</strong></td>
+                <td><strong>reports</strong></td>
+                <td><code>reports.event_id</code></td>
+                <td><strong>1 : N</strong></td>
+                <td>One event listing can have zero or many content/scam reports.</td>
+                <td><code>CASCADE</code></td>
+            </tr>
+            <tr>
+                <td>9</td>
+                <td><strong>users</strong></td>
+                <td><strong>reports</strong></td>
+                <td><code>reports.user_id</code></td>
+                <td><strong>1 : N</strong></td>
+                <td>One user submits zero or many reports (optional if guest reports).</td>
+                <td><code>SET NULL</code></td>
+            </tr>
+            <tr>
+                <td>10</td>
+                <td><strong>users</strong></td>
+                <td><strong>activity_logs</strong></td>
+                <td><code>activity_logs.user_id</code></td>
+                <td><strong>1 : N</strong></td>
+                <td>One administrator/user triggers zero or many immutable audit records.</td>
+                <td><code>SET NULL</code></td>
+            </tr>
+            <tr>
+                <td>11</td>
+                <td><strong>users</strong></td>
+                <td><strong>notifications</strong></td>
+                <td><code>notifications.user_id</code></td>
+                <td><strong>1 : N</strong></td>
+                <td>One user receives zero or many in-app alerts and soundcheck updates.</td>
+                <td><code>CASCADE</code></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- SECTION 4: DATA DICTIONARY -->
+    <div class="page-break"></div>
+    <div class="section-header">
+        <h2>4. Complete Data Dictionary (10 Tables)</h2>
+        <span class="section-badge">Section 4.0</span>
+    </div>
+
+    <!-- 1. roles -->
+    <div class="table-title">
+        <span>4.1 Table: <code>roles</code></span>
+        <span style="font-size: 9pt; font-weight: 600; color: #64748b;">RBAC Roles Table</span>
+    </div>
+    <div class="table-desc">Stores user role designations for role-based access control.</div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 20%;">Column Name</th>
+                <th style="width: 15%;">Data Type</th>
+                <th style="width: 10%;">Null</th>
+                <th style="width: 10%;">Key</th>
+                <th style="width: 15%;">Default</th>
+                <th style="width: 30%;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-name">id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-pk">PK</span></td>
+                <td>AUTO_INCREMENT</td>
+                <td>Surrogate primary key for role.</td>
+            </tr>
+            <tr>
+                <td class="col-name">name</td>
+                <td><span class="type-badge">VARCHAR(50)</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-uk">UK</span></td>
+                <td>NULL</td>
+                <td>Unique role title: <code>Admin</code>, <code>Organizer</code>, <code>Fan</code>.</td>
+            </tr>
+            <tr>
+                <td class="col-name">created_at</td>
+                <td><span class="type-badge">DATETIME</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>CURRENT_TIMESTAMP</td>
+                <td>Timestamp when the role record was initialized.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 2. users -->
+    <div class="table-title">
+        <span>4.2 Table: <code>users</code></span>
+        <span style="font-size: 9pt; font-weight: 600; color: #64748b;">User Accounts & Profiles</span>
+    </div>
+    <div class="table-desc">Stores registered user credentials, profiles, and organizer verification metadata.</div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 20%;">Column Name</th>
+                <th style="width: 15%;">Data Type</th>
+                <th style="width: 10%;">Null</th>
+                <th style="width: 10%;">Key</th>
+                <th style="width: 15%;">Default</th>
+                <th style="width: 30%;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-name">id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-pk">PK</span></td>
+                <td>AUTO_INCREMENT</td>
+                <td>Unique user identifier.</td>
+            </tr>
+            <tr>
+                <td class="col-name">role_id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-fk">FK</span></td>
+                <td>3</td>
+                <td>References <code>roles(id)</code>. Default 3 = Fan.</td>
+            </tr>
+            <tr>
+                <td class="col-name">full_name</td>
+                <td><span class="type-badge">VARCHAR(100)</span></td>
+                <td>NO</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>User's full display or legal name.</td>
+            </tr>
+            <tr>
+                <td class="col-name">username</td>
+                <td><span class="type-badge">VARCHAR(50)</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-uk">UK</span></td>
+                <td>NULL</td>
+                <td>Unique login username / handle.</td>
+            </tr>
+            <tr>
+                <td class="col-name">email</td>
+                <td><span class="type-badge">VARCHAR(100)</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-uk">UK</span></td>
+                <td>NULL</td>
+                <td>Unique email address used for sign-in and notifications.</td>
+            </tr>
+            <tr>
+                <td class="col-name">password_hash</td>
+                <td><span class="type-badge">VARCHAR(255)</span></td>
+                <td>NO</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Bcrypt-hashed password string.</td>
+            </tr>
+            <tr>
+                <td class="col-name">bio</td>
+                <td><span class="type-badge">TEXT</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Short user biography or fanclub description.</td>
+            </tr>
+            <tr>
+                <td class="col-name">profile_image</td>
+                <td><span class="type-badge">VARCHAR(255)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>URL or uploaded path to avatar photo.</td>
+            </tr>
+            <tr>
+                <td class="col-name">organization_name</td>
+                <td><span class="type-badge">VARCHAR(150)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Official registered organizer or fanclub organization name.</td>
+            </tr>
+            <tr>
+                <td class="col-name">organization_type</td>
+                <td><span class="type-badge">VARCHAR(50)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>'Fanclub'</td>
+                <td>Entity type: <code>Fanclub</code>, <code>Promoter</code>, <code>Agency</code>.</td>
+            </tr>
+            <tr>
+                <td class="col-name">social_handle</td>
+                <td><span class="type-badge">VARCHAR(50)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Official X / Instagram username (e.g. <code>@TXT_MY</code>).</td>
+            </tr>
+            <tr>
+                <td class="col-name">social_url</td>
+                <td><span class="type-badge">VARCHAR(255)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Direct URL to official organizer announcement channel.</td>
+            </tr>
+            <tr>
+                <td class="col-name">location</td>
+                <td><span class="type-badge">VARCHAR(100)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>'Kuala Lumpur'</td>
+                <td>Malaysian city/state of the user.</td>
+            </tr>
+            <tr>
+                <td class="col-name">status</td>
+                <td><span class="type-badge">VARCHAR(20)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>'ACTIVE'</td>
+                <td>Account status: <code>ACTIVE</code>, <code>SUSPENDED</code>.</td>
+            </tr>
+            <tr>
+                <td class="col-name">created_at</td>
+                <td><span class="type-badge">DATETIME</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>CURRENT_TIMESTAMP</td>
+                <td>User account registration timestamp.</td>
+            </tr>
+            <tr>
+                <td class="col-name">updated_at</td>
+                <td><span class="type-badge">DATETIME</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>CURRENT_TIMESTAMP</td>
+                <td>Timestamp of latest profile modification.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 3. artists -->
+    <div class="table-title">
+        <span>4.3 Table: <code>artists</code></span>
+        <span style="font-size: 9pt; font-weight: 600; color: #64748b;">K-Pop Artists & Idol Biodata</span>
+    </div>
+    <div class="table-desc">Stores idol groups and soloists, embedding all member profiles directly inside JSON format.</div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 20%;">Column Name</th>
+                <th style="width: 15%;">Data Type</th>
+                <th style="width: 10%;">Null</th>
+                <th style="width: 10%;">Key</th>
+                <th style="width: 15%;">Default</th>
+                <th style="width: 30%;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-name">id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-pk">PK</span></td>
+                <td>AUTO_INCREMENT</td>
+                <td>Unique artist catalog identifier.</td>
+            </tr>
+            <tr>
+                <td class="col-name">name</td>
+                <td><span class="type-badge">VARCHAR(100)</span></td>
+                <td>NO</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Official artist/group name (e.g. <code>TOMORROW X TOGETHER</code>).</td>
+            </tr>
+            <tr>
+                <td class="col-name">group_type</td>
+                <td><span class="type-badge">VARCHAR(50)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>'Boy Group'</td>
+                <td>Category: <code>Boy Group</code>, <code>Girl Group</code>, <code>Soloist</code>.</td>
+            </tr>
+            <tr>
+                <td class="col-name">image_url</td>
+                <td><span class="type-badge">VARCHAR(255)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Header / promotional group photo asset URL.</td>
+            </tr>
+            <tr>
+                <td class="col-name">agency</td>
+                <td><span class="type-badge">VARCHAR(100)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Management entertainment agency (e.g. <code>BIGHIT MUSIC</code>).</td>
+            </tr>
+            <tr>
+                <td class="col-name">description</td>
+                <td><span class="type-badge">TEXT</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Career summary and background biography of the artist.</td>
+            </tr>
+            <tr>
+                <td class="col-name">members</td>
+                <td><span class="type-badge">LONGTEXT (JSON)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td><strong>JSON array holding individual idol biodatas</strong> (Stage name, birth name, positions, DOB, zodiac, height, blood, MBTI).</td>
+            </tr>
+            <tr>
+                <td class="col-name">created_at</td>
+                <td><span class="type-badge">DATETIME</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>CURRENT_TIMESTAMP</td>
+                <td>Timestamp when artist was added to catalog.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 4. event_categories -->
+    <div class="table-title">
+        <span>4.4 Table: <code>event_categories</code></span>
+        <span style="font-size: 9pt; font-weight: 600; color: #64748b;">Event Type Taxonomy</span>
+    </div>
+    <div class="table-desc">Categorization taxonomy for Malaysian K-Pop events.</div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 20%;">Column Name</th>
+                <th style="width: 15%;">Data Type</th>
+                <th style="width: 10%;">Null</th>
+                <th style="width: 10%;">Key</th>
+                <th style="width: 15%;">Default</th>
+                <th style="width: 30%;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-name">id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-pk">PK</span></td>
+                <td>AUTO_INCREMENT</td>
+                <td>Unique category identifier.</td>
+            </tr>
+            <tr>
+                <td class="col-name">name</td>
+                <td><span class="type-badge">VARCHAR(100)</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-uk">UK</span></td>
+                <td>NULL</td>
+                <td>Category title (e.g. <code>Concert</code>, <code>Fan Meeting</code>, <code>Cupsleeve Event</code>).</td>
+            </tr>
+            <tr>
+                <td class="col-name">slug</td>
+                <td><span class="type-badge">VARCHAR(100)</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-uk">UK</span></td>
+                <td>NULL</td>
+                <td>URL slug for filtering (e.g. <code>fan-meeting</code>).</td>
+            </tr>
+            <tr>
+                <td class="col-name">badge_color</td>
+                <td><span class="type-badge">VARCHAR(30)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>'purple'</td>
+                <td>Tailwind color theme for UI badges (<code>purple</code>, <code>pink</code>, <code>rose</code>).</td>
+            </tr>
+            <tr>
+                <td class="col-name">description</td>
+                <td><span class="type-badge">TEXT</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Scope and definition of the event category.</td>
+            </tr>
+            <tr>
+                <td class="col-name">created_at</td>
+                <td><span class="type-badge">DATETIME</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>CURRENT_TIMESTAMP</td>
+                <td>Timestamp when category was established.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 5. events -->
+    <div class="page-break"></div>
+    <div class="table-title">
+        <span>4.5 Table: <code>events</code></span>
+        <span style="font-size: 9pt; font-weight: 600; color: #64748b;">Centralized Event Information (Embedded Venue)</span>
+    </div>
+    <div class="table-desc">Central repository of verified K-Pop events, ticketing tiers, rules, embedded venue details, and public submission tracking codes.</div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 20%;">Column Name</th>
+                <th style="width: 15%;">Data Type</th>
+                <th style="width: 10%;">Null</th>
+                <th style="width: 10%;">Key</th>
+                <th style="width: 15%;">Default</th>
+                <th style="width: 30%;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-name">id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-pk">PK</span></td>
+                <td>AUTO_INCREMENT</td>
+                <td>Unique event identifier.</td>
+            </tr>
+            <tr>
+                <td class="col-name">organizer_id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-fk">FK</span></td>
+                <td>2</td>
+                <td>References <code>users(id)</code> (Managing organizer/promoter).</td>
+            </tr>
+            <tr>
+                <td class="col-name">artist_id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>YES</td>
+                <td><span class="key-badge key-fk">FK</span></td>
+                <td>NULL</td>
+                <td>References <code>artists(id)</code>. Set null if multiple artists.</td>
+            </tr>
+            <tr>
+                <td class="col-name">category_id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-fk">FK</span></td>
+                <td>NULL</td>
+                <td>References <code>event_categories(id)</code>.</td>
+            </tr>
+            <tr>
+                <td class="col-name">event_name</td>
+                <td><span class="type-badge">VARCHAR(200)</span></td>
+                <td>NO</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Full official title of the Malaysian event.</td>
+            </tr>
+            <tr>
+                <td class="col-name">description</td>
+                <td><span class="type-badge">TEXT</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Itinerary, setlist highlights, soundcheck perks, and overview.</td>
+            </tr>
+            <tr>
+                <td class="col-name">event_date</td>
+                <td><span class="type-badge">DATE</span></td>
+                <td>NO</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Calendar date of performance (<code>YYYY-MM-DD</code>).</td>
+            </tr>
+            <tr>
+                <td class="col-name">start_time</td>
+                <td><span class="type-badge">TIME</span></td>
+                <td>NO</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Doors open / concert start time (<code>HH:MM:SS</code>).</td>
+            </tr>
+            <tr>
+                <td class="col-name">end_time</td>
+                <td><span class="type-badge">TIME</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Estimated conclusion time (used for 24h chat auto-lock).</td>
+            </tr>
+            <tr>
+                <td class="col-name">venue_name</td>
+                <td><span class="type-badge">VARCHAR(150)</span></td>
+                <td>NO</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td><strong>Embedded Venue Name</strong> (e.g. <code>Zepp Kuala Lumpur</code>).</td>
+            </tr>
+            <tr>
+                <td class="col-name">address</td>
+                <td><span class="type-badge">TEXT</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td><strong>Embedded Street Address</strong> (e.g. <code>LaLaport BBCC, Jalan Hang Tuah</code>).</td>
+            </tr>
+            <tr>
+                <td class="col-name">city</td>
+                <td><span class="type-badge">VARCHAR(100)</span></td>
+                <td>NO</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td><strong>Embedded City</strong> (e.g. <code>Kuala Lumpur</code>).</td>
+            </tr>
+            <tr>
+                <td class="col-name">state</td>
+                <td><span class="type-badge">VARCHAR(100)</span></td>
+                <td>NO</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td><strong>Embedded State</strong> (e.g. <code>Wilayah Persekutuan Kuala Lumpur</code>).</td>
+            </tr>
+            <tr>
+                <td class="col-name">ticket_info</td>
+                <td><span class="type-badge">TEXT</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Ticket tiers, seated categories, and pricing breakdown.</td>
+            </tr>
+            <tr>
+                <td class="col-name">event_rules</td>
+                <td><span class="type-badge">TEXT</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Prohibited items (cameras, large bags), soundcheck queue rules.</td>
+            </tr>
+            <tr>
+                <td class="col-name">official_url</td>
+                <td><span class="type-badge">VARCHAR(255)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Official verified ticketing link (BookMyShow, GoLive, Ticket2U).</td>
+            </tr>
+            <tr>
+                <td class="col-name">poster_image</td>
+                <td><span class="type-badge">VARCHAR(255)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Promotional poster image URL or uploaded file location.</td>
+            </tr>
+            <tr>
+                <td class="col-name">event_status</td>
+                <td><span class="type-badge">VARCHAR(30)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>'UPCOMING'</td>
+                <td>Life cycle: <code>UPCOMING</code>, <code>ONGOING</code>, <code>COMPLETED</code>.</td>
+            </tr>
+            <tr>
+                <td class="col-name">verification_status</td>
+                <td><span class="type-badge">VARCHAR(30)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>'PENDING'</td>
+                <td>Review state: <code>PENDING</code>, <code>VERIFIED</code>, <code>REJECTED</code>.</td>
+            </tr>
+            <tr>
+                <td class="col-name">rejection_reason</td>
+                <td><span class="type-badge">TEXT</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Administrator recorded reason explaining submission rejection.</td>
+            </tr>
+            <tr>
+                <td class="col-name">tracking_code</td>
+                <td><span class="type-badge">VARCHAR(50)</span></td>
+                <td>YES</td>
+                <td><span class="key-badge key-uk">UK</span></td>
+                <td>NULL</td>
+                <td>Unique tracking code (e.g. <code>KS-2026-TXT001</code>) for public status lookup.</td>
+            </tr>
+            <tr>
+                <td class="col-name">submitter_name</td>
+                <td><span class="type-badge">VARCHAR(150)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Name of the public submitter or fanclub organizer.</td>
+            </tr>
+            <tr>
+                <td class="col-name">submitter_email</td>
+                <td><span class="type-badge">VARCHAR(150)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Contact email where review notifications are delivered.</td>
+            </tr>
+            <tr>
+                <td class="col-name">created_at</td>
+                <td><span class="type-badge">DATETIME</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>CURRENT_TIMESTAMP</td>
+                <td>Submission timestamp.</td>
+            </tr>
+            <tr>
+                <td class="col-name">updated_at</td>
+                <td><span class="type-badge">DATETIME</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>CURRENT_TIMESTAMP</td>
+                <td>Last modification timestamp.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 6. saved_events -->
+    <div class="table-title">
+        <span>4.6 Table: <code>saved_events</code></span>
+        <span style="font-size: 9pt; font-weight: 600; color: #64748b;">Fan Bookmarks Associative Table</span>
+    </div>
+    <div class="table-desc">Resolves the M:N relationship between users and bookmarked events with personal countdown timers.</div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 20%;">Column Name</th>
+                <th style="width: 15%;">Data Type</th>
+                <th style="width: 10%;">Null</th>
+                <th style="width: 10%;">Key</th>
+                <th style="width: 15%;">Default</th>
+                <th style="width: 30%;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-name">id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-pk">PK</span></td>
+                <td>AUTO_INCREMENT</td>
+                <td>Surrogate primary key.</td>
+            </tr>
+            <tr>
+                <td class="col-name">user_id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-fk">FK</span></td>
+                <td>NULL</td>
+                <td>References <code>users(id)</code>. Deleted on user cascade.</td>
+            </tr>
+            <tr>
+                <td class="col-name">event_id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-fk">FK</span></td>
+                <td>NULL</td>
+                <td>References <code>events(id)</code>. Deleted on event cascade.</td>
+            </tr>
+            <tr>
+                <td class="col-name">saved_at</td>
+                <td><span class="type-badge">DATETIME</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>CURRENT_TIMESTAMP</td>
+                <td>Timestamp when bookmark was saved.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 7. event_chat_messages -->
+    <div class="table-title">
+        <span>4.7 Table: <code>event_chat_messages</code></span>
+        <span style="font-size: 9pt; font-weight: 600; color: #64748b;">Live Event Discussion Hub</span>
+    </div>
+    <div class="table-desc">Stores per-event discussion messages exchanged between registered fans with automatic 24-hour post-event archival.</div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 20%;">Column Name</th>
+                <th style="width: 15%;">Data Type</th>
+                <th style="width: 10%;">Null</th>
+                <th style="width: 10%;">Key</th>
+                <th style="width: 15%;">Default</th>
+                <th style="width: 30%;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-name">id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-pk">PK</span></td>
+                <td>AUTO_INCREMENT</td>
+                <td>Unique chat message identifier.</td>
+            </tr>
+            <tr>
+                <td class="col-name">event_id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-fk">FK</span></td>
+                <td>NULL</td>
+                <td>References <code>events(id)</code> to isolate discussions by show.</td>
+            </tr>
+            <tr>
+                <td class="col-name">user_id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-fk">FK</span></td>
+                <td>NULL</td>
+                <td>References <code>users(id)</code> of message author.</td>
+            </tr>
+            <tr>
+                <td class="col-name">message</td>
+                <td><span class="type-badge">TEXT</span></td>
+                <td>NO</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Sanitized message body text.</td>
+            </tr>
+            <tr>
+                <td class="col-name">created_at</td>
+                <td><span class="type-badge">DATETIME</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>CURRENT_TIMESTAMP</td>
+                <td>Message creation timestamp.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 8. reports -->
+    <div class="page-break"></div>
+    <div class="table-title">
+        <span>4.8 Table: <code>reports</code></span>
+        <span style="font-size: 9pt; font-weight: 600; color: #64748b;">Community Content Flagging</span>
+    </div>
+    <div class="table-desc">Records community reports flagging fraudulent listings, inaccurate event times, or inappropriate content.</div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 20%;">Column Name</th>
+                <th style="width: 15%;">Data Type</th>
+                <th style="width: 10%;">Null</th>
+                <th style="width: 10%;">Key</th>
+                <th style="width: 15%;">Default</th>
+                <th style="width: 30%;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-name">id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-pk">PK</span></td>
+                <td>AUTO_INCREMENT</td>
+                <td>Unique report tracking identifier.</td>
+            </tr>
+            <tr>
+                <td class="col-name">user_id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>YES</td>
+                <td><span class="key-badge key-fk">FK</span></td>
+                <td>NULL</td>
+                <td>References <code>users(id)</code> (Reporter). Set NULL if anonymous guest.</td>
+            </tr>
+            <tr>
+                <td class="col-name">event_id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>YES</td>
+                <td><span class="key-badge key-fk">FK</span></td>
+                <td>NULL</td>
+                <td>References <code>events(id)</code> being flagged.</td>
+            </tr>
+            <tr>
+                <td class="col-name">report_type</td>
+                <td><span class="type-badge">VARCHAR(50)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>'EVENT'</td>
+                <td>Classification: <code>EVENT</code>, <code>CHAT</code>, <code>SCAM</code>.</td>
+            </tr>
+            <tr>
+                <td class="col-name">reason</td>
+                <td><span class="type-badge">VARCHAR(255)</span></td>
+                <td>NO</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Category: Inaccurate Date, Fake Event, Scalper Resale Link.</td>
+            </tr>
+            <tr>
+                <td class="col-name">details</td>
+                <td><span class="type-badge">TEXT</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Supporting evidence or official link provided by reporter.</td>
+            </tr>
+            <tr>
+                <td class="col-name">status</td>
+                <td><span class="type-badge">VARCHAR(30)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>'PENDING'</td>
+                <td>Resolution state: <code>PENDING</code>, <code>INVESTIGATING</code>, <code>RESOLVED</code>.</td>
+            </tr>
+            <tr>
+                <td class="col-name">created_at</td>
+                <td><span class="type-badge">DATETIME</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>CURRENT_TIMESTAMP</td>
+                <td>Filing timestamp.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 9. activity_logs -->
+    <div class="table-title">
+        <span>4.9 Table: <code>activity_logs</code></span>
+        <span style="font-size: 9pt; font-weight: 600; color: #64748b;">Administrator Audit Trail</span>
+    </div>
+    <div class="table-desc">Maintains an immutable historical record of all administrative verifications, approvals, and moderation actions.</div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 20%;">Column Name</th>
+                <th style="width: 15%;">Data Type</th>
+                <th style="width: 10%;">Null</th>
+                <th style="width: 10%;">Key</th>
+                <th style="width: 15%;">Default</th>
+                <th style="width: 30%;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-name">id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-pk">PK</span></td>
+                <td>AUTO_INCREMENT</td>
+                <td>Unique log identifier.</td>
+            </tr>
+            <tr>
+                <td class="col-name">user_id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>YES</td>
+                <td><span class="key-badge key-fk">FK</span></td>
+                <td>NULL</td>
+                <td>References <code>users(id)</code> of the administrator who executed action.</td>
+            </tr>
+            <tr>
+                <td class="col-name">action</td>
+                <td><span class="type-badge">VARCHAR(50)</span></td>
+                <td>NO</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Action code: <code>APPROVE_EVENT</code>, <code>REJECT_EVENT</code>, <code>DELETE_USER</code>.</td>
+            </tr>
+            <tr>
+                <td class="col-name">target_type</td>
+                <td><span class="type-badge">VARCHAR(50)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Target entity: <code>events</code>, <code>users</code>, <code>categories</code>, <code>artists</code>.</td>
+            </tr>
+            <tr>
+                <td class="col-name">target_id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Primary key of modified target record.</td>
+            </tr>
+            <tr>
+                <td class="col-name">details</td>
+                <td><span class="type-badge">TEXT</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Human-readable summary of the administrative action.</td>
+            </tr>
+            <tr>
+                <td class="col-name">ip_address</td>
+                <td><span class="type-badge">VARCHAR(50)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Client IPv4/IPv6 address of executor for security auditing.</td>
+            </tr>
+            <tr>
+                <td class="col-name">created_at</td>
+                <td><span class="type-badge">DATETIME</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>CURRENT_TIMESTAMP</td>
+                <td>Action execution timestamp.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 10. notifications -->
+    <div class="table-title">
+        <span>4.10 Table: <code>notifications</code></span>
+        <span style="font-size: 9pt; font-weight: 600; color: #64748b;">User & Organizer Alerts</span>
+    </div>
+    <div class="table-desc">Stores user notifications for soundcheck queues, ticket sales, and event submission outcomes.</div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 20%;">Column Name</th>
+                <th style="width: 15%;">Data Type</th>
+                <th style="width: 10%;">Null</th>
+                <th style="width: 10%;">Key</th>
+                <th style="width: 15%;">Default</th>
+                <th style="width: 30%;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-name">id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-pk">PK</span></td>
+                <td>AUTO_INCREMENT</td>
+                <td>Unique notification identifier.</td>
+            </tr>
+            <tr>
+                <td class="col-name">user_id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-fk">FK</span></td>
+                <td>NULL</td>
+                <td>References <code>users(id)</code> of recipient.</td>
+            </tr>
+            <tr>
+                <td class="col-name">title</td>
+                <td><span class="type-badge">VARCHAR(150)</span></td>
+                <td>NO</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Notification headline banner.</td>
+            </tr>
+            <tr>
+                <td class="col-name">message</td>
+                <td><span class="type-badge">TEXT</span></td>
+                <td>NO</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Detailed alert notification message.</td>
+            </tr>
+            <tr>
+                <td class="col-name">link</td>
+                <td><span class="type-badge">VARCHAR(255)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Target route URL (e.g. <code>/events/1</code>).</td>
+            </tr>
+            <tr>
+                <td class="col-name">is_read</td>
+                <td><span class="type-badge">TINYINT(1)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>0</td>
+                <td>Read flag: <code>0 = Unread</code>, <code>1 = Read</code>.</td>
+            </tr>
+            <tr>
+                <td class="col-name">created_at</td>
+                <td><span class="type-badge">DATETIME</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>CURRENT_TIMESTAMP</td>
+                <td>Alert dispatch timestamp.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- SECTION 5: JSON SCHEMA FOR MEMBERS -->
+    <div class="page-break"></div>
+    <div class="section-header">
+        <h2>5. JSON Column Specification: <code>artists.members</code></h2>
+        <span class="section-badge">Section 5.0</span>
+    </div>
+
+    <p>
+        To prevent schema bloat and preserve a lean 10-table architecture, idol group members are stored directly in the <code>artists</code> table inside the <code>members</code> column as a structured JSON array.
+    </p>
+
+    <h3 style="font-size: 11pt; font-weight: 800; color: #0f172a; margin-top: 16px; margin-bottom: 8px;">JSON Schema Definition:</h3>
+    <pre>{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "IdolMemberBiodataArray",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["stage_name", "birth_name", "position", "dob"],
+    "properties": {
+      "stage_name":   { "type": "string", "description": "Public stage name (e.g. Yeonjun)" },
+      "birth_name":   { "type": "string", "description": "Legal Korean/English birth name" },
+      "position":     { "type": "string", "description": "Group role: Leader, Main Vocalist, Rapper, Dancer" },
+      "dob":          { "type": "string", "description": "Date of Birth (e.g. September 13, 1999)" },
+      "zodiac":       { "type": "string", "description": "Western astrological zodiac sign" },
+      "height":       { "type": "string", "description": "Height in cm / feet-inches" },
+      "blood_type":   { "type": "string", "description": "Blood type: A, B, AB, O" },
+      "mbti":         { "type": "string", "description": "MBTI 4-letter personality type (e.g. ENFP)" },
+      "nationality":  { "type": "string", "description": "Citizenship/country of origin" },
+      "years_active": { "type": "string", "description": "Debut year to present" },
+      "photo":        { "type": "string", "description": "Direct URL to official member profile portrait" }
+    }
+  }
+}</pre>
+
+    <h3 style="font-size: 11pt; font-weight: 800; color: #0f172a; margin-top: 20px; margin-bottom: 8px;">Flagship Sample Payload: TOMORROW X TOGETHER (TXT)</h3>
+    <pre>[
+  {
+    "stage_name": "Yeonjun",
+    "birth_name": "Choi Yeon-jun (최연준)",
+    "position": "Main Rapper, Main Dancer, Vocalist",
+    "dob": "September 13, 1999",
+    "zodiac": "Virgo",
+    "height": "181.5 cm / 5'11"",
+    "blood_type": "A",
+    "mbti": "ENFP",
+    "nationality": "South Korean",
+    "years_active": "2019–present",
+    "photo": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300"
+  },
+  {
+    "stage_name": "Soobin",
+    "birth_name": "Choi Soo-bin (최수빈)",
+    "position": "Leader, Vocalist, Rapper",
+    "dob": "December 5, 2000",
+    "zodiac": "Sagittarius",
+    "height": "185 cm / 6'1"",
+    "blood_type": "A",
+    "mbti": "ISFP",
+    "nationality": "South Korean",
+    "years_active": "2019–present",
+    "photo": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300"
+  },
+  {
+    "stage_name": "Beomgyu",
+    "birth_name": "Choi Beom-gyu (최범규)",
+    "position": "Vocalist, Dancer, Rapper, Center, Visual",
+    "dob": "March 13, 2001",
+    "zodiac": "Pisces",
+    "height": "180 cm / 5'11"",
+    "blood_type": "AB",
+    "mbti": "INFJ",
+    "nationality": "South Korean",
+    "years_active": "2019–present",
+    "photo": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300"
+  },
+  {
+    "stage_name": "Taehyun",
+    "birth_name": "Kang Tae-hyun (강태현)",
+    "position": "Main Vocalist, Dancer",
+    "dob": "February 5, 2002",
+    "zodiac": "Aquarius",
+    "height": "177 cm / 5'10"",
+    "blood_type": "A",
+    "mbti": "ESTP",
+    "nationality": "South Korean",
+    "years_active": "2019–present",
+    "photo": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300"
+  },
+  {
+    "stage_name": "HueningKai",
+    "birth_name": "Kai Kamal Huening (카이 카말 휴닝)",
+    "position": "Main Vocalist, Dancer, Maknae",
+    "dob": "August 14, 2002",
+    "zodiac": "Leo",
+    "height": "183 cm / 6'0"",
+    "blood_type": "A",
+    "mbti": "ISTP",
+    "nationality": "Korean-American",
+    "years_active": "2019–present",
+    "photo": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300"
+  }
+]</pre>
+
+    <div class="footer-note">
+        K-Sync Malaysia &copy; 2026. Final Year Project Chapter 3 Database Design Deliverable. All rights reserved.
+    </div>
+
+</body>
+</html>
