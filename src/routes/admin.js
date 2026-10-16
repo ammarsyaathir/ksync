@@ -4,6 +4,7 @@ import db from '../../config/database.js';
 import { requireAdmin } from '../middleware/auth.js';
 import { logActivity } from '../utils/helpers.js';
 import helpers from '../utils/helpers.js';
+import { sendEventApprovalEmail, sendEventRejectionEmail } from '../utils/mailer.js';
 
 const router = express.Router();
 
@@ -84,12 +85,26 @@ router.post('/admin/verifications/approve-event', async (req, res) => {
   const adminId = req.session.userId;
 
   try {
+    const ev = await db.getOne("SELECT * FROM events WHERE id = ?", [event_id]);
+
     await db.execute(
       "UPDATE events SET verification_status = 'VERIFIED', updated_at = CURRENT_TIMESTAMP WHERE id = ?",
       [event_id]
     );
 
     await logActivity(adminId, 'APPROVE_EVENT', 'events', event_id, `Admin approved event #${event_id} live to public directory`, req.ip);
+
+    // Send Real Approval Email to Organizer/Submitter (UC20 / UC22)
+    if (ev && ev.submitter_email) {
+      sendEventApprovalEmail({
+        to: ev.submitter_email.trim(),
+        name: ev.submitter_name || 'Event Organizer',
+        eventName: ev.event_name,
+        eventId: event_id,
+        trackingCode: ev.tracking_code
+      }).catch(e => console.error('[Admin Verification] Approval email send error:', e.message));
+    }
+
     req.session.flash = { success: `Event #${event_id} approved and published live to public discovery!` };
     res.redirect('/admin/verifications');
   } catch (err) {
@@ -105,12 +120,26 @@ router.post('/admin/verifications/reject-event', async (req, res) => {
   const adminId = req.session.userId;
 
   try {
+    const ev = await db.getOne("SELECT * FROM events WHERE id = ?", [event_id]);
+
     await db.execute(
       "UPDATE events SET verification_status = 'REJECTED', rejection_reason = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
       [reason.trim(), event_id]
     );
 
     await logActivity(adminId, 'REJECT_EVENT', 'events', event_id, `Admin rejected event #${event_id}: ${reason.trim()}`, req.ip);
+
+    // Send Real Rejection / Action Required Email to Organizer/Submitter (UC22 & UC23)
+    if (ev && ev.submitter_email) {
+      sendEventRejectionEmail({
+        to: ev.submitter_email.trim(),
+        name: ev.submitter_name || 'Event Organizer',
+        eventName: ev.event_name,
+        trackingCode: ev.tracking_code,
+        reason: reason.trim()
+      }).catch(e => console.error('[Admin Verification] Rejection email send error:', e.message));
+    }
+
     req.session.flash = { warning: `Event #${event_id} rejected. Reason recorded for submitter.` };
     res.redirect('/admin/verifications');
   } catch (err) {

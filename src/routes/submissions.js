@@ -5,6 +5,7 @@ import db from '../../config/database.js';
 import upload from '../middleware/upload.js';
 import { logActivity } from '../utils/helpers.js';
 import helpers from '../utils/helpers.js';
+import { sendSubmissionConfirmationEmail } from '../utils/mailer.js';
 
 const router = express.Router();
 
@@ -106,6 +107,18 @@ router.post('/submit-event', upload.single('poster_file'), async (req, res) => {
       `Event '${event_name.trim()}' submitted by ${submitter_name.trim()} [Tracking Code: ${tracking_code}]`,
       req.ip
     );
+
+    // Send Real Confirmation Email to Submitter/Organizer (UC20)
+    if (submitter_email && submitter_email.trim()) {
+      sendSubmissionConfirmationEmail({
+        to: submitter_email.trim(),
+        name: submitter_name.trim(),
+        eventName: event_name.trim(),
+        eventDate: event_date,
+        venueName: venue_name.trim(),
+        trackingCode: tracking_code
+      }).catch(e => console.error('[Submission Route] Confirmation email delivery error:', e.message));
+    }
 
     res.redirect(`/submission-success?code=${encodeURIComponent(tracking_code)}`);
   } catch (err) {
