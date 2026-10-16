@@ -1,0 +1,25 @@
+@startuml UC09_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC09: Business Activity Diagram - Search Events by Keyword
+
+|User|
+start
+:Input search keyword into search bar;
+:Press Enter or submit search;
+|System|
+:Execute SQL query with LIKE wildcards across event, artist, and venue names;
+|User|
+if (Matches found?) then (Yes)
+  |System|
+  :Render filtered event cards matching query;
+  stop
+else (No)
+  |System|
+  :Display friendly "No events found" empty state;
+  stop
+endif
+@enduml

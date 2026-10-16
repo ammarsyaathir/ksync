@@ -1,0 +1,18 @@
+@startuml UC45_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC45: Business Activity Diagram - Manage Concert Day Survival Checklist
+
+|User|
+start
+:Check off prepared item on 7-item concert survival checklist;
+|System|
+:Read updated state of checked items;
+:Calculate prepared percentage (e.g. 5/7 Prepared - 71%);
+:Persist checked item IDs in browser localStorage;
+:Animate progress bar fill to current completion rate;
+stop
+@enduml

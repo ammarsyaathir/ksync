@@ -1,0 +1,15 @@
+@startuml UC38_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC38: System Sequence Diagram - Create Artist Profile with Biodata
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : createArtist(name, groupType, agency, imageURL, membersJSON)
+System --> Admin : showArtistCreatedSuccess()
+System -> System : validateArtistData()
+System -> System : insertArtistRecord(name, groupType, agency, imageURL, membersJSON)
+System -> System : recordAuditLog('CREATE_ARTIST')
+@enduml

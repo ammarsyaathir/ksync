@@ -1,0 +1,15 @@
+@startuml UC15_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC15: System Sequence Diagram - Resubmit Rejected Event Listing
+
+actor Submitter
+participant ":System" as System
+
+Submitter -> System : openResubmitForm(code)
+System --> Submitter : displayPreFilledForm(eventData, rejectionReason)
+Submitter -> System : resubmitCorrectedDetails(code, correctedData)
+System -> System : updateEventAndResetStatus(code)
+System --> Submitter : showResubmissionConfirmation(code)
+@enduml

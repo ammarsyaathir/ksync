@@ -1,0 +1,18 @@
+@startuml UC32_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC32: Business Activity Diagram - Update Event Listing Status
+
+|Admin|
+start
+:Select new event status (UPCOMING / ONGOING / COMPLETED);
+:Click "Update Status" button;
+|System|
+:UPDATE events SET event_status = ? WHERE id = ?;
+:INSERT INTO activity_logs (action="UPDATE_STATUS");
+:Reload management table with updated badge;
+stop
+@enduml

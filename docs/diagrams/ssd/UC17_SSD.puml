@@ -1,0 +1,13 @@
+@startuml UC17_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC17: System Sequence Diagram - View Saved Events List
+
+actor Fan
+participant ":System" as System
+
+Fan -> System : openSavedEvents()
+System --> Fan : displaySavedEventsList(savedCards)
+System -> System : querySavedEventsWithCountdowns(userID)
+@enduml

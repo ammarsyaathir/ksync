@@ -1,0 +1,19 @@
+@startuml UC20_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC20: System Sequence Diagram - Post Event Chat Message
+
+actor Fan
+participant ":System" as System
+
+Fan -> System : postChatMessage(eventID, messageText)
+System -> System : verifyChatWindowActive(eventID)
+alt event ended > 24 hours ago
+    System --> Fan : showChatLockedError()
+else chat active
+    System -> System : sanitizeInput()
+    System -> System : insertChatMessage(eventID, userID, text)
+    System --> Fan : appendNewMessageToStream()
+end
+@enduml

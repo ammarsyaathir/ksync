@@ -1,0 +1,16 @@
+@startuml UC08_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC08: Business Activity Diagram - Browse Events Directory
+
+|User|
+start
+:Click "Events" in navigation bar;
+|System|
+:Query verified events joined with artists & categories;
+:Render complete responsive event card catalog;
+stop
+@enduml

@@ -1,0 +1,19 @@
+@startuml UC06_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC06: System Sequence Diagram - Change Account Password
+
+actor User
+participant ":System" as System
+
+User -> System : submitPasswordChange(currentPass, newPass, confirmPass)
+System -> System : verifyCurrentPassword(currentPass)
+alt incorrect current pass or mismatch
+    System --> User : showPasswordError(msg)
+else verified & match
+    System -> System : hashNewPassword(newPass)
+    System -> System : updatePasswordHash(userID)
+    System --> User : showPasswordChangeSuccess()
+end
+@enduml

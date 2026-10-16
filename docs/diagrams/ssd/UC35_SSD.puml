@@ -1,0 +1,19 @@
+@startuml UC35_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC35: System Sequence Diagram - Create Event Category
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : createCategory(name, slug, color)
+System -> System : validateUniqueCategorySlug(slug)
+alt duplicate slug exists
+    System --> Admin : showDuplicateCategoryError()
+else unique slug
+    System -> System : insertCategory(name, slug, color)
+    System -> System : recordAuditLog('CREATE_CATEGORY')
+    System --> Admin : showCategoryCreatedSuccess()
+end
+@enduml

@@ -1,0 +1,28 @@
+@startuml UC36_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC36: Business Activity Diagram - Delete Event Category
+
+|Admin|
+start
+:Click Delete icon on category row;
+|System|
+:Check if category is currently referenced in events table;
+|Admin|
+if (Category referenced in events?) then (Referenced)
+  |System|
+  :Show error dialog: Cannot delete category with linked events (RESTRICT);
+  stop
+else (Unreferenced)
+  |Admin|
+  :Confirm Delete;
+  |System|
+  :DELETE FROM event_categories WHERE id = ?;
+  :Record action in activity_logs;
+  :Reload categories table;
+  stop
+endif
+@enduml

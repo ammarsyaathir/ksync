@@ -1,0 +1,25 @@
+@startuml UC16_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC16: Business Activity Diagram - Bookmark Event (Save to Favorites)
+
+|Fan|
+start
+:Click heart "Save Event" button on event card or details page;
+|System|
+:Check if user is authenticated;
+|Fan|
+if (Authenticated?) then (Yes)
+  |System|
+  :INSERT INTO saved_events (user_id, event_id);
+  :Update heart icon to filled rose color asynchronously;
+  stop
+else (No)
+  |System|
+  :Display login prompt modal;
+  stop
+endif
+@enduml

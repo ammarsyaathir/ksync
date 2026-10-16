@@ -1,0 +1,27 @@
+@startuml UC02_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC02: Business Activity Diagram - Log In to Account
+
+|User|
+start
+:Navigate to "/login";
+:Enter email address and password;
+:Click "Log In" button;
+|System|
+:Query user by email and verify Bcrypt hash;
+|User|
+if (Credentials valid?) then (Valid)
+  |System|
+  :Initialize session cookie;
+  :Redirect user to intended destination or home;
+  stop
+else (Invalid)
+  |System|
+  :Display "Invalid email or password" error banner;
+  stop
+endif
+@enduml

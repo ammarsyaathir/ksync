@@ -1,0 +1,15 @@
+@startuml UC21_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC21: System Sequence Diagram - Submit Event Content Report
+
+actor User
+participant ":System" as System
+
+User -> System : clickReportEvent(eventID)
+System --> User : displayReportModal()
+User -> System : submitReport(eventID, reason, details)
+System -> System : saveReportRecord(eventID, reason, details)
+System --> User : showReportConfirmationToast()
+@enduml

@@ -1,0 +1,27 @@
+@startuml UC06_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC06: Business Activity Diagram - Change Account Password
+
+|User|
+start
+:Enter current password, new password, and confirmation;
+:Click "Update Password" button;
+|System|
+:Verify current password Bcrypt hash and confirm match;
+|User|
+if (Password verified & matched?) then (Yes)
+  |System|
+  :Hash new password with Bcrypt;
+  :UPDATE users SET password_hash = newHash;
+  :Show success toast notification;
+  stop
+else (No)
+  |System|
+  :Display error: incorrect password or mismatch;
+  stop
+endif
+@enduml

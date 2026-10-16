@@ -1,0 +1,19 @@
+@startuml UC15_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC15: Business Activity Diagram - Resubmit Rejected Event Listing
+
+|Submitter|
+start
+:Inspect administrator rejection reason on tracking portal;
+:Modify flagged details (e.g. date, venue, or ticketing URL);
+:Click "Resubmit Event" button;
+|System|
+:UPDATE events SET details, verification_status="PENDING", rejection_reason=NULL;
+:Record resubmission action in system audit log;
+:Display resubmission confirmation notice with same tracking code;
+stop
+@enduml

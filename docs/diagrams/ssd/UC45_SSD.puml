@@ -1,0 +1,14 @@
+@startuml UC45_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC45: System Sequence Diagram - Manage Concert Day Survival Checklist
+
+actor User
+participant ":System" as System
+
+User -> System : toggleChecklistItem(itemID, isChecked)
+System --> User : animateProgressBar(progressPercent)
+System -> System : saveChecklistStateToLocalStorage(itemID, isChecked)
+System -> System : calculatePreparedPercentage()
+@enduml

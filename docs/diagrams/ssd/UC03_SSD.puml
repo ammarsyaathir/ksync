@@ -1,0 +1,13 @@
+@startuml UC03_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC03: System Sequence Diagram - Log Out of Account
+
+actor User
+participant ":System" as System
+
+User -> System : requestLogout()
+System --> User : displayLogoutConfirmation()
+System -> System : destroySessionCookies()
+@enduml

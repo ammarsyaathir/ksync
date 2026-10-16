@@ -1,0 +1,956 @@
+@startuml KSync_All_System_Sequence_Diagrams
+
+' ========================================
+' UC01: Register New Fan Account
+' ========================================
+@startuml UC01_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC01: System Sequence Diagram - Register New Fan Account
+
+actor Guest
+participant ":System" as System
+
+Guest -> System : openRegisterPage()
+System --> Guest : displayRegisterForm()
+Guest -> System : submitRegisterDetails(name, username, email, password)
+System -> System : validateRegisterData(email, username, password)
+alt invalid data or existing email
+    System --> Guest : showValidationErrors(errors)
+else valid data
+    System -> System : hashPasswordWithBcrypt(password)
+    System -> System : createFanAccount(userData)
+    System --> Guest : showRegistrationSuccess(userID)
+end
+@enduml
+
+
+' ========================================
+' UC02: Log In to Account
+' ========================================
+@startuml UC02_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC02: System Sequence Diagram - Log In to Account
+
+actor User
+participant ":System" as System
+
+User -> System : openLoginPage()
+System --> User : displayLoginForm()
+User -> System : submitCredentials(email, password)
+System -> System : verifyCredentials(email, password)
+alt invalid credentials
+    System --> User : showLoginError(message)
+else valid credentials
+    System -> System : createSession(userID, role)
+    System --> User : redirectUserToDashboard(role)
+end
+@enduml
+
+
+' ========================================
+' UC03: Log Out of Account
+' ========================================
+@startuml UC03_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC03: System Sequence Diagram - Log Out of Account
+
+actor User
+participant ":System" as System
+
+User -> System : requestLogout()
+System --> User : displayLogoutConfirmation()
+System -> System : destroySessionCookies()
+@enduml
+
+
+' ========================================
+' UC04: View Profile Details
+' ========================================
+@startuml UC04_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC04: System Sequence Diagram - View Profile Details
+
+actor Fan
+participant ":System" as System
+
+Fan -> System : openProfilePage()
+System --> Fan : displayProfileDetails(userData)
+System -> System : fetchUserProfile(sessionUserID)
+@enduml
+
+
+' ========================================
+' UC05: Update Profile Information
+' ========================================
+@startuml UC05_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC05: System Sequence Diagram - Update Profile Information
+
+actor Fan
+participant ":System" as System
+
+Fan -> System : openEditProfile()
+System --> Fan : displayProfileForm(userData)
+Fan -> System : submitProfileUpdates(name, bio, location, handle)
+System -> System : validateProfileInput()
+alt validation error
+    System --> Fan : showProfileErrors()
+else valid input
+    System -> System : updateUserRecord(userID, data)
+    System --> Fan : showUpdateSuccessToast()
+end
+@enduml
+
+
+' ========================================
+' UC06: Change Account Password
+' ========================================
+@startuml UC06_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC06: System Sequence Diagram - Change Account Password
+
+actor User
+participant ":System" as System
+
+User -> System : submitPasswordChange(currentPass, newPass, confirmPass)
+System -> System : verifyCurrentPassword(currentPass)
+alt incorrect current pass or mismatch
+    System --> User : showPasswordError(msg)
+else verified & match
+    System -> System : hashNewPassword(newPass)
+    System -> System : updatePasswordHash(userID)
+    System --> User : showPasswordChangeSuccess()
+end
+@enduml
+
+
+' ========================================
+' UC07: Browse Featured Upcoming Events
+' ========================================
+@startuml UC07_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC07: System Sequence Diagram - Browse Featured Upcoming Events
+
+actor User
+participant ":System" as System
+
+User -> System : openHomePage()
+System --> User : displayFeaturedCarouselAndCards(eventList)
+System -> System : queryFeaturedVerifiedEvents(limit=6)
+@enduml
+
+
+' ========================================
+' UC08: Browse Events Directory
+' ========================================
+@startuml UC08_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC08: System Sequence Diagram - Browse Events Directory
+
+actor User
+participant ":System" as System
+
+User -> System : openEventsDirectory()
+System --> User : displayEventsCatalogGrid(events)
+System -> System : queryAllVerifiedEvents()
+@enduml
+
+
+' ========================================
+' UC09: Search Events by Keyword
+' ========================================
+@startuml UC09_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC09: System Sequence Diagram - Search Events by Keyword
+
+actor User
+participant ":System" as System
+
+User -> System : searchEvents(keyword)
+System -> System : executeKeywordSearch(keyword)
+alt no matches
+    System --> User : displayEmptySearchState()
+else matches found
+    System --> User : displayMatchingEvents(results)
+end
+@enduml
+
+
+' ========================================
+' UC10: Filter Events by Artist, Category & City
+' ========================================
+@startuml UC10_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC10: System Sequence Diagram - Filter Events by Artist, Category & City
+
+actor User
+participant ":System" as System
+
+User -> System : selectFilters(categorySlug, artistID, city)
+System --> User : displayFilteredEventGrid(filteredEvents)
+System -> System : queryFilteredCatalog(categorySlug, artistID, city)
+@enduml
+
+
+' ========================================
+' UC11: View Event Details & Embedded Venue
+' ========================================
+@startuml UC11_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC11: System Sequence Diagram - View Event Details & Embedded Venue
+
+actor User
+participant ":System" as System
+
+User -> System : openEventDetails(eventID)
+System --> User : displayEventPage(eventData, venueMap, ticketTiers)
+System -> System : fetchEventWithArtistVenueChat(eventID)
+@enduml
+
+
+' ========================================
+' UC12: View Artist & Idol Member Biodata
+' ========================================
+@startuml UC12_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC12: System Sequence Diagram - View Artist & Idol Member Biodata
+
+actor User
+participant ":System" as System
+
+User -> System : openArtistBiodataSection(artistID)
+System --> User : displayMemberProfileCards(membersArray)
+System -> System : parseArtistMembersJSON(artistID)
+@enduml
+
+
+' ========================================
+' UC13: Submit Public Event Listing
+' ========================================
+@startuml UC13_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC13: System Sequence Diagram - Submit Public Event Listing
+
+actor Submitter
+participant ":System" as System
+
+Submitter -> System : openSubmissionForm()
+System --> Submitter : displayPublicSubmissionForm()
+Submitter -> System : submitEvent(eventData, posterImage)
+System -> System : validateSubmissionData()
+alt missing required fields or file > 5MB
+    System --> Submitter : showSubmissionErrors(errors)
+else valid submission
+    System -> System : generateTrackingCode()
+    System -> System : savePendingEvent(data)
+    System -> System : sendConfirmationEmail()
+    System --> Submitter : showSubmissionSuccess(trackingCode)
+end
+@enduml
+
+
+' ========================================
+' UC14: Track Submission Status by Tracking Code
+' ========================================
+@startuml UC14_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC14: System Sequence Diagram - Track Submission Status by Tracking Code
+
+actor Submitter
+participant ":System" as System
+
+Submitter -> System : openStatusLookupPage()
+System --> Submitter : displayTrackingInput()
+Submitter -> System : lookupTrackingCode(code)
+System -> System : queryEventByTrackingCode(code)
+alt code not found
+    System --> Submitter : showCodeNotFoundError()
+else code exists
+    System --> Submitter : displayStatusTimeline(event, feedback)
+end
+@enduml
+
+
+' ========================================
+' UC15: Resubmit Rejected Event Listing
+' ========================================
+@startuml UC15_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC15: System Sequence Diagram - Resubmit Rejected Event Listing
+
+actor Submitter
+participant ":System" as System
+
+Submitter -> System : openResubmitForm(code)
+System --> Submitter : displayPreFilledForm(eventData, rejectionReason)
+Submitter -> System : resubmitCorrectedDetails(code, correctedData)
+System -> System : updateEventAndResetStatus(code)
+System --> Submitter : showResubmissionConfirmation(code)
+@enduml
+
+
+' ========================================
+' UC16: Bookmark Event (Save to Favorites)
+' ========================================
+@startuml UC16_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC16: System Sequence Diagram - Bookmark Event (Save to Favorites)
+
+actor Fan
+participant ":System" as System
+
+Fan -> System : bookmarkEvent(eventID)
+System -> System : checkAuthenticationAndExisting(userID, eventID)
+alt not authenticated
+    System --> Fan : promptLoginModal()
+else authenticated
+    System -> System : insertSavedEvent(userID, eventID)
+    System --> Fan : updateHeartIconState(saved=true)
+end
+@enduml
+
+
+' ========================================
+' UC17: View Saved Events List
+' ========================================
+@startuml UC17_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC17: System Sequence Diagram - View Saved Events List
+
+actor Fan
+participant ":System" as System
+
+Fan -> System : openSavedEvents()
+System --> Fan : displaySavedEventsList(savedCards)
+System -> System : querySavedEventsWithCountdowns(userID)
+@enduml
+
+
+' ========================================
+' UC18: Remove Event from Bookmarks
+' ========================================
+@startuml UC18_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC18: System Sequence Diagram - Remove Event from Bookmarks
+
+actor Fan
+participant ":System" as System
+
+Fan -> System : removeBookmark(eventID)
+System --> Fan : updateHeartIconState(saved=false)
+System -> System : deleteSavedEvent(userID, eventID)
+@enduml
+
+
+' ========================================
+' UC19: View Event Discussion Live Chat
+' ========================================
+@startuml UC19_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC19: System Sequence Diagram - View Event Discussion Live Chat
+
+actor User
+participant ":System" as System
+
+User -> System : openEventChatHub(eventID)
+System --> User : renderChatMessageStream(messages)
+System -> System : fetchChatMessages(eventID)
+@enduml
+
+
+' ========================================
+' UC20: Post Event Chat Message
+' ========================================
+@startuml UC20_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC20: System Sequence Diagram - Post Event Chat Message
+
+actor Fan
+participant ":System" as System
+
+Fan -> System : postChatMessage(eventID, messageText)
+System -> System : verifyChatWindowActive(eventID)
+alt event ended > 24 hours ago
+    System --> Fan : showChatLockedError()
+else chat active
+    System -> System : sanitizeInput()
+    System -> System : insertChatMessage(eventID, userID, text)
+    System --> Fan : appendNewMessageToStream()
+end
+@enduml
+
+
+' ========================================
+' UC21: Submit Event Content Report
+' ========================================
+@startuml UC21_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC21: System Sequence Diagram - Submit Event Content Report
+
+actor User
+participant ":System" as System
+
+User -> System : clickReportEvent(eventID)
+System --> User : displayReportModal()
+User -> System : submitReport(eventID, reason, details)
+System -> System : saveReportRecord(eventID, reason, details)
+System --> User : showReportConfirmationToast()
+@enduml
+
+
+' ========================================
+' UC22: View In-App Notifications
+' ========================================
+@startuml UC22_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC22: System Sequence Diagram - View In-App Notifications
+
+actor Fan
+participant ":System" as System
+
+Fan -> System : openNotifications()
+System --> Fan : displayNotificationsList(notifications)
+System -> System : fetchUserNotifications(userID)
+@enduml
+
+
+' ========================================
+' UC23: Mark Notifications as Read
+' ========================================
+@startuml UC23_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC23: System Sequence Diagram - Mark Notifications as Read
+
+actor Fan
+participant ":System" as System
+
+Fan -> System : markAllNotificationsRead()
+System --> Fan : resetNavbarBadgeCount(0)
+System -> System : updateNotificationsReadStatus(userID)
+@enduml
+
+
+' ========================================
+' UC24: View Admin Dashboard & KPI Metrics
+' ========================================
+@startuml UC24_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC24: System Sequence Diagram - View Admin Dashboard & KPI Metrics
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : openAdminDashboard()
+System --> Admin : displayDashboardWithKPIs(metrics, logs)
+System -> System : aggregateMetricsAndLogs()
+@enduml
+
+
+' ========================================
+' UC25: View Audit Activity Logs
+' ========================================
+@startuml UC25_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC25: System Sequence Diagram - View Audit Activity Logs
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : openAuditLogs()
+System --> Admin : displayAuditLogsTable(logs)
+System -> System : queryActivityLogsWithUsers()
+@enduml
+
+
+' ========================================
+' UC26: View Pending Verification Queue
+' ========================================
+@startuml UC26_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC26: System Sequence Diagram - View Pending Verification Queue
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : openVerificationQueue()
+System --> Admin : displayPendingQueue(pendingEvents)
+System -> System : queryPendingEventsWithEvidence()
+@enduml
+
+
+' ========================================
+' UC27: Approve Event Submission Live
+' ========================================
+@startuml UC27_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC27: System Sequence Diagram - Approve Event Submission Live
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : approveEvent(eventID)
+System --> Admin : showApprovalSuccessNotification()
+System -> System : updateVerificationStatus(eventID, 'VERIFIED')
+System -> System : recordAuditLog('APPROVE_EVENT', eventID)
+System -> System : sendApprovalEmail(eventID)
+@enduml
+
+
+' ========================================
+' UC28: Reject Event Submission with Feedback
+' ========================================
+@startuml UC28_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC28: System Sequence Diagram - Reject Event Submission with Feedback
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : rejectEvent(eventID, rejectionReason)
+System --> Admin : showRejectionCompletedNotice()
+System -> System : updateVerificationStatus(eventID, 'REJECTED')
+System -> System : saveRejectionReason(eventID, reason)
+System -> System : recordAuditLog('REJECT_EVENT')
+System -> System : sendRejectionEmail()
+@enduml
+
+
+' ========================================
+' UC29: View Content Reports List
+' ========================================
+@startuml UC29_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC29: System Sequence Diagram - View Content Reports List
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : openReportsInbox()
+System --> Admin : displayReportsTable(reportsList)
+System -> System : queryReportsWithEventsAndUsers()
+@enduml
+
+
+' ========================================
+' UC30: Resolve Content Report
+' ========================================
+@startuml UC30_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC30: System Sequence Diagram - Resolve Content Report
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : resolveReport(reportID)
+System --> Admin : showResolutionSuccessNotification()
+System -> System : updateReportStatus(reportID, 'RESOLVED')
+@enduml
+
+
+' ========================================
+' UC31: View All Events Management List
+' ========================================
+@startuml UC31_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC31: System Sequence Diagram - View All Events Management List
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : openEventsManagement()
+System --> Admin : displayEventsManagementTable(allEvents)
+System -> System : queryAllEvents()
+@enduml
+
+
+' ========================================
+' UC32: Update Event Listing Status
+' ========================================
+@startuml UC32_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC32: System Sequence Diagram - Update Event Listing Status
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : updateEventStatus(eventID, newStatus)
+System --> Admin : showStatusUpdatedNotice()
+System -> System : updateEventStatusColumn(eventID, newStatus)
+System -> System : recordAuditLog('UPDATE_STATUS', eventID)
+@enduml
+
+
+' ========================================
+' UC33: Delete Event Listing
+' ========================================
+@startuml UC33_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC33: System Sequence Diagram - Delete Event Listing
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : requestDeleteEvent(eventID)
+System --> Admin : displayDeleteConfirmationDialog(eventID)
+Admin -> System : confirmDeleteEvent(eventID)
+System -> System : deleteEventAndCascadeChildren(eventID)
+System -> System : recordAuditLog('DELETE_EVENT')
+System --> Admin : showDeleteSuccessToast()
+@enduml
+
+
+' ========================================
+' UC34: View Event Categories
+' ========================================
+@startuml UC34_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC34: System Sequence Diagram - View Event Categories
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : openCategoriesPage()
+System --> Admin : displayCategoriesTable(categories)
+System -> System : queryCategoriesWithCounts()
+@enduml
+
+
+' ========================================
+' UC35: Create Event Category
+' ========================================
+@startuml UC35_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC35: System Sequence Diagram - Create Event Category
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : createCategory(name, slug, color)
+System -> System : validateUniqueCategorySlug(slug)
+alt duplicate slug exists
+    System --> Admin : showDuplicateCategoryError()
+else unique slug
+    System -> System : insertCategory(name, slug, color)
+    System -> System : recordAuditLog('CREATE_CATEGORY')
+    System --> Admin : showCategoryCreatedSuccess()
+end
+@enduml
+
+
+' ========================================
+' UC36: Delete Event Category
+' ========================================
+@startuml UC36_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC36: System Sequence Diagram - Delete Event Category
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : deleteCategory(categoryID)
+System -> System : checkLinkedEvents(categoryID)
+alt linked to existing events
+    System --> Admin : showForeignConstraintError()
+else unreferenced
+    System -> System : deleteCategoryRecord(categoryID)
+    System -> System : recordAuditLog('DELETE_CATEGORY')
+    System --> Admin : showCategoryDeletedNotice()
+end
+@enduml
+
+
+' ========================================
+' UC37: View Artist Catalog
+' ========================================
+@startuml UC37_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC37: System Sequence Diagram - View Artist Catalog
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : openArtistsCatalog()
+System --> Admin : displayArtistsTable(artists)
+System -> System : queryAllArtists()
+@enduml
+
+
+' ========================================
+' UC38: Create Artist Profile with Biodata
+' ========================================
+@startuml UC38_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC38: System Sequence Diagram - Create Artist Profile with Biodata
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : createArtist(name, groupType, agency, imageURL, membersJSON)
+System --> Admin : showArtistCreatedSuccess()
+System -> System : validateArtistData()
+System -> System : insertArtistRecord(name, groupType, agency, imageURL, membersJSON)
+System -> System : recordAuditLog('CREATE_ARTIST')
+@enduml
+
+
+' ========================================
+' UC39: Delete Artist Profile
+' ========================================
+@startuml UC39_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC39: System Sequence Diagram - Delete Artist Profile
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : requestDeleteArtist(artistID)
+System --> Admin : displayDeleteConfirmation(artistID)
+Admin -> System : confirmDeleteArtist(artistID)
+System -> System : deleteArtistAndSetNullEvents(artistID)
+System -> System : recordAuditLog('DELETE_ARTIST')
+System --> Admin : showDeleteSuccess()
+@enduml
+
+
+' ========================================
+' UC40: View Registered Users List
+' ========================================
+@startuml UC40_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC40: System Sequence Diagram - View Registered Users List
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : openUsersManagement()
+System --> Admin : displayUsersTable(users)
+System -> System : queryUsersWithRoles()
+@enduml
+
+
+' ========================================
+' UC41: Delete User Account
+' ========================================
+@startuml UC41_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC41: System Sequence Diagram - Delete User Account
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : requestDeleteUser(targetUserID)
+System -> System : checkIsRootAdmin(targetUserID)
+alt target is root admin (id=1)
+    System --> Admin : showRootAdminProtectedError()
+else regular user
+    System -> System : deleteUserAndCascade(targetUserID)
+    System -> System : recordAuditLog('DELETE_USER')
+    System --> Admin : showUserDeletedSuccess()
+end
+@enduml
+
+
+' ========================================
+' UC42: View Interactive Google Map & Directions in Browser
+' ========================================
+@startuml UC42_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC42: System Sequence Diagram - View Interactive Google Map & Directions in Browser
+
+actor User
+participant ":System" as System
+
+User -> System : viewVenueLocationSection(eventID)
+System --> User : displayInteractiveVenueMap()
+User -> System : clickGetDirections()
+System -> System : renderGoogleMapIframe(venueCoordinates)
+System --> User : launchNavigationWindow()
+@enduml
+
+
+' ========================================
+' UC43: View Real-Time Event Countdown Timer
+' ========================================
+@startuml UC43_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC43: System Sequence Diagram - View Real-Time Event Countdown Timer
+
+actor User
+participant ":System" as System
+
+User -> System : openEventPage(eventID)
+System -> System : calculateRemainingTime(eventDate, startTime)
+alt event started or past
+    System --> User : displayEventLiveBadge()
+else upcoming
+    System -> System : startIntervalTimer(1000ms)
+    System --> User : displayTickingClock(days, hrs, mins, secs)
+end
+@enduml
+
+
+' ========================================
+' UC44: Share Event via Multi-Channel Social Modal
+' ========================================
+@startuml UC44_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC44: System Sequence Diagram - Share Event via Multi-Channel Social Modal
+
+actor User
+participant ":System" as System
+
+User -> System : clickShareEventButton()
+System -> System : detectPlatformCapabilities()
+alt mobile device with navigator.share
+    System --> User : openNativeShareSheet()
+else desktop browser
+    System --> User : displayShareModal(WhatsApp, X, Telegram, FB, CopyLink)
+end
+@enduml
+
+
+' ========================================
+' UC45: Manage Concert Day Survival Checklist
+' ========================================
+@startuml UC45_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC45: System Sequence Diagram - Manage Concert Day Survival Checklist
+
+actor User
+participant ":System" as System
+
+User -> System : toggleChecklistItem(itemID, isChecked)
+System --> User : animateProgressBar(progressPercent)
+System -> System : saveChecklistStateToLocalStorage(itemID, isChecked)
+System -> System : calculatePreparedPercentage()
+@enduml
+
+
+' ========================================
+' UC46: Add Event to Google Calendar
+' ========================================
+@startuml UC46_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC46: System Sequence Diagram - Add Event to Google Calendar
+
+actor User
+participant ":System" as System
+
+User -> System : clickAddToGoogleCalendar()
+System --> User : openGoogleCalendarTab()
+System -> System : formatISO8601Timestamps()
+System -> System : constructGoogleCalendarURL()
+@enduml
+
+
+' ========================================
+' UC47: Copy Event Verification Reference Code
+' ========================================
+@startuml UC47_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC47: System Sequence Diagram - Copy Event Verification Reference Code
+
+actor User
+participant ":System" as System
+
+User -> System : clickCopyReferenceCode()
+System --> User : displayFloatingToastNotice('Reference code copied!')
+System -> System : writeTrackingCodeToClipboard(trackingCode)
+@enduml
+
+
+@enduml

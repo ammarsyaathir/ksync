@@ -1,0 +1,15 @@
+@startuml UC42_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC42: System Sequence Diagram - View Interactive Google Map & Directions in Browser
+
+actor User
+participant ":System" as System
+
+User -> System : viewVenueLocationSection(eventID)
+System --> User : displayInteractiveVenueMap()
+User -> System : clickGetDirections()
+System -> System : renderGoogleMapIframe(venueCoordinates)
+System --> User : launchNavigationWindow()
+@enduml

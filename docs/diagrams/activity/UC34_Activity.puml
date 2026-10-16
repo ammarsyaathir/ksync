@@ -1,0 +1,16 @@
+@startuml UC34_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC34: Business Activity Diagram - View Event Categories
+
+|Admin|
+start
+:Navigate to "/admin/categories";
+|System|
+:Query event_categories joined with event counts;
+:Render categories table with badge color previews;
+stop
+@enduml

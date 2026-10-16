@@ -1,0 +1,13 @@
+@startuml UC04_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC04: System Sequence Diagram - View Profile Details
+
+actor Fan
+participant ":System" as System
+
+Fan -> System : openProfilePage()
+System --> Fan : displayProfileDetails(userData)
+System -> System : fetchUserProfile(sessionUserID)
+@enduml

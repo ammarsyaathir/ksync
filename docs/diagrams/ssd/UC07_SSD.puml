@@ -1,0 +1,13 @@
+@startuml UC07_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC07: System Sequence Diagram - Browse Featured Upcoming Events
+
+actor User
+participant ":System" as System
+
+User -> System : openHomePage()
+System --> User : displayFeaturedCarouselAndCards(eventList)
+System -> System : queryFeaturedVerifiedEvents(limit=6)
+@enduml

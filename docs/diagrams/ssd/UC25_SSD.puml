@@ -1,0 +1,13 @@
+@startuml UC25_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC25: System Sequence Diagram - View Audit Activity Logs
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : openAuditLogs()
+System --> Admin : displayAuditLogsTable(logs)
+System -> System : queryActivityLogsWithUsers()
+@enduml

@@ -1,0 +1,16 @@
+@startuml UC22_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC22: Business Activity Diagram - View In-App Notifications
+
+|Fan|
+start
+:Click notification bell icon in navigation bar;
+|System|
+:Query notifications table for active user ID;
+:Render notification feed with unread indicators;
+stop
+@enduml

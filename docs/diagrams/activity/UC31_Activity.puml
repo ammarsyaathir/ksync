@@ -1,0 +1,16 @@
+@startuml UC31_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC31: Business Activity Diagram - View All Events Management List
+
+|Admin|
+start
+:Navigate to "/admin/events";
+|System|
+:SELECT * FROM events joined with categories & artists;
+:Render complete event management table with status toggles;
+stop
+@enduml

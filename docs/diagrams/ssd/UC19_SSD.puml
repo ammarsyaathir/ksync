@@ -1,0 +1,13 @@
+@startuml UC19_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC19: System Sequence Diagram - View Event Discussion Live Chat
+
+actor User
+participant ":System" as System
+
+User -> System : openEventChatHub(eventID)
+System --> User : renderChatMessageStream(messages)
+System -> System : fetchChatMessages(eventID)
+@enduml

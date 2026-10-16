@@ -1,0 +1,16 @@
+@startuml UC19_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC19: Business Activity Diagram - View Event Discussion Live Chat
+
+|User|
+start
+:Scroll to "Event Fan Chat Hub" section on event page;
+|System|
+:Query event_chat_messages JOIN users for event ID;
+:Render chronological discussion feed with fan avatars and timestamps;
+stop
+@enduml

@@ -1,0 +1,16 @@
+@startuml UC47_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC47: Business Activity Diagram - Copy Event Verification Reference Code
+
+|User|
+start
+:Click copy icon on Official Verification card;
+|System|
+:Write tracking code string (e.g. KS-2026-TXT001) to clipboard;
+:Show floating green toast notification: "Reference code copied to clipboard!";
+stop
+@enduml

@@ -1,0 +1,27 @@
+@startuml UC44_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC44: Business Activity Diagram - Share Event via Multi-Channel Social Modal
+
+|User|
+start
+:Click "Share" button on event action bar;
+|System|
+:Check if device supports native navigator.share() API;
+|User|
+if (Native share supported?) then (Yes (Mobile))
+  |System|
+  :Invoke native navigator.share() dialog;
+  stop
+else (No (Desktop))
+  |User|
+  :Select social channel or click "Copy Link";
+  |System|
+  :Open share modal with WhatsApp, X, Telegram, Facebook & Copy Link;
+  :Launch target share page or write URL to clipboard with confirmation toast;
+  stop
+endif
+@enduml

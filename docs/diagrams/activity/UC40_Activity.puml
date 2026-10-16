@@ -1,0 +1,16 @@
+@startuml UC40_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC40: Business Activity Diagram - View Registered Users List
+
+|Admin|
+start
+:Navigate to "/admin/users";
+|System|
+:SELECT * FROM users JOIN roles;
+:Render registered users table with role badges and registration dates;
+stop
+@enduml

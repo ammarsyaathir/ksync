@@ -1,0 +1,16 @@
+@startuml UC12_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC12: Business Activity Diagram - View Artist & Idol Member Biodata
+
+|User|
+start
+:Scroll to "Member Profiles & Biodata" section on event page;
+|System|
+:Parse JSON string from artists.members column;
+:Render individual member cards with portrait, positions, birthday, blood type & MBTI;
+stop
+@enduml

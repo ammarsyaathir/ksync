@@ -1,0 +1,14 @@
+@startuml UC46_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC46: System Sequence Diagram - Add Event to Google Calendar
+
+actor User
+participant ":System" as System
+
+User -> System : clickAddToGoogleCalendar()
+System --> User : openGoogleCalendarTab()
+System -> System : formatISO8601Timestamps()
+System -> System : constructGoogleCalendarURL()
+@enduml

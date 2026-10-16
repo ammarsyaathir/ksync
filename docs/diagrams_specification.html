@@ -1,0 +1,5454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-Sync Malaysia: System Sequence & Business Activity Diagrams Specification</title>
+    <!-- Mermaid CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'neutral',
+            themeVariables: {
+                primaryColor: '#f8fafc',
+                primaryBorderColor: '#0f172a',
+                primaryTextColor: '#0f172a',
+                lineColor: '#334155',
+                secondaryColor: '#f1f5f9',
+                tertiaryColor: '#ffffff'
+            },
+            flowchart: { curve: 'linear' },
+            sequence: { actorMargin: 50, mirrorActors: false }
+        });
+    </script>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 15mm;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            color: #1e293b;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 24px;
+            line-height: 1.5;
+        }
+        .header-hero {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            padding: 36px 32px;
+            border-radius: 16px;
+            margin-bottom: 32px;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.2);
+        }
+        .header-hero h1 { margin: 0 0 10px 0; font-size: 26pt; font-weight: 800; letter-spacing: -0.5px; }
+        .header-hero p { margin: 0; font-size: 13pt; color: #cbd5e1; max-width: 900px; }
+        .guide-pill-row { margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap; }
+        .guide-pill {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 9.5pt;
+            color: #e2e8f0;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .use-case-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 28px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            page-break-inside: avoid;
+        }
+        .uc-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            margin-bottom: 20px;
+        }
+        .uc-badge {
+            background: #db2777;
+            color: white;
+            font-weight: 800;
+            font-size: 13pt;
+            padding: 8px 14px;
+            border-radius: 8px;
+            letter-spacing: 0.5px;
+        }
+        .uc-title { margin: 0; font-size: 15pt; color: #0f172a; font-weight: 700; }
+        .uc-module { font-size: 10pt; color: #64748b; }
+        .diagram-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 1024px) {
+            .diagram-grid { grid-template-columns: 1fr; }
+        }
+        .diagram-pane {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+        .diagram-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        .diagram-type-tag {
+            font-size: 9pt;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+        .ssd-tag { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+        .act-tag { background: #fdf2f8; color: #be185d; border: 1px solid #fbcfe8; }
+        .diagram-subtitle { font-size: 9pt; color: #64748b; font-weight: 500; }
+        .mermaid-container {
+            background: #fafafa;
+            border: 1px solid #f1f5f9;
+            border-radius: 8px;
+            padding: 12px;
+            overflow-x: auto;
+            min-height: 280px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .puml-details {
+            margin-top: 14px;
+            font-size: 9pt;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 8px 12px;
+        }
+        .puml-details summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: #475569;
+        }
+        .code-box {
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 8.5pt;
+            overflow-x: auto;
+            margin: 8px 0 0 0;
+            white-space: pre;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-hero">
+        <h1>K-Sync Malaysia: Formal Diagram Specifications</h1>
+        <p>Comprehensive System Sequence Diagrams (SSD) and Business Activity Diagrams with Swimlanes for all 47 uncombined system use cases across 7 functional modules.</p>
+        <div class="guide-pill-row">
+            <span class="guide-pill"><strong>Total Use Cases:</strong> 47 Specifications</span>
+            <span class="guide-pill"><strong>System Sequence Diagrams (Pic 1 Style):</strong> 47 Diagrams</span>
+            <span class="guide-pill"><strong>Business Activity Diagrams (Pic 2 Style):</strong> 47 Diagrams</span>
+            <span class="guide-pill"><strong>Draw.io Ready:</strong> Arrange &rarr; Insert &rarr; PlantUML / Mermaid</span>
+        </div>
+    </div>
+
+    
+      <div class="use-case-card" id="UC01">
+        <div class="uc-header">
+          <div class="uc-badge">UC01</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Register New Fan Account</h3>
+            <span class="uc-module">Module 1: Authentication & User Profile Management &bull; Primary Actor: <strong>Guest</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Guest as Guest
+    participant System as :System
+    Guest->>System: openRegisterPage()
+    System-->>Guest: displayRegisterForm()
+    Guest->>System: submitRegisterDetails(name, username, email, password)
+    System->>System: validateRegisterData(email, username, password)
+    alt invalid data or existing email
+        System-->>Guest: showValidationErrors(errors)
+    else valid data
+        System->>System: hashPasswordWithBcrypt(password)
+        System->>System: createFanAccount(userData)
+        System-->>Guest: showRegistrationSuccess(userID)
+    end
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC01_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC01: System Sequence Diagram - Register New Fan Account
+
+actor Guest
+participant ":System" as System
+
+Guest -&gt; System : openRegisterPage()
+System --&gt; Guest : displayRegisterForm()
+Guest -&gt; System : submitRegisterDetails(name, username, email, password)
+System -&gt; System : validateRegisterData(email, username, password)
+alt invalid data or existing email
+    System --&gt; Guest : showValidationErrors(errors)
+else valid data
+    System -&gt; System : hashPasswordWithBcrypt(password)
+    System -&gt; System : createFanAccount(userData)
+    System --&gt; Guest : showRegistrationSuccess(userID)
+end
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Guest | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Guest ["👤 Guest"]
+        startNode(("● Start"))
+        A1["Click "Register" link in navbar"]
+        A2["Fill personal details (name, username, email, password)"]
+        A3["Click "Register" button"]
+        DEC{"Input valid & unique email?"}
+    end
+
+    subgraph System ["💻 :System"]
+        SPREP["Validate field formats & check unique email"]
+        SYES1["Hash password using Bcrypt (10 rounds)"]
+        SYES2["INSERT INTO users (role_id=3)"]
+        SYES3["Establish authenticated session"]
+        SYES4["Redirect to dashboard with welcome alert"]
+        SNO1["Display validation error message"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> A2
+    A2 --> A3
+    A3 --> SPREP
+    SPREP --> DEC
+    DEC -- "Valid" --> SYES1
+    SYES1 --> SYES2
+    SYES2 --> SYES3
+    SYES3 --> SYES4
+    SYES4 --> endNode
+    DEC -- "Invalid / Exists" --> SNO1
+    SNO1 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC01_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC01: Business Activity Diagram - Register New Fan Account
+
+|Guest|
+start
+:Click "Register" link in navbar;
+:Fill personal details (name, username, email, password);
+:Click "Register" button;
+|System|
+:Validate field formats &amp; check unique email;
+|Guest|
+if (Input valid &amp; unique email?) then (Valid)
+  |System|
+  :Hash password using Bcrypt (10 rounds);
+  :INSERT INTO users (role_id=3);
+  :Establish authenticated session;
+  :Redirect to dashboard with welcome alert;
+  stop
+else (Invalid / Exists)
+  |System|
+  :Display validation error message;
+  stop
+endif
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC02">
+        <div class="uc-header">
+          <div class="uc-badge">UC02</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Log In to Account</h3>
+            <span class="uc-module">Module 1: Authentication & User Profile Management &bull; Primary Actor: <strong>User</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor User as User
+    participant System as :System
+    User->>System: openLoginPage()
+    System-->>User: displayLoginForm()
+    User->>System: submitCredentials(email, password)
+    System->>System: verifyCredentials(email, password)
+    alt invalid credentials
+        System-->>User: showLoginError(message)
+    else valid credentials
+        System->>System: createSession(userID, role)
+        System-->>User: redirectUserToDashboard(role)
+    end
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC02_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC02: System Sequence Diagram - Log In to Account
+
+actor User
+participant ":System" as System
+
+User -&gt; System : openLoginPage()
+System --&gt; User : displayLoginForm()
+User -&gt; System : submitCredentials(email, password)
+System -&gt; System : verifyCredentials(email, password)
+alt invalid credentials
+    System --&gt; User : showLoginError(message)
+else valid credentials
+    System -&gt; System : createSession(userID, role)
+    System --&gt; User : redirectUserToDashboard(role)
+end
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: User | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph User ["👤 User"]
+        startNode(("● Start"))
+        A1["Navigate to "/login""]
+        A2["Enter email address and password"]
+        A3["Click "Log In" button"]
+        DEC{"Credentials valid?"}
+    end
+
+    subgraph System ["💻 :System"]
+        SPREP["Query user by email and verify Bcrypt hash"]
+        SYES1["Initialize session cookie"]
+        SYES2["Redirect user to intended destination or home"]
+        SNO1["Display "Invalid email or password" error banner"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> A2
+    A2 --> A3
+    A3 --> SPREP
+    SPREP --> DEC
+    DEC -- "Valid" --> SYES1
+    SYES1 --> SYES2
+    SYES2 --> endNode
+    DEC -- "Invalid" --> SNO1
+    SNO1 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC02_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC02: Business Activity Diagram - Log In to Account
+
+|User|
+start
+:Navigate to "/login";
+:Enter email address and password;
+:Click "Log In" button;
+|System|
+:Query user by email and verify Bcrypt hash;
+|User|
+if (Credentials valid?) then (Valid)
+  |System|
+  :Initialize session cookie;
+  :Redirect user to intended destination or home;
+  stop
+else (Invalid)
+  |System|
+  :Display "Invalid email or password" error banner;
+  stop
+endif
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC03">
+        <div class="uc-header">
+          <div class="uc-badge">UC03</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Log Out of Account</h3>
+            <span class="uc-module">Module 1: Authentication & User Profile Management &bull; Primary Actor: <strong>User</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor User as User
+    participant System as :System
+    User->>System: requestLogout()
+    System-->>User: displayLogoutConfirmation()
+    System->>System: destroySessionCookies()
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC03_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC03: System Sequence Diagram - Log Out of Account
+
+actor User
+participant ":System" as System
+
+User -&gt; System : requestLogout()
+System --&gt; User : displayLogoutConfirmation()
+System -&gt; System : destroySessionCookies()
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: User | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph User ["👤 User"]
+        startNode(("● Start"))
+        A1["Click "Log Out" from profile dropdown"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["Destroy server-side session object"]
+        SDIR2["Clear authentication cookie token"]
+        SDIR3["Redirect user to home page with confirmation"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> SDIR3
+    SDIR3 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC03_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC03: Business Activity Diagram - Log Out of Account
+
+|User|
+start
+:Click "Log Out" from profile dropdown;
+|System|
+:Destroy server-side session object;
+:Clear authentication cookie token;
+:Redirect user to home page with confirmation;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC04">
+        <div class="uc-header">
+          <div class="uc-badge">UC04</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">View Profile Details</h3>
+            <span class="uc-module">Module 1: Authentication & User Profile Management &bull; Primary Actor: <strong>Fan</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Fan as Fan
+    participant System as :System
+    Fan->>System: openProfilePage()
+    System-->>Fan: displayProfileDetails(userData)
+    System->>System: fetchUserProfile(sessionUserID)
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC04_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC04: System Sequence Diagram - View Profile Details
+
+actor Fan
+participant ":System" as System
+
+Fan -&gt; System : openProfilePage()
+System --&gt; Fan : displayProfileDetails(userData)
+System -&gt; System : fetchUserProfile(sessionUserID)
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Fan | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Fan ["👤 Fan"]
+        startNode(("● Start"))
+        A1["Click profile avatar in navigation bar"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["Query users table by session user ID"]
+        SDIR2["Render profile dashboard with account info"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC04_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC04: Business Activity Diagram - View Profile Details
+
+|Fan|
+start
+:Click profile avatar in navigation bar;
+|System|
+:Query users table by session user ID;
+:Render profile dashboard with account info;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC05">
+        <div class="uc-header">
+          <div class="uc-badge">UC05</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Update Profile Information</h3>
+            <span class="uc-module">Module 1: Authentication & User Profile Management &bull; Primary Actor: <strong>Fan</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Fan as Fan
+    participant System as :System
+    Fan->>System: openEditProfile()
+    System-->>Fan: displayProfileForm(userData)
+    Fan->>System: submitProfileUpdates(name, bio, location, handle)
+    System->>System: validateProfileInput()
+    alt validation error
+        System-->>Fan: showProfileErrors()
+    else valid input
+        System->>System: updateUserRecord(userID, data)
+        System-->>Fan: showUpdateSuccessToast()
+    end
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC05_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC05: System Sequence Diagram - Update Profile Information
+
+actor Fan
+participant ":System" as System
+
+Fan -&gt; System : openEditProfile()
+System --&gt; Fan : displayProfileForm(userData)
+Fan -&gt; System : submitProfileUpdates(name, bio, location, handle)
+System -&gt; System : validateProfileInput()
+alt validation error
+    System --&gt; Fan : showProfileErrors()
+else valid input
+    System -&gt; System : updateUserRecord(userID, data)
+    System --&gt; Fan : showUpdateSuccessToast()
+end
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Fan | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Fan ["👤 Fan"]
+        startNode(("● Start"))
+        A1["Edit display name, bio, city/location, or social handle"]
+        A2["Click "Save Changes" button"]
+        DEC{"Input valid?"}
+    end
+
+    subgraph System ["💻 :System"]
+        SPREP["Validate field length and format constraints"]
+        SYES1["UPDATE users SET name, bio, location, handle"]
+        SYES2["Refresh active session user cache"]
+        SYES3["Show green "Profile updated" notification"]
+        SNO1["Display field validation warning"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> A2
+    A2 --> SPREP
+    SPREP --> DEC
+    DEC -- "Valid" --> SYES1
+    SYES1 --> SYES2
+    SYES2 --> SYES3
+    SYES3 --> endNode
+    DEC -- "Invalid" --> SNO1
+    SNO1 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC05_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC05: Business Activity Diagram - Update Profile Information
+
+|Fan|
+start
+:Edit display name, bio, city/location, or social handle;
+:Click "Save Changes" button;
+|System|
+:Validate field length and format constraints;
+|Fan|
+if (Input valid?) then (Valid)
+  |System|
+  :UPDATE users SET name, bio, location, handle;
+  :Refresh active session user cache;
+  :Show green "Profile updated" notification;
+  stop
+else (Invalid)
+  |System|
+  :Display field validation warning;
+  stop
+endif
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC06">
+        <div class="uc-header">
+          <div class="uc-badge">UC06</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Change Account Password</h3>
+            <span class="uc-module">Module 1: Authentication & User Profile Management &bull; Primary Actor: <strong>User</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor User as User
+    participant System as :System
+    User->>System: submitPasswordChange(currentPass, newPass, confirmPass)
+    System->>System: verifyCurrentPassword(currentPass)
+    alt incorrect current pass or mismatch
+        System-->>User: showPasswordError(msg)
+    else verified & match
+        System->>System: hashNewPassword(newPass)
+        System->>System: updatePasswordHash(userID)
+        System-->>User: showPasswordChangeSuccess()
+    end
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC06_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC06: System Sequence Diagram - Change Account Password
+
+actor User
+participant ":System" as System
+
+User -&gt; System : submitPasswordChange(currentPass, newPass, confirmPass)
+System -&gt; System : verifyCurrentPassword(currentPass)
+alt incorrect current pass or mismatch
+    System --&gt; User : showPasswordError(msg)
+else verified &amp; match
+    System -&gt; System : hashNewPassword(newPass)
+    System -&gt; System : updatePasswordHash(userID)
+    System --&gt; User : showPasswordChangeSuccess()
+end
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: User | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph User ["👤 User"]
+        startNode(("● Start"))
+        A1["Enter current password, new password, and confirmation"]
+        A2["Click "Update Password" button"]
+        DEC{"Password verified & matched?"}
+    end
+
+    subgraph System ["💻 :System"]
+        SPREP["Verify current password Bcrypt hash and confirm match"]
+        SYES1["Hash new password with Bcrypt"]
+        SYES2["UPDATE users SET password_hash = newHash"]
+        SYES3["Show success toast notification"]
+        SNO1["Display error: incorrect password or mismatch"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> A2
+    A2 --> SPREP
+    SPREP --> DEC
+    DEC -- "Yes" --> SYES1
+    SYES1 --> SYES2
+    SYES2 --> SYES3
+    SYES3 --> endNode
+    DEC -- "No" --> SNO1
+    SNO1 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC06_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC06: Business Activity Diagram - Change Account Password
+
+|User|
+start
+:Enter current password, new password, and confirmation;
+:Click "Update Password" button;
+|System|
+:Verify current password Bcrypt hash and confirm match;
+|User|
+if (Password verified &amp; matched?) then (Yes)
+  |System|
+  :Hash new password with Bcrypt;
+  :UPDATE users SET password_hash = newHash;
+  :Show success toast notification;
+  stop
+else (No)
+  |System|
+  :Display error: incorrect password or mismatch;
+  stop
+endif
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC07">
+        <div class="uc-header">
+          <div class="uc-badge">UC07</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Browse Featured Upcoming Events</h3>
+            <span class="uc-module">Module 2: Event Discovery & Information &bull; Primary Actor: <strong>User</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor User as User
+    participant System as :System
+    User->>System: openHomePage()
+    System-->>User: displayFeaturedCarouselAndCards(eventList)
+    System->>System: queryFeaturedVerifiedEvents(limit=6)
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC07_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC07: System Sequence Diagram - Browse Featured Upcoming Events
+
+actor User
+participant ":System" as System
+
+User -&gt; System : openHomePage()
+System --&gt; User : displayFeaturedCarouselAndCards(eventList)
+System -&gt; System : queryFeaturedVerifiedEvents(limit=6)
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: User | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph User ["👤 User"]
+        startNode(("● Start"))
+        A1["Visit platform root URL ("/")"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["SELECT * FROM events WHERE verification_status = "VERIFIED" ORDER BY event_date ASC LIMIT 6"]
+        SDIR2["Render featured banner carousel and event cards"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC07_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC07: Business Activity Diagram - Browse Featured Upcoming Events
+
+|User|
+start
+:Visit platform root URL ("/");
+|System|
+:SELECT * FROM events WHERE verification_status = "VERIFIED" ORDER BY event_date ASC LIMIT 6;
+:Render featured banner carousel and event cards;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC08">
+        <div class="uc-header">
+          <div class="uc-badge">UC08</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Browse Events Directory</h3>
+            <span class="uc-module">Module 2: Event Discovery & Information &bull; Primary Actor: <strong>User</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor User as User
+    participant System as :System
+    User->>System: openEventsDirectory()
+    System-->>User: displayEventsCatalogGrid(events)
+    System->>System: queryAllVerifiedEvents()
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC08_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC08: System Sequence Diagram - Browse Events Directory
+
+actor User
+participant ":System" as System
+
+User -&gt; System : openEventsDirectory()
+System --&gt; User : displayEventsCatalogGrid(events)
+System -&gt; System : queryAllVerifiedEvents()
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: User | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph User ["👤 User"]
+        startNode(("● Start"))
+        A1["Click "Events" in navigation bar"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["Query verified events joined with artists & categories"]
+        SDIR2["Render complete responsive event card catalog"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC08_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC08: Business Activity Diagram - Browse Events Directory
+
+|User|
+start
+:Click "Events" in navigation bar;
+|System|
+:Query verified events joined with artists &amp; categories;
+:Render complete responsive event card catalog;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC09">
+        <div class="uc-header">
+          <div class="uc-badge">UC09</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Search Events by Keyword</h3>
+            <span class="uc-module">Module 2: Event Discovery & Information &bull; Primary Actor: <strong>User</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor User as User
+    participant System as :System
+    User->>System: searchEvents(keyword)
+    System->>System: executeKeywordSearch(keyword)
+    alt no matches
+        System-->>User: displayEmptySearchState()
+    else matches found
+        System-->>User: displayMatchingEvents(results)
+    end
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC09_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC09: System Sequence Diagram - Search Events by Keyword
+
+actor User
+participant ":System" as System
+
+User -&gt; System : searchEvents(keyword)
+System -&gt; System : executeKeywordSearch(keyword)
+alt no matches
+    System --&gt; User : displayEmptySearchState()
+else matches found
+    System --&gt; User : displayMatchingEvents(results)
+end
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: User | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph User ["👤 User"]
+        startNode(("● Start"))
+        A1["Input search keyword into search bar"]
+        A2["Press Enter or submit search"]
+        DEC{"Matches found?"}
+    end
+
+    subgraph System ["💻 :System"]
+        SPREP["Execute SQL query with LIKE wildcards across event, artist, and venue names"]
+        SYES1["Render filtered event cards matching query"]
+        SNO1["Display friendly "No events found" empty state"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> A2
+    A2 --> SPREP
+    SPREP --> DEC
+    DEC -- "Yes" --> SYES1
+    SYES1 --> endNode
+    DEC -- "No" --> SNO1
+    SNO1 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC09_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC09: Business Activity Diagram - Search Events by Keyword
+
+|User|
+start
+:Input search keyword into search bar;
+:Press Enter or submit search;
+|System|
+:Execute SQL query with LIKE wildcards across event, artist, and venue names;
+|User|
+if (Matches found?) then (Yes)
+  |System|
+  :Render filtered event cards matching query;
+  stop
+else (No)
+  |System|
+  :Display friendly "No events found" empty state;
+  stop
+endif
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC10">
+        <div class="uc-header">
+          <div class="uc-badge">UC10</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Filter Events by Artist, Category & City</h3>
+            <span class="uc-module">Module 2: Event Discovery & Information &bull; Primary Actor: <strong>User</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor User as User
+    participant System as :System
+    User->>System: selectFilters(categorySlug, artistID, city)
+    System-->>User: displayFilteredEventGrid(filteredEvents)
+    System->>System: queryFilteredCatalog(categorySlug, artistID, city)
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC10_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC10: System Sequence Diagram - Filter Events by Artist, Category &amp; City
+
+actor User
+participant ":System" as System
+
+User -&gt; System : selectFilters(categorySlug, artistID, city)
+System --&gt; User : displayFilteredEventGrid(filteredEvents)
+System -&gt; System : queryFilteredCatalog(categorySlug, artistID, city)
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: User | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph User ["👤 User"]
+        startNode(("● Start"))
+        A1["Select category filter pill, artist dropdown, or city filter"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["Build dynamic parameterized SQL WHERE conditions"]
+        SDIR2["Update card grid asynchronously with matching events"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC10_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC10: Business Activity Diagram - Filter Events by Artist, Category &amp; City
+
+|User|
+start
+:Select category filter pill, artist dropdown, or city filter;
+|System|
+:Build dynamic parameterized SQL WHERE conditions;
+:Update card grid asynchronously with matching events;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC11">
+        <div class="uc-header">
+          <div class="uc-badge">UC11</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">View Event Details & Embedded Venue</h3>
+            <span class="uc-module">Module 2: Event Discovery & Information &bull; Primary Actor: <strong>User</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor User as User
+    participant System as :System
+    User->>System: openEventDetails(eventID)
+    System-->>User: displayEventPage(eventData, venueMap, ticketTiers)
+    System->>System: fetchEventWithArtistVenueChat(eventID)
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC11_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC11: System Sequence Diagram - View Event Details &amp; Embedded Venue
+
+actor User
+participant ":System" as System
+
+User -&gt; System : openEventDetails(eventID)
+System --&gt; User : displayEventPage(eventData, venueMap, ticketTiers)
+System -&gt; System : fetchEventWithArtistVenueChat(eventID)
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: User | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph User ["👤 User"]
+        startNode(("● Start"))
+        A1["Click on any event card in directory"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["Query event record joined with artist, tickets, and venue"]
+        SDIR2["Render event hero banner, ticket tiers, embedded Google Map, transit guide, and chat hub"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC11_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC11: Business Activity Diagram - View Event Details &amp; Embedded Venue
+
+|User|
+start
+:Click on any event card in directory;
+|System|
+:Query event record joined with artist, tickets, and venue;
+:Render event hero banner, ticket tiers, embedded Google Map, transit guide, and chat hub;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC12">
+        <div class="uc-header">
+          <div class="uc-badge">UC12</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">View Artist & Idol Member Biodata</h3>
+            <span class="uc-module">Module 2: Event Discovery & Information &bull; Primary Actor: <strong>User</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor User as User
+    participant System as :System
+    User->>System: openArtistBiodataSection(artistID)
+    System-->>User: displayMemberProfileCards(membersArray)
+    System->>System: parseArtistMembersJSON(artistID)
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC12_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC12: System Sequence Diagram - View Artist &amp; Idol Member Biodata
+
+actor User
+participant ":System" as System
+
+User -&gt; System : openArtistBiodataSection(artistID)
+System --&gt; User : displayMemberProfileCards(membersArray)
+System -&gt; System : parseArtistMembersJSON(artistID)
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: User | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph User ["👤 User"]
+        startNode(("● Start"))
+        A1["Scroll to "Member Profiles & Biodata" section on event page"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["Parse JSON string from artists.members column"]
+        SDIR2["Render individual member cards with portrait, positions, birthday, blood type & MBTI"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC12_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC12: Business Activity Diagram - View Artist &amp; Idol Member Biodata
+
+|User|
+start
+:Scroll to "Member Profiles &amp; Biodata" section on event page;
+|System|
+:Parse JSON string from artists.members column;
+:Render individual member cards with portrait, positions, birthday, blood type &amp; MBTI;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC13">
+        <div class="uc-header">
+          <div class="uc-badge">UC13</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Submit Public Event Listing</h3>
+            <span class="uc-module">Module 3: Public Event Submission & Status Tracking (Model 2) &bull; Primary Actor: <strong>Submitter</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Submitter as Submitter
+    participant System as :System
+    Submitter->>System: openSubmissionForm()
+    System-->>Submitter: displayPublicSubmissionForm()
+    Submitter->>System: submitEvent(eventData, posterImage)
+    System->>System: validateSubmissionData()
+    alt missing required fields or file > 5MB
+        System-->>Submitter: showSubmissionErrors(errors)
+    else valid submission
+        System->>System: generateTrackingCode()
+        System->>System: savePendingEvent(data)
+        System->>System: sendConfirmationEmail()
+        System-->>Submitter: showSubmissionSuccess(trackingCode)
+    end
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC13_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC13: System Sequence Diagram - Submit Public Event Listing
+
+actor Submitter
+participant ":System" as System
+
+Submitter -&gt; System : openSubmissionForm()
+System --&gt; Submitter : displayPublicSubmissionForm()
+Submitter -&gt; System : submitEvent(eventData, posterImage)
+System -&gt; System : validateSubmissionData()
+alt missing required fields or file &gt; 5MB
+    System --&gt; Submitter : showSubmissionErrors(errors)
+else valid submission
+    System -&gt; System : generateTrackingCode()
+    System -&gt; System : savePendingEvent(data)
+    System -&gt; System : sendConfirmationEmail()
+    System --&gt; Submitter : showSubmissionSuccess(trackingCode)
+end
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Submitter | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Submitter ["👤 Submitter"]
+        startNode(("● Start"))
+        A1["Navigate to "/submit-event""]
+        A2["Fill event details, pick preset venue, upload poster, enter email"]
+        A3["Click "Submit Event" button"]
+        DEC{"Inputs valid?"}
+    end
+
+    subgraph System ["💻 :System"]
+        SPREP["Validate required fields and uploaded poster image size"]
+        SYES1["Upload poster file via Multer"]
+        SYES2["Generate unique reference tracking code (e.g. KS-2026-TXT001)"]
+        SYES3["INSERT INTO events (verification_status="PENDING")"]
+        SYES4["Send confirmation email to submitter"]
+        SYES5["Display success confirmation page with tracking code"]
+        SNO1["Display form validation error notice"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> A2
+    A2 --> A3
+    A3 --> SPREP
+    SPREP --> DEC
+    DEC -- "Valid" --> SYES1
+    SYES1 --> SYES2
+    SYES2 --> SYES3
+    SYES3 --> SYES4
+    SYES4 --> SYES5
+    SYES5 --> endNode
+    DEC -- "Invalid" --> SNO1
+    SNO1 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC13_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC13: Business Activity Diagram - Submit Public Event Listing
+
+|Submitter|
+start
+:Navigate to "/submit-event";
+:Fill event details, pick preset venue, upload poster, enter email;
+:Click "Submit Event" button;
+|System|
+:Validate required fields and uploaded poster image size;
+|Submitter|
+if (Inputs valid?) then (Valid)
+  |System|
+  :Upload poster file via Multer;
+  :Generate unique reference tracking code (e.g. KS-2026-TXT001);
+  :INSERT INTO events (verification_status="PENDING");
+  :Send confirmation email to submitter;
+  :Display success confirmation page with tracking code;
+  stop
+else (Invalid)
+  |System|
+  :Display form validation error notice;
+  stop
+endif
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC14">
+        <div class="uc-header">
+          <div class="uc-badge">UC14</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Track Submission Status by Tracking Code</h3>
+            <span class="uc-module">Module 3: Public Event Submission & Status Tracking (Model 2) &bull; Primary Actor: <strong>Submitter</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Submitter as Submitter
+    participant System as :System
+    Submitter->>System: openStatusLookupPage()
+    System-->>Submitter: displayTrackingInput()
+    Submitter->>System: lookupTrackingCode(code)
+    System->>System: queryEventByTrackingCode(code)
+    alt code not found
+        System-->>Submitter: showCodeNotFoundError()
+    else code exists
+        System-->>Submitter: displayStatusTimeline(event, feedback)
+    end
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC14_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC14: System Sequence Diagram - Track Submission Status by Tracking Code
+
+actor Submitter
+participant ":System" as System
+
+Submitter -&gt; System : openStatusLookupPage()
+System --&gt; Submitter : displayTrackingInput()
+Submitter -&gt; System : lookupTrackingCode(code)
+System -&gt; System : queryEventByTrackingCode(code)
+alt code not found
+    System --&gt; Submitter : showCodeNotFoundError()
+else code exists
+    System --&gt; Submitter : displayStatusTimeline(event, feedback)
+end
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Submitter | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Submitter ["👤 Submitter"]
+        startNode(("● Start"))
+        A1["Navigate to "/check-submission""]
+        A2["Enter reference tracking code (e.g. KS-2026-TXT001)"]
+        A3["Click "Check Status" button"]
+        DEC{"Tracking code found?"}
+    end
+
+    subgraph System ["💻 :System"]
+        SPREP["Query events table by tracking_code"]
+        SYES1["Display review status badge (PENDING / VERIFIED / REJECTED)"]
+        SYES2["Render review timeline and administrator feedback notes"]
+        SNO1["Display "Tracking code not found" alert notice"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> A2
+    A2 --> A3
+    A3 --> SPREP
+    SPREP --> DEC
+    DEC -- "Found" --> SYES1
+    SYES1 --> SYES2
+    SYES2 --> endNode
+    DEC -- "Not Found" --> SNO1
+    SNO1 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC14_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC14: Business Activity Diagram - Track Submission Status by Tracking Code
+
+|Submitter|
+start
+:Navigate to "/check-submission";
+:Enter reference tracking code (e.g. KS-2026-TXT001);
+:Click "Check Status" button;
+|System|
+:Query events table by tracking_code;
+|Submitter|
+if (Tracking code found?) then (Found)
+  |System|
+  :Display review status badge (PENDING / VERIFIED / REJECTED);
+  :Render review timeline and administrator feedback notes;
+  stop
+else (Not Found)
+  |System|
+  :Display "Tracking code not found" alert notice;
+  stop
+endif
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC15">
+        <div class="uc-header">
+          <div class="uc-badge">UC15</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Resubmit Rejected Event Listing</h3>
+            <span class="uc-module">Module 3: Public Event Submission & Status Tracking (Model 2) &bull; Primary Actor: <strong>Submitter</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Submitter as Submitter
+    participant System as :System
+    Submitter->>System: openResubmitForm(code)
+    System-->>Submitter: displayPreFilledForm(eventData, rejectionReason)
+    Submitter->>System: resubmitCorrectedDetails(code, correctedData)
+    System->>System: updateEventAndResetStatus(code)
+    System-->>Submitter: showResubmissionConfirmation(code)
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC15_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC15: System Sequence Diagram - Resubmit Rejected Event Listing
+
+actor Submitter
+participant ":System" as System
+
+Submitter -&gt; System : openResubmitForm(code)
+System --&gt; Submitter : displayPreFilledForm(eventData, rejectionReason)
+Submitter -&gt; System : resubmitCorrectedDetails(code, correctedData)
+System -&gt; System : updateEventAndResetStatus(code)
+System --&gt; Submitter : showResubmissionConfirmation(code)
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Submitter | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Submitter ["👤 Submitter"]
+        startNode(("● Start"))
+        A1["Inspect administrator rejection reason on tracking portal"]
+        A2["Modify flagged details (e.g. date, venue, or ticketing URL)"]
+        A3["Click "Resubmit Event" button"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["UPDATE events SET details, verification_status="PENDING", rejection_reason=NULL"]
+        SDIR2["Record resubmission action in system audit log"]
+        SDIR3["Display resubmission confirmation notice with same tracking code"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> A2
+    A2 --> A3
+    A3 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> SDIR3
+    SDIR3 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC15_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC15: Business Activity Diagram - Resubmit Rejected Event Listing
+
+|Submitter|
+start
+:Inspect administrator rejection reason on tracking portal;
+:Modify flagged details (e.g. date, venue, or ticketing URL);
+:Click "Resubmit Event" button;
+|System|
+:UPDATE events SET details, verification_status="PENDING", rejection_reason=NULL;
+:Record resubmission action in system audit log;
+:Display resubmission confirmation notice with same tracking code;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC16">
+        <div class="uc-header">
+          <div class="uc-badge">UC16</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Bookmark Event (Save to Favorites)</h3>
+            <span class="uc-module">Module 4: Fan Community, Live Chat & Bookmarks &bull; Primary Actor: <strong>Fan</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Fan as Fan
+    participant System as :System
+    Fan->>System: bookmarkEvent(eventID)
+    System->>System: checkAuthenticationAndExisting(userID, eventID)
+    alt not authenticated
+        System-->>Fan: promptLoginModal()
+    else authenticated
+        System->>System: insertSavedEvent(userID, eventID)
+        System-->>Fan: updateHeartIconState(saved=true)
+    end
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC16_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC16: System Sequence Diagram - Bookmark Event (Save to Favorites)
+
+actor Fan
+participant ":System" as System
+
+Fan -&gt; System : bookmarkEvent(eventID)
+System -&gt; System : checkAuthenticationAndExisting(userID, eventID)
+alt not authenticated
+    System --&gt; Fan : promptLoginModal()
+else authenticated
+    System -&gt; System : insertSavedEvent(userID, eventID)
+    System --&gt; Fan : updateHeartIconState(saved=true)
+end
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Fan | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Fan ["👤 Fan"]
+        startNode(("● Start"))
+        A1["Click heart "Save Event" button on event card or details page"]
+        DEC{"Authenticated?"}
+    end
+
+    subgraph System ["💻 :System"]
+        SPREP["Check if user is authenticated"]
+        SYES1["INSERT INTO saved_events (user_id, event_id)"]
+        SYES2["Update heart icon to filled rose color asynchronously"]
+        SNO1["Display login prompt modal"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SPREP
+    SPREP --> DEC
+    DEC -- "Yes" --> SYES1
+    SYES1 --> SYES2
+    SYES2 --> endNode
+    DEC -- "No" --> SNO1
+    SNO1 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC16_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC16: Business Activity Diagram - Bookmark Event (Save to Favorites)
+
+|Fan|
+start
+:Click heart "Save Event" button on event card or details page;
+|System|
+:Check if user is authenticated;
+|Fan|
+if (Authenticated?) then (Yes)
+  |System|
+  :INSERT INTO saved_events (user_id, event_id);
+  :Update heart icon to filled rose color asynchronously;
+  stop
+else (No)
+  |System|
+  :Display login prompt modal;
+  stop
+endif
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC17">
+        <div class="uc-header">
+          <div class="uc-badge">UC17</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">View Saved Events List</h3>
+            <span class="uc-module">Module 4: Fan Community, Live Chat & Bookmarks &bull; Primary Actor: <strong>Fan</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Fan as Fan
+    participant System as :System
+    Fan->>System: openSavedEvents()
+    System-->>Fan: displaySavedEventsList(savedCards)
+    System->>System: querySavedEventsWithCountdowns(userID)
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC17_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC17: System Sequence Diagram - View Saved Events List
+
+actor Fan
+participant ":System" as System
+
+Fan -&gt; System : openSavedEvents()
+System --&gt; Fan : displaySavedEventsList(savedCards)
+System -&gt; System : querySavedEventsWithCountdowns(userID)
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Fan | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Fan ["👤 Fan"]
+        startNode(("● Start"))
+        A1["Click "Saved Events" link in navigation bar"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["SELECT * FROM saved_events JOIN events WHERE user_id = ?"]
+        SDIR2["Render personal saved events page with live countdown timers"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC17_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC17: Business Activity Diagram - View Saved Events List
+
+|Fan|
+start
+:Click "Saved Events" link in navigation bar;
+|System|
+:SELECT * FROM saved_events JOIN events WHERE user_id = ?;
+:Render personal saved events page with live countdown timers;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC18">
+        <div class="uc-header">
+          <div class="uc-badge">UC18</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Remove Event from Bookmarks</h3>
+            <span class="uc-module">Module 4: Fan Community, Live Chat & Bookmarks &bull; Primary Actor: <strong>Fan</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Fan as Fan
+    participant System as :System
+    Fan->>System: removeBookmark(eventID)
+    System-->>Fan: updateHeartIconState(saved=false)
+    System->>System: deleteSavedEvent(userID, eventID)
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC18_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC18: System Sequence Diagram - Remove Event from Bookmarks
+
+actor Fan
+participant ":System" as System
+
+Fan -&gt; System : removeBookmark(eventID)
+System --&gt; Fan : updateHeartIconState(saved=false)
+System -&gt; System : deleteSavedEvent(userID, eventID)
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Fan | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Fan ["👤 Fan"]
+        startNode(("● Start"))
+        A1["Click filled heart icon on an already bookmarked event"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["DELETE FROM saved_events WHERE user_id=? AND event_id=?"]
+        SDIR2["Revert heart icon to empty outline state asynchronously"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC18_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC18: Business Activity Diagram - Remove Event from Bookmarks
+
+|Fan|
+start
+:Click filled heart icon on an already bookmarked event;
+|System|
+:DELETE FROM saved_events WHERE user_id=? AND event_id=?;
+:Revert heart icon to empty outline state asynchronously;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC19">
+        <div class="uc-header">
+          <div class="uc-badge">UC19</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">View Event Discussion Live Chat</h3>
+            <span class="uc-module">Module 4: Fan Community, Live Chat & Bookmarks &bull; Primary Actor: <strong>User</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor User as User
+    participant System as :System
+    User->>System: openEventChatHub(eventID)
+    System-->>User: renderChatMessageStream(messages)
+    System->>System: fetchChatMessages(eventID)
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC19_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC19: System Sequence Diagram - View Event Discussion Live Chat
+
+actor User
+participant ":System" as System
+
+User -&gt; System : openEventChatHub(eventID)
+System --&gt; User : renderChatMessageStream(messages)
+System -&gt; System : fetchChatMessages(eventID)
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: User | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph User ["👤 User"]
+        startNode(("● Start"))
+        A1["Scroll to "Event Fan Chat Hub" section on event page"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["Query event_chat_messages JOIN users for event ID"]
+        SDIR2["Render chronological discussion feed with fan avatars and timestamps"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC19_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC19: Business Activity Diagram - View Event Discussion Live Chat
+
+|User|
+start
+:Scroll to "Event Fan Chat Hub" section on event page;
+|System|
+:Query event_chat_messages JOIN users for event ID;
+:Render chronological discussion feed with fan avatars and timestamps;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC20">
+        <div class="uc-header">
+          <div class="uc-badge">UC20</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Post Event Chat Message</h3>
+            <span class="uc-module">Module 4: Fan Community, Live Chat & Bookmarks &bull; Primary Actor: <strong>Fan</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Fan as Fan
+    participant System as :System
+    Fan->>System: postChatMessage(eventID, messageText)
+    System->>System: verifyChatWindowActive(eventID)
+    alt event ended > 24 hours ago
+        System-->>Fan: showChatLockedError()
+    else chat active
+        System->>System: sanitizeInput()
+        System->>System: insertChatMessage(eventID, userID, text)
+        System-->>Fan: appendNewMessageToStream()
+    end
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC20_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC20: System Sequence Diagram - Post Event Chat Message
+
+actor Fan
+participant ":System" as System
+
+Fan -&gt; System : postChatMessage(eventID, messageText)
+System -&gt; System : verifyChatWindowActive(eventID)
+alt event ended &gt; 24 hours ago
+    System --&gt; Fan : showChatLockedError()
+else chat active
+    System -&gt; System : sanitizeInput()
+    System -&gt; System : insertChatMessage(eventID, userID, text)
+    System --&gt; Fan : appendNewMessageToStream()
+end
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Fan | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Fan ["👤 Fan"]
+        startNode(("● Start"))
+        A1["Type discussion message into chat input field"]
+        A2["Click "Send" button"]
+        DEC{"Chat active?"}
+    end
+
+    subgraph System ["💻 :System"]
+        SPREP["Check if event chat is within active window (<24h post-event)"]
+        SYES1["Sanitize message input text"]
+        SYES2["INSERT INTO event_chat_messages"]
+        SYES3["Append new message to chat stream asynchronously"]
+        SNO1["Display "Chat room locked 24 hours post-event" banner"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> A2
+    A2 --> SPREP
+    SPREP --> DEC
+    DEC -- "Active" --> SYES1
+    SYES1 --> SYES2
+    SYES2 --> SYES3
+    SYES3 --> endNode
+    DEC -- "Locked" --> SNO1
+    SNO1 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC20_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC20: Business Activity Diagram - Post Event Chat Message
+
+|Fan|
+start
+:Type discussion message into chat input field;
+:Click "Send" button;
+|System|
+:Check if event chat is within active window (&lt;24h post-event);
+|Fan|
+if (Chat active?) then (Active)
+  |System|
+  :Sanitize message input text;
+  :INSERT INTO event_chat_messages;
+  :Append new message to chat stream asynchronously;
+  stop
+else (Locked)
+  |System|
+  :Display "Chat room locked 24 hours post-event" banner;
+  stop
+endif
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC21">
+        <div class="uc-header">
+          <div class="uc-badge">UC21</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Submit Event Content Report</h3>
+            <span class="uc-module">Module 4: Fan Community, Live Chat & Bookmarks &bull; Primary Actor: <strong>User</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor User as User
+    participant System as :System
+    User->>System: clickReportEvent(eventID)
+    System-->>User: displayReportModal()
+    User->>System: submitReport(eventID, reason, details)
+    System->>System: saveReportRecord(eventID, reason, details)
+    System-->>User: showReportConfirmationToast()
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC21_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC21: System Sequence Diagram - Submit Event Content Report
+
+actor User
+participant ":System" as System
+
+User -&gt; System : clickReportEvent(eventID)
+System --&gt; User : displayReportModal()
+User -&gt; System : submitReport(eventID, reason, details)
+System -&gt; System : saveReportRecord(eventID, reason, details)
+System --&gt; User : showReportConfirmationToast()
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: User | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph User ["👤 User"]
+        startNode(("● Start"))
+        A1["Click "Report" button on event action bar"]
+        A2["Select report reason (e.g. Inaccurate Date/Fake Event) and enter details"]
+        A3["Click "Submit Report" button"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["INSERT INTO reports (event_id, user_id, reason, details, status="PENDING")"]
+        SDIR2["Display green confirmation toast: "Report submitted to moderators""]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> A2
+    A2 --> A3
+    A3 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC21_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC21: Business Activity Diagram - Submit Event Content Report
+
+|User|
+start
+:Click "Report" button on event action bar;
+:Select report reason (e.g. Inaccurate Date/Fake Event) and enter details;
+:Click "Submit Report" button;
+|System|
+:INSERT INTO reports (event_id, user_id, reason, details, status="PENDING");
+:Display green confirmation toast: "Report submitted to moderators";
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC22">
+        <div class="uc-header">
+          <div class="uc-badge">UC22</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">View In-App Notifications</h3>
+            <span class="uc-module">Module 4: Fan Community, Live Chat & Bookmarks &bull; Primary Actor: <strong>Fan</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Fan as Fan
+    participant System as :System
+    Fan->>System: openNotifications()
+    System-->>Fan: displayNotificationsList(notifications)
+    System->>System: fetchUserNotifications(userID)
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC22_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC22: System Sequence Diagram - View In-App Notifications
+
+actor Fan
+participant ":System" as System
+
+Fan -&gt; System : openNotifications()
+System --&gt; Fan : displayNotificationsList(notifications)
+System -&gt; System : fetchUserNotifications(userID)
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Fan | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Fan ["👤 Fan"]
+        startNode(("● Start"))
+        A1["Click notification bell icon in navigation bar"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["Query notifications table for active user ID"]
+        SDIR2["Render notification feed with unread indicators"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC22_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC22: Business Activity Diagram - View In-App Notifications
+
+|Fan|
+start
+:Click notification bell icon in navigation bar;
+|System|
+:Query notifications table for active user ID;
+:Render notification feed with unread indicators;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC23">
+        <div class="uc-header">
+          <div class="uc-badge">UC23</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Mark Notifications as Read</h3>
+            <span class="uc-module">Module 4: Fan Community, Live Chat & Bookmarks &bull; Primary Actor: <strong>Fan</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Fan as Fan
+    participant System as :System
+    Fan->>System: markAllNotificationsRead()
+    System-->>Fan: resetNavbarBadgeCount(0)
+    System->>System: updateNotificationsReadStatus(userID)
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC23_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC23: System Sequence Diagram - Mark Notifications as Read
+
+actor Fan
+participant ":System" as System
+
+Fan -&gt; System : markAllNotificationsRead()
+System --&gt; Fan : resetNavbarBadgeCount(0)
+System -&gt; System : updateNotificationsReadStatus(userID)
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Fan | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Fan ["👤 Fan"]
+        startNode(("● Start"))
+        A1["Click "Mark all as read" button"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["UPDATE notifications SET is_read = 1 WHERE user_id = ?"]
+        SDIR2["Reset navbar unread badge counter to 0"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC23_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC23: Business Activity Diagram - Mark Notifications as Read
+
+|Fan|
+start
+:Click "Mark all as read" button;
+|System|
+:UPDATE notifications SET is_read = 1 WHERE user_id = ?;
+:Reset navbar unread badge counter to 0;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC24">
+        <div class="uc-header">
+          <div class="uc-badge">UC24</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">View Admin Dashboard & KPI Metrics</h3>
+            <span class="uc-module">Module 5: Administrator Review, Verification & Moderation &bull; Primary Actor: <strong>Admin</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Admin as Admin
+    participant System as :System
+    Admin->>System: openAdminDashboard()
+    System-->>Admin: displayDashboardWithKPIs(metrics, logs)
+    System->>System: aggregateMetricsAndLogs()
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC24_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC24: System Sequence Diagram - View Admin Dashboard &amp; KPI Metrics
+
+actor Admin
+participant ":System" as System
+
+Admin -&gt; System : openAdminDashboard()
+System --&gt; Admin : displayDashboardWithKPIs(metrics, logs)
+System -&gt; System : aggregateMetricsAndLogs()
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Admin | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Admin ["👤 Admin"]
+        startNode(("● Start"))
+        A1["Navigate to "/admin""]
+        DEC{"Is Admin?"}
+    end
+
+    subgraph System ["💻 :System"]
+        SPREP["Verify user has role_id = 1 (Admin)"]
+        SYES1["Aggregate counts: total events, pending submissions, registered users"]
+        SYES2["Retrieve recent activity logs"]
+        SYES3["Render administrative control center dashboard"]
+        SNO1["Deny access and redirect to home page with warning"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SPREP
+    SPREP --> DEC
+    DEC -- "Authorized" --> SYES1
+    SYES1 --> SYES2
+    SYES2 --> SYES3
+    SYES3 --> endNode
+    DEC -- "Unauthorized" --> SNO1
+    SNO1 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC24_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC24: Business Activity Diagram - View Admin Dashboard &amp; KPI Metrics
+
+|Admin|
+start
+:Navigate to "/admin";
+|System|
+:Verify user has role_id = 1 (Admin);
+|Admin|
+if (Is Admin?) then (Authorized)
+  |System|
+  :Aggregate counts: total events, pending submissions, registered users;
+  :Retrieve recent activity logs;
+  :Render administrative control center dashboard;
+  stop
+else (Unauthorized)
+  |System|
+  :Deny access and redirect to home page with warning;
+  stop
+endif
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC25">
+        <div class="uc-header">
+          <div class="uc-badge">UC25</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">View Audit Activity Logs</h3>
+            <span class="uc-module">Module 5: Administrator Review, Verification & Moderation &bull; Primary Actor: <strong>Admin</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Admin as Admin
+    participant System as :System
+    Admin->>System: openAuditLogs()
+    System-->>Admin: displayAuditLogsTable(logs)
+    System->>System: queryActivityLogsWithUsers()
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC25_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC25: System Sequence Diagram - View Audit Activity Logs
+
+actor Admin
+participant ":System" as System
+
+Admin -&gt; System : openAuditLogs()
+System --&gt; Admin : displayAuditLogsTable(logs)
+System -&gt; System : queryActivityLogsWithUsers()
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Admin | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Admin ["👤 Admin"]
+        startNode(("● Start"))
+        A1["Navigate to "/admin/logs""]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["SELECT * FROM activity_logs JOIN users ORDER BY created_at DESC"]
+        SDIR2["Render immutable audit log table with action badges and timestamps"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC25_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC25: Business Activity Diagram - View Audit Activity Logs
+
+|Admin|
+start
+:Navigate to "/admin/logs";
+|System|
+:SELECT * FROM activity_logs JOIN users ORDER BY created_at DESC;
+:Render immutable audit log table with action badges and timestamps;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC26">
+        <div class="uc-header">
+          <div class="uc-badge">UC26</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">View Pending Verification Queue</h3>
+            <span class="uc-module">Module 5: Administrator Review, Verification & Moderation &bull; Primary Actor: <strong>Admin</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Admin as Admin
+    participant System as :System
+    Admin->>System: openVerificationQueue()
+    System-->>Admin: displayPendingQueue(pendingEvents)
+    System->>System: queryPendingEventsWithEvidence()
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC26_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC26: System Sequence Diagram - View Pending Verification Queue
+
+actor Admin
+participant ":System" as System
+
+Admin -&gt; System : openVerificationQueue()
+System --&gt; Admin : displayPendingQueue(pendingEvents)
+System -&gt; System : queryPendingEventsWithEvidence()
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Admin | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Admin ["👤 Admin"]
+        startNode(("● Start"))
+        A1["Navigate to "/admin/verifications""]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["SELECT * FROM events WHERE verification_status = "PENDING""]
+        SDIR2["Render verification table with submitter details, poster previews, and proof URLs"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC26_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC26: Business Activity Diagram - View Pending Verification Queue
+
+|Admin|
+start
+:Navigate to "/admin/verifications";
+|System|
+:SELECT * FROM events WHERE verification_status = "PENDING";
+:Render verification table with submitter details, poster previews, and proof URLs;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC27">
+        <div class="uc-header">
+          <div class="uc-badge">UC27</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Approve Event Submission Live</h3>
+            <span class="uc-module">Module 5: Administrator Review, Verification & Moderation &bull; Primary Actor: <strong>Admin</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Admin as Admin
+    participant System as :System
+    Admin->>System: approveEvent(eventID)
+    System-->>Admin: showApprovalSuccessNotification()
+    System->>System: updateVerificationStatus(eventID, 'VERIFIED')
+    System->>System: recordAuditLog('APPROVE_EVENT', eventID)
+    System->>System: sendApprovalEmail(eventID)
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC27_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC27: System Sequence Diagram - Approve Event Submission Live
+
+actor Admin
+participant ":System" as System
+
+Admin -&gt; System : approveEvent(eventID)
+System --&gt; Admin : showApprovalSuccessNotification()
+System -&gt; System : updateVerificationStatus(eventID, 'VERIFIED')
+System -&gt; System : recordAuditLog('APPROVE_EVENT', eventID)
+System -&gt; System : sendApprovalEmail(eventID)
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Admin | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Admin ["👤 Admin"]
+        startNode(("● Start"))
+        A1["Inspect official proof link and ticketing evidence"]
+        A2["Click "Approve Event" button"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["UPDATE events SET verification_status = "VERIFIED""]
+        SDIR2["INSERT INTO activity_logs (action="APPROVE_EVENT")"]
+        SDIR3["Dispatch approval email with live URL to organizer"]
+        SDIR4["Publish event to public catalog and refresh queue"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> A2
+    A2 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> SDIR3
+    SDIR3 --> SDIR4
+    SDIR4 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC27_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC27: Business Activity Diagram - Approve Event Submission Live
+
+|Admin|
+start
+:Inspect official proof link and ticketing evidence;
+:Click "Approve Event" button;
+|System|
+:UPDATE events SET verification_status = "VERIFIED";
+:INSERT INTO activity_logs (action="APPROVE_EVENT");
+:Dispatch approval email with live URL to organizer;
+:Publish event to public catalog and refresh queue;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC28">
+        <div class="uc-header">
+          <div class="uc-badge">UC28</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Reject Event Submission with Feedback</h3>
+            <span class="uc-module">Module 5: Administrator Review, Verification & Moderation &bull; Primary Actor: <strong>Admin</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Admin as Admin
+    participant System as :System
+    Admin->>System: rejectEvent(eventID, rejectionReason)
+    System-->>Admin: showRejectionCompletedNotice()
+    System->>System: updateVerificationStatus(eventID, 'REJECTED')
+    System->>System: saveRejectionReason(eventID, reason)
+    System->>System: recordAuditLog('REJECT_EVENT')
+    System->>System: sendRejectionEmail()
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC28_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC28: System Sequence Diagram - Reject Event Submission with Feedback
+
+actor Admin
+participant ":System" as System
+
+Admin -&gt; System : rejectEvent(eventID, rejectionReason)
+System --&gt; Admin : showRejectionCompletedNotice()
+System -&gt; System : updateVerificationStatus(eventID, 'REJECTED')
+System -&gt; System : saveRejectionReason(eventID, reason)
+System -&gt; System : recordAuditLog('REJECT_EVENT')
+System -&gt; System : sendRejectionEmail()
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Admin | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Admin ["👤 Admin"]
+        startNode(("● Start"))
+        A1["Enter rejection feedback reason (e.g. "Official ticketing link missing")"]
+        A2["Click "Reject Event" button"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["UPDATE events SET verification_status = "REJECTED", rejection_reason = ?"]
+        SDIR2["INSERT INTO activity_logs (action="REJECT_EVENT")"]
+        SDIR3["Dispatch rejection feedback email to submitter"]
+        SDIR4["Refresh verification queue"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> A2
+    A2 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> SDIR3
+    SDIR3 --> SDIR4
+    SDIR4 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC28_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC28: Business Activity Diagram - Reject Event Submission with Feedback
+
+|Admin|
+start
+:Enter rejection feedback reason (e.g. "Official ticketing link missing");
+:Click "Reject Event" button;
+|System|
+:UPDATE events SET verification_status = "REJECTED", rejection_reason = ?;
+:INSERT INTO activity_logs (action="REJECT_EVENT");
+:Dispatch rejection feedback email to submitter;
+:Refresh verification queue;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC29">
+        <div class="uc-header">
+          <div class="uc-badge">UC29</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">View Content Reports List</h3>
+            <span class="uc-module">Module 5: Administrator Review, Verification & Moderation &bull; Primary Actor: <strong>Admin</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Admin as Admin
+    participant System as :System
+    Admin->>System: openReportsInbox()
+    System-->>Admin: displayReportsTable(reportsList)
+    System->>System: queryReportsWithEventsAndUsers()
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC29_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC29: System Sequence Diagram - View Content Reports List
+
+actor Admin
+participant ":System" as System
+
+Admin -&gt; System : openReportsInbox()
+System --&gt; Admin : displayReportsTable(reportsList)
+System -&gt; System : queryReportsWithEventsAndUsers()
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Admin | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Admin ["👤 Admin"]
+        startNode(("● Start"))
+        A1["Navigate to "/admin/reports""]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["Query reports table joined with events and reporting users"]
+        SDIR2["Render moderation table with status tags and event links"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC29_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC29: Business Activity Diagram - View Content Reports List
+
+|Admin|
+start
+:Navigate to "/admin/reports";
+|System|
+:Query reports table joined with events and reporting users;
+:Render moderation table with status tags and event links;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC30">
+        <div class="uc-header">
+          <div class="uc-badge">UC30</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Resolve Content Report</h3>
+            <span class="uc-module">Module 5: Administrator Review, Verification & Moderation &bull; Primary Actor: <strong>Admin</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Admin as Admin
+    participant System as :System
+    Admin->>System: resolveReport(reportID)
+    System-->>Admin: showResolutionSuccessNotification()
+    System->>System: updateReportStatus(reportID, 'RESOLVED')
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC30_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC30: System Sequence Diagram - Resolve Content Report
+
+actor Admin
+participant ":System" as System
+
+Admin -&gt; System : resolveReport(reportID)
+System --&gt; Admin : showResolutionSuccessNotification()
+System -&gt; System : updateReportStatus(reportID, 'RESOLVED')
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Admin | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Admin ["👤 Admin"]
+        startNode(("● Start"))
+        A1["Investigate reported listing and apply corrections"]
+        A2["Click "Mark as Resolved" button"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["UPDATE reports SET status = "RESOLVED" WHERE id = ?"]
+        SDIR2["Record moderation action in activity_logs"]
+        SDIR3["Refresh reports management table"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> A2
+    A2 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> SDIR3
+    SDIR3 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC30_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC30: Business Activity Diagram - Resolve Content Report
+
+|Admin|
+start
+:Investigate reported listing and apply corrections;
+:Click "Mark as Resolved" button;
+|System|
+:UPDATE reports SET status = "RESOLVED" WHERE id = ?;
+:Record moderation action in activity_logs;
+:Refresh reports management table;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC31">
+        <div class="uc-header">
+          <div class="uc-badge">UC31</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">View All Events Management List</h3>
+            <span class="uc-module">Module 6: Administrator Catalog & System Entity CRUD &bull; Primary Actor: <strong>Admin</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Admin as Admin
+    participant System as :System
+    Admin->>System: openEventsManagement()
+    System-->>Admin: displayEventsManagementTable(allEvents)
+    System->>System: queryAllEvents()
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC31_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC31: System Sequence Diagram - View All Events Management List
+
+actor Admin
+participant ":System" as System
+
+Admin -&gt; System : openEventsManagement()
+System --&gt; Admin : displayEventsManagementTable(allEvents)
+System -&gt; System : queryAllEvents()
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Admin | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Admin ["👤 Admin"]
+        startNode(("● Start"))
+        A1["Navigate to "/admin/events""]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["SELECT * FROM events joined with categories & artists"]
+        SDIR2["Render complete event management table with status toggles"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC31_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC31: Business Activity Diagram - View All Events Management List
+
+|Admin|
+start
+:Navigate to "/admin/events";
+|System|
+:SELECT * FROM events joined with categories &amp; artists;
+:Render complete event management table with status toggles;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC32">
+        <div class="uc-header">
+          <div class="uc-badge">UC32</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Update Event Listing Status</h3>
+            <span class="uc-module">Module 6: Administrator Catalog & System Entity CRUD &bull; Primary Actor: <strong>Admin</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Admin as Admin
+    participant System as :System
+    Admin->>System: updateEventStatus(eventID, newStatus)
+    System-->>Admin: showStatusUpdatedNotice()
+    System->>System: updateEventStatusColumn(eventID, newStatus)
+    System->>System: recordAuditLog('UPDATE_STATUS', eventID)
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC32_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC32: System Sequence Diagram - Update Event Listing Status
+
+actor Admin
+participant ":System" as System
+
+Admin -&gt; System : updateEventStatus(eventID, newStatus)
+System --&gt; Admin : showStatusUpdatedNotice()
+System -&gt; System : updateEventStatusColumn(eventID, newStatus)
+System -&gt; System : recordAuditLog('UPDATE_STATUS', eventID)
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Admin | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Admin ["👤 Admin"]
+        startNode(("● Start"))
+        A1["Select new event status (UPCOMING / ONGOING / COMPLETED)"]
+        A2["Click "Update Status" button"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["UPDATE events SET event_status = ? WHERE id = ?"]
+        SDIR2["INSERT INTO activity_logs (action="UPDATE_STATUS")"]
+        SDIR3["Reload management table with updated badge"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> A2
+    A2 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> SDIR3
+    SDIR3 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC32_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC32: Business Activity Diagram - Update Event Listing Status
+
+|Admin|
+start
+:Select new event status (UPCOMING / ONGOING / COMPLETED);
+:Click "Update Status" button;
+|System|
+:UPDATE events SET event_status = ? WHERE id = ?;
+:INSERT INTO activity_logs (action="UPDATE_STATUS");
+:Reload management table with updated badge;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC33">
+        <div class="uc-header">
+          <div class="uc-badge">UC33</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Delete Event Listing</h3>
+            <span class="uc-module">Module 6: Administrator Catalog & System Entity CRUD &bull; Primary Actor: <strong>Admin</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Admin as Admin
+    participant System as :System
+    Admin->>System: requestDeleteEvent(eventID)
+    System-->>Admin: displayDeleteConfirmationDialog(eventID)
+    Admin->>System: confirmDeleteEvent(eventID)
+    System->>System: deleteEventAndCascadeChildren(eventID)
+    System->>System: recordAuditLog('DELETE_EVENT')
+    System-->>Admin: showDeleteSuccessToast()
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC33_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC33: System Sequence Diagram - Delete Event Listing
+
+actor Admin
+participant ":System" as System
+
+Admin -&gt; System : requestDeleteEvent(eventID)
+System --&gt; Admin : displayDeleteConfirmationDialog(eventID)
+Admin -&gt; System : confirmDeleteEvent(eventID)
+System -&gt; System : deleteEventAndCascadeChildren(eventID)
+System -&gt; System : recordAuditLog('DELETE_EVENT')
+System --&gt; Admin : showDeleteSuccessToast()
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Admin | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Admin ["👤 Admin"]
+        startNode(("● Start"))
+        A1["Click Delete icon on event row"]
+        DEC{"Confirm Delete?"}
+        AYES["Click "Delete""]
+        ANO["Click "Cancel""]
+    end
+
+    subgraph System ["💻 :System"]
+        SPREP["Show "Delete Event" confirmation dialog"]
+        SYES1["DELETE FROM events WHERE id = ?"]
+        SYES2["Cascade delete saved_events & chat messages"]
+        SYES3["INSERT INTO activity_logs (action="DELETE_EVENT")"]
+        SYES4["Show success toast notification"]
+        SNO1["Close dialog (no changes made)"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SPREP
+    SPREP --> DEC
+    DEC -- "Delete" --> AYES
+    AYES --> SYES1
+    SYES1 --> SYES2
+    SYES2 --> SYES3
+    SYES3 --> SYES4
+    SYES4 --> endNode
+    DEC -- "Cancel" --> ANO
+    ANO --> SNO1
+    SNO1 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC33_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC33: Business Activity Diagram - Delete Event Listing
+
+|Admin|
+start
+:Click Delete icon on event row;
+|System|
+:Show "Delete Event" confirmation dialog;
+|Admin|
+if (Confirm Delete?) then (Delete)
+  :Click "Delete";
+  |System|
+  :DELETE FROM events WHERE id = ?;
+  :Cascade delete saved_events &amp; chat messages;
+  :INSERT INTO activity_logs (action="DELETE_EVENT");
+  :Show success toast notification;
+  stop
+else (Cancel)
+  |Admin|
+  :Click "Cancel";
+  |System|
+  :Close dialog (no changes made);
+  stop
+endif
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC34">
+        <div class="uc-header">
+          <div class="uc-badge">UC34</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">View Event Categories</h3>
+            <span class="uc-module">Module 6: Administrator Catalog & System Entity CRUD &bull; Primary Actor: <strong>Admin</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Admin as Admin
+    participant System as :System
+    Admin->>System: openCategoriesPage()
+    System-->>Admin: displayCategoriesTable(categories)
+    System->>System: queryCategoriesWithCounts()
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC34_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC34: System Sequence Diagram - View Event Categories
+
+actor Admin
+participant ":System" as System
+
+Admin -&gt; System : openCategoriesPage()
+System --&gt; Admin : displayCategoriesTable(categories)
+System -&gt; System : queryCategoriesWithCounts()
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Admin | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Admin ["👤 Admin"]
+        startNode(("● Start"))
+        A1["Navigate to "/admin/categories""]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["Query event_categories joined with event counts"]
+        SDIR2["Render categories table with badge color previews"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC34_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC34: Business Activity Diagram - View Event Categories
+
+|Admin|
+start
+:Navigate to "/admin/categories";
+|System|
+:Query event_categories joined with event counts;
+:Render categories table with badge color previews;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC35">
+        <div class="uc-header">
+          <div class="uc-badge">UC35</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Create Event Category</h3>
+            <span class="uc-module">Module 6: Administrator Catalog & System Entity CRUD &bull; Primary Actor: <strong>Admin</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Admin as Admin
+    participant System as :System
+    Admin->>System: createCategory(name, slug, color)
+    System->>System: validateUniqueCategorySlug(slug)
+    alt duplicate slug exists
+        System-->>Admin: showDuplicateCategoryError()
+    else unique slug
+        System->>System: insertCategory(name, slug, color)
+        System->>System: recordAuditLog('CREATE_CATEGORY')
+        System-->>Admin: showCategoryCreatedSuccess()
+    end
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC35_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC35: System Sequence Diagram - Create Event Category
+
+actor Admin
+participant ":System" as System
+
+Admin -&gt; System : createCategory(name, slug, color)
+System -&gt; System : validateUniqueCategorySlug(slug)
+alt duplicate slug exists
+    System --&gt; Admin : showDuplicateCategoryError()
+else unique slug
+    System -&gt; System : insertCategory(name, slug, color)
+    System -&gt; System : recordAuditLog('CREATE_CATEGORY')
+    System --&gt; Admin : showCategoryCreatedSuccess()
+end
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Admin | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Admin ["👤 Admin"]
+        startNode(("● Start"))
+        A1["Enter category name, slug, and badge color"]
+        A2["Click "Add Category" button"]
+        DEC{"Slug unique?"}
+    end
+
+    subgraph System ["💻 :System"]
+        SPREP["Validate category name and unique slug constraint"]
+        SYES1["INSERT INTO event_categories (name, slug, color)"]
+        SYES2["INSERT INTO activity_logs (action="CREATE_CATEGORY")"]
+        SYES3["Reload categories list with new category"]
+        SNO1["Display "Category slug already exists" error"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> A2
+    A2 --> SPREP
+    SPREP --> DEC
+    DEC -- "Unique" --> SYES1
+    SYES1 --> SYES2
+    SYES2 --> SYES3
+    SYES3 --> endNode
+    DEC -- "Duplicate" --> SNO1
+    SNO1 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC35_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC35: Business Activity Diagram - Create Event Category
+
+|Admin|
+start
+:Enter category name, slug, and badge color;
+:Click "Add Category" button;
+|System|
+:Validate category name and unique slug constraint;
+|Admin|
+if (Slug unique?) then (Unique)
+  |System|
+  :INSERT INTO event_categories (name, slug, color);
+  :INSERT INTO activity_logs (action="CREATE_CATEGORY");
+  :Reload categories list with new category;
+  stop
+else (Duplicate)
+  |System|
+  :Display "Category slug already exists" error;
+  stop
+endif
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC36">
+        <div class="uc-header">
+          <div class="uc-badge">UC36</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Delete Event Category</h3>
+            <span class="uc-module">Module 6: Administrator Catalog & System Entity CRUD &bull; Primary Actor: <strong>Admin</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Admin as Admin
+    participant System as :System
+    Admin->>System: deleteCategory(categoryID)
+    System->>System: checkLinkedEvents(categoryID)
+    alt linked to existing events
+        System-->>Admin: showForeignConstraintError()
+    else unreferenced
+        System->>System: deleteCategoryRecord(categoryID)
+        System->>System: recordAuditLog('DELETE_CATEGORY')
+        System-->>Admin: showCategoryDeletedNotice()
+    end
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC36_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC36: System Sequence Diagram - Delete Event Category
+
+actor Admin
+participant ":System" as System
+
+Admin -&gt; System : deleteCategory(categoryID)
+System -&gt; System : checkLinkedEvents(categoryID)
+alt linked to existing events
+    System --&gt; Admin : showForeignConstraintError()
+else unreferenced
+    System -&gt; System : deleteCategoryRecord(categoryID)
+    System -&gt; System : recordAuditLog('DELETE_CATEGORY')
+    System --&gt; Admin : showCategoryDeletedNotice()
+end
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Admin | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Admin ["👤 Admin"]
+        startNode(("● Start"))
+        A1["Click Delete icon on category row"]
+        DEC{"Category referenced in events?"}
+        ANO["Confirm Delete"]
+    end
+
+    subgraph System ["💻 :System"]
+        SPREP["Check if category is currently referenced in events table"]
+        SYES1["Show error dialog: Cannot delete category with linked events (RESTRICT)"]
+        SNO1["DELETE FROM event_categories WHERE id = ?"]
+        SNO2["Record action in activity_logs"]
+        SNO3["Reload categories table"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SPREP
+    SPREP --> DEC
+    DEC -- "Referenced" --> SYES1
+    SYES1 --> endNode
+    DEC -- "Unreferenced" --> ANO
+    ANO --> SNO1
+    SNO1 --> SNO2
+    SNO2 --> SNO3
+    SNO3 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC36_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC36: Business Activity Diagram - Delete Event Category
+
+|Admin|
+start
+:Click Delete icon on category row;
+|System|
+:Check if category is currently referenced in events table;
+|Admin|
+if (Category referenced in events?) then (Referenced)
+  |System|
+  :Show error dialog: Cannot delete category with linked events (RESTRICT);
+  stop
+else (Unreferenced)
+  |Admin|
+  :Confirm Delete;
+  |System|
+  :DELETE FROM event_categories WHERE id = ?;
+  :Record action in activity_logs;
+  :Reload categories table;
+  stop
+endif
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC37">
+        <div class="uc-header">
+          <div class="uc-badge">UC37</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">View Artist Catalog</h3>
+            <span class="uc-module">Module 6: Administrator Catalog & System Entity CRUD &bull; Primary Actor: <strong>Admin</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Admin as Admin
+    participant System as :System
+    Admin->>System: openArtistsCatalog()
+    System-->>Admin: displayArtistsTable(artists)
+    System->>System: queryAllArtists()
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC37_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC37: System Sequence Diagram - View Artist Catalog
+
+actor Admin
+participant ":System" as System
+
+Admin -&gt; System : openArtistsCatalog()
+System --&gt; Admin : displayArtistsTable(artists)
+System -&gt; System : queryAllArtists()
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Admin | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Admin ["👤 Admin"]
+        startNode(("● Start"))
+        A1["Navigate to "/admin/artists""]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["SELECT * FROM artists ORDER BY name ASC"]
+        SDIR2["Render artist catalog table with group type and agency badges"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC37_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC37: Business Activity Diagram - View Artist Catalog
+
+|Admin|
+start
+:Navigate to "/admin/artists";
+|System|
+:SELECT * FROM artists ORDER BY name ASC;
+:Render artist catalog table with group type and agency badges;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC38">
+        <div class="uc-header">
+          <div class="uc-badge">UC38</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Create Artist Profile with Biodata</h3>
+            <span class="uc-module">Module 6: Administrator Catalog & System Entity CRUD &bull; Primary Actor: <strong>Admin</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Admin as Admin
+    participant System as :System
+    Admin->>System: createArtist(name, groupType, agency, imageURL, membersJSON)
+    System-->>Admin: showArtistCreatedSuccess()
+    System->>System: validateArtistData()
+    System->>System: insertArtistRecord(name, groupType, agency, imageURL, membersJSON)
+    System->>System: recordAuditLog('CREATE_ARTIST')
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC38_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC38: System Sequence Diagram - Create Artist Profile with Biodata
+
+actor Admin
+participant ":System" as System
+
+Admin -&gt; System : createArtist(name, groupType, agency, imageURL, membersJSON)
+System --&gt; Admin : showArtistCreatedSuccess()
+System -&gt; System : validateArtistData()
+System -&gt; System : insertArtistRecord(name, groupType, agency, imageURL, membersJSON)
+System -&gt; System : recordAuditLog('CREATE_ARTIST')
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Admin | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Admin ["👤 Admin"]
+        startNode(("● Start"))
+        A1["Enter artist name, group type, agency, and image URL"]
+        A2["Input member biodata details into member table"]
+        A3["Click "Add Artist" button"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["Serialize member biodata array into JSON string"]
+        SDIR2["INSERT INTO artists (name, group_type, agency, image_url, members)"]
+        SDIR3["INSERT INTO activity_logs (action="CREATE_ARTIST")"]
+        SDIR4["Reload artist catalog with new profile"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> A2
+    A2 --> A3
+    A3 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> SDIR3
+    SDIR3 --> SDIR4
+    SDIR4 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC38_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC38: Business Activity Diagram - Create Artist Profile with Biodata
+
+|Admin|
+start
+:Enter artist name, group type, agency, and image URL;
+:Input member biodata details into member table;
+:Click "Add Artist" button;
+|System|
+:Serialize member biodata array into JSON string;
+:INSERT INTO artists (name, group_type, agency, image_url, members);
+:INSERT INTO activity_logs (action="CREATE_ARTIST");
+:Reload artist catalog with new profile;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC39">
+        <div class="uc-header">
+          <div class="uc-badge">UC39</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Delete Artist Profile</h3>
+            <span class="uc-module">Module 6: Administrator Catalog & System Entity CRUD &bull; Primary Actor: <strong>Admin</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Admin as Admin
+    participant System as :System
+    Admin->>System: requestDeleteArtist(artistID)
+    System-->>Admin: displayDeleteConfirmation(artistID)
+    Admin->>System: confirmDeleteArtist(artistID)
+    System->>System: deleteArtistAndSetNullEvents(artistID)
+    System->>System: recordAuditLog('DELETE_ARTIST')
+    System-->>Admin: showDeleteSuccess()
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC39_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC39: System Sequence Diagram - Delete Artist Profile
+
+actor Admin
+participant ":System" as System
+
+Admin -&gt; System : requestDeleteArtist(artistID)
+System --&gt; Admin : displayDeleteConfirmation(artistID)
+Admin -&gt; System : confirmDeleteArtist(artistID)
+System -&gt; System : deleteArtistAndSetNullEvents(artistID)
+System -&gt; System : recordAuditLog('DELETE_ARTIST')
+System --&gt; Admin : showDeleteSuccess()
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Admin | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Admin ["👤 Admin"]
+        startNode(("● Start"))
+        A1["Click Delete icon on artist row"]
+        DEC{"Confirm Delete?"}
+        AYES["Click "Delete""]
+        ANO["Click "Cancel""]
+    end
+
+    subgraph System ["💻 :System"]
+        SPREP["Show "Delete Artist" confirmation modal"]
+        SYES1["DELETE FROM artists WHERE id = ?"]
+        SYES2["Set artist_id = NULL on linked events (ON DELETE SET NULL)"]
+        SYES3["INSERT INTO activity_logs (action="DELETE_ARTIST")"]
+        SYES4["Show success toast notification"]
+        SNO1["Close modal without changes"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SPREP
+    SPREP --> DEC
+    DEC -- "Delete" --> AYES
+    AYES --> SYES1
+    SYES1 --> SYES2
+    SYES2 --> SYES3
+    SYES3 --> SYES4
+    SYES4 --> endNode
+    DEC -- "Cancel" --> ANO
+    ANO --> SNO1
+    SNO1 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC39_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC39: Business Activity Diagram - Delete Artist Profile
+
+|Admin|
+start
+:Click Delete icon on artist row;
+|System|
+:Show "Delete Artist" confirmation modal;
+|Admin|
+if (Confirm Delete?) then (Delete)
+  :Click "Delete";
+  |System|
+  :DELETE FROM artists WHERE id = ?;
+  :Set artist_id = NULL on linked events (ON DELETE SET NULL);
+  :INSERT INTO activity_logs (action="DELETE_ARTIST");
+  :Show success toast notification;
+  stop
+else (Cancel)
+  |Admin|
+  :Click "Cancel";
+  |System|
+  :Close modal without changes;
+  stop
+endif
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC40">
+        <div class="uc-header">
+          <div class="uc-badge">UC40</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">View Registered Users List</h3>
+            <span class="uc-module">Module 6: Administrator Catalog & System Entity CRUD &bull; Primary Actor: <strong>Admin</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Admin as Admin
+    participant System as :System
+    Admin->>System: openUsersManagement()
+    System-->>Admin: displayUsersTable(users)
+    System->>System: queryUsersWithRoles()
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC40_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC40: System Sequence Diagram - View Registered Users List
+
+actor Admin
+participant ":System" as System
+
+Admin -&gt; System : openUsersManagement()
+System --&gt; Admin : displayUsersTable(users)
+System -&gt; System : queryUsersWithRoles()
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Admin | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Admin ["👤 Admin"]
+        startNode(("● Start"))
+        A1["Navigate to "/admin/users""]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["SELECT * FROM users JOIN roles"]
+        SDIR2["Render registered users table with role badges and registration dates"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC40_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC40: Business Activity Diagram - View Registered Users List
+
+|Admin|
+start
+:Navigate to "/admin/users";
+|System|
+:SELECT * FROM users JOIN roles;
+:Render registered users table with role badges and registration dates;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC41">
+        <div class="uc-header">
+          <div class="uc-badge">UC41</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Delete User Account</h3>
+            <span class="uc-module">Module 6: Administrator Catalog & System Entity CRUD &bull; Primary Actor: <strong>Admin</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor Admin as Admin
+    participant System as :System
+    Admin->>System: requestDeleteUser(targetUserID)
+    System->>System: checkIsRootAdmin(targetUserID)
+    alt target is root admin (id=1)
+        System-->>Admin: showRootAdminProtectedError()
+    else regular user
+        System->>System: deleteUserAndCascade(targetUserID)
+        System->>System: recordAuditLog('DELETE_USER')
+        System-->>Admin: showUserDeletedSuccess()
+    end
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC41_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC41: System Sequence Diagram - Delete User Account
+
+actor Admin
+participant ":System" as System
+
+Admin -&gt; System : requestDeleteUser(targetUserID)
+System -&gt; System : checkIsRootAdmin(targetUserID)
+alt target is root admin (id=1)
+    System --&gt; Admin : showRootAdminProtectedError()
+else regular user
+    System -&gt; System : deleteUserAndCascade(targetUserID)
+    System -&gt; System : recordAuditLog('DELETE_USER')
+    System --&gt; Admin : showUserDeletedSuccess()
+end
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: Admin | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph Admin ["👤 Admin"]
+        startNode(("● Start"))
+        A1["Click Delete icon on target user row"]
+        DEC{"Is root admin?"}
+        ANO["Confirm Delete"]
+    end
+
+    subgraph System ["💻 :System"]
+        SPREP["Verify target user is not primary root administrator"]
+        SYES1["Display error: Root administrator account cannot be deleted"]
+        SNO1["DELETE FROM users WHERE id = ?"]
+        SNO2["Cascade delete user bookmarks and chat messages"]
+        SNO3["INSERT INTO activity_logs (action="DELETE_USER")"]
+        SNO4["Show success notification"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SPREP
+    SPREP --> DEC
+    DEC -- "Yes" --> SYES1
+    SYES1 --> endNode
+    DEC -- "No" --> ANO
+    ANO --> SNO1
+    SNO1 --> SNO2
+    SNO2 --> SNO3
+    SNO3 --> SNO4
+    SNO4 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC41_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC41: Business Activity Diagram - Delete User Account
+
+|Admin|
+start
+:Click Delete icon on target user row;
+|System|
+:Verify target user is not primary root administrator;
+|Admin|
+if (Is root admin?) then (Yes)
+  |System|
+  :Display error: Root administrator account cannot be deleted;
+  stop
+else (No)
+  |Admin|
+  :Confirm Delete;
+  |System|
+  :DELETE FROM users WHERE id = ?;
+  :Cascade delete user bookmarks and chat messages;
+  :INSERT INTO activity_logs (action="DELETE_USER");
+  :Show success notification;
+  stop
+endif
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC42">
+        <div class="uc-header">
+          <div class="uc-badge">UC42</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">View Interactive Google Map & Directions in Browser</h3>
+            <span class="uc-module">Module 7: Additional / Minor User Experience Enhancements &bull; Primary Actor: <strong>User</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor User as User
+    participant System as :System
+    User->>System: viewVenueLocationSection(eventID)
+    System-->>User: displayInteractiveVenueMap()
+    User->>System: clickGetDirections()
+    System->>System: renderGoogleMapIframe(venueCoordinates)
+    System-->>User: launchNavigationWindow()
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC42_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC42: System Sequence Diagram - View Interactive Google Map &amp; Directions in Browser
+
+actor User
+participant ":System" as System
+
+User -&gt; System : viewVenueLocationSection(eventID)
+System --&gt; User : displayInteractiveVenueMap()
+User -&gt; System : clickGetDirections()
+System -&gt; System : renderGoogleMapIframe(venueCoordinates)
+System --&gt; User : launchNavigationWindow()
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: User | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph User ["👤 User"]
+        startNode(("● Start"))
+        A1["Scroll to "Venue & Location" sidebar card on event page"]
+        A2["Click "Directions" or "Open Google Maps" button"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["Render embedded Google Maps iframe displaying venue coordinates"]
+        SDIR2["Launch Google Maps navigation in new browser tab with turn-by-turn routing"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> A2
+    A2 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC42_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC42: Business Activity Diagram - View Interactive Google Map &amp; Directions in Browser
+
+|User|
+start
+:Scroll to "Venue &amp; Location" sidebar card on event page;
+:Click "Directions" or "Open Google Maps" button;
+|System|
+:Render embedded Google Maps iframe displaying venue coordinates;
+:Launch Google Maps navigation in new browser tab with turn-by-turn routing;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC43">
+        <div class="uc-header">
+          <div class="uc-badge">UC43</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">View Real-Time Event Countdown Timer</h3>
+            <span class="uc-module">Module 7: Additional / Minor User Experience Enhancements &bull; Primary Actor: <strong>User</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor User as User
+    participant System as :System
+    User->>System: openEventPage(eventID)
+    System->>System: calculateRemainingTime(eventDate, startTime)
+    alt event started or past
+        System-->>User: displayEventLiveBadge()
+    else upcoming
+        System->>System: startIntervalTimer(1000ms)
+        System-->>User: displayTickingClock(days, hrs, mins, secs)
+    end
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC43_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC43: System Sequence Diagram - View Real-Time Event Countdown Timer
+
+actor User
+participant ":System" as System
+
+User -&gt; System : openEventPage(eventID)
+System -&gt; System : calculateRemainingTime(eventDate, startTime)
+alt event started or past
+    System --&gt; User : displayEventLiveBadge()
+else upcoming
+    System -&gt; System : startIntervalTimer(1000ms)
+    System --&gt; User : displayTickingClock(days, hrs, mins, secs)
+end
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: User | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph User ["👤 User"]
+        startNode(("● Start"))
+        A1["Open event details page"]
+        DEC{"Event is upcoming?"}
+    end
+
+    subgraph System ["💻 :System"]
+        SPREP["Calculate difference between current timestamp and event start time"]
+        SYES1["Initialize client-side setInterval(1000ms)"]
+        SYES2["Update Days, Hours, Minutes, Seconds display in hero banner"]
+        SNO1["Display "Event Started / Live Now" badge"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SPREP
+    SPREP --> DEC
+    DEC -- "Upcoming" --> SYES1
+    SYES1 --> SYES2
+    SYES2 --> endNode
+    DEC -- "Live / Past" --> SNO1
+    SNO1 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC43_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC43: Business Activity Diagram - View Real-Time Event Countdown Timer
+
+|User|
+start
+:Open event details page;
+|System|
+:Calculate difference between current timestamp and event start time;
+|User|
+if (Event is upcoming?) then (Upcoming)
+  |System|
+  :Initialize client-side setInterval(1000ms);
+  :Update Days, Hours, Minutes, Seconds display in hero banner;
+  stop
+else (Live / Past)
+  |System|
+  :Display "Event Started / Live Now" badge;
+  stop
+endif
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC44">
+        <div class="uc-header">
+          <div class="uc-badge">UC44</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Share Event via Multi-Channel Social Modal</h3>
+            <span class="uc-module">Module 7: Additional / Minor User Experience Enhancements &bull; Primary Actor: <strong>User</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor User as User
+    participant System as :System
+    User->>System: clickShareEventButton()
+    System->>System: detectPlatformCapabilities()
+    alt mobile device with navigator.share
+        System-->>User: openNativeShareSheet()
+    else desktop browser
+        System-->>User: displayShareModal(WhatsApp, X, Telegram, FB, CopyLink)
+    end
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC44_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC44: System Sequence Diagram - Share Event via Multi-Channel Social Modal
+
+actor User
+participant ":System" as System
+
+User -&gt; System : clickShareEventButton()
+System -&gt; System : detectPlatformCapabilities()
+alt mobile device with navigator.share
+    System --&gt; User : openNativeShareSheet()
+else desktop browser
+    System --&gt; User : displayShareModal(WhatsApp, X, Telegram, FB, CopyLink)
+end
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: User | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph User ["👤 User"]
+        startNode(("● Start"))
+        A1["Click "Share" button on event action bar"]
+        DEC{"Native share supported?"}
+        ANO["Select social channel or click "Copy Link""]
+    end
+
+    subgraph System ["💻 :System"]
+        SPREP["Check if device supports native navigator.share() API"]
+        SYES1["Invoke native navigator.share() dialog"]
+        SNO1["Open share modal with WhatsApp, X, Telegram, Facebook & Copy Link"]
+        SNO2["Launch target share page or write URL to clipboard with confirmation toast"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SPREP
+    SPREP --> DEC
+    DEC -- "Yes (Mobile)" --> SYES1
+    SYES1 --> endNode
+    DEC -- "No (Desktop)" --> ANO
+    ANO --> SNO1
+    SNO1 --> SNO2
+    SNO2 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC44_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC44: Business Activity Diagram - Share Event via Multi-Channel Social Modal
+
+|User|
+start
+:Click "Share" button on event action bar;
+|System|
+:Check if device supports native navigator.share() API;
+|User|
+if (Native share supported?) then (Yes (Mobile))
+  |System|
+  :Invoke native navigator.share() dialog;
+  stop
+else (No (Desktop))
+  |User|
+  :Select social channel or click "Copy Link";
+  |System|
+  :Open share modal with WhatsApp, X, Telegram, Facebook &amp; Copy Link;
+  :Launch target share page or write URL to clipboard with confirmation toast;
+  stop
+endif
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC45">
+        <div class="uc-header">
+          <div class="uc-badge">UC45</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Manage Concert Day Survival Checklist</h3>
+            <span class="uc-module">Module 7: Additional / Minor User Experience Enhancements &bull; Primary Actor: <strong>User</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor User as User
+    participant System as :System
+    User->>System: toggleChecklistItem(itemID, isChecked)
+    System-->>User: animateProgressBar(progressPercent)
+    System->>System: saveChecklistStateToLocalStorage(itemID, isChecked)
+    System->>System: calculatePreparedPercentage()
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC45_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC45: System Sequence Diagram - Manage Concert Day Survival Checklist
+
+actor User
+participant ":System" as System
+
+User -&gt; System : toggleChecklistItem(itemID, isChecked)
+System --&gt; User : animateProgressBar(progressPercent)
+System -&gt; System : saveChecklistStateToLocalStorage(itemID, isChecked)
+System -&gt; System : calculatePreparedPercentage()
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: User | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph User ["👤 User"]
+        startNode(("● Start"))
+        A1["Check off prepared item on 7-item concert survival checklist"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["Read updated state of checked items"]
+        SDIR2["Calculate prepared percentage (e.g. 5/7 Prepared - 71%)"]
+        SDIR3["Persist checked item IDs in browser localStorage"]
+        SDIR4["Animate progress bar fill to current completion rate"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> SDIR3
+    SDIR3 --> SDIR4
+    SDIR4 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC45_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC45: Business Activity Diagram - Manage Concert Day Survival Checklist
+
+|User|
+start
+:Check off prepared item on 7-item concert survival checklist;
+|System|
+:Read updated state of checked items;
+:Calculate prepared percentage (e.g. 5/7 Prepared - 71%);
+:Persist checked item IDs in browser localStorage;
+:Animate progress bar fill to current completion rate;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC46">
+        <div class="uc-header">
+          <div class="uc-badge">UC46</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Add Event to Google Calendar</h3>
+            <span class="uc-module">Module 7: Additional / Minor User Experience Enhancements &bull; Primary Actor: <strong>User</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor User as User
+    participant System as :System
+    User->>System: clickAddToGoogleCalendar()
+    System-->>User: openGoogleCalendarTab()
+    System->>System: formatISO8601Timestamps()
+    System->>System: constructGoogleCalendarURL()
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC46_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC46: System Sequence Diagram - Add Event to Google Calendar
+
+actor User
+participant ":System" as System
+
+User -&gt; System : clickAddToGoogleCalendar()
+System --&gt; User : openGoogleCalendarTab()
+System -&gt; System : formatISO8601Timestamps()
+System -&gt; System : constructGoogleCalendarURL()
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: User | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph User ["👤 User"]
+        startNode(("● Start"))
+        A1["Click "Add to Calendar" button on event action bar"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["Format event title, ISO dates, venue, and description into query string"]
+        SDIR2["Construct "calendar.google.com/calendar/render?action=TEMPLATE" URL"]
+        SDIR3["Open pre-filled Google Calendar event creation tab"]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> SDIR3
+    SDIR3 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC46_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC46: Business Activity Diagram - Add Event to Google Calendar
+
+|User|
+start
+:Click "Add to Calendar" button on event action bar;
+|System|
+:Format event title, ISO dates, venue, and description into query string;
+:Construct "calendar.google.com/calendar/render?action=TEMPLATE" URL;
+:Open pre-filled Google Calendar event creation tab;
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+      <div class="use-case-card" id="UC47">
+        <div class="uc-header">
+          <div class="uc-badge">UC47</div>
+          <div class="uc-title-block">
+            <h3 class="uc-title">Copy Event Verification Reference Code</h3>
+            <span class="uc-module">Module 7: Additional / Minor User Experience Enhancements &bull; Primary Actor: <strong>User</strong></span>
+          </div>
+        </div>
+
+        <div class="diagram-grid">
+          <!-- System Sequence Diagram (Pic 1 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag ssd-tag">SYSTEM SEQUENCE DIAGRAM (SSD)</span>
+              <span class="diagram-subtitle">Actor &harr; :System Method Signature Flow</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+sequenceDiagram
+    actor User as User
+    participant System as :System
+    User->>System: clickCopyReferenceCode()
+    System-->>User: displayFloatingToastNotice('Reference code copied!')
+    System->>System: writeTrackingCodeToClipboard(trackingCode)
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC47_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC47: System Sequence Diagram - Copy Event Verification Reference Code
+
+actor User
+participant ":System" as System
+
+User -&gt; System : clickCopyReferenceCode()
+System --&gt; User : displayFloatingToastNotice('Reference code copied!')
+System -&gt; System : writeTrackingCodeToClipboard(trackingCode)
+@enduml
+</pre>
+            </details>
+          </div>
+
+          <!-- Business Activity Diagram (Pic 2 Style) -->
+          <div class="diagram-pane">
+            <div class="diagram-header">
+              <span class="diagram-type-tag act-tag">BUSINESS ACTIVITY DIAGRAM</span>
+              <span class="diagram-subtitle">Swimlanes: User | System</span>
+            </div>
+            <div class="mermaid-container">
+              <pre class="mermaid">
+flowchart TD
+    subgraph User ["👤 User"]
+        startNode(("● Start"))
+        A1["Click copy icon on Official Verification card"]
+    end
+
+    subgraph System ["💻 :System"]
+        SDIR1["Write tracking code string (e.g. KS-2026-TXT001) to clipboard"]
+        SDIR2["Show floating green toast notification: "Reference code copied to clipboard!""]
+        endNode((("◉ End")))
+    end
+
+    startNode --> A1
+    A1 --> SDIR1
+    SDIR1 --> SDIR2
+    SDIR2 --> endNode
+
+              </pre>
+            </div>
+            <details class="puml-details">
+              <summary>View / Copy PlantUML & Draw.io Code</summary>
+              <pre class="code-box">@startuml UC47_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC47: Business Activity Diagram - Copy Event Verification Reference Code
+
+|User|
+start
+:Click copy icon on Official Verification card;
+|System|
+:Write tracking code string (e.g. KS-2026-TXT001) to clipboard;
+:Show floating green toast notification: "Reference code copied to clipboard!";
+stop
+@enduml
+</pre>
+            </details>
+          </div>
+        </div>
+      </div>
+    
+
+    <div style="text-align: center; color: #94a3b8; font-size: 10pt; margin: 40px 0;">
+        K-Sync Malaysia &copy; 2026. Final Year Project Chapter 3 Software Requirements Specification (SRS) Diagrams.
+    </div>
+</body>
+</html>

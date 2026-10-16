@@ -1,0 +1,13 @@
+@startuml UC34_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC34: System Sequence Diagram - View Event Categories
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : openCategoriesPage()
+System --> Admin : displayCategoriesTable(categories)
+System -> System : queryCategoriesWithCounts()
+@enduml

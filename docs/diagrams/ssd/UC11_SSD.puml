@@ -1,0 +1,13 @@
+@startuml UC11_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC11: System Sequence Diagram - View Event Details & Embedded Venue
+
+actor User
+participant ":System" as System
+
+User -> System : openEventDetails(eventID)
+System --> User : displayEventPage(eventData, venueMap, ticketTiers)
+System -> System : fetchEventWithArtistVenueChat(eventID)
+@enduml

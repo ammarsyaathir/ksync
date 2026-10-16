@@ -1,0 +1,16 @@
+@startuml UC17_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC17: Business Activity Diagram - View Saved Events List
+
+|Fan|
+start
+:Click "Saved Events" link in navigation bar;
+|System|
+:SELECT * FROM saved_events JOIN events WHERE user_id = ?;
+:Render personal saved events page with live countdown timers;
+stop
+@enduml

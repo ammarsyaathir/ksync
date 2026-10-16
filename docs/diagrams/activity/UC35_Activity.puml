@@ -1,0 +1,27 @@
+@startuml UC35_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC35: Business Activity Diagram - Create Event Category
+
+|Admin|
+start
+:Enter category name, slug, and badge color;
+:Click "Add Category" button;
+|System|
+:Validate category name and unique slug constraint;
+|Admin|
+if (Slug unique?) then (Unique)
+  |System|
+  :INSERT INTO event_categories (name, slug, color);
+  :INSERT INTO activity_logs (action="CREATE_CATEGORY");
+  :Reload categories list with new category;
+  stop
+else (Duplicate)
+  |System|
+  :Display "Category slug already exists" error;
+  stop
+endif
+@enduml

@@ -1,0 +1,16 @@
+@startuml UC25_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC25: Business Activity Diagram - View Audit Activity Logs
+
+|Admin|
+start
+:Navigate to "/admin/logs";
+|System|
+:SELECT * FROM activity_logs JOIN users ORDER BY created_at DESC;
+:Render immutable audit log table with action badges and timestamps;
+stop
+@enduml

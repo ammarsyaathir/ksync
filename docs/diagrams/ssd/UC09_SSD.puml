@@ -1,0 +1,17 @@
+@startuml UC09_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC09: System Sequence Diagram - Search Events by Keyword
+
+actor User
+participant ":System" as System
+
+User -> System : searchEvents(keyword)
+System -> System : executeKeywordSearch(keyword)
+alt no matches
+    System --> User : displayEmptySearchState()
+else matches found
+    System --> User : displayMatchingEvents(results)
+end
+@enduml

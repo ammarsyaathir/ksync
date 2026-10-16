@@ -1,0 +1,16 @@
+@startuml UC29_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC29: Business Activity Diagram - View Content Reports List
+
+|Admin|
+start
+:Navigate to "/admin/reports";
+|System|
+:Query reports table joined with events and reporting users;
+:Render moderation table with status tags and event links;
+stop
+@enduml

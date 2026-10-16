@@ -1,0 +1,29 @@
+@startuml UC01_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC01: Business Activity Diagram - Register New Fan Account
+
+|Guest|
+start
+:Click "Register" link in navbar;
+:Fill personal details (name, username, email, password);
+:Click "Register" button;
+|System|
+:Validate field formats & check unique email;
+|Guest|
+if (Input valid & unique email?) then (Valid)
+  |System|
+  :Hash password using Bcrypt (10 rounds);
+  :INSERT INTO users (role_id=3);
+  :Establish authenticated session;
+  :Redirect to dashboard with welcome alert;
+  stop
+else (Invalid / Exists)
+  |System|
+  :Display validation error message;
+  stop
+endif
+@enduml

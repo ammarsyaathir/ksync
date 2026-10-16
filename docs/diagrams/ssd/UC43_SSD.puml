@@ -1,0 +1,18 @@
+@startuml UC43_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC43: System Sequence Diagram - View Real-Time Event Countdown Timer
+
+actor User
+participant ":System" as System
+
+User -> System : openEventPage(eventID)
+System -> System : calculateRemainingTime(eventDate, startTime)
+alt event started or past
+    System --> User : displayEventLiveBadge()
+else upcoming
+    System -> System : startIntervalTimer(1000ms)
+    System --> User : displayTickingClock(days, hrs, mins, secs)
+end
+@enduml

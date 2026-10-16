@@ -1,0 +1,13 @@
+@startuml UC08_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC08: System Sequence Diagram - Browse Events Directory
+
+actor User
+participant ":System" as System
+
+User -> System : openEventsDirectory()
+System --> User : displayEventsCatalogGrid(events)
+System -> System : queryAllVerifiedEvents()
+@enduml

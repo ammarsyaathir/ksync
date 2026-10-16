@@ -1,0 +1,19 @@
+@startuml UC14_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC14: System Sequence Diagram - Track Submission Status by Tracking Code
+
+actor Submitter
+participant ":System" as System
+
+Submitter -> System : openStatusLookupPage()
+System --> Submitter : displayTrackingInput()
+Submitter -> System : lookupTrackingCode(code)
+System -> System : queryEventByTrackingCode(code)
+alt code not found
+    System --> Submitter : showCodeNotFoundError()
+else code exists
+    System --> Submitter : displayStatusTimeline(event, feedback)
+end
+@enduml

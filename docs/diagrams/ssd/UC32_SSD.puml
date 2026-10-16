@@ -1,0 +1,14 @@
+@startuml UC32_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC32: System Sequence Diagram - Update Event Listing Status
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : updateEventStatus(eventID, newStatus)
+System --> Admin : showStatusUpdatedNotice()
+System -> System : updateEventStatusColumn(eventID, newStatus)
+System -> System : recordAuditLog('UPDATE_STATUS', eventID)
+@enduml

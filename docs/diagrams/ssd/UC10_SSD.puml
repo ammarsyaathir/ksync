@@ -1,0 +1,13 @@
+@startuml UC10_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC10: System Sequence Diagram - Filter Events by Artist, Category & City
+
+actor User
+participant ":System" as System
+
+User -> System : selectFilters(categorySlug, artistID, city)
+System --> User : displayFilteredEventGrid(filteredEvents)
+System -> System : queryFilteredCatalog(categorySlug, artistID, city)
+@enduml

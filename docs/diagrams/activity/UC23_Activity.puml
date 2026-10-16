@@ -1,0 +1,16 @@
+@startuml UC23_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC23: Business Activity Diagram - Mark Notifications as Read
+
+|Fan|
+start
+:Click "Mark all as read" button;
+|System|
+:UPDATE notifications SET is_read = 1 WHERE user_id = ?;
+:Reset navbar unread badge counter to 0;
+stop
+@enduml

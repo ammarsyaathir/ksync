@@ -1,0 +1,13 @@
+@startuml UC47_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC47: System Sequence Diagram - Copy Event Verification Reference Code
+
+actor User
+participant ":System" as System
+
+User -> System : clickCopyReferenceCode()
+System --> User : displayFloatingToastNotice('Reference code copied!')
+System -> System : writeTrackingCodeToClipboard(trackingCode)
+@enduml

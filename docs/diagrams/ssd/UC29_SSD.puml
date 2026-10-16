@@ -1,0 +1,13 @@
+@startuml UC29_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC29: System Sequence Diagram - View Content Reports List
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : openReportsInbox()
+System --> Admin : displayReportsTable(reportsList)
+System -> System : queryReportsWithEventsAndUsers()
+@enduml

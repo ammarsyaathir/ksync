@@ -1,0 +1,16 @@
+@startuml UC37_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC37: Business Activity Diagram - View Artist Catalog
+
+|Admin|
+start
+:Navigate to "/admin/artists";
+|System|
+:SELECT * FROM artists ORDER BY name ASC;
+:Render artist catalog table with group type and agency badges;
+stop
+@enduml

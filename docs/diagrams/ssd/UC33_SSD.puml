@@ -1,0 +1,16 @@
+@startuml UC33_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC33: System Sequence Diagram - Delete Event Listing
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : requestDeleteEvent(eventID)
+System --> Admin : displayDeleteConfirmationDialog(eventID)
+Admin -> System : confirmDeleteEvent(eventID)
+System -> System : deleteEventAndCascadeChildren(eventID)
+System -> System : recordAuditLog('DELETE_EVENT')
+System --> Admin : showDeleteSuccessToast()
+@enduml

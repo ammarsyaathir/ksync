@@ -1,0 +1,17 @@
+@startuml UC03_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC03: Business Activity Diagram - Log Out of Account
+
+|User|
+start
+:Click "Log Out" from profile dropdown;
+|System|
+:Destroy server-side session object;
+:Clear authentication cookie token;
+:Redirect user to home page with confirmation;
+stop
+@enduml

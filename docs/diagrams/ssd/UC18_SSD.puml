@@ -1,0 +1,13 @@
+@startuml UC18_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC18: System Sequence Diagram - Remove Event from Bookmarks
+
+actor Fan
+participant ":System" as System
+
+Fan -> System : removeBookmark(eventID)
+System --> Fan : updateHeartIconState(saved=false)
+System -> System : deleteSavedEvent(userID, eventID)
+@enduml

@@ -1,0 +1,16 @@
+@startuml UC10_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC10: Business Activity Diagram - Filter Events by Artist, Category & City
+
+|User|
+start
+:Select category filter pill, artist dropdown, or city filter;
+|System|
+:Build dynamic parameterized SQL WHERE conditions;
+:Update card grid asynchronously with matching events;
+stop
+@enduml

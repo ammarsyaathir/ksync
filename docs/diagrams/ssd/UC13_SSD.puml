@@ -1,0 +1,22 @@
+@startuml UC13_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC13: System Sequence Diagram - Submit Public Event Listing
+
+actor Submitter
+participant ":System" as System
+
+Submitter -> System : openSubmissionForm()
+System --> Submitter : displayPublicSubmissionForm()
+Submitter -> System : submitEvent(eventData, posterImage)
+System -> System : validateSubmissionData()
+alt missing required fields or file > 5MB
+    System --> Submitter : showSubmissionErrors(errors)
+else valid submission
+    System -> System : generateTrackingCode()
+    System -> System : savePendingEvent(data)
+    System -> System : sendConfirmationEmail()
+    System --> Submitter : showSubmissionSuccess(trackingCode)
+end
+@enduml

@@ -1,0 +1,13 @@
+@startuml UC26_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC26: System Sequence Diagram - View Pending Verification Queue
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : openVerificationQueue()
+System --> Admin : displayPendingQueue(pendingEvents)
+System -> System : queryPendingEventsWithEvidence()
+@enduml

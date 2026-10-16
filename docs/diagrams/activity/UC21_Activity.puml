@@ -1,0 +1,18 @@
+@startuml UC21_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC21: Business Activity Diagram - Submit Event Content Report
+
+|User|
+start
+:Click "Report" button on event action bar;
+:Select report reason (e.g. Inaccurate Date/Fake Event) and enter details;
+:Click "Submit Report" button;
+|System|
+:INSERT INTO reports (event_id, user_id, reason, details, status="PENDING");
+:Display green confirmation toast: "Report submitted to moderators";
+stop
+@enduml

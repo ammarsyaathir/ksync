@@ -1,0 +1,13 @@
+@startuml UC40_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC40: System Sequence Diagram - View Registered Users List
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : openUsersManagement()
+System --> Admin : displayUsersTable(users)
+System -> System : queryUsersWithRoles()
+@enduml

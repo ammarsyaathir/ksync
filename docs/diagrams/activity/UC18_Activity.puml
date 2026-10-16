@@ -1,0 +1,16 @@
+@startuml UC18_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC18: Business Activity Diagram - Remove Event from Bookmarks
+
+|Fan|
+start
+:Click filled heart icon on an already bookmarked event;
+|System|
+:DELETE FROM saved_events WHERE user_id=? AND event_id=?;
+:Revert heart icon to empty outline state asynchronously;
+stop
+@enduml

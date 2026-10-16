@@ -1,0 +1,19 @@
+@startuml UC36_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC36: System Sequence Diagram - Delete Event Category
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : deleteCategory(categoryID)
+System -> System : checkLinkedEvents(categoryID)
+alt linked to existing events
+    System --> Admin : showForeignConstraintError()
+else unreferenced
+    System -> System : deleteCategoryRecord(categoryID)
+    System -> System : recordAuditLog('DELETE_CATEGORY')
+    System --> Admin : showCategoryDeletedNotice()
+end
+@enduml

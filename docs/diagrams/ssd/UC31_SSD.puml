@@ -1,0 +1,13 @@
+@startuml UC31_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC31: System Sequence Diagram - View All Events Management List
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : openEventsManagement()
+System --> Admin : displayEventsManagementTable(allEvents)
+System -> System : queryAllEvents()
+@enduml

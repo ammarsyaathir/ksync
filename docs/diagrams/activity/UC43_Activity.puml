@@ -1,0 +1,25 @@
+@startuml UC43_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC43: Business Activity Diagram - View Real-Time Event Countdown Timer
+
+|User|
+start
+:Open event details page;
+|System|
+:Calculate difference between current timestamp and event start time;
+|User|
+if (Event is upcoming?) then (Upcoming)
+  |System|
+  :Initialize client-side setInterval(1000ms);
+  :Update Days, Hours, Minutes, Seconds display in hero banner;
+  stop
+else (Live / Past)
+  |System|
+  :Display "Event Started / Live Now" badge;
+  stop
+endif
+@enduml

@@ -1,0 +1,13 @@
+@startuml UC12_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC12: System Sequence Diagram - View Artist & Idol Member Biodata
+
+actor User
+participant ":System" as System
+
+User -> System : openArtistBiodataSection(artistID)
+System --> User : displayMemberProfileCards(membersArray)
+System -> System : parseArtistMembersJSON(artistID)
+@enduml

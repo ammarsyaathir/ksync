@@ -1,0 +1,20 @@
+@startuml UC38_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC38: Business Activity Diagram - Create Artist Profile with Biodata
+
+|Admin|
+start
+:Enter artist name, group type, agency, and image URL;
+:Input member biodata details into member table;
+:Click "Add Artist" button;
+|System|
+:Serialize member biodata array into JSON string;
+:INSERT INTO artists (name, group_type, agency, image_url, members);
+:INSERT INTO activity_logs (action="CREATE_ARTIST");
+:Reload artist catalog with new profile;
+stop
+@enduml

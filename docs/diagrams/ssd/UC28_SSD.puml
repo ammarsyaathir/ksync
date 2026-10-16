@@ -1,0 +1,16 @@
+@startuml UC28_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC28: System Sequence Diagram - Reject Event Submission with Feedback
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : rejectEvent(eventID, rejectionReason)
+System --> Admin : showRejectionCompletedNotice()
+System -> System : updateVerificationStatus(eventID, 'REJECTED')
+System -> System : saveRejectionReason(eventID, reason)
+System -> System : recordAuditLog('REJECT_EVENT')
+System -> System : sendRejectionEmail()
+@enduml

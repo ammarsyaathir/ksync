@@ -1,0 +1,27 @@
+@startuml UC05_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC05: Business Activity Diagram - Update Profile Information
+
+|Fan|
+start
+:Edit display name, bio, city/location, or social handle;
+:Click "Save Changes" button;
+|System|
+:Validate field length and format constraints;
+|Fan|
+if (Input valid?) then (Valid)
+  |System|
+  :UPDATE users SET name, bio, location, handle;
+  :Refresh active session user cache;
+  :Show green "Profile updated" notification;
+  stop
+else (Invalid)
+  |System|
+  :Display field validation warning;
+  stop
+endif
+@enduml

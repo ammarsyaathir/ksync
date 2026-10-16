@@ -1,0 +1,16 @@
+@startuml UC11_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC11: Business Activity Diagram - View Event Details & Embedded Venue
+
+|User|
+start
+:Click on any event card in directory;
+|System|
+:Query event record joined with artist, tickets, and venue;
+:Render event hero banner, ticket tiers, embedded Google Map, transit guide, and chat hub;
+stop
+@enduml

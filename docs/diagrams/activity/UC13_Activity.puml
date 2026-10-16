@@ -1,0 +1,30 @@
+@startuml UC13_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC13: Business Activity Diagram - Submit Public Event Listing
+
+|Submitter|
+start
+:Navigate to "/submit-event";
+:Fill event details, pick preset venue, upload poster, enter email;
+:Click "Submit Event" button;
+|System|
+:Validate required fields and uploaded poster image size;
+|Submitter|
+if (Inputs valid?) then (Valid)
+  |System|
+  :Upload poster file via Multer;
+  :Generate unique reference tracking code (e.g. KS-2026-TXT001);
+  :INSERT INTO events (verification_status="PENDING");
+  :Send confirmation email to submitter;
+  :Display success confirmation page with tracking code;
+  stop
+else (Invalid)
+  |System|
+  :Display form validation error notice;
+  stop
+endif
+@enduml

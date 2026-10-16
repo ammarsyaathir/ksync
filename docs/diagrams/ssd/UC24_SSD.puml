@@ -1,0 +1,13 @@
+@startuml UC24_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC24: System Sequence Diagram - View Admin Dashboard & KPI Metrics
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : openAdminDashboard()
+System --> Admin : displayDashboardWithKPIs(metrics, logs)
+System -> System : aggregateMetricsAndLogs()
+@enduml

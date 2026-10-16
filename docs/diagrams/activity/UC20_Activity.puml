@@ -1,0 +1,27 @@
+@startuml UC20_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC20: Business Activity Diagram - Post Event Chat Message
+
+|Fan|
+start
+:Type discussion message into chat input field;
+:Click "Send" button;
+|System|
+:Check if event chat is within active window (<24h post-event);
+|Fan|
+if (Chat active?) then (Active)
+  |System|
+  :Sanitize message input text;
+  :INSERT INTO event_chat_messages;
+  :Append new message to chat stream asynchronously;
+  stop
+else (Locked)
+  |System|
+  :Display "Chat room locked 24 hours post-event" banner;
+  stop
+endif
+@enduml

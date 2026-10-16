@@ -1,0 +1,19 @@
+@startuml UC41_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC41: System Sequence Diagram - Delete User Account
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : requestDeleteUser(targetUserID)
+System -> System : checkIsRootAdmin(targetUserID)
+alt target is root admin (id=1)
+    System --> Admin : showRootAdminProtectedError()
+else regular user
+    System -> System : deleteUserAndCascade(targetUserID)
+    System -> System : recordAuditLog('DELETE_USER')
+    System --> Admin : showUserDeletedSuccess()
+end
+@enduml

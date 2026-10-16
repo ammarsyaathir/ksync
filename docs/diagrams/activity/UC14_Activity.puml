@@ -1,0 +1,27 @@
+@startuml UC14_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC14: Business Activity Diagram - Track Submission Status by Tracking Code
+
+|Submitter|
+start
+:Navigate to "/check-submission";
+:Enter reference tracking code (e.g. KS-2026-TXT001);
+:Click "Check Status" button;
+|System|
+:Query events table by tracking_code;
+|Submitter|
+if (Tracking code found?) then (Found)
+  |System|
+  :Display review status badge (PENDING / VERIFIED / REJECTED);
+  :Render review timeline and administrator feedback notes;
+  stop
+else (Not Found)
+  |System|
+  :Display "Tracking code not found" alert notice;
+  stop
+endif
+@enduml

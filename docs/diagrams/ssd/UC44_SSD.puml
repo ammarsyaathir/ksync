@@ -1,0 +1,17 @@
+@startuml UC44_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC44: System Sequence Diagram - Share Event via Multi-Channel Social Modal
+
+actor User
+participant ":System" as System
+
+User -> System : clickShareEventButton()
+System -> System : detectPlatformCapabilities()
+alt mobile device with navigator.share
+    System --> User : openNativeShareSheet()
+else desktop browser
+    System --> User : displayShareModal(WhatsApp, X, Telegram, FB, CopyLink)
+end
+@enduml

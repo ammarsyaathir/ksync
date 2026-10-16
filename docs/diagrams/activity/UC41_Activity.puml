@@ -1,0 +1,29 @@
+@startuml UC41_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC41: Business Activity Diagram - Delete User Account
+
+|Admin|
+start
+:Click Delete icon on target user row;
+|System|
+:Verify target user is not primary root administrator;
+|Admin|
+if (Is root admin?) then (Yes)
+  |System|
+  :Display error: Root administrator account cannot be deleted;
+  stop
+else (No)
+  |Admin|
+  :Confirm Delete;
+  |System|
+  :DELETE FROM users WHERE id = ?;
+  :Cascade delete user bookmarks and chat messages;
+  :INSERT INTO activity_logs (action="DELETE_USER");
+  :Show success notification;
+  stop
+endif
+@enduml

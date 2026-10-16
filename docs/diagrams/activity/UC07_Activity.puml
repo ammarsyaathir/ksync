@@ -1,0 +1,16 @@
+@startuml UC07_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC07: Business Activity Diagram - Browse Featured Upcoming Events
+
+|User|
+start
+:Visit platform root URL ("/");
+|System|
+:SELECT * FROM events WHERE verification_status = "VERIFIED" ORDER BY event_date ASC LIMIT 6;
+:Render featured banner carousel and event cards;
+stop
+@enduml

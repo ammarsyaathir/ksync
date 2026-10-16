@@ -1,0 +1,21 @@
+@startuml UC01_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC01: System Sequence Diagram - Register New Fan Account
+
+actor Guest
+participant ":System" as System
+
+Guest -> System : openRegisterPage()
+System --> Guest : displayRegisterForm()
+Guest -> System : submitRegisterDetails(name, username, email, password)
+System -> System : validateRegisterData(email, username, password)
+alt invalid data or existing email
+    System --> Guest : showValidationErrors(errors)
+else valid data
+    System -> System : hashPasswordWithBcrypt(password)
+    System -> System : createFanAccount(userData)
+    System --> Guest : showRegistrationSuccess(userID)
+end
+@enduml

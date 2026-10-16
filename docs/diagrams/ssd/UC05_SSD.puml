@@ -1,0 +1,20 @@
+@startuml UC05_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC05: System Sequence Diagram - Update Profile Information
+
+actor Fan
+participant ":System" as System
+
+Fan -> System : openEditProfile()
+System --> Fan : displayProfileForm(userData)
+Fan -> System : submitProfileUpdates(name, bio, location, handle)
+System -> System : validateProfileInput()
+alt validation error
+    System --> Fan : showProfileErrors()
+else valid input
+    System -> System : updateUserRecord(userID, data)
+    System --> Fan : showUpdateSuccessToast()
+end
+@enduml

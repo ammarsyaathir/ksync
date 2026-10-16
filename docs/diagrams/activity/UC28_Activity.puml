@@ -1,0 +1,19 @@
+@startuml UC28_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC28: Business Activity Diagram - Reject Event Submission with Feedback
+
+|Admin|
+start
+:Enter rejection feedback reason (e.g. "Official ticketing link missing");
+:Click "Reject Event" button;
+|System|
+:UPDATE events SET verification_status = "REJECTED", rejection_reason = ?;
+:INSERT INTO activity_logs (action="REJECT_EVENT");
+:Dispatch rejection feedback email to submitter;
+:Refresh verification queue;
+stop
+@enduml

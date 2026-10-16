@@ -1,0 +1,13 @@
+@startuml UC22_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC22: System Sequence Diagram - View In-App Notifications
+
+actor Fan
+participant ":System" as System
+
+Fan -> System : openNotifications()
+System --> Fan : displayNotificationsList(notifications)
+System -> System : fetchUserNotifications(userID)
+@enduml

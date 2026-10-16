@@ -1,0 +1,16 @@
+@startuml UC04_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC04: Business Activity Diagram - View Profile Details
+
+|Fan|
+start
+:Click profile avatar in navigation bar;
+|System|
+:Query users table by session user ID;
+:Render profile dashboard with account info;
+stop
+@enduml

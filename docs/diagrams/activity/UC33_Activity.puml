@@ -1,0 +1,30 @@
+@startuml UC33_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC33: Business Activity Diagram - Delete Event Listing
+
+|Admin|
+start
+:Click Delete icon on event row;
+|System|
+:Show "Delete Event" confirmation dialog;
+|Admin|
+if (Confirm Delete?) then (Delete)
+  :Click "Delete";
+  |System|
+  :DELETE FROM events WHERE id = ?;
+  :Cascade delete saved_events & chat messages;
+  :INSERT INTO activity_logs (action="DELETE_EVENT");
+  :Show success toast notification;
+  stop
+else (Cancel)
+  |Admin|
+  :Click "Cancel";
+  |System|
+  :Close dialog (no changes made);
+  stop
+endif
+@enduml

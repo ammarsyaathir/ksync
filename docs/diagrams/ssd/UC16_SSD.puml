@@ -1,0 +1,18 @@
+@startuml UC16_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC16: System Sequence Diagram - Bookmark Event (Save to Favorites)
+
+actor Fan
+participant ":System" as System
+
+Fan -> System : bookmarkEvent(eventID)
+System -> System : checkAuthenticationAndExisting(userID, eventID)
+alt not authenticated
+    System --> Fan : promptLoginModal()
+else authenticated
+    System -> System : insertSavedEvent(userID, eventID)
+    System --> Fan : updateHeartIconState(saved=true)
+end
+@enduml

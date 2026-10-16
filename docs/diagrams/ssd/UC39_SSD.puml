@@ -1,0 +1,16 @@
+@startuml UC39_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC39: System Sequence Diagram - Delete Artist Profile
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : requestDeleteArtist(artistID)
+System --> Admin : displayDeleteConfirmation(artistID)
+Admin -> System : confirmDeleteArtist(artistID)
+System -> System : deleteArtistAndSetNullEvents(artistID)
+System -> System : recordAuditLog('DELETE_ARTIST')
+System --> Admin : showDeleteSuccess()
+@enduml

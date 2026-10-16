@@ -1,0 +1,30 @@
+@startuml UC39_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC39: Business Activity Diagram - Delete Artist Profile
+
+|Admin|
+start
+:Click Delete icon on artist row;
+|System|
+:Show "Delete Artist" confirmation modal;
+|Admin|
+if (Confirm Delete?) then (Delete)
+  :Click "Delete";
+  |System|
+  :DELETE FROM artists WHERE id = ?;
+  :Set artist_id = NULL on linked events (ON DELETE SET NULL);
+  :INSERT INTO activity_logs (action="DELETE_ARTIST");
+  :Show success toast notification;
+  stop
+else (Cancel)
+  |Admin|
+  :Click "Cancel";
+  |System|
+  :Close modal without changes;
+  stop
+endif
+@enduml

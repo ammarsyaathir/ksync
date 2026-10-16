@@ -1,0 +1,17 @@
+@startuml UC46_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC46: Business Activity Diagram - Add Event to Google Calendar
+
+|User|
+start
+:Click "Add to Calendar" button on event action bar;
+|System|
+:Format event title, ISO dates, venue, and description into query string;
+:Construct "calendar.google.com/calendar/render?action=TEMPLATE" URL;
+:Open pre-filled Google Calendar event creation tab;
+stop
+@enduml

@@ -1,0 +1,13 @@
+@startuml UC23_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC23: System Sequence Diagram - Mark Notifications as Read
+
+actor Fan
+participant ":System" as System
+
+Fan -> System : markAllNotificationsRead()
+System --> Fan : resetNavbarBadgeCount(0)
+System -> System : updateNotificationsReadStatus(userID)
+@enduml

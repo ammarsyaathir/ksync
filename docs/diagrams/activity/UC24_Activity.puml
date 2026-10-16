@@ -1,0 +1,26 @@
+@startuml UC24_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC24: Business Activity Diagram - View Admin Dashboard & KPI Metrics
+
+|Admin|
+start
+:Navigate to "/admin";
+|System|
+:Verify user has role_id = 1 (Admin);
+|Admin|
+if (Is Admin?) then (Authorized)
+  |System|
+  :Aggregate counts: total events, pending submissions, registered users;
+  :Retrieve recent activity logs;
+  :Render administrative control center dashboard;
+  stop
+else (Unauthorized)
+  |System|
+  :Deny access and redirect to home page with warning;
+  stop
+endif
+@enduml

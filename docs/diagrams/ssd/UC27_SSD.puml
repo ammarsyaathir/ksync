@@ -1,0 +1,15 @@
+@startuml UC27_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC27: System Sequence Diagram - Approve Event Submission Live
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : approveEvent(eventID)
+System --> Admin : showApprovalSuccessNotification()
+System -> System : updateVerificationStatus(eventID, 'VERIFIED')
+System -> System : recordAuditLog('APPROVE_EVENT', eventID)
+System -> System : sendApprovalEmail(eventID)
+@enduml

@@ -1,0 +1,13 @@
+@startuml UC30_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC30: System Sequence Diagram - Resolve Content Report
+
+actor Admin
+participant ":System" as System
+
+Admin -> System : resolveReport(reportID)
+System --> Admin : showResolutionSuccessNotification()
+System -> System : updateReportStatus(reportID, 'RESOLVED')
+@enduml

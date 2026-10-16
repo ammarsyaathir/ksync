@@ -1,0 +1,20 @@
+@startuml UC02_SSD
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+title UC02: System Sequence Diagram - Log In to Account
+
+actor User
+participant ":System" as System
+
+User -> System : openLoginPage()
+System --> User : displayLoginForm()
+User -> System : submitCredentials(email, password)
+System -> System : verifyCredentials(email, password)
+alt invalid credentials
+    System --> User : showLoginError(message)
+else valid credentials
+    System -> System : createSession(userID, role)
+    System --> User : redirectUserToDashboard(role)
+end
+@enduml

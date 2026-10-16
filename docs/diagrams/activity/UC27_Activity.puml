@@ -1,0 +1,19 @@
+@startuml UC27_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC27: Business Activity Diagram - Approve Event Submission Live
+
+|Admin|
+start
+:Inspect official proof link and ticketing evidence;
+:Click "Approve Event" button;
+|System|
+:UPDATE events SET verification_status = "VERIFIED";
+:INSERT INTO activity_logs (action="APPROVE_EVENT");
+:Dispatch approval email with live URL to organizer;
+:Publish event to public catalog and refresh queue;
+stop
+@enduml

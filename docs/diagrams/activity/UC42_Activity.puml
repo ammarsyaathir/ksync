@@ -1,0 +1,17 @@
+@startuml UC42_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC42: Business Activity Diagram - View Interactive Google Map & Directions in Browser
+
+|User|
+start
+:Scroll to "Venue & Location" sidebar card on event page;
+:Click "Directions" or "Open Google Maps" button;
+|System|
+:Render embedded Google Maps iframe displaying venue coordinates;
+:Launch Google Maps navigation in new browser tab with turn-by-turn routing;
+stop
+@enduml

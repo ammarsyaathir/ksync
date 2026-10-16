@@ -1,0 +1,16 @@
+@startuml UC26_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC26: Business Activity Diagram - View Pending Verification Queue
+
+|Admin|
+start
+:Navigate to "/admin/verifications";
+|System|
+:SELECT * FROM events WHERE verification_status = "PENDING";
+:Render verification table with submitter details, poster previews, and proof URLs;
+stop
+@enduml

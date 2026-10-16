@@ -1,0 +1,18 @@
+@startuml UC30_Activity
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultTextAlignment center
+
+title UC30: Business Activity Diagram - Resolve Content Report
+
+|Admin|
+start
+:Investigate reported listing and apply corrections;
+:Click "Mark as Resolved" button;
+|System|
+:UPDATE reports SET status = "RESOLVED" WHERE id = ?;
+:Record moderation action in activity_logs;
+:Refresh reports management table;
+stop
+@enduml
