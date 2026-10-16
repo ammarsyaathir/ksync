@@ -13,13 +13,11 @@ router.get('/saved-events', requireAuth, async (req, res) => {
     const saved_events = await db.query(`
       SELECT e.*, se.saved_at,
              a.name as artist_name,
-             c.name as category_name,
-             v.name as venue_display
+             c.name as category_name
       FROM saved_events se
       JOIN events e ON se.event_id = e.id
       LEFT JOIN artists a ON e.artist_id = a.id
       LEFT JOIN event_categories c ON e.category_id = c.id
-      LEFT JOIN venues v ON e.venue_id = v.id
       WHERE se.user_id = ?
       ORDER BY e.event_date ASC
     `, [userId]);

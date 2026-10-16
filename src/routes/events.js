@@ -9,11 +9,10 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const upcoming_events = await db.query(`
-      SELECT e.*, a.name as artist_name, c.name as category_name, c.badge_color, v.name as venue_display
+      SELECT e.*, a.name as artist_name, c.name as category_name, c.badge_color, e.venue_name as venue_display
       FROM events e
       LEFT JOIN artists a ON e.artist_id = a.id
       LEFT JOIN event_categories c ON e.category_id = c.id
-      LEFT JOIN venues v ON e.venue_id = v.id
       WHERE e.verification_status = 'VERIFIED'
       ORDER BY e.event_date ASC
       LIMIT 6
@@ -65,12 +64,11 @@ router.get('/events', async (req, res) => {
 
   try {
     let sql = `
-      SELECT e.*, a.name as artist_name, c.name as category_name, c.slug as category_slug, v.name as venue_display,
+      SELECT e.*, a.name as artist_name, c.name as category_name, c.slug as category_slug, e.venue_name as venue_display,
              u.full_name as organizer_name, u.organization_name, u.organization_type, u.social_handle, u.social_url, u.is_verified_organizer
       FROM events e
       LEFT JOIN artists a ON e.artist_id = a.id
       LEFT JOIN event_categories c ON e.category_id = c.id
-      LEFT JOIN venues v ON e.venue_id = v.id
       LEFT JOIN users u ON e.organizer_id = u.id
       WHERE e.verification_status = 'VERIFIED'
     `;
@@ -138,13 +136,11 @@ router.get('/events/:id', async (req, res) => {
       SELECT e.*, 
              a.name as artist_name, a.group_type, a.image_url as artist_image, a.description as artist_description, a.agency as artist_agency, a.members as artist_members,
              c.name as category_name, c.badge_color,
-             v.name as venue_display, v.map_link, v.transit_info,
              u.full_name as organizer_name, u.email as organizer_email,
              u.organization_name, u.organization_type, u.social_handle, u.social_url, u.is_verified_organizer
       FROM events e
       LEFT JOIN artists a ON e.artist_id = a.id
       LEFT JOIN event_categories c ON e.category_id = c.id
-      LEFT JOIN venues v ON e.venue_id = v.id
       LEFT JOIN users u ON e.organizer_id = u.id
       WHERE e.id = ?
     `, [eventId]);
@@ -161,12 +157,8 @@ router.get('/events/:id', async (req, res) => {
       const saved = await db.getOne("SELECT id FROM saved_events WHERE user_id = ? AND event_id = ?", [req.session.userId, eventId]);
       isSavedEvent = !!saved;
 
-      const int = await db.getOne("SELECT id FROM event_interest WHERE user_id = ? AND event_id = ?", [req.session.userId, eventId]);
-      isInterested = !!int;
     }
-
-    const intCountRow = await db.getOne("SELECT count(id) as count FROM event_interest WHERE event_id = ?", [eventId]);
-    const interestCount = intCountRow ? intCountRow.count : 0;
+    const interestCount = 0;
 
     // Fetch chat messages
     const chatMessages = await db.query(`

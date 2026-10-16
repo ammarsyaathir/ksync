@@ -46,11 +46,11 @@
                         <i class="<%= isSaved ? 'fas' : 'far' %> fa-heart me-2 text-rose-500"></i>
                         <span><%= isSaved ? 'Saved to Bookmarks' : 'Save Event' %></span>
                     </button>
-                    <button onclick="toggleInterest(<%= event.id %>, this)" 
-                            class="px-5 py-2.5 rounded-xl border <%= isInterested ? 'bg-pink-600 text-white border-pink-600' : 'bg-pink-50 text-pink-700 border-pink-200 hover:bg-pink-100' %> font-bold text-xs flex items-center shadow-sm transition-all cursor-pointer">
-                        <i class="fas fa-user-plus me-2"></i>
-                        <span><%= isInterested ? "I'm Attending!" : 'Join / Going' %></span>
-                        <span class="ms-1.5 px-1.5 py-0.5 rounded-full text-[10px] bg-white/20"><%= interestCount %></span>
+                    <button onclick="reportEventPrompt(<%= event.id %>)" 
+                            class="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs flex items-center shadow-sm transition-all cursor-pointer"
+                            title="Report inaccurate details or outdated info">
+                        <i class="fas fa-flag text-amber-500 me-1.5"></i>
+                        <span>Report Listing</span>
                     </button>
                 </div>
                 <% if (event.official_url) { %>
@@ -348,6 +348,30 @@
             }
         } catch (e) {
             console.error(e);
+        }
+    }
+
+    async function reportEventPrompt(eventId) {
+        const reason = prompt("Why are you reporting this event listing?\n\n1. Inaccurate Date/Venue\n2. Fake or Unauthorized Event\n3. Outdated Ticket Links\n4. Other\n\nPlease enter the reason:");
+        if (!reason || !reason.trim()) return;
+
+        const details = prompt("Please provide additional context or official correction link (optional):");
+
+        try {
+            const res = await fetch(`/api/events/${eventId}/report`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reason: reason.trim(), details: details ? details.trim() : '' })
+            });
+            const data = await res.json();
+            if (data.status === 'success') {
+                alert("Thank you! Your report has been submitted to the platform administrator for review.");
+            } else {
+                alert(data.message || 'Error submitting report.');
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Failed to submit report. Please try again.");
         }
     }
 

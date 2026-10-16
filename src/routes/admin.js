@@ -9,7 +9,7 @@ import { sendEventApprovalEmail, sendEventRejectionEmail } from '../utils/mailer
 const router = express.Router();
 
 // Apply requireAdmin guard to all /admin/* routes
-router.use(requireAdmin);
+router.use('/admin', requireAdmin);
 
 // GET /admin - Admin Dashboard
 router.get('/admin', async (req, res) => {
@@ -233,7 +233,6 @@ router.post('/admin/events/delete', async (req, res) => {
 
   try {
     await db.execute("DELETE FROM saved_events WHERE event_id = ?", [event_id]);
-    await db.execute("DELETE FROM event_interest WHERE event_id = ?", [event_id]);
     await db.execute("DELETE FROM event_chat_messages WHERE event_id = ?", [event_id]);
     await db.execute("DELETE FROM events WHERE id = ?", [event_id]);
 
@@ -324,41 +323,32 @@ router.post('/admin/artists/delete', async (req, res) => {
   }
 });
 
-// GET /admin/venues
-router.get('/admin/venues', async (req, res) => {
+// GET /admin/reports - Chapter 1 Scope 1.6.1 Review Content Reports
+router.get('/admin/reports', async (req, res) => {
   try {
-    const venues = await db.query("SELECT * FROM venues ORDER BY name ASC");
-    res.render('admin/venues', { venues, helpers });
+    const reports = await db.query(`
+      SELECT r.*, u.username, u.full_name, e.event_name, e.tracking_code
+      FROM reports r
+      LEFT JOIN users u ON r.user_id = u.id
+      LEFT JOIN events e ON r.event_id = e.id
+      ORDER BY r.created_at DESC
+    `);
+    res.render('admin/reports', { reports, helpers });
   } catch (err) {
-    res.status(500).send('Error loading venues');
+    console.error('Admin reports error:', err);
+    res.status(500).send('Error loading reports');
   }
 });
 
-// POST /admin/venues/add
-router.post('/admin/venues/add', async (req, res) => {
-  const { name, address, city, state, transit_info, map_link } = req.body;
-  try {
-    await db.execute(
-      "INSERT INTO venues (name, address, city, state, transit_info, map_link) VALUES (?, ?, ?, ?, ?, ?)",
-      [name.trim(), address.trim(), city.trim(), state.trim(), transit_info ? transit_info.trim() : null, map_link ? map_link.trim() : null]
-    );
-    req.session.flash = { success: 'Venue added!' };
-    res.redirect('/admin/venues');
-  } catch (err) {
-    req.session.flash = { error: 'Failed to add venue.' };
-    res.redirect('/admin/venues');
-  }
-});
-
-// POST /admin/venues/delete
-router.post('/admin/venues/delete', async (req, res) => {
+// POST /admin/reports/resolve
+router.post('/admin/reports/resolve', async (req, res) => {
   const { id } = req.body;
   try {
-    await db.execute("DELETE FROM venues WHERE id = ?", [id]);
-    req.session.flash = { success: 'Venue deleted.' };
-    res.redirect('/admin/venues');
+    await db.execute("UPDATE reports SET status = 'RESOLVED' WHERE id = ?", [id]);
+    req.session.flash = { success: 'Report marked as resolved.' };
+    res.redirect('/admin/reports');
   } catch (err) {
-    res.redirect('/admin/venues');
+    res.redirect('/admin/reports');
   }
 });
 

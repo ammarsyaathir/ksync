@@ -14,12 +14,11 @@ router.get('/submit-event', async (req, res) => {
   try {
     const artists = await db.query("SELECT * FROM artists ORDER BY name ASC");
     const categories = await db.query("SELECT * FROM event_categories ORDER BY name ASC");
-    const venues = await db.query("SELECT * FROM venues ORDER BY name ASC");
 
     res.render('submit-event', {
       artists,
       categories,
-      venues
+      venues: []
     });
   } catch (err) {
     console.error('Error rendering submit-event form:', err);

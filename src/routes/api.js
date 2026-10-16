@@ -38,18 +38,28 @@ router.post('/events/:id/interest', async (req, res) => {
   const userId = req.session.userId;
   const eventId = Number(req.params.id);
 
-  try {
-    const existing = await db.getOne("SELECT id FROM event_interest WHERE user_id = ? AND event_id = ?", [userId, eventId]);
+  return res.json({ status: 'success', interested: true });
+});
 
-    if (existing) {
-      await db.execute("DELETE FROM event_interest WHERE user_id = ? AND event_id = ?", [userId, eventId]);
-      return res.json({ status: 'success', interested: false });
-    } else {
-      await db.execute("INSERT INTO event_interest (user_id, event_id) VALUES (?, ?)", [userId, eventId]);
-      return res.json({ status: 'success', interested: true });
-    }
+// POST /api/events/:id/report - Report Incorrect Event (Chapter 1 Solution 1.3.3 & Scope 1.6.1)
+router.post('/events/:id/report', async (req, res) => {
+  const userId = req.session ? req.session.userId : null;
+  const eventId = Number(req.params.id);
+  const { reason, details } = req.body;
+
+  if (!reason || !reason.trim()) {
+    return res.status(400).json({ status: 'error', message: 'Reason is required.' });
+  }
+
+  try {
+    await db.execute(
+      "INSERT INTO reports (user_id, event_id, report_type, reason, details) VALUES (?, ?, 'EVENT', ?, ?)",
+      [userId, eventId, reason.trim(), details ? details.trim() : '']
+    );
+
+    return res.json({ status: 'success', message: 'Report submitted for administrator review.' });
   } catch (err) {
-    console.error('API interest error:', err);
+    console.error('API report event error:', err);
     return res.status(500).json({ status: 'error', message: err.message });
   }
 });
