@@ -1,0 +1,197 @@
+<%- include('partials/header', { title: 'Event Buddy Hub | K-Sync Malaysia' }) %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6">
+        <div>
+            <div class="flex items-center space-x-2 mb-2">
+                <span class="px-3 py-1 rounded-full text-xs font-bold bg-pink-100 text-pink-700 border border-pink-200">
+                    <i class="fas fa-handshake me-1 text-pink-500"></i> Event Buddy Matchmaking
+                </span>
+            </div>
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">K-Pop Concert Buddies</h1>
+            <p class="text-slate-600 text-sm mt-1 font-medium">Never attend a K-Pop concert alone! Connect with Malaysian fans, plan carpools, queue together, and share the hype.</p>
+        </div>
+        <div class="flex items-center space-x-2">
+            <a href="/buddies" class="px-4 py-2 rounded-xl text-xs font-bold <%= activeTab === 'discover' ? 'bg-slate-900 text-white shadow' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50' %>">
+                <i class="fas fa-compass me-1.5"></i> Discover Buddies
+            </a>
+            <a href="/buddies?tab=connections" class="px-4 py-2 rounded-xl text-xs font-bold <%= activeTab === 'connections' ? 'bg-pink-600 text-white shadow' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50' %> relative">
+                <i class="fas fa-users me-1.5"></i> My Buddies (<%= connections.length %>)
+            </a>
+            <% if (pendingRequests.length > 0) { %>
+                <a href="/buddies?tab=requests" class="px-4 py-2 rounded-xl text-xs font-bold bg-rose-50 border border-rose-200 text-rose-700 shadow-sm animate-pulse">
+                    <i class="fas fa-bell me-1"></i> <%= pendingRequests.length %> Request(s)
+                </a>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Event Selector Filter -->
+    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="text-xs font-bold text-slate-700 flex items-center">
+            <i class="fas fa-calendar-check text-pink-500 me-2 text-base"></i> Filter Fans by Show:
+        </div>
+        <form action="/buddies" method="GET" class="flex-grow max-w-md flex gap-2">
+            <input type="hidden" name="tab" value="<%= activeTab %>">
+            <select name="event_id" onchange="this.form.submit()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                <option value="">-- Choose an Event to View Attending Fans --</option>
+                <% eventsList.forEach(function(ev) { %>
+                    <option value="<%= ev.id %>" <%= selectedEventId == ev.id ? 'selected' : '' %>><%= ev.event_name %> (<%= ev.city %>)</option>
+                <% }); %>
+            </select>
+        </form>
+    </div>
+
+    <!-- TAB 1: Discover Interested Fans -->
+    <% if (activeTab === 'discover') { %>
+        <% if (!selectedEventId) { %>
+            <div class="text-center py-16 bg-white rounded-3xl border border-slate-200 shadow-sm">
+                <div class="w-16 h-16 rounded-full bg-pink-50 text-pink-500 flex items-center justify-center text-2xl mx-auto mb-4">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <h3 class="text-base font-bold text-slate-900 mb-1">Select an Event to View Attending Fans</h3>
+                <p class="text-xs text-slate-500 max-w-md mx-auto mb-6">Choose an event from the selector above, or mark yourself as "Attending" on any event page to get matched with fellow fans.</p>
+                <a href="/events" class="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow inline-block">
+                    Browse All Events
+                </a>
+            </div>
+        <% } else if (interestedFans.length === 0) { %>
+            <div class="text-center py-16 bg-white rounded-3xl border border-slate-200 shadow-sm">
+                <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mx-auto mb-3">
+                    <i class="fas fa-users-slash"></i>
+                </div>
+                <h3 class="text-base font-bold text-slate-800">No other fans have joined this event yet</h3>
+                <p class="text-xs text-slate-500 mt-1">Be the first to share your enthusiasm in the event discussion!</p>
+            </div>
+        <% } else { %>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <% interestedFans.forEach(function(fan) { %>
+                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between space-y-4 hover:shadow-md transition-all">
+                        <div class="flex items-start space-x-3.5">
+                            <div class="w-14 h-14 rounded-2xl bg-pink-100 text-pink-600 font-bold text-lg flex items-center justify-center shrink-0 overflow-hidden shadow-xs">
+                                <% if (fan.profile_image) { %>
+                                    <img src="<%= fan.profile_image %>" alt="" class="w-full h-full object-cover">
+                                <% } else { %>
+                                    <%= fan.full_name.charAt(0).toUpperCase() %>
+                                <% } %>
+                            </div>
+                            <div class="flex-grow min-w-0">
+                                <h3 class="font-bold text-sm text-slate-900 truncate"><%= fan.full_name %></h3>
+                                <div class="text-[11px] text-slate-500 flex items-center mt-0.5">
+                                    <i class="fas fa-location-dot me-1 text-rose-500 text-[10px]"></i> <%= fan.location || 'Kuala Lumpur' %>
+                                </div>
+                                <div class="mt-2 text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-100 line-clamp-2">
+                                    "<%= fan.buddy_preference || fan.bio || 'Looking for fellow concert buddies!' %>"
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Button -->
+                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                            <% if (fan.connection_status === 'ACCEPTED') { %>
+                                <span class="text-xs font-bold text-emerald-600"><i class="fas fa-check-circle me-1"></i> Connected</span>
+                                <a href="/buddies/chat/<%= fan.id %>?event_id=<%= selectedEventId %>" class="px-4 py-1.5 rounded-xl bg-slate-900 text-white font-bold text-xs shadow hover:bg-slate-800">
+                                    <i class="fas fa-comments me-1"></i> Chat
+                                </a>
+                            <% } else if (fan.connection_status === 'PENDING') { %>
+                                <span class="text-xs font-bold text-amber-600"><i class="fas fa-clock me-1"></i> Request Pending</span>
+                                <button disabled class="px-4 py-1.5 rounded-xl bg-slate-100 text-slate-400 font-bold text-xs">Sent</button>
+                            <% } else { %>
+                                <span class="text-[11px] text-slate-400 font-medium">Attending this show</span>
+                                <form action="/buddies/request" method="POST">
+                                    <input type="hidden" name="receiver_id" value="<%= fan.id %>">
+                                    <input type="hidden" name="event_id" value="<%= selectedEventId %>">
+                                    <button type="submit" class="px-4 py-1.5 rounded-xl bg-pink-50 text-pink-700 border border-pink-200 hover:bg-pink-600 hover:text-white font-bold text-xs shadow-xs transition-all">
+                                        <i class="fas fa-user-plus me-1"></i> Connect
+                                    </button>
+                                </form>
+                            <% } %>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } %>
+
+    <!-- TAB 2: My Connections -->
+    <% } else if (activeTab === 'connections') { %>
+        <% if (connections.length === 0) { %>
+            <div class="text-center py-16 bg-white rounded-3xl border border-slate-200 shadow-sm">
+                <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mx-auto mb-3">
+                    <i class="fas fa-user-group"></i>
+                </div>
+                <h3 class="text-base font-bold text-slate-800">No Accepted Connections Yet</h3>
+                <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto mb-6">Browse attending fans and send buddy requests to start direct messaging.</p>
+                <a href="/buddies?tab=discover" class="px-6 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold shadow">
+                    Find Buddies
+                </a>
+            </div>
+        <% } else { %>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <% connections.forEach(function(c) { %>
+                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+                        <div class="flex items-center space-x-3.5">
+                            <div class="w-12 h-12 rounded-2xl bg-pink-500 text-white font-bold flex items-center justify-center text-base shrink-0 overflow-hidden">
+                                <% if (c.buddy_image) { %>
+                                    <img src="<%= c.buddy_image %>" alt="" class="w-full h-full object-cover">
+                                <% } else { %>
+                                    <%= c.buddy_name.charAt(0).toUpperCase() %>
+                                <% } %>
+                            </div>
+                            <div class="min-w-0">
+                                <h3 class="font-bold text-sm text-slate-900 truncate"><%= c.buddy_name %></h3>
+                                <div class="text-[11px] text-slate-500"><i class="fas fa-location-dot me-1 text-rose-500"></i> <%= c.buddy_location || 'Malaysia' %></div>
+                            </div>
+                        </div>
+                        <div class="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                            <span class="font-bold text-slate-700">Matched For:</span> <%= c.event_name %>
+                        </div>
+                        <div class="pt-2 flex justify-end">
+                            <a href="/buddies/chat/<%= c.buddy_id %>?event_id=<%= c.event_id %>" class="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow flex items-center">
+                                <i class="fas fa-comments me-2 text-pink-400"></i> Open Direct Chat
+                            </a>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } %>
+
+    <!-- TAB 3: Pending Incoming Requests -->
+    <% } else if (activeTab === 'requests') { %>
+        <% if (pendingRequests.length === 0) { %>
+            <div class="text-center py-16 bg-white rounded-3xl border border-slate-200 shadow-sm">
+                <i class="fas fa-inbox text-4xl text-slate-300 mb-3"></i>
+                <h3 class="text-base font-bold text-slate-800">No pending buddy requests</h3>
+            </div>
+        <% } else { %>
+            <div class="space-y-4 max-w-2xl mx-auto">
+                <% pendingRequests.forEach(function(r) { %>
+                    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm flex items-center justify-between gap-4">
+                        <div class="flex items-center space-x-3.5">
+                            <div class="w-12 h-12 rounded-2xl bg-purple-500 text-white font-bold flex items-center justify-center text-base shrink-0">
+                                <%= r.sender_name.charAt(0).toUpperCase() %>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-slate-900"><%= r.sender_name %></h4>
+                                <div class="text-xs text-slate-500">Wants to be your buddy for <span class="font-bold text-slate-700"><%= r.event_name %></span></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2 shrink-0">
+                            <form action="/buddies/respond" method="POST" class="inline">
+                                <input type="hidden" name="request_id" value="<%= r.id %>">
+                                <input type="hidden" name="action" value="accept">
+                                <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow">Accept</button>
+                            </form>
+                            <form action="/buddies/respond" method="POST" class="inline">
+                                <input type="hidden" name="request_id" value="<%= r.id %>">
+                                <input type="hidden" name="action" value="decline">
+                                <button type="submit" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold">Decline</button>
+                            </form>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } %>
+    <% } %>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,201 @@
+<%- include('../partials/header', { title: 'Verification Center | K-Sync Admin' }) %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <div class="flex items-center space-x-2 mb-2">
+                <span class="px-3 py-1 rounded-full text-xs font-bold bg-pink-100 text-pink-700 border border-pink-200">
+                    <i class="fas fa-check-double me-1 text-pink-500"></i> Verification Central
+                </span>
+            </div>
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Event Submissions & Fanclub Verifications</h1>
+            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Review open event submissions (Model 2), examine official ticketing proof, and grant official fanclub verification badges.</p>
+        </div>
+    </div>
+
+    <!-- Admin Nav -->
+    <%- include('./admin-nav', { activePath: '/admin/verifications', pendingCount: pendingEvents.length }) %>
+
+    <!-- SECTION 1: Model 2 Event Submissions Verification Queue -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm mb-10 space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div>
+                <h2 class="text-lg font-bold text-slate-900 flex items-center">
+                    <i class="fas fa-hourglass-half text-amber-500 me-2"></i> Pending Event Submissions Queue (Model 2)
+                </h2>
+                <p class="text-xs text-slate-500 mt-0.5">Submitted by organizers/guests without account. Verify evidence and publish live.</p>
+            </div>
+            <span class="px-3.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                <%= pendingEvents.length %> Pending
+            </span>
+        </div>
+
+        <% if (pendingEvents.length === 0) { %>
+            <div class="text-center py-12 text-slate-400 text-xs">
+                <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center text-xl mx-auto mb-2">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="font-bold text-slate-700">All submissions verified!</div>
+                <div class="text-slate-500">No events currently waiting in the approval queue.</div>
+            </div>
+        <% } else { %>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-slate-700">
+                    <thead class="bg-slate-50 text-slate-500 uppercase font-bold text-[10px] border-b border-slate-200">
+                        <tr>
+                            <th class="p-3">Ref Code</th>
+                            <th class="p-3">Event & Artist</th>
+                            <th class="p-3">Date & Venue</th>
+                            <th class="p-3">Submitter</th>
+                            <th class="p-3">Evidence</th>
+                            <th class="p-3 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        <% pendingEvents.forEach(function(ev) { %>
+                            <tr class="hover:bg-slate-50/50">
+                                <td class="p-3 font-mono font-bold text-pink-600"><%= ev.tracking_code %></td>
+                                <td class="p-3">
+                                    <div class="font-bold text-slate-900"><%= ev.event_name %></div>
+                                    <div class="text-[10px] text-purple-600"><%= ev.artist_name || 'Multiple Artists' %></div>
+                                </td>
+                                <td class="p-3">
+                                    <div><%= helpers.formatDate(ev.event_date) %></div>
+                                    <div class="text-[10px] text-slate-400"><%= ev.venue_name %>, <%= ev.city %></div>
+                                </td>
+                                <td class="p-3">
+                                    <div class="font-medium text-slate-900"><%= ev.submitter_name %></div>
+                                    <div class="text-[10px] text-slate-400"><%= ev.submitter_email %></div>
+                                </td>
+                                <td class="p-3 space-y-1">
+                                    <% if (ev.official_url) { %>
+                                        <a href="<%= ev.official_url %>" target="_blank" class="text-pink-600 hover:underline block text-[11px] font-bold">
+                                            <i class="fas fa-link me-1"></i> Official Link
+                                        </a>
+                                    <% } %>
+                                    <% if (ev.poster_image) { %>
+                                        <a href="<%= ev.poster_image %>" target="_blank" class="text-slate-600 hover:underline block text-[10px]">
+                                            <i class="far fa-image me-1"></i> View Poster
+                                        </a>
+                                    <% } %>
+                                </td>
+                                <td class="p-3 text-right space-x-1.5 whitespace-nowrap">
+                                    <form action="/admin/verifications/approve-event" method="POST" class="inline">
+                                        <input type="hidden" name="event_id" value="<%= ev.id %>">
+                                        <button type="submit" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs">
+                                            <i class="fas fa-check me-1"></i> Approve
+                                        </button>
+                                    </form>
+                                    <button type="button" onclick="openRejectModal(<%= ev.id %>, '<%= ev.tracking_code %>')" class="px-3.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs">
+                                        <i class="fas fa-xmark me-1"></i> Reject
+                                    </button>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- SECTION 2: Fanclub & Organizer Verification Center -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div>
+                <h2 class="text-lg font-bold text-slate-900 flex items-center">
+                    <i class="fas fa-certificate text-pink-600 me-2"></i> Verified Fanclub Badge Management
+                </h2>
+                <p class="text-xs text-slate-500 mt-0.5">Review social handles and grant the [✓ Verified Fanclub] badge to authentic Malaysian fan clubs.</p>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-700">
+                <thead class="bg-slate-50 text-slate-500 uppercase font-bold text-[10px] border-b border-slate-200">
+                    <tr>
+                        <th class="p-3">Organizer / Fanclub</th>
+                        <th class="p-3">Handle & Link</th>
+                        <th class="p-3">Current Status</th>
+                        <th class="p-3 text-right">Verification Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    <% organizers.forEach(function(org) { %>
+                        <tr class="hover:bg-slate-50/50">
+                            <td class="p-3">
+                                <div class="font-bold text-slate-900"><%= org.organization_name || org.full_name %></div>
+                                <div class="text-[10px] text-slate-400">@<%= org.username %> &bull; <%= org.email %></div>
+                            </td>
+                            <td class="p-3">
+                                <% if (org.social_url) { %>
+                                    <a href="<%= org.social_url %>" target="_blank" class="text-pink-600 font-bold hover:underline">
+                                        <%= org.social_handle || org.social_url %>
+                                    </a>
+                                <% } else { %>
+                                    <span class="text-slate-400">None provided</span>
+                                <% } %>
+                            </td>
+                            <td class="p-3">
+                                <%- helpers.getOrganizerBadge(org) %>
+                            </td>
+                            <td class="p-3 text-right">
+                                <% if (Number(org.is_verified_organizer) === 1) { %>
+                                    <form action="/admin/verifications/revoke-organizer" method="POST" class="inline">
+                                        <input type="hidden" name="user_id" value="<%= org.id %>">
+                                        <button type="submit" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs">
+                                            Revoke Badge
+                                        </button>
+                                    </form>
+                                <% } else { %>
+                                    <form action="/admin/verifications/verify-organizer" method="POST" class="inline">
+                                        <input type="hidden" name="user_id" value="<%= org.id %>">
+                                        <button type="submit" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs">
+                                            Grant Verified Badge
+                                        </button>
+                                    </form>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Rejection Modal -->
+<div id="reject-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-4">
+        <div class="flex items-center space-x-3 text-rose-600">
+            <i class="fas fa-triangle-exclamation text-2xl"></i>
+            <h3 class="text-base font-bold text-slate-900">Reject Event Submission</h3>
+        </div>
+        <p class="text-xs text-slate-500">
+            Please specify why this submission is being rejected. The submitter will see this reason in their tracking portal and can resubmit with corrections (UC23).
+        </p>
+        <form action="/admin/verifications/reject-event" method="POST" class="space-y-4">
+            <input type="hidden" name="event_id" id="reject-event-id">
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Rejection Reason</label>
+                <textarea name="reason" rows="3" required placeholder="e.g. Official ticketing link is invalid, poster does not mention Malaysia date, or duplicate event."
+                          class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-300"></textarea>
+            </div>
+            <div class="flex justify-end space-x-2 pt-2">
+                <button type="button" onclick="closeRejectModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold">Cancel</button>
+                <button type="submit" class="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow">Confirm Rejection</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openRejectModal(id, code) {
+        document.getElementById('reject-event-id').value = id;
+        document.getElementById('reject-modal').classList.remove('hidden');
+    }
+    function closeRejectModal() {
+        document.getElementById('reject-modal').classList.add('hidden');
+    }
+</script>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,196 @@
+<%- include('partials/header', { title: 'Track Event Submission Status | K-Sync Malaysia' }) %>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <!-- Header -->
+    <div class="mb-8 text-center max-w-xl mx-auto">
+        <span class="px-3.5 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700 border border-purple-200 uppercase tracking-wider">
+            <i class="fas fa-barcode me-1.5 text-purple-500"></i> Submission Tracker (UC21, UC22)
+        </span>
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mt-3">Check Submission Status</h1>
+        <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">
+            Enter your official Reference Code (e.g. KS-2026-XXXX) or submitter email address to check approval status.
+        </p>
+    </div>
+
+    <!-- Lookup Form -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm mb-8">
+        <form action="/check-submission" method="GET" class="grid grid-cols-1 sm:grid-cols-5 gap-3">
+            <div class="sm:col-span-4">
+                <input type="text" name="code" value="<%= queryCode || '' %>" required 
+                       placeholder="Enter Reference Code (e.g. KS-2026-...) or your email address"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs sm:text-sm text-slate-900 font-mono font-medium focus:outline-none focus:ring-2 focus:ring-purple-300">
+            </div>
+            <div>
+                <button type="submit" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm flex items-center justify-center">
+                    <i class="fas fa-magnifying-glass me-2 text-pink-400"></i> Track
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results Section -->
+    <% if (searched) { %>
+        <% if (!event) { %>
+            <div class="text-center py-12 bg-white rounded-3xl border border-slate-200 shadow-sm">
+                <div class="w-16 h-16 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center text-2xl mx-auto mb-3">
+                    <i class="fas fa-circle-xmark"></i>
+                </div>
+                <h3 class="text-base font-bold text-slate-900">No submission found</h3>
+                <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                    Please double-check your Reference Code or Email. Reference codes follow the format <code class="font-bold text-pink-600">KS-2026-XXXXX</code>.
+                </p>
+            </div>
+        <% } else { %>
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                <!-- Status Header Banner -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+                    <div>
+                        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                            Reference: <span class="font-mono text-pink-600 font-black"><%= event.tracking_code %></span>
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">
+                            <%= event.event_name %>
+                        </h2>
+                        <div class="text-xs text-slate-500 mt-1">
+                            Submitted on <%= helpers.formatDate(event.created_at) %> by <span class="font-semibold text-slate-700"><%= event.submitter_name %></span>
+                        </div>
+                    </div>
+                    <div>
+                        <%- helpers.getVerificationBadge(event.verification_status) %>
+                    </div>
+                </div>
+
+                <!-- Visual Step-by-Step Timeline -->
+                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Verification Progression</h4>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 relative">
+                        <!-- Step 1: Received -->
+                        <div class="flex items-center space-x-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800">
+                            <i class="fas fa-check-circle text-emerald-600 text-lg"></i>
+                            <div>
+                                <div class="text-xs font-bold">1. Received</div>
+                                <div class="text-[10px] text-emerald-600">Submission recorded</div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Under Review -->
+                        <% const isUnderReview = ['PENDING', 'VERIFIED', 'REJECTED'].includes(event.verification_status); %>
+                        <div class="flex items-center space-x-3 p-3 rounded-xl <%= isUnderReview ? 'bg-purple-50 border border-purple-200 text-purple-800' : 'bg-white border border-slate-200 text-slate-400' %>">
+                            <i class="fas fa-magnifying-glass text-purple-600 text-lg"></i>
+                            <div>
+                                <div class="text-xs font-bold">2. Verification</div>
+                                <div class="text-[10px] text-purple-600">Admin reviewing links & poster</div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Decision Reached -->
+                        <% if (event.verification_status === 'VERIFIED') { %>
+                            <div class="flex items-center space-x-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800">
+                                <i class="fas fa-circle-check text-emerald-600 text-lg"></i>
+                                <div>
+                                    <div class="text-xs font-bold">3. Published Live!</div>
+                                    <div class="text-[10px] text-emerald-600">Visible to all fans</div>
+                                </div>
+                            </div>
+                        <% } else if (event.verification_status === 'REJECTED') { %>
+                            <div class="flex items-center space-x-3 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800">
+                                <i class="fas fa-circle-xmark text-rose-600 text-lg"></i>
+                                <div>
+                                    <div class="text-xs font-bold">3. Rejected / Needs Edit</div>
+                                    <div class="text-[10px] text-rose-600">See notes below</div>
+                                </div>
+                            </div>
+                        <% } else { %>
+                            <div class="flex items-center space-x-3 p-3 rounded-xl bg-white border border-slate-200 text-slate-400">
+                                <i class="fas fa-clock text-slate-400 text-lg"></i>
+                                <div>
+                                    <div class="text-xs font-bold">3. Decision</div>
+                                    <div class="text-[10px] text-slate-400">Pending final review</div>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Rejection Notes and Resubmission (UC23) -->
+                <% if (event.verification_status === 'REJECTED') { %>
+                    <div class="p-6 rounded-2xl bg-rose-50 border border-rose-200 space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-circle-exclamation text-rose-500 text-xl shrink-0 mt-0.5"></i>
+                            <div>
+                                <h4 class="text-sm font-bold text-rose-900">Admin Review Notes / Rejection Reason</h4>
+                                <p class="text-xs text-rose-700 mt-1 leading-relaxed">
+                                    <%= event.rejection_reason || 'Official evidence or poster link was unverifiable. Please provide valid official sources.' %>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Resubmission Button -->
+                        <div class="pt-2">
+                            <button onclick="document.getElementById('resubmit-box').classList.toggle('hidden')" 
+                                    class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow transition-all">
+                                <i class="fas fa-pen-to-square me-1.5"></i> Correct and Resubmit Event (UC23)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Resubmit Form (Initially hidden) -->
+                    <div id="resubmit-box" class="hidden bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
+                        <h4 class="text-sm font-bold text-slate-900">Update Event Details for Resubmission</h4>
+                        <form action="/check-submission/resubmit" method="POST" class="space-y-4">
+                            <input type="hidden" name="event_id" value="<%= event.id %>">
+                            <input type="hidden" name="tracking_code" value="<%= event.tracking_code %>">
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Event Name</label>
+                                <input type="text" name="event_name" value="<%= event.event_name %>" required 
+                                       class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs">
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Official Verification URL</label>
+                                    <input type="url" name="official_url" value="<%= event.official_url || '' %>" required 
+                                           placeholder="https://..." class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Poster Image URL</label>
+                                    <input type="url" name="poster_image" value="<%= event.poster_image || '' %>" required 
+                                           class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Description / Notes for Admin</label>
+                                <textarea name="description" rows="3" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs"><%= event.description %></textarea>
+                            </div>
+
+                            <button type="submit" class="px-6 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold shadow">
+                                Submit Correction for Re-Review
+                            </button>
+                        </form>
+                    </div>
+                <% } %>
+
+                <!-- Verified View Live Link -->
+                <% if (event.verification_status === 'VERIFIED') { %>
+                    <div class="p-6 rounded-2xl bg-emerald-50 border border-emerald-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-circle-check text-emerald-500 text-2xl"></i>
+                            <div>
+                                <div class="text-sm font-bold text-emerald-900">Your event has been approved and published!</div>
+                                <div class="text-xs text-emerald-700">It is now visible to all Malaysian K-Pop fans on the discovery board.</div>
+                            </div>
+                        </div>
+                        <a href="/events/<%= event.id %>" class="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow shrink-0">
+                            View Live Event &rarr;
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+        <% } %>
+    <% } %>
+</div>
+
+<%- include('partials/footer') %>

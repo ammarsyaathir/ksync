@@ -1,0 +1,221 @@
+<%- include('partials/header', { title: 'Submit K-Pop Event | K-Sync Malaysia' }) %>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <!-- Header Card -->
+    <div class="bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 rounded-3xl p-8 text-white shadow-xl mb-8 relative overflow-hidden">
+        <div class="relative z-10">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-white/20 backdrop-blur-md mb-3 border border-white/30">
+                <i class="fas fa-paper-plane me-1.5 text-pink-300"></i> Open Community Submission (Model 2)
+            </span>
+            <h1 class="text-3xl font-extrabold tracking-tight">Submit a K-Pop Event</h1>
+            <p class="text-xs sm:text-sm text-pink-100 mt-2 max-w-xl font-medium leading-relaxed">
+                Hosting a concert, fan meeting, cupsleeve cafe, or dance gathering? Submit below without registering an account. You will receive an official tracking code immediately.
+            </p>
+        </div>
+    </div>
+
+    <!-- Form Container -->
+    <div class="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-sm">
+        <form action="/submit-event" method="POST" enctype="multipart/form-data" class="space-y-8">
+            <!-- SECTION 1: Submitter Info -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center">
+                    <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs me-2 font-bold">1</span>
+                    Submitter Information (No Account Required)
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Your Full Name / Fanclub Name <span class="text-rose-500">*</span></label>
+                        <input type="text" name="submitter_name" required value="<%= currentUser ? currentUser.full_name : '' %>"
+                               placeholder="e.g. Starline Events or Aiman Carat"
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Your Email Address <span class="text-rose-500">*</span></label>
+                        <input type="email" name="submitter_email" required value="<%= currentUser ? currentUser.email : '' %>"
+                               placeholder="e.g. organizer@ksync.my"
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                        <span class="text-[10px] text-slate-400">Used to track your submission and send approval notifications.</span>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-slate-100">
+
+            <!-- SECTION 2: Event Core Details -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center">
+                    <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs me-2 font-bold">2</span>
+                    Event Information
+                </h3>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Event Title <span class="text-rose-500">*</span></label>
+                    <input type="text" name="event_name" required placeholder="e.g. SEVENTEEN [RIGHT HERE] WORLD TOUR IN KUALA LUMPUR"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">K-Pop Artist / Group</label>
+                        <select name="artist_id" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                            <option value="">Select Artist / Group (or leave empty if multiple)</option>
+                            <% artists.forEach(function(a) { %>
+                                <option value="<%= a.id %>"><%= a.name %> (<%= a.group_type %>)</option>
+                            <% }); %>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Event Category <span class="text-rose-500">*</span></label>
+                        <select name="category_id" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                            <option value="">Select Category</option>
+                            <% categories.forEach(function(c) { %>
+                                <option value="<%= c.id %>"><%= c.name %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Event Date <span class="text-rose-500">*</span></label>
+                        <input type="date" name="event_date" required 
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Start Time <span class="text-rose-500">*</span></label>
+                        <input type="time" name="start_time" required 
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">End Time (Optional)</label>
+                        <input type="time" name="end_time" 
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Event Description</label>
+                    <textarea name="description" rows="4" placeholder="Describe the event, artist appearance details, admission policies, fan projects, etc."
+                              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-pink-300"></textarea>
+                </div>
+            </div>
+
+            <hr class="border-slate-100">
+
+            <!-- SECTION 3: Venue & Location -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center">
+                    <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs me-2 font-bold">3</span>
+                    Venue & Malaysian Location
+                </h3>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Select Preset Venue (or type custom below)</label>
+                    <select id="preset-venue" onchange="fillVenue(this)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                        <option value="">-- Choose Venue Preset (Axiata, Zepp KL, Mega Star, etc.) --</option>
+                        <% venues.forEach(function(v) { %>
+                            <option value="<%= v.id %>" data-name="<%= v.name %>" data-address="<%= v.address %>" data-city="<%= v.city %>" data-state="<%= v.state %>"><%= v.name %> (<%= v.city %>)</option>
+                        <% }); %>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Venue Name <span class="text-rose-500">*</span></label>
+                        <input type="text" id="venue_name" name="venue_name" required placeholder="e.g. Axiata Arena Bukit Jalil"
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">City <span class="text-rose-500">*</span></label>
+                        <input type="text" id="city" name="city" required placeholder="e.g. Kuala Lumpur"
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Street Address</label>
+                        <input type="text" id="address" name="address" placeholder="e.g. Bukit Jalil National Sports Complex"
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">State</label>
+                        <input type="text" id="state" name="state" placeholder="e.g. Wilayah Persekutuan Kuala Lumpur"
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-slate-100">
+
+            <!-- SECTION 4: Poster & Verification Evidence -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center">
+                    <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs me-2 font-bold">4</span>
+                    Poster & Official Verification Proof
+                </h3>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Upload Event Poster Image</label>
+                        <input type="file" name="poster_file" accept="image/*"
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-600 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100">
+                        <span class="text-[10px] text-slate-400">PNG, JPG, WebP up to 10MB</span>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">OR Poster Image URL</label>
+                        <input type="url" name="poster_url" placeholder="https://example.com/poster.jpg"
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Official Ticketing / Event URL</label>
+                        <input type="url" name="official_url" placeholder="https://golive-asia.com or organizer tweet"
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Ticket Tiers & Pricing</label>
+                        <input type="text" name="ticket_info" placeholder="e.g. VIP RM1088, CAT1 RM788, CAT2 RM488"
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Event Rules & Entry Guidelines</label>
+                    <textarea name="event_rules" rows="3" placeholder="Queue schedule, bag policy, lightstick restrictions, dress code, age limits"
+                              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-pink-300"></textarea>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-xs text-slate-500 font-medium">
+                    <i class="fas fa-shield-halved text-emerald-500 me-1"></i> Admin reviews typically take 1–6 hours.
+                </div>
+                <button type="submit" class="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs shadow-md transition-all flex items-center justify-center">
+                    <i class="fas fa-check-circle me-2 text-pink-400"></i> Submit Event for Verification
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function fillVenue(select) {
+        const opt = select.selectedOptions[0];
+        if (opt && opt.dataset.name) {
+            document.getElementById('venue_name').value = opt.dataset.name;
+            document.getElementById('address').value = opt.dataset.address || '';
+            document.getElementById('city').value = opt.dataset.city || '';
+            document.getElementById('state').value = opt.dataset.state || '';
+        }
+    }
+</script>
+
+<%- include('partials/footer') %>

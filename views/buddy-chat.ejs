@@ -1,0 +1,73 @@
+<%- include('partials/header', { title: 'Direct Buddy Chat | K-Sync Malaysia' }) %>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden flex flex-col h-[650px]">
+        <!-- Chat Header -->
+        <div class="p-4 sm:p-5 border-b border-slate-200 bg-slate-50/70 flex items-center justify-between">
+            <div class="flex items-center space-x-3.5">
+                <a href="/buddies?tab=connections" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-slate-900 flex items-center justify-center text-xs shadow-xs">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                <div class="w-10 h-10 rounded-xl bg-pink-500 text-white font-bold flex items-center justify-center text-sm overflow-hidden">
+                    <% if (buddyUser.profile_image) { %>
+                        <img src="<%= buddyUser.profile_image %>" alt="" class="w-full h-full object-cover">
+                    <% } else { %>
+                        <%= buddyUser.full_name.charAt(0).toUpperCase() %>
+                    <% } %>
+                </div>
+                <div>
+                    <h2 class="text-sm font-bold text-slate-900"><%= buddyUser.full_name %></h2>
+                    <div class="text-[11px] text-slate-500">Concert Buddy for <span class="font-semibold text-slate-700"><%= event ? event.event_name : 'K-Pop Show' %></span></div>
+                </div>
+            </div>
+            <div>
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping me-1.5"></span> Connected
+                </span>
+            </div>
+        </div>
+
+        <!-- Chat Stream -->
+        <div id="messages-stream" class="flex-grow p-6 overflow-y-auto space-y-4 bg-slate-50/40">
+            <% if (messages.length === 0) { %>
+                <div class="text-center py-16 text-slate-400 text-xs font-medium">
+                    <div class="w-12 h-12 rounded-full bg-pink-50 text-pink-400 flex items-center justify-center mx-auto mb-2 text-xl">
+                        <i class="fas fa-hand-wave"></i>
+                    </div>
+                    Say hi to <%= buddyUser.full_name %>! Start planning your concert day together.
+                </div>
+            <% } %>
+            <% messages.forEach(function(m) { %>
+                <div class="flex <%= m.sender_id === currentUser.id ? 'justify-end' : 'justify-start' %>">
+                    <div class="max-w-xs sm:max-w-md">
+                        <div class="p-3.5 rounded-2xl text-xs <%= m.sender_id === currentUser.id ? 'bg-slate-900 text-white rounded-tr-none' : 'bg-white text-slate-800 border border-slate-200 rounded-tl-none shadow-xs' %>">
+                            <%= m.message %>
+                        </div>
+                        <div class="text-[10px] text-slate-400 mt-1 <%= m.sender_id === currentUser.id ? 'text-right' : 'text-left' %>">
+                            <%= helpers.formatTime(new Date(m.created_at).toTimeString().split(' ')[0]) %>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+
+        <!-- Chat Input Form -->
+        <div class="p-4 bg-white border-t border-slate-200">
+            <form action="/buddies/chat/<%= buddyUser.id %>/send" method="POST" class="flex gap-2">
+                <input type="hidden" name="event_id" value="<%= event ? event.id : '' %>">
+                <input type="text" name="message" required placeholder="Type your message..." autocomplete="off"
+                       class="flex-grow bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-300">
+                <button type="submit" class="px-6 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const stream = document.getElementById('messages-stream');
+    if (stream) stream.scrollTop = stream.scrollHeight;
+</script>
+
+<%- include('partials/footer') %>

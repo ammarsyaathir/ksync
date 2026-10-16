@@ -1,0 +1,76 @@
+<%- include('../partials/header', { title: 'Manage Artists | K-Sync Admin' }) %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="mb-6">
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">K-Pop Artists & Groups</h1>
+        <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Manage artist catalog, agencies, and group profiles.</p>
+    </div>
+
+    <!-- Admin Nav -->
+    <%- include('./admin-nav', { activePath: '/admin/artists' }) %>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Add Artist Form -->
+        <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm h-fit space-y-4">
+            <h3 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">Add New Artist / Group</h3>
+            <form action="/admin/artists/add" method="POST" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Artist / Group Name</label>
+                    <input type="text" name="name" required placeholder="e.g. NewJeans"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Group Type</label>
+                    <select name="group_type" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs">
+                        <option value="Boy Group">Boy Group</option>
+                        <option value="Girl Group">Girl Group</option>
+                        <option value="Soloist">Soloist</option>
+                        <option value="Co-ed Group">Co-ed Group</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Agency</label>
+                    <input type="text" name="agency" placeholder="e.g. ADOR / HYBE"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Profile Image URL</label>
+                    <input type="url" name="image_url" placeholder="https://..."
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs">
+                </div>
+                <button type="submit" class="w-full py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs shadow hover:bg-slate-800">
+                    Add Artist
+                </button>
+            </form>
+        </div>
+
+        <!-- Artists Grid -->
+        <div class="lg:col-span-2 bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
+            <h3 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4">Artists Directory</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <% artists.forEach(function(a) { %>
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
+                        <div class="flex items-center space-x-3 min-w-0">
+                            <div class="w-12 h-12 rounded-full overflow-hidden bg-slate-200 shrink-0 border border-slate-300">
+                                <img src="<%= a.image_url %>" alt="" class="w-full h-full object-cover"
+                                     onerror="this.src='https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&auto=format&fit=crop'">
+                            </div>
+                            <div class="min-w-0">
+                                <h4 class="font-bold text-xs text-slate-900 truncate"><%= a.name %></h4>
+                                <div class="text-[10px] text-purple-600 font-semibold"><%= a.group_type %> &bull; <%= a.agency || 'Independent' %></div>
+                            </div>
+                        </div>
+                        <form action="/admin/artists/delete" method="POST" onsubmit="return confirm('Delete artist?')" class="inline">
+                            <input type="hidden" name="id" value="<%= a.id %>">
+                            <button type="submit" class="p-1.5 text-rose-500 hover:text-rose-700">
+                                <i class="fas fa-trash-can text-xs"></i>
+                            </button>
+                        </form>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

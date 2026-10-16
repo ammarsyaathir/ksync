@@ -1,0 +1,79 @@
+<%- include('../partials/header', { title: 'Manage Events | K-Sync Admin' }) %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Manage Events</h1>
+            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Update event schedule status (Upcoming, Ongoing, Postponed, Cancelled) or remove listings.</p>
+        </div>
+        <a href="/submit-event" class="px-5 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow flex items-center">
+            <i class="fas fa-plus me-1.5 text-pink-400"></i> New Event
+        </a>
+    </div>
+
+    <!-- Admin Nav -->
+    <%- include('./admin-nav', { activePath: '/admin/events' }) %>
+
+    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-700">
+                <thead class="bg-slate-50 text-slate-500 uppercase font-bold text-[10px] border-b border-slate-200">
+                    <tr>
+                        <th class="p-3">ID</th>
+                        <th class="p-3">Event Title</th>
+                        <th class="p-3">Artist / Category</th>
+                        <th class="p-3">Date & Venue</th>
+                        <th class="p-3">Verification</th>
+                        <th class="p-3">Status</th>
+                        <th class="p-3 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    <% events.forEach(function(ev) { %>
+                        <tr class="hover:bg-slate-50/50">
+                            <td class="p-3 font-mono font-bold text-slate-400">#<%= ev.id %></td>
+                            <td class="p-3">
+                                <div class="font-bold text-slate-900 hover:text-pink-600">
+                                    <a href="/events/<%= ev.id %>"><%= ev.event_name %></a>
+                                </div>
+                            </td>
+                            <td class="p-3">
+                                <div class="font-bold text-purple-600"><%= ev.artist_name || 'Multiple' %></div>
+                                <div class="text-[10px] text-slate-400"><%= ev.category_name %></div>
+                            </td>
+                            <td class="p-3">
+                                <div><%= helpers.formatDate(ev.event_date) %></div>
+                                <div class="text-[10px] text-slate-400"><%= ev.venue_name %>, <%= ev.city %></div>
+                            </td>
+                            <td class="p-3">
+                                <%- helpers.getVerificationBadge(ev.verification_status) %>
+                            </td>
+                            <td class="p-3">
+                                <form action="/admin/events/update-status" method="POST" class="inline">
+                                    <input type="hidden" name="event_id" value="<%= ev.id %>">
+                                    <select name="event_status" onchange="this.form.submit()" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-[11px] font-bold text-slate-800">
+                                        <option value="UPCOMING" <%= ev.event_status === 'UPCOMING' ? 'selected' : '' %>>Upcoming</option>
+                                        <option value="ONGOING" <%= ev.event_status === 'ONGOING' ? 'selected' : '' %>>Ongoing</option>
+                                        <option value="COMPLETED" <%= ev.event_status === 'COMPLETED' ? 'selected' : '' %>>Completed</option>
+                                        <option value="POSTPONED" <%= ev.event_status === 'POSTPONED' ? 'selected' : '' %>>Postponed</option>
+                                        <option value="CANCELLED" <%= ev.event_status === 'CANCELLED' ? 'selected' : '' %>>Cancelled</option>
+                                    </select>
+                                </form>
+                            </td>
+                            <td class="p-3 text-right">
+                                <form action="/admin/events/delete" method="POST" onsubmit="return confirm('Permanently delete this event?')" class="inline">
+                                    <input type="hidden" name="event_id" value="<%= ev.id %>">
+                                    <button type="submit" class="p-2 text-rose-500 hover:text-rose-700 rounded-lg hover:bg-rose-50" title="Delete">
+                                        <i class="fas fa-trash-can"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

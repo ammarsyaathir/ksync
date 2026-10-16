@@ -1,0 +1,171 @@
+<nav class="sticky top-0 z-50 glass-nav shadow-sm border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3">
+                <a href="/" class="flex items-center space-x-2.5 cursor-pointer">
+                    <div class="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white text-base shadow-sm">
+                        <i class="fas fa-bolt text-pink-400"></i>
+                    </div>
+                    <div class="flex items-center space-x-1.5">
+                        <span class="text-xl font-bold tracking-tight text-slate-900">K-SYNC</span>
+                        <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-900 text-white uppercase">MY</span>
+                        <% if (currentUser && currentUser.role_name.toLowerCase() === 'organizer') { %>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200 ms-1">ORGANIZER</span>
+                        <% } else if (currentUser && currentUser.role_name.toLowerCase() === 'admin') { %>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-purple-100 text-purple-800 border border-purple-200 ms-1">ADMIN</span>
+                        <% } %>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Desktop Navigation Links -->
+            <div class="hidden md:flex items-center space-x-1">
+                <a href="/" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer <%= activePath === '/' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' %>">
+                    <span>Home</span>
+                </a>
+                <a href="/events" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1.5 cursor-pointer <%= activePath === '/events' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' %>">
+                    <i class="fas fa-compass text-xs"></i>
+                    <span>Discover Events</span>
+                </a>
+                <a href="/buddies" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1.5 cursor-pointer <%= activePath === '/buddies' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' %>">
+                    <i class="fas fa-handshake text-xs text-pink-500"></i>
+                    <span>Event Buddy</span>
+                </a>
+                <a href="/submit-event" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1 cursor-pointer <%= activePath === '/submit-event' ? 'bg-slate-900 text-white shadow-sm' : 'bg-pink-50 text-pink-700 hover:bg-pink-100 border border-pink-200' %>">
+                    <i class="fas fa-paper-plane text-xs me-1"></i>
+                    <span>Submit Event</span>
+                </a>
+                <a href="/check-submission" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1.5 cursor-pointer <%= activePath === '/check-submission' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' %>">
+                    <i class="fas fa-barcode text-xs text-purple-600"></i>
+                    <span>Track Status</span>
+                </a>
+
+                <% if (currentUser && currentUser.role_name.toLowerCase() === 'admin') { %>
+                    <a href="/admin" class="px-3 py-1.5 rounded-lg text-sm font-semibold flex items-center space-x-1.5 cursor-pointer <%= activePath.startsWith('/admin') ? 'bg-purple-900 text-white shadow-sm' : 'bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200' %>">
+                        <i class="fas fa-shield-halved text-xs text-purple-400"></i>
+                        <span>Admin Portal</span>
+                    </a>
+                <% } %>
+            </div>
+
+            <!-- Right Side Auth / User Controls -->
+            <div class="hidden md:flex items-center space-x-3">
+                <% if (currentUser) { %>
+                    <!-- Saved Events -->
+                    <a href="/saved-events" class="p-2 text-slate-500 hover:text-pink-600 hover:bg-pink-50 rounded-lg transition-colors cursor-pointer" title="Saved Events">
+                        <i class="fas fa-bookmark"></i>
+                    </a>
+
+                    <!-- Notifications -->
+                    <a href="/notifications" class="relative p-2 text-slate-500 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors cursor-pointer" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <% if (unreadCount > 0) { %>
+                            <span class="absolute top-1 right-1 w-4 h-4 bg-pink-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse">
+                                <%= unreadCount > 9 ? '9+' : unreadCount %>
+                            </span>
+                        <% } %>
+                    </a>
+
+                    <!-- User Profile & Dropdown -->
+                    <div class="relative group">
+                        <button class="flex items-center space-x-2 p-1.5 rounded-xl hover:bg-slate-100 transition-colors focus:outline-none cursor-pointer">
+                            <% if (currentUser.profile_image) { %>
+                                <img src="<%= currentUser.profile_image %>" alt="<%= currentUser.full_name %>" class="w-8 h-8 rounded-lg object-cover border border-slate-200">
+                            <% } else { %>
+                                <div class="w-8 h-8 rounded-lg bg-pink-500 text-white font-bold text-xs flex items-center justify-center">
+                                    <%= currentUser.full_name.charAt(0).toUpperCase() %>
+                                </div>
+                            <% } %>
+                            <span class="text-sm font-medium text-slate-800"><%= currentUser.full_name.split(' ')[0] %></span>
+                            <i class="fas fa-chevron-down text-[10px] text-slate-400"></i>
+                        </button>
+                        <!-- Dropdown menu -->
+                        <div class="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-slate-200 py-1 hidden group-hover:block transition-all z-50">
+                            <div class="px-4 py-2 border-b border-slate-100">
+                                <div class="text-xs text-slate-400">Signed in as</div>
+                                <div class="text-sm font-bold text-slate-800 truncate">@<%= currentUser.username %></div>
+                            </div>
+                            <a href="/profile" class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
+                                <i class="fas fa-user-circle w-5 text-slate-400"></i>
+                                <span>My Profile</span>
+                            </a>
+                            <a href="/saved-events" class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
+                                <i class="fas fa-bookmark w-5 text-slate-400"></i>
+                                <span>Bookmarked Events</span>
+                            </a>
+                            <% if (currentUser.role_name.toLowerCase() === 'admin') { %>
+                                <a href="/admin/verifications" class="flex items-center px-4 py-2 text-sm text-purple-700 hover:bg-purple-50">
+                                    <i class="fas fa-check-double w-5 text-purple-500"></i>
+                                    <span>Verification Queue</span>
+                                </a>
+                            <% } %>
+                            <div class="border-t border-slate-100 my-1"></div>
+                            <a href="/logout" class="flex items-center px-4 py-2 text-sm text-rose-600 hover:bg-rose-50">
+                                <i class="fas fa-arrow-right-from-bracket w-5 text-rose-400"></i>
+                                <span>Log Out</span>
+                            </a>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <a href="/login" class="text-sm font-semibold text-slate-700 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+                        Log In
+                    </a>
+                    <a href="/register" class="text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 px-4 py-2 rounded-xl shadow-sm transition-all hover:shadow">
+                        Join K-Sync
+                    </a>
+                <% } %>
+            </div>
+
+            <!-- Mobile Hamburger Button -->
+            <div class="flex md:hidden items-center space-x-2">
+                <button id="mobile-menu-btn" class="p-2 rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-menu" class="hidden md:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 space-y-2">
+        <a href="/" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-100">Home</a>
+        <a href="/events" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-100">Discover Events</a>
+        <a href="/buddies" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-100">Event Buddy</a>
+        <a href="/submit-event" class="block px-3 py-2 rounded-lg text-base font-medium text-pink-700 bg-pink-50">Submit Event</a>
+        <a href="/check-submission" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-100">Track Status</a>
+        <% if (currentUser && currentUser.role_name.toLowerCase() === 'admin') { %>
+            <a href="/admin" class="block px-3 py-2 rounded-lg text-base font-medium text-purple-700 bg-purple-50">Admin Center</a>
+        <% } %>
+        <div class="border-t border-slate-200 pt-3">
+            <% if (currentUser) { %>
+                <div class="flex items-center space-x-3 px-3 py-2">
+                    <div class="w-10 h-10 rounded-lg bg-pink-500 text-white font-bold flex items-center justify-center">
+                        <%= currentUser.full_name.charAt(0).toUpperCase() %>
+                    </div>
+                    <div>
+                        <div class="font-bold text-slate-800"><%= currentUser.full_name %></div>
+                        <div class="text-xs text-slate-500">@<%= currentUser.username %></div>
+                    </div>
+                </div>
+                <a href="/profile" class="block px-3 py-2 rounded-lg text-sm text-slate-700 hover:bg-slate-100">My Profile</a>
+                <a href="/saved-events" class="block px-3 py-2 rounded-lg text-sm text-slate-700 hover:bg-slate-100">Saved Events</a>
+                <a href="/logout" class="block px-3 py-2 rounded-lg text-sm text-rose-600 hover:bg-rose-50">Log Out</a>
+            <% } else { %>
+                <div class="grid grid-cols-2 gap-2 pt-2">
+                    <a href="/login" class="text-center py-2 border border-slate-300 rounded-lg font-semibold text-slate-700">Log In</a>
+                    <a href="/register" class="text-center py-2 bg-slate-900 text-white rounded-lg font-semibold">Join K-Sync</a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</nav>
+
+<script>
+    const mobileBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileBtn && mobileMenu) {
+        mobileBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    }
+</script>

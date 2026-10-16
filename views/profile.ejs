@@ -1,0 +1,120 @@
+<%- include('partials/header', { title: 'My Profile | K-Sync Malaysia' }) %>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="mb-8 border-b border-slate-200 pb-6 flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Account Profile</h1>
+            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Manage your personal fan identity, concert buddy preferences, and security.</p>
+        </div>
+        <div>
+            <span class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white">
+                <%= currentUser.role_name %>
+            </span>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left Col: Profile Card Preview -->
+        <div class="space-y-6">
+            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm text-center">
+                <div class="w-24 h-24 rounded-2xl mx-auto mb-4 overflow-hidden border-2 border-pink-200 bg-pink-50 flex items-center justify-center text-3xl font-extrabold text-pink-600 shadow-sm">
+                    <% if (currentUser.profile_image) { %>
+                        <img src="<%= currentUser.profile_image %>" alt="" class="w-full h-full object-cover">
+                    <% } else { %>
+                        <%= currentUser.full_name.charAt(0).toUpperCase() %>
+                    <% } %>
+                </div>
+                <h2 class="text-lg font-bold text-slate-900"><%= currentUser.full_name %></h2>
+                <div class="text-xs text-slate-400 font-mono">@<%= currentUser.username %></div>
+                <div class="mt-2 text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100 italic">
+                    "<%= currentUser.bio || 'K-Pop fan in Malaysia!' %>"
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-600 text-left">
+                    <div><span class="font-bold text-slate-700">Email:</span> <%= currentUser.email %></div>
+                    <div><span class="font-bold text-slate-700">Location:</span> <%= currentUser.location || 'Kuala Lumpur' %></div>
+                    <div><span class="font-bold text-slate-700">Buddy Status:</span> <%= currentUser.buddy_preference || 'Looking for event buddy' %></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right 2 Cols: Edit Forms -->
+        <div class="lg:col-span-2 space-y-8">
+            <!-- Edit Profile Details -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
+                <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center">
+                    <i class="fas fa-user-pen text-pink-600 me-2"></i> Edit Profile Information
+                </h3>
+                <form action="/profile" method="POST" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
+                        <input type="text" name="full_name" value="<%= currentUser.full_name %>" required 
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">City / Region in Malaysia</label>
+                            <input type="text" name="location" value="<%= currentUser.location || 'Kuala Lumpur' %>"
+                                   placeholder="e.g. Subang Jaya, Penang, JB"
+                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Concert Buddy Preference</label>
+                            <input type="text" name="buddy_preference" value="<%= currentUser.buddy_preference || 'Looking for concert buddies' %>"
+                                   placeholder="e.g. Cat 1 / VIP seatmate, carpool from PJ"
+                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Avatar / Profile Picture URL</label>
+                        <input type="url" name="profile_image" value="<%= currentUser.profile_image || '' %>"
+                               placeholder="https://..."
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Bio & Favorite Groups</label>
+                        <textarea name="bio" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-900"><%= currentUser.bio || '' %></textarea>
+                    </div>
+
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow">
+                        Save Changes
+                    </button>
+                </form>
+            </div>
+
+            <!-- Change Password -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
+                <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center">
+                    <i class="fas fa-lock text-purple-600 me-2"></i> Change Password
+                </h3>
+                <form action="/profile/change-password" method="POST" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Current Password</label>
+                        <input type="password" name="current_password" required placeholder="••••••••"
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs">
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">New Password</label>
+                            <input type="password" name="new_password" required minlength="6" placeholder="••••••••"
+                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Confirm New Password</label>
+                            <input type="password" name="confirm_password" required minlength="6" placeholder="••••••••"
+                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs">
+                        </div>
+                    </div>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-purple-900 hover:bg-purple-800 text-white text-xs font-bold shadow">
+                        Update Password
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

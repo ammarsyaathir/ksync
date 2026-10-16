@@ -1,0 +1,48 @@
+<%- include('partials/header', { title: 'Notifications | K-Sync Malaysia' }) %>
+
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="mb-8 border-b border-slate-200 pb-6 flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Notification Center</h1>
+            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Updates for your saved concerts, announcements, and buddy requests.</p>
+        </div>
+        <div>
+            <form action="/notifications/mark-all-read" method="POST">
+                <button type="submit" class="px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold shadow-xs">
+                    <i class="fas fa-check-double me-1.5 text-pink-500"></i> Mark All as Read
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <% if (notifications.length === 0) { %>
+        <div class="text-center py-16 bg-white rounded-3xl border border-slate-200 shadow-sm">
+            <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mx-auto mb-3">
+                <i class="far fa-bell-slash"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-800">No notifications yet</h3>
+            <p class="text-xs text-slate-500 mt-1">When organizers post soundcheck updates or schedule changes, they will appear here.</p>
+        </div>
+    <% } else { %>
+        <div class="space-y-3">
+            <% notifications.forEach(function(n) { %>
+                <div class="p-4 rounded-2xl border transition-all <%= n.is_read ? 'bg-white border-slate-200 opacity-80' : 'bg-pink-50/60 border-pink-200 shadow-xs' %> flex items-start space-x-3.5">
+                    <div class="w-9 h-9 rounded-xl <%= n.is_read ? 'bg-slate-100 text-slate-400' : 'bg-pink-100 text-pink-600' %> flex items-center justify-center shrink-0 text-sm font-bold">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="flex-grow min-w-0">
+                        <p class="text-xs font-bold text-slate-900 leading-snug"><%= n.message %></p>
+                        <div class="text-[10px] text-slate-400 mt-1"><%= helpers.formatDate(n.created_at) %></div>
+                    </div>
+                    <% if (n.event_id) { %>
+                        <a href="/events/<%= n.event_id %>" class="px-3 py-1 rounded-lg bg-slate-900 text-white text-[11px] font-bold shrink-0">
+                            View Show
+                        </a>
+                    <% } %>
+                </div>
+            <% }); %>
+        </div>
+    <% } %>
+</div>
+
+<%- include('partials/footer') %>

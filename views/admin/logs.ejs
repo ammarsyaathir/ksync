@@ -1,0 +1,48 @@
+<%- include('../partials/header', { title: 'Audit Trail Logs | K-Sync Admin' }) %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="mb-6">
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">System Audit Trail Logs</h1>
+        <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Immutable audit trail of administrator verification actions, event submissions, and security events.</p>
+    </div>
+
+    <!-- Admin Nav -->
+    <%- include('./admin-nav', { activePath: '/admin/logs' }) %>
+
+    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-700">
+                <thead class="bg-slate-50 text-slate-500 uppercase font-bold text-[10px] border-b border-slate-200">
+                    <tr>
+                        <th class="p-3">Log ID</th>
+                        <th class="p-3">Timestamp</th>
+                        <th class="p-3">User</th>
+                        <th class="p-3">Action</th>
+                        <th class="p-3">Entity</th>
+                        <th class="p-3">Details</th>
+                        <th class="p-3">IP Address</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 font-mono text-[11px]">
+                    <% logs.forEach(function(l) { %>
+                        <tr class="hover:bg-slate-50/50">
+                            <td class="p-3 text-slate-400">#<%= l.id %></td>
+                            <td class="p-3 text-slate-500 font-sans"><%= helpers.formatDate(l.created_at) %></td>
+                            <td class="p-3 font-sans font-bold text-slate-900"><%= l.username ? '@' + l.username : 'Anonymous/System' %></td>
+                            <td class="p-3">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-800">
+                                    <%= l.action %>
+                                </span>
+                            </td>
+                            <td class="p-3 text-purple-600 font-sans"><%= l.entity_type ? l.entity_type + ' #' + l.entity_id : '-' %></td>
+                            <td class="p-3 font-sans text-slate-600"><%= l.description %></td>
+                            <td class="p-3 text-slate-400"><%= l.ip_address || '127.0.0.1' %></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

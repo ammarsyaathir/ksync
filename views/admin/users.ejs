@@ -1,0 +1,62 @@
+<%- include('../partials/header', { title: 'Manage Users | K-Sync Admin' }) %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="mb-6">
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">System Users & Roles</h1>
+        <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Manage user accounts, roles (Admin, Organizer, Fan), and active statuses.</p>
+    </div>
+
+    <!-- Admin Nav -->
+    <%- include('./admin-nav', { activePath: '/admin/users' }) %>
+
+    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-700">
+                <thead class="bg-slate-50 text-slate-500 uppercase font-bold text-[10px] border-b border-slate-200">
+                    <tr>
+                        <th class="p-3">User</th>
+                        <th class="p-3">Role</th>
+                        <th class="p-3">Location</th>
+                        <th class="p-3">Status</th>
+                        <th class="p-3">Joined</th>
+                        <th class="p-3 text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    <% users.forEach(function(u) { %>
+                        <tr class="hover:bg-slate-50/50">
+                            <td class="p-3">
+                                <div class="font-bold text-slate-900"><%= u.full_name %></div>
+                                <div class="text-[10px] text-slate-400">@<%= u.username %> &bull; <%= u.email %></div>
+                            </td>
+                            <td class="p-3">
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold <%= u.role_name === 'Admin' ? 'bg-purple-100 text-purple-800' : (u.role_name === 'Organizer' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700') %>">
+                                    <%= u.role_name %>
+                                </span>
+                            </td>
+                            <td class="p-3 text-slate-600"><%= u.location || 'Malaysia' %></td>
+                            <td class="p-3">
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    <%= u.status || 'ACTIVE' %>
+                                </span>
+                            </td>
+                            <td class="p-3 text-slate-400 text-[10px]"><%= helpers.formatDate(u.created_at) %></td>
+                            <td class="p-3 text-right">
+                                <% if (u.id !== currentUser.id) { %>
+                                    <form action="/admin/users/delete" method="POST" onsubmit="return confirm('Permanently delete user account?')" class="inline">
+                                        <input type="hidden" name="id" value="<%= u.id %>">
+                                        <button type="submit" class="p-1.5 text-rose-500 hover:text-rose-700" title="Delete User">
+                                            <i class="fas fa-trash-can text-xs"></i>
+                                        </button>
+                                    </form>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>
