@@ -3,6 +3,14 @@
 <% 
     const calcStatus = helpers.getCalculatedEventStatus(event);
     const isSaved = isSavedEvent;
+    
+    // Calendar URL generation
+    const dateFormatted = (event.event_date || '').replace(/-/g, '');
+    const startTimeFormatted = (event.start_time || '18:00:00').replace(/:/g, '').substring(0, 4) + '00';
+    const endTimeFormatted = (event.end_time || '22:00:00').replace(/:/g, '').substring(0, 4) + '00';
+    const gCalDates = `${dateFormatted}T${startTimeFormatted}/${dateFormatted}T${endTimeFormatted}`;
+    const gCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.event_name)}&dates=${gCalDates}&details=${encodeURIComponent(event.description || 'K-Pop Event in Malaysia')}&location=${encodeURIComponent(event.venue_name + ', ' + event.city)}`;
+    const mapQuery = encodeURIComponent(`${event.venue_name} ${event.address || ''} ${event.city} Malaysia`);
 %>
 
 <!-- Banner Header -->
@@ -36,26 +44,73 @@
 <!-- Main Details Layout -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Left 2 Cols: Description, Rules, Updates, Live Chat -->
+        <!-- Left 2 Cols: Countdown, Action Bar, Description, Checklist, Biodata, Live Chat -->
         <div class="lg:col-span-2 space-y-8">
-            <!-- Action Bar (RSVP & Bookmark) -->
-            <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
-                <div class="flex items-center space-x-3">
+            <!-- Live Countdown To Event Card -->
+            <% if (calcStatus === 'UPCOMING') { %>
+                <div class="p-6 rounded-3xl bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 shadow-lg text-white">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <p class="text-xs font-black flex items-center text-pink-100 uppercase tracking-wider mb-1">
+                                <i class="fas fa-stopwatch me-2 text-white animate-pulse"></i> Live Event Countdown
+                            </p>
+                            <h3 class="text-lg font-extrabold text-white">Get Ready for <%= event.artist_name || 'the Show' %>!</h3>
+                        </div>
+                        <div id="countdown-timer" class="grid grid-cols-4 gap-2 text-center shrink-0">
+                            <div class="bg-white/20 backdrop-blur-md rounded-2xl px-3 py-2 border border-white/25 min-w-[62px]">
+                                <span id="cd-days" class="block text-xl font-black">00</span>
+                                <span class="text-[9px] font-bold text-pink-100 uppercase">Days</span>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-md rounded-2xl px-3 py-2 border border-white/25 min-w-[62px]">
+                                <span id="cd-hours" class="block text-xl font-black">00</span>
+                                <span class="text-[9px] font-bold text-pink-100 uppercase">Hours</span>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-md rounded-2xl px-3 py-2 border border-white/25 min-w-[62px]">
+                                <span id="cd-minutes" class="block text-xl font-black">00</span>
+                                <span class="text-[9px] font-bold text-pink-100 uppercase">Mins</span>
+                            </div>
+                            <div class="bg-white/20 backdrop-blur-md rounded-2xl px-3 py-2 border border-white/25 min-w-[62px]">
+                                <span id="cd-seconds" class="block text-xl font-black">00</span>
+                                <span class="text-[9px] font-bold text-pink-100 uppercase">Secs</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+
+            <!-- Action Bar (Bookmark, Share, Calendar, Report, Official Link) -->
+            <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-2.5">
                     <button onclick="toggleSaveEvent(<%= event.id %>, this)" 
-                            class="px-5 py-2.5 rounded-xl border <%= isSaved ? 'bg-rose-50 text-rose-600 border-rose-200' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' %> font-bold text-xs flex items-center shadow-sm transition-all cursor-pointer">
-                        <i class="<%= isSaved ? 'fas' : 'far' %> fa-heart me-2 text-rose-500"></i>
-                        <span><%= isSaved ? 'Saved to Bookmarks' : 'Save Event' %></span>
+                            class="px-4 py-2.5 rounded-xl border <%= isSaved ? 'bg-rose-50 text-rose-600 border-rose-200' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' %> font-bold text-xs flex items-center shadow-xs transition-all cursor-pointer">
+                        <i class="<%= isSaved ? 'fas' : 'far' %> fa-heart me-1.5 text-rose-500"></i>
+                        <span><%= isSaved ? 'Saved' : 'Save Event' %></span>
                     </button>
+                    
+                    <button onclick="openShareModal('<%= event.event_name.replace(/'/g, "\\'") %>')" 
+                            class="px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center shadow-xs transition-all cursor-pointer">
+                        <i class="fas fa-share-nodes me-1.5 text-pink-500"></i>
+                        <span>Share</span>
+                    </button>
+
+                    <a href="<%= gCalUrl %>" target="_blank" rel="noopener" 
+                       class="px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center shadow-xs transition-all"
+                       title="Add to Google Calendar">
+                        <i class="far fa-calendar-plus me-1.5 text-purple-600"></i>
+                        <span>Add to Calendar</span>
+                    </a>
+
                     <button onclick="reportEventPrompt(<%= event.id %>)" 
-                            class="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs flex items-center shadow-sm transition-all cursor-pointer"
+                            class="px-3.5 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-500 font-bold text-xs flex items-center shadow-xs transition-all cursor-pointer"
                             title="Report inaccurate details or outdated info">
-                        <i class="fas fa-flag text-amber-500 me-1.5"></i>
-                        <span>Report Listing</span>
+                        <i class="fas fa-flag text-amber-500 me-1"></i>
+                        <span>Report</span>
                     </button>
                 </div>
+
                 <% if (event.official_url) { %>
                     <a href="<%= event.official_url %>" target="_blank" rel="noopener" 
-                       class="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md flex items-center">
+                       class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md flex items-center">
                         <i class="fas fa-ticket me-2 text-pink-400"></i> Official Ticket Link &rarr;
                     </a>
                 <% } %>
@@ -97,6 +152,85 @@
                     <% } %>
                 </div>
             <% } %>
+
+            <!-- Concert Day Survival & Fan Prep Checklist Card -->
+            <div class="bg-gradient-to-b from-emerald-50/50 via-white to-white rounded-3xl p-6 sm:p-8 border border-emerald-200/90 shadow-sm space-y-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 gap-2">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 flex items-center">
+                            <i class="fas fa-clipboard-check text-emerald-600 me-2.5"></i> Concert Day Survival Checklist
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-1">Interactive checklist for attendees. Items are automatically saved to your browser.</p>
+                    </div>
+                    <span id="checklist-count-label" class="text-xs font-bold px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full self-start sm:self-auto">
+                        0 / 7 Prepared (0%)
+                    </span>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                    <div id="checklist-progress-bar" class="bg-gradient-to-r from-emerald-500 to-teal-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+
+                <!-- Checklist Items -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                    <label class="p-3.5 rounded-2xl bg-white border border-slate-200 flex items-start space-x-3 cursor-pointer hover:border-emerald-300 transition-all shadow-xs group">
+                        <input type="checkbox" onchange="updateChecklistProgress()" class="chk-item rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 mt-0.5" data-id="e_<%= event.id %>_ticket">
+                        <div class="text-xs font-bold text-slate-800">
+                            <span class="block group-hover:text-emerald-700 transition-colors"><i class="fas fa-ticket text-amber-500 me-1.5"></i> E-Ticket / Wristband Barcode</span>
+                            <span class="text-[10px] text-slate-400 font-normal block mt-0.5">Screenshot or save PDF offline on your phone.</span>
+                        </div>
+                    </label>
+
+                    <label class="p-3.5 rounded-2xl bg-white border border-slate-200 flex items-start space-x-3 cursor-pointer hover:border-emerald-300 transition-all shadow-xs group">
+                        <input type="checkbox" onchange="updateChecklistProgress()" class="chk-item rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 mt-0.5" data-id="e_<%= event.id %>_nric">
+                        <div class="text-xs font-bold text-slate-800">
+                            <span class="block group-hover:text-emerald-700 transition-colors"><i class="fas fa-id-card text-indigo-500 me-1.5"></i> NRIC / Passport ID</span>
+                            <span class="text-[10px] text-slate-400 font-normal block mt-0.5">Required for identity verification at entry gates.</span>
+                        </div>
+                    </label>
+
+                    <label class="p-3.5 rounded-2xl bg-white border border-slate-200 flex items-start space-x-3 cursor-pointer hover:border-emerald-300 transition-all shadow-xs group">
+                        <input type="checkbox" onchange="updateChecklistProgress()" class="chk-item rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 mt-0.5" data-id="e_<%= event.id %>_lightstick">
+                        <div class="text-xs font-bold text-slate-800">
+                            <span class="block group-hover:text-emerald-700 transition-colors"><i class="fas fa-wand-sparkles text-pink-500 me-1.5"></i> Official Lightstick + Batteries</span>
+                            <span class="text-[10px] text-slate-400 font-normal block mt-0.5">Bring 3x fresh AAA batteries (load them before entering).</span>
+                        </div>
+                    </label>
+
+                    <label class="p-3.5 rounded-2xl bg-white border border-slate-200 flex items-start space-x-3 cursor-pointer hover:border-emerald-300 transition-all shadow-xs group">
+                        <input type="checkbox" onchange="updateChecklistProgress()" class="chk-item rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 mt-0.5" data-id="e_<%= event.id %>_powerbank">
+                        <div class="text-xs font-bold text-slate-800">
+                            <span class="block group-hover:text-emerald-700 transition-colors"><i class="fas fa-battery-three-quarters text-emerald-500 me-1.5"></i> Power Bank (&lt; 20,000mAh)</span>
+                            <span class="text-[10px] text-slate-400 font-normal block mt-0.5">Keep phone charged for concert clips and Grab ride home.</span>
+                        </div>
+                    </label>
+
+                    <label class="p-3.5 rounded-2xl bg-white border border-slate-200 flex items-start space-x-3 cursor-pointer hover:border-emerald-300 transition-all shadow-xs group">
+                        <input type="checkbox" onchange="updateChecklistProgress()" class="chk-item rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 mt-0.5" data-id="e_<%= event.id %>_bag">
+                        <div class="text-xs font-bold text-slate-800">
+                            <span class="block group-hover:text-emerald-700 transition-colors"><i class="fas fa-bag-shopping text-purple-500 me-1.5"></i> Compact Bag (Max A4 Size)</span>
+                            <span class="text-[10px] text-slate-400 font-normal block mt-0.5">Most Malaysian arenas ban large backpacks at security.</span>
+                        </div>
+                    </label>
+
+                    <label class="p-3.5 rounded-2xl bg-white border border-slate-200 flex items-start space-x-3 cursor-pointer hover:border-emerald-300 transition-all shadow-xs group">
+                        <input type="checkbox" onchange="updateChecklistProgress()" class="chk-item rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 mt-0.5" data-id="e_<%= event.id %>_shoes">
+                        <div class="text-xs font-bold text-slate-800">
+                            <span class="block group-hover:text-emerald-700 transition-colors"><i class="fas fa-shoe-prints text-amber-600 me-1.5"></i> Comfortable Shoes</span>
+                            <span class="text-[10px] text-slate-400 font-normal block mt-0.5">Expect 2–4 hours of standing in queue and pit zones.</span>
+                        </div>
+                    </label>
+
+                    <label class="p-3.5 rounded-2xl bg-white border border-slate-200 flex items-start space-x-3 cursor-pointer hover:border-emerald-300 transition-all shadow-xs group sm:col-span-2">
+                        <input type="checkbox" onchange="updateChecklistProgress()" class="chk-item rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 mt-0.5" data-id="e_<%= event.id %>_transit">
+                        <div class="text-xs font-bold text-slate-800">
+                            <span class="block group-hover:text-emerald-700 transition-colors"><i class="fas fa-route text-rose-500 me-1.5"></i> Public Transit / Grab Route Planned</span>
+                            <span class="text-[10px] text-slate-400 font-normal block mt-0.5">Check LRT extension hours or pre-agree on designated pickup point.</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
 
             <!-- Idol Group Members & Biodata (Same Table 'artists.members') -->
             <% if (typeof members !== 'undefined' && members && members.length > 0) { %>
@@ -266,9 +400,26 @@
                             <div class="text-slate-600"><%= event.address %>, <%= event.city %>, <%= event.state %></div>
                             <% if (event.map_link) { %>
                                 <a href="<%= event.map_link %>" target="_blank" rel="noopener" class="text-pink-600 font-bold hover:underline inline-block mt-1">
-                                    <i class="fas fa-arrow-up-right-from-square me-1"></i> Google Maps Link
+                                    <i class="fas fa-arrow-up-right-from-square me-1"></i> Open Google Maps
                                 </a>
                             <% } %>
+                        </div>
+                    </div>
+
+                    <!-- Embedded Interactive Google Map in Browser -->
+                    <div class="mt-4 pt-4 border-t border-slate-100">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[11px] font-bold text-slate-700 uppercase tracking-wider flex items-center">
+                                <i class="fas fa-map-location-dot text-rose-500 me-1.5"></i> Interactive Venue Map
+                            </span>
+                            <a href="https://maps.google.com/?q=<%= mapQuery %>" target="_blank" rel="noopener noreferrer" class="text-[11px] font-bold text-pink-600 hover:underline flex items-center">
+                                <span>Directions</span> <i class="fas fa-arrow-up-right-from-square ms-1 text-[9px]"></i>
+                            </a>
+                        </div>
+                        <div class="rounded-2xl overflow-hidden border border-slate-200 shadow-sm h-52 bg-slate-100">
+                            <iframe class="w-full h-full border-0" loading="lazy" allowfullscreen 
+                                    src="https://maps.google.com/maps?q=<%= mapQuery %>&t=&z=15&ie=UTF8&iwloc=&output=embed">
+                            </iframe>
                         </div>
                     </div>
                 </div>
@@ -297,16 +448,37 @@
                 </div>
             </div>
 
-            <!-- Concert Buddy Match Shortcut -->
-            <div class="bg-gradient-to-br from-pink-500 to-purple-600 rounded-3xl p-6 text-white shadow-lg space-y-3">
-                <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-lg">
-                    <i class="fas fa-handshake"></i>
+            <!-- Official K-Sync Verification & Safety Card (Small Card) -->
+            <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 rounded-3xl p-6 text-white shadow-lg space-y-3.5">
+                <div class="flex items-center justify-between">
+                    <div class="w-10 h-10 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center text-lg">
+                        <i class="fas fa-shield-check"></i>
+                    </div>
+                    <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                        <i class="fas fa-circle-check me-1"></i> Verified Event
+                    </span>
                 </div>
-                <h3 class="font-bold text-base">Looking for a Concert Buddy?</h3>
-                <p class="text-xs text-pink-100 leading-relaxed font-medium">Connect with other Carats, ONCEs, or ARMYs attending this show. Match up for carpooling or queueing together!</p>
-                <a href="/buddies" class="inline-block px-5 py-2.5 rounded-xl bg-white text-slate-900 font-bold text-xs shadow hover:bg-pink-50 transition-all">
-                    Find Event Buddy &rarr;
-                </a>
+                <div>
+                    <h3 class="font-extrabold text-sm text-white">Event Reference ID</h3>
+                    <p class="text-[11px] text-slate-300 mt-0.5">Use this reference code to track verified event updates.</p>
+                </div>
+                <div class="flex items-center justify-between bg-white/10 rounded-xl p-2.5 border border-white/10 font-mono text-xs">
+                    <span class="text-pink-300 font-bold tracking-wider"><%= event.tracking_code || 'KS-2026-TXT001' %></span>
+                    <button onclick="copyRefCode('<%= event.tracking_code || 'KS-2026-TXT001' %>')" 
+                            class="text-[11px] text-slate-300 hover:text-white font-sans font-bold flex items-center cursor-pointer transition-colors">
+                        <i class="far fa-copy me-1 text-xs"></i> Copy
+                    </button>
+                </div>
+                <div class="text-[11px] text-slate-300/90 leading-relaxed pt-1 border-t border-white/10 space-y-1">
+                    <div class="flex items-start gap-1.5">
+                        <i class="fas fa-check text-pink-400 text-[10px] mt-0.5"></i>
+                        <span>Vetted against official tour promoters</span>
+                    </div>
+                    <div class="flex items-start gap-1.5">
+                        <i class="fas fa-ban text-rose-400 text-[10px] mt-0.5"></i>
+                        <span>Never buy from unverified social media scalpers</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -404,6 +576,203 @@
     if (chatBox) {
         chatBox.scrollTop = chatBox.scrollHeight;
     }
+
+    // Toast Helper
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toast-msg');
+        if (toast && toastMsg) {
+            toastMsg.textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+    }
+
+    // Share Modal Logic
+    function openShareModal(eventName) {
+        const url = window.location.href;
+        if (navigator.share && /mobile|android|iphone/i.test(navigator.userAgent)) {
+            navigator.share({
+                title: eventName,
+                text: 'Check out ' + eventName + ' on K-Sync Malaysia!',
+                url: url
+            }).catch(() => {});
+            return;
+        }
+
+        const modal = document.getElementById('share-modal');
+        const content = document.getElementById('share-modal-content');
+        document.getElementById('share-url-input').value = url;
+        
+        const shareText = encodeURIComponent('Check out ' + eventName + ' on K-Sync Malaysia: ' + url);
+        document.getElementById('share-wa').href = 'https://api.whatsapp.com/send?text=' + shareText;
+        document.getElementById('share-x').href = 'https://twitter.com/intent/tweet?text=' + shareText;
+        document.getElementById('share-tg').href = 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent('Check out ' + eventName + ' on K-Sync Malaysia');
+        document.getElementById('share-fb').href = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url);
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        setTimeout(() => {
+            content.classList.remove('scale-95', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+
+    function closeShareModal() {
+        const modal = document.getElementById('share-modal');
+        const content = document.getElementById('share-modal-content');
+        content.classList.remove('scale-100', 'opacity-100');
+        content.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }, 200);
+    }
+
+    function copyShareUrl() {
+        const input = document.getElementById('share-url-input');
+        input.select();
+        navigator.clipboard.writeText(input.value);
+        showToast('Event link copied to clipboard!');
+        const btn = document.getElementById('share-copy-btn');
+        btn.innerHTML = '<i class="fas fa-check text-emerald-400"></i>';
+        setTimeout(() => { btn.innerText = 'Copy'; }, 2000);
+    }
+
+    function copyRefCode(code) {
+        navigator.clipboard.writeText(code);
+        showToast('Reference code ' + code + ' copied!');
+    }
+
+    // Live Countdown Timer
+    const eventDateStr = "<%= event.event_date %>";
+    const startTimeStr = "<%= event.start_time || '18:00:00' %>";
+    const targetTime = new Date(`${eventDateStr}T${startTimeStr}`).getTime();
+
+    function updateCountdown() {
+        const now = Date.now();
+        const diff = targetTime - now;
+
+        if (diff <= 0) {
+            const timerEl = document.getElementById('countdown-timer');
+            if (timerEl) {
+                timerEl.innerHTML = '<div class="col-span-4 bg-white/20 py-2 px-4 rounded-xl text-xs font-bold">Event Started / Live!</div>';
+            }
+            return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        const cdDays = document.getElementById('cd-days');
+        const cdHours = document.getElementById('cd-hours');
+        const cdMinutes = document.getElementById('cd-minutes');
+        const cdSeconds = document.getElementById('cd-seconds');
+
+        if (cdDays) cdDays.textContent = String(days).padStart(2, '0');
+        if (cdHours) cdHours.textContent = String(hours).padStart(2, '0');
+        if (cdMinutes) cdMinutes.textContent = String(minutes).padStart(2, '0');
+        if (cdSeconds) cdSeconds.textContent = String(seconds).padStart(2, '0');
+    }
+
+    if (targetTime) {
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    }
+
+    // Interactive Checklist Progress & LocalStorage
+    function updateChecklistProgress() {
+        const items = document.querySelectorAll('.chk-item');
+        let checkedCount = 0;
+
+        items.forEach(item => {
+            const id = item.getAttribute('data-id');
+            if (item.checked) {
+                checkedCount++;
+                localStorage.setItem(id, '1');
+            } else {
+                localStorage.removeItem(id);
+            }
+        });
+
+        const total = items.length;
+        const percentage = total > 0 ? Math.round((checkedCount / total) * 100) : 0;
+
+        const label = document.getElementById('checklist-count-label');
+        const progressBar = document.getElementById('checklist-progress-bar');
+
+        if (label) label.textContent = `${checkedCount} / ${total} Prepared (${percentage}%)`;
+        if (progressBar) progressBar.style.width = `${percentage}%`;
+    }
+
+    function loadChecklistState() {
+        const items = document.querySelectorAll('.chk-item');
+        items.forEach(item => {
+            const id = item.getAttribute('data-id');
+            if (localStorage.getItem(id) === '1') {
+                item.checked = true;
+            }
+        });
+        updateChecklistProgress();
+    }
+
+    document.addEventListener('DOMContentLoaded', loadChecklistState);
 </script>
+
+<!-- Interactive Share Modal -->
+<div id="share-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 transform transition-all scale-95 opacity-0 duration-200" id="share-modal-content">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+            <h3 class="text-lg font-bold text-slate-900 flex items-center">
+                <i class="fas fa-share-nodes text-pink-600 me-2.5"></i> Share This Event
+            </h3>
+            <button onclick="closeShareModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-xs cursor-pointer transition-colors">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
+
+        <p class="text-xs text-slate-600 mb-4 font-medium">Spread the word to fellow Malaysian K-pop fans!</p>
+
+        <!-- Direct Social Share Buttons -->
+        <div class="grid grid-cols-4 gap-3 mb-6">
+            <a id="share-wa" href="#" target="_blank" rel="noopener" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-colors group">
+                <i class="fab fa-whatsapp text-2xl mb-1 text-emerald-600 group-hover:scale-110 transition-transform"></i>
+                <span class="text-[10px] font-bold">WhatsApp</span>
+            </a>
+            <a id="share-x" href="#" target="_blank" rel="noopener" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-900 transition-colors group">
+                <i class="fab fa-x-twitter text-2xl mb-1 text-slate-900 group-hover:scale-110 transition-transform"></i>
+                <span class="text-[10px] font-bold">X (Twitter)</span>
+            </a>
+            <a id="share-tg" href="#" target="_blank" rel="noopener" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-sky-50 hover:bg-sky-100 text-sky-700 transition-colors group">
+                <i class="fab fa-telegram text-2xl mb-1 text-sky-500 group-hover:scale-110 transition-transform"></i>
+                <span class="text-[10px] font-bold">Telegram</span>
+            </a>
+            <a id="share-fb" href="#" target="_blank" rel="noopener" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-blue-50 hover:bg-blue-100 text-blue-700 transition-colors group">
+                <i class="fab fa-facebook text-2xl mb-1 text-blue-600 group-hover:scale-110 transition-transform"></i>
+                <span class="text-[10px] font-bold">Facebook</span>
+            </a>
+        </div>
+
+        <!-- Copy Link Input Box -->
+        <div class="relative">
+            <input type="text" id="share-url-input" readonly 
+                   class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 pl-4 pr-24 text-xs text-slate-700 font-mono focus:outline-none">
+            <button onclick="copyShareUrl()" id="share-copy-btn"
+                    class="absolute right-1.5 top-1.5 bottom-1.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center transition-all cursor-pointer">
+                <span>Copy</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Toast Notification -->
+<div id="toast" class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <i class="fas fa-circle-check text-emerald-400"></i>
+    <span id="toast-msg">Copied to clipboard!</span>
+</div>
 
 <%- include('partials/footer') %>
