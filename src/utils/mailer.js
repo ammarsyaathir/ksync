@@ -24,8 +24,8 @@ async function getTransporter() {
       port: Number(SMTP_PORT) || 587,
       secure: SMTP_SECURE === 'true' || Number(SMTP_PORT) === 465,
       auth: {
-        user: SMTP_USER,
-        pass: SMTP_PASS
+        user: SMTP_USER.trim(),
+        pass: SMTP_PASS.replace(/\s+/g, '')
       },
       tls: {
         rejectUnauthorized: false
