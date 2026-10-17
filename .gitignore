@@ -7,3 +7,13 @@ scratch/
 *.log
 .DS_Store
 Thumbs.db
+
+# Local database temporary files & backups
+database/*.db-shm
+database/*.db-wal
+database/backups/
+!database/ksync.db
+
+# User-uploaded files
+public/uploads/
+uploads/

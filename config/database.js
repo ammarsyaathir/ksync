@@ -1,4 +1,4 @@
-// config/database.js - Dual Hostinger MySQL & Local SQLite Database Connector
+// config/database.js - Tri-Database Connector (Azure SQL Database, MySQL & SQLite)
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -6,14 +6,45 @@ import { fileURLToPath } from 'url';
 dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dbFile = path.resolve(__dirname, '../database/ksync.db');
+const dbFile = process.env.SQLITE_DB_PATH || path.resolve(__dirname, '../database/ksync.db');
 
+let mssqlPool = null;
+let isUsingMSSQL = false;
 let mysqlPool = null;
-let sqliteDb = null;
 let isUsingMySQL = false;
+let sqliteDb = null;
 
-// Check if MySQL credentials are provided in environment
-if (process.env.DB_HOST && process.env.DB_NAME && process.env.DB_USER) {
+// 1. Check if Azure SQL Database (MSSQL) is configured
+if (process.env.DB_SERVER && (process.env.DB_DATABASE || process.env.DB_NAME) && process.env.DB_USER) {
+  try {
+    const mssql = (await import('mssql')).default;
+    const dbName = process.env.DB_DATABASE || process.env.DB_NAME;
+    const config = {
+      server: process.env.DB_SERVER, // e.g. ksync-sql-server.database.windows.net
+      database: dbName,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD || '',
+      port: Number(process.env.DB_PORT) || 1433,
+      options: {
+        encrypt: true, // Mandatory for Azure SQL Database
+        trustServerCertificate: false
+      },
+      pool: {
+        max: 10,
+        min: 0,
+        idleTimeoutMillis: 30000
+      }
+    };
+    mssqlPool = await mssql.connect(config);
+    isUsingMSSQL = true;
+    console.log(`🔌 Connected to Azure SQL Database [${dbName}] at ${process.env.DB_SERVER}`);
+  } catch (err) {
+    console.error('⚠️ Failed to connect to Azure SQL Database:', err.message);
+  }
+}
+
+// 2. Check if MySQL is configured (if not using MSSQL)
+if (!isUsingMSSQL && process.env.DB_HOST && process.env.DB_NAME && process.env.DB_USER) {
   try {
     const mysql = await import('mysql2/promise');
     mysqlPool = mysql.createPool({
@@ -25,17 +56,18 @@ if (process.env.DB_HOST && process.env.DB_NAME && process.env.DB_USER) {
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
-      charset: 'utf8mb4'
+      charset: 'utf8mb4',
+      ssl: process.env.DB_SSL === 'false' ? false : { rejectUnauthorized: false }
     });
     isUsingMySQL = true;
-    console.log(`🔌 Connected to Hostinger MySQL Database [${process.env.DB_NAME}] at ${process.env.DB_HOST}`);
+    console.log(`🔌 Connected to MySQL Database [${process.env.DB_NAME}] at ${process.env.DB_HOST}`);
   } catch (err) {
-    console.error('⚠️ Failed to connect to MySQL, falling back to local SQLite:', err.message);
+    console.error('⚠️ Failed to connect to MySQL:', err.message);
   }
 }
 
-// Fallback to local SQLite if MySQL not configured or connection failed
-if (!isUsingMySQL) {
+// 3. Fallback to Local SQLite if neither cloud DB is configured or connection failed
+if (!isUsingMSSQL && !isUsingMySQL) {
   try {
     const Database = (await import('better-sqlite3')).default;
     sqliteDb = new Database(dbFile);
@@ -55,7 +87,16 @@ if (!isUsingMySQL) {
  * @returns {Promise<Array>}
  */
 export async function query(sql, params = []) {
-  if (isUsingMySQL && mysqlPool) {
+  if (isUsingMSSQL && mssqlPool) {
+    const request = mssqlPool.request();
+    let paramIdx = 1;
+    const mssqlSql = sql.replace(/\?/g, () => `@p${paramIdx++}`);
+    params.forEach((val, i) => {
+      request.input(`p${i + 1}`, val);
+    });
+    const result = await request.query(mssqlSql);
+    return result.recordset || [];
+  } else if (isUsingMySQL && mysqlPool) {
     const [rows] = await mysqlPool.query(sql, params);
     return rows;
   } else {
@@ -70,7 +111,16 @@ export async function query(sql, params = []) {
  * @returns {Promise<Object|null>}
  */
 export async function getOne(sql, params = []) {
-  if (isUsingMySQL && mysqlPool) {
+  if (isUsingMSSQL && mssqlPool) {
+    const request = mssqlPool.request();
+    let paramIdx = 1;
+    const mssqlSql = sql.replace(/\?/g, () => `@p${paramIdx++}`);
+    params.forEach((val, i) => {
+      request.input(`p${i + 1}`, val);
+    });
+    const result = await request.query(mssqlSql);
+    return result.recordset && result.recordset.length > 0 ? result.recordset[0] : null;
+  } else if (isUsingMySQL && mysqlPool) {
     const [rows] = await mysqlPool.query(sql, params);
     return rows && rows.length > 0 ? rows[0] : null;
   } else {
@@ -86,7 +136,29 @@ export async function getOne(sql, params = []) {
  * @returns {Promise<{ insertId: number|null, affectedRows: number }>}
  */
 export async function execute(sql, params = []) {
-  if (isUsingMySQL && mysqlPool) {
+  if (isUsingMSSQL && mssqlPool) {
+    const request = mssqlPool.request();
+    let paramIdx = 1;
+    let mssqlSql = sql.replace(/\?/g, () => `@p${paramIdx++}`);
+    params.forEach((val, i) => {
+      request.input(`p${i + 1}`, val);
+    });
+
+    const isInsert = /^\s*INSERT\s+INTO/i.test(sql);
+    if (isInsert) {
+      mssqlSql += '; SELECT SCOPE_IDENTITY() AS insertId;';
+    }
+
+    const result = await request.query(mssqlSql);
+    const insertId = result.recordset && result.recordset[0] && result.recordset[0].insertId 
+      ? Number(result.recordset[0].insertId) 
+      : null;
+
+    return {
+      insertId,
+      affectedRows: result.rowsAffected ? result.rowsAffected[0] : 0
+    };
+  } else if (isUsingMySQL && mysqlPool) {
     const [result] = await mysqlPool.execute(sql, params);
     return {
       insertId: result.insertId || null,
@@ -105,9 +177,14 @@ export function isMySQL() {
   return isUsingMySQL;
 }
 
+export function isMSSQL() {
+  return isUsingMSSQL;
+}
+
 export default {
   query,
   getOne,
   execute,
-  isMySQL
+  isMySQL,
+  isMSSQL
 };

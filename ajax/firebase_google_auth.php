@@ -1,29 +1,56 @@
 <?php
 // ajax/firebase_google_auth.php - Firebase Google Authentication Handler
+//
+// SECURITY: Identity is derived ONLY from a Firebase ID token that is verified
+// server-side. Client-supplied email/uid/role are ignored.
 
 header('Content-Type: application/json');
 require_once __DIR__ . '/../config/auth.php';
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/verify_token.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['status' => 'error', 'message' => 'Invalid request method.']);
     exit;
 }
 
-$email = trim($_POST['email'] ?? '');
-$full_name = trim($_POST['full_name'] ?? '');
-$google_uid = trim($_POST['uid'] ?? '');
-$profile_image = trim($_POST['photo_url'] ?? '');
-$selected_role = trim($_POST['role'] ?? 'Fan');
+// Accept the token from the POST body, or an Authorization: Bearer header.
+$id_token = trim($_POST['id_token'] ?? '');
+if ($id_token === '') {
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    if (stripos($authHeader, 'Bearer ') === 0) {
+        $id_token = trim(substr($authHeader, 7));
+    }
+}
 
-if (empty($email) || empty($google_uid)) {
-    echo json_encode(['status' => 'error', 'message' => 'Invalid Google authentication payload.']);
+if ($id_token === '') {
+    echo json_encode(['status' => 'error', 'message' => 'Missing Google authentication token.']);
     exit;
 }
 
-if (empty($full_name)) {
+// Verify the token before trusting any identity data.
+try {
+    $claims = verify_firebase_id_token($id_token);
+} catch (Exception $e) {
+    error_log('Firebase token verification failed: ' . $e->getMessage());
+    echo json_encode(['status' => 'error', 'message' => 'Google authentication failed. Please try again.']);
+    exit;
+}
+
+$email = trim($claims['email'] ?? '');
+if ($email === '' || ($claims['email_verified'] ?? false) === false) {
+    echo json_encode(['status' => 'error', 'message' => 'Google account email is missing or unverified.']);
+    exit;
+}
+
+$full_name = trim($claims['name'] ?? '');
+if ($full_name === '') {
     $full_name = explode('@', $email)[0];
 }
+$profile_image = $claims['picture'] ?? '';
+
+// Only self-service roles are allowed; Admin can never be self-assigned.
+$selected_role = strtolower(trim($_POST['role'] ?? 'fan')) === 'organizer' ? 'Organizer' : 'Fan';
 
 // Generate unique username from email
 $username = strtolower(explode('@', $email)[0]);
@@ -31,7 +58,7 @@ $username = preg_replace('/[^a-z0-9_]/', '', $username);
 
 try {
     // Check if user already exists by email
-    $stmt = $pdo->prepare("SELECT u.*, r.name as role_name FROM users u JOIN roles r ON u.role_id = r.id WHERE u.email = ?");
+    $stmt = $pdo->prepare("SELECT u.*, r.name as role_name FROM users u JOIN roles r ON u.role_id = r.id WHERE LOWER(u.email) = LOWER(?)");
     $stmt->execute([$email]);
     $user = $stmt->fetch();
 
@@ -53,7 +80,7 @@ try {
 
         log_activity($user['id'], 'GOOGLE_LOGIN', 'users', $user['id'], 'User logged in via Firebase Google Auth');
 
-        $redirect = strtolower($user['role_name']) === 'admin' ? "{$base_url}/admin/dashboard.php" : 
+        $redirect = strtolower($user['role_name']) === 'admin' ? "{$base_url}/admin/dashboard.php" :
                    (strtolower($user['role_name']) === 'organizer' ? "{$base_url}/organizer/dashboard.php" : "{$base_url}/index.php");
 
         set_flash_message('success', "Welcome back, {$user['full_name']}! Signed in with Google.");
@@ -68,12 +95,12 @@ try {
             $username = $username . rand(100, 999);
         }
 
-        // Get Role ID
+        // Get Role ID (allow-listed: Fan or Organizer only)
         $stmtRole = $pdo->prepare("SELECT id FROM roles WHERE LOWER(name) = LOWER(?)");
         $stmtRole->execute([$selected_role]);
         $role_id = $stmtRole->fetchColumn() ?: 3; // Default Fan role
 
-        $random_password = password_hash(bin2hex(random_bytes(10)), PASSWORD_DEFAULT);
+        $random_password = password_hash(bin2hex(random_bytes(16)), PASSWORD_DEFAULT);
 
         $ins = $pdo->prepare("INSERT INTO users (role_id, full_name, username, email, password_hash, profile_image) VALUES (?, ?, ?, ?, ?, ?)");
         $ins->execute([$role_id, $full_name, $username, $email, $random_password, $profile_image]);
@@ -97,6 +124,7 @@ try {
         exit;
     }
 } catch (Exception $e) {
-    echo json_encode(['status' => 'error', 'message' => 'Database error during Google Authentication: ' . $e->getMessage()]);
+    error_log('Firebase auth DB error: ' . $e->getMessage());
+    echo json_encode(['status' => 'error', 'message' => 'Database error during Google Authentication.']);
     exit;
 }

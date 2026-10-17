@@ -85,25 +85,49 @@ async function handleSupabaseEmailSignIn(email, password) {
     }
 }
 
-function syncSupabaseUser(user, fullName, role) {
-    const formData = new FormData();
-    formData.append('email', user.email || '');
-    formData.append('full_name', fullName || user.email.split('@')[0]);
-    formData.append('uid', user.id || '');
-    formData.append('photo_url', user.user_metadata?.avatar_url || '');
-    formData.append('role', role);
+async function syncSupabaseUser(user, fullName, selectedRole) {
+    if (window.__ksSupabaseSyncing) return;
+    window.__ksSupabaseSyncing = true;
 
-    fetch('<?= $base_url ?>/ajax/supabase_auth_sync.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === 'success') {
-            window.location.href = data.redirect;
-        } else {
-            alert(data.message);
+    try {
+        // Retrieve the signed Supabase session token; the server verifies it and
+        // derives identity from its claims (client identity is not trusted).
+        const { data } = await supabaseClient.auth.getSession();
+        const token = data && data.session ? data.session.access_token : null;
+        if (!token) {
+            alert('Could not verify your Supabase session. Please sign in again.');
+            window.__ksSupabaseSyncing = false;
+            return;
         }
-    });
+
+        const formData = new FormData();
+        formData.append('access_token', token);
+        formData.append('full_name', fullName || '');
+        formData.append('role', selectedRole || 'Fan');
+
+        const res = await fetch('<?= $base_url ?>/ajax/supabase_auth_sync.php', {
+            method: 'POST',
+            body: formData
+        });
+        const result = await res.json();
+
+        if (result.status === 'success') {
+            window.location.href = result.redirect;
+        } else {
+            alert(result.message);
+            window.__ksSupabaseSyncing = false;
+        }
+    } catch (err) {
+        console.error('Supabase sync error:', err);
+        window.__ksSupabaseSyncing = false;
+    }
 }
+
+// Complete the OAuth redirect flow: once Supabase restores the session from the
+// callback URL, sync it with our backend (verified server-side).
+supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session && session.user && !window.__ksSupabaseSyncing) {
+        syncSupabaseUser(session.user, (session.user.user_metadata && session.user.user_metadata.full_name) || '', 'Fan');
+    }
+});
 </script>

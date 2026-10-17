@@ -41,23 +41,71 @@ router.post('/events/:id/interest', async (req, res) => {
   return res.json({ status: 'success', interested: true });
 });
 
-// POST /api/events/:id/report - Report Incorrect Event (Chapter 1 Solution 1.3.3 & Scope 1.6.1)
+// POST /api/events/:id/report - Multi-Layer Verified Report (Chapter 1 Solution 1.3.3 & Scope 1.6.1)
 router.post('/events/:id/report', async (req, res) => {
-  const userId = req.session ? req.session.userId : null;
-  const eventId = Number(req.params.id);
-  const { reason, details } = req.body;
+  if (!req.session || !req.session.userId) {
+    return res.status(401).json({ 
+      status: 'unauthorized', 
+      message: 'Authentication required. Only verified community members can submit reports to prevent malicious report spam and competitor sabotage.' 
+    });
+  }
 
-  if (!reason || !reason.trim()) {
-    return res.status(400).json({ status: 'error', message: 'Reason is required.' });
+  const userId = req.session.userId;
+  const eventId = Number(req.params.id);
+  const { reason, details, evidence_url, declaration } = req.body;
+
+  const validCategories = [
+    'SCAM_TICKETS',
+    'IMPOSTOR_ORGANIZER',
+    'INACCURATE_SCHEDULE',
+    'CANCELLED_EVENT',
+    'OTHER'
+  ];
+
+  if (!reason || !validCategories.includes(reason)) {
+    return res.status(400).json({ 
+      status: 'error', 
+      message: 'Please select a valid violation category from the verified checklist.' 
+    });
+  }
+
+  if (!details || details.trim().length < 20) {
+    return res.status(400).json({ 
+      status: 'error', 
+      message: 'Please provide a detailed explanation of at least 20 characters so the admin team can verify the issue.' 
+    });
+  }
+
+  if (!declaration || (declaration !== true && declaration !== 'true')) {
+    return res.status(400).json({ 
+      status: 'error', 
+      message: 'You must confirm the good-faith anti-defamation declaration before submitting.' 
+    });
   }
 
   try {
-    await db.execute(
-      "INSERT INTO reports (user_id, event_id, report_type, reason, details) VALUES (?, ?, 'EVENT', ?, ?)",
-      [userId, eventId, reason.trim(), details ? details.trim() : '']
+    // Anti-spam check: prevent duplicate active pending reports from the same user for this event
+    const activeReport = await db.getOne(
+      "SELECT id FROM reports WHERE user_id = ? AND event_id = ? AND status = 'PENDING'",
+      [userId, eventId]
     );
 
-    return res.json({ status: 'success', message: 'Report submitted for administrator review.' });
+    if (activeReport) {
+      return res.status(409).json({ 
+        status: 'duplicate', 
+        message: 'You already have an active report under review for this event listing (#Report ' + activeReport.id + '). Our moderation team is actively investigating.' 
+      });
+    }
+
+    await db.execute(
+      "INSERT INTO reports (user_id, event_id, report_type, reason, details, evidence_url, status) VALUES (?, ?, 'EVENT', ?, ?, ?, 'PENDING')",
+      [userId, eventId, reason, details.trim(), evidence_url ? evidence_url.trim() : null]
+    );
+
+    return res.json({ 
+      status: 'success', 
+      message: 'Your report has been successfully filed with priority status. Our moderation team will audit the counter-evidence within 24 hours.' 
+    });
   } catch (err) {
     console.error('API report event error:', err);
     return res.status(500).json({ status: 'error', message: err.message });

@@ -18,7 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $password = trim($_POST['password'] ?? '');
-    $role_name = trim($_POST['role'] ?? 'Fan');
+    // Only self-service roles may be chosen; Admin can never be self-assigned.
+    $role_name = strtolower(trim($_POST['role'] ?? 'fan')) === 'organizer' ? 'Organizer' : 'Fan';
 
     if (empty($full_name) || empty($username) || empty($email) || empty($password)) {
         $error = "All fields are required.";

@@ -16,6 +16,53 @@
     <!-- Admin Nav -->
     <%- include('./admin-nav', { activePath: '/admin/verifications', pendingCount: pendingEvents.length }) %>
 
+    <!-- 4-Step Organizer Legitimacy Verification Protocol -->
+    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-lg mb-8 border border-white/10">
+        <div class="flex items-center gap-2 mb-3">
+            <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-pink-500/20 text-pink-300 border border-pink-500/30">
+                <i class="fas fa-shield-check me-1"></i> Anti-Scam Standard Operating Procedure (SOP)
+            </span>
+        </div>
+        <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight">How Admins Verify Authentic Organizers vs Fake Accounts</h2>
+        <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-3xl leading-relaxed">
+            Because K-Sync Malaysia allows frictionless public submissions (Model 2), platform moderators enforce this 4-step forensic audit before approving any event live:
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+            <div class="bg-white/10 rounded-2xl p-4 border border-white/10 backdrop-blur-xs">
+                <div class="w-8 h-8 rounded-xl bg-pink-500/30 text-pink-300 font-black flex items-center justify-center text-xs mb-3">01</div>
+                <h4 class="font-bold text-xs text-white">Social Channel Proof</h4>
+                <p class="text-[11px] text-slate-300 mt-1 leading-normal">
+                    Inspect Twitter/IG handle (@Carat_MY). Check account age (&gt;3 months), follower count (&gt;500), and past cupsleeve/project history.
+                </p>
+            </div>
+
+            <div class="bg-white/10 rounded-2xl p-4 border border-white/10 backdrop-blur-xs">
+                <div class="w-8 h-8 rounded-xl bg-purple-500/30 text-purple-300 font-black flex items-center justify-center text-xs mb-3">02</div>
+                <h4 class="font-bold text-xs text-white">Venue Booking Check</h4>
+                <p class="text-[11px] text-slate-300 mt-1 leading-normal">
+                    Cross-reference cafe/hall reservation (e.g. After Black Cafe). Admin verifies booking announcement on the cafe's social channels.
+                </p>
+            </div>
+
+            <div class="bg-white/10 rounded-2xl p-4 border border-white/10 backdrop-blur-xs">
+                <div class="w-8 h-8 rounded-xl bg-emerald-500/30 text-emerald-300 font-black flex items-center justify-center text-xs mb-3">03</div>
+                <h4 class="font-bold text-xs text-white">Ticketing Whitelist</h4>
+                <p class="text-[11px] text-slate-300 mt-1 leading-normal">
+                    System automatically verifies domain against whitelisted Malaysian ticketing platforms (GoLive, Ticket2U, BookMyShow). Flags suspicious bank DMs.
+                </p>
+            </div>
+
+            <div class="bg-white/10 rounded-2xl p-4 border border-white/10 backdrop-blur-xs">
+                <div class="w-8 h-8 rounded-xl bg-sky-500/30 text-sky-300 font-black flex items-center justify-center text-xs mb-3">04</div>
+                <h4 class="font-bold text-xs text-white">One-Click Inquiry</h4>
+                <p class="text-[11px] text-slate-300 mt-1 leading-normal">
+                    If suspicious, Admin uses "Request Booking Proof" to email submitter for cafe receipt / promoter permit before publishing.
+                </p>
+            </div>
+        </div>
+    </div>
+
     <!-- SECTION 1: Model 2 Event Submissions Verification Queue -->
     <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm mb-10 space-y-6">
         <div class="flex items-center justify-between border-b border-slate-100 pb-4">
@@ -46,13 +93,14 @@
                             <th class="p-3">Ref Code</th>
                             <th class="p-3">Event & Artist</th>
                             <th class="p-3">Date & Venue</th>
-                            <th class="p-3">Submitter</th>
-                            <th class="p-3">Evidence</th>
+                            <th class="p-3">Submitter & Social Proof</th>
+                            <th class="p-3">Evidence & Whitelist</th>
                             <th class="p-3 text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         <% pendingEvents.forEach(function(ev) { %>
+                            <% const ticketSec = helpers.getTicketingSecurity(ev.official_url, ev.submitter_name); %>
                             <tr class="hover:bg-slate-50/50">
                                 <td class="p-3 font-mono font-bold text-pink-600"><%= ev.tracking_code %></td>
                                 <td class="p-3">
@@ -66,11 +114,21 @@
                                 <td class="p-3">
                                     <div class="font-medium text-slate-900"><%= ev.submitter_name %></div>
                                     <div class="text-[10px] text-slate-400"><%= ev.submitter_email %></div>
+                                    <% if (ev.submitter_social) { %>
+                                        <% const handleClean = ev.submitter_social.replace(/^@/, ''); %>
+                                        <a href="https://x.com/<%= handleClean %>" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-[10px] text-pink-600 font-bold hover:underline mt-0.5">
+                                            <i class="fab fa-x-twitter me-1"></i> <%= ev.submitter_social %>
+                                            <i class="fas fa-arrow-up-right-from-square text-[8px] ms-1"></i>
+                                        </a>
+                                    <% } %>
                                 </td>
                                 <td class="p-3 space-y-1">
+                                    <div class="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full <%= ticketSec.statusClass %>">
+                                        <i class="fas <%= ticketSec.icon %> me-1"></i> <%= ticketSec.badge %>
+                                    </div>
                                     <% if (ev.official_url) { %>
-                                        <a href="<%= ev.official_url %>" target="_blank" class="text-pink-600 hover:underline block text-[11px] font-bold">
-                                            <i class="fas fa-link me-1"></i> Official Link
+                                        <a href="<%= ev.official_url %>" target="_blank" class="text-pink-600 hover:underline block text-[11px] font-bold truncate max-w-[150px]">
+                                            <i class="fas fa-link me-1"></i> <%= ticketSec.domain %>
                                         </a>
                                     <% } %>
                                     <% if (ev.poster_image) { %>
@@ -80,13 +138,18 @@
                                     <% } %>
                                 </td>
                                 <td class="p-3 text-right space-x-1.5 whitespace-nowrap">
+                                    <a href="mailto:<%= ev.submitter_email %>?subject=K-Sync%20Verification:%20<%= encodeURIComponent(ev.event_name) %>&body=Hi%20<%= encodeURIComponent(ev.submitter_name) %>,%20please%20provide%20proof%20of%20venue%20reservation%20or%20social%20announcement%20for%20event%20<%= ev.tracking_code %>." 
+                                       class="px-2.5 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs" 
+                                       title="Inquire / Request Booking Proof">
+                                        <i class="far fa-envelope me-1 text-slate-400"></i> Inquire
+                                    </a>
                                     <form action="/admin/verifications/approve-event" method="POST" class="inline">
                                         <input type="hidden" name="event_id" value="<%= ev.id %>">
                                         <button type="submit" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs">
                                             <i class="fas fa-check me-1"></i> Approve
                                         </button>
                                     </form>
-                                    <button type="button" onclick="openRejectModal(<%= ev.id %>, '<%= ev.tracking_code %>')" class="px-3.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs">
+                                    <button type="button" onclick="openRejectModal(<%= ev.id %>, '<%= ev.tracking_code %>')" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs">
                                         <i class="fas fa-xmark me-1"></i> Reject
                                     </button>
                                 </td>

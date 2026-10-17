@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import db from '../../config/database.js';
 import { requireAuth } from '../middleware/auth.js';
 import { logActivity } from '../utils/helpers.js';
+import { verifyFirebaseIdToken } from '../utils/google-auth.js';
 
 const router = express.Router();
 
@@ -35,25 +36,14 @@ router.post('/login', async (req, res) => {
       return res.redirect('/login');
     }
 
-    // Verify Password (bcrypt or demo fallback)
+    // Verify Password. Only a valid bcrypt hash is accepted; there is no
+    // plaintext comparison and no hardcoded/demo credential fallback.
     let isMatch = false;
     if (user.password_hash) {
-      if (user.password_hash.startsWith('$2y$') || user.password_hash.startsWith('$2a$') || user.password_hash.startsWith('$2b$')) {
-        // PHP bcrypt uses $2y$, JS bcryptjs supports $2a$ / $2b$ / $2y$
-        const fixedHash = user.password_hash.replace(/^\$2y\$/, '$2a$');
-        isMatch = await bcrypt.compare(password, fixedHash);
-      } else {
-        isMatch = (password === user.password_hash);
-      }
-    }
-
-    // Fallback for university demo accounts:
-    if (!isMatch) {
-      if ((user.username === 'admin' && password === 'admin123') ||
-          (user.username === 'starline' && password === 'organizer123') ||
-          (user.username === 'aiman_carat' && password === 'fan123') ||
-          (user.email === 'fan@ksync.my' && password === 'fan123')) {
-        isMatch = true;
+      // PHP bcrypt uses $2y$; normalize so bcryptjs can verify it.
+      const hash = user.password_hash.replace(/^\$2y\$/, '$2a$');
+      if (/^\$2[aby]\$/.test(hash)) {
+        isMatch = await bcrypt.compare(password, hash);
       }
     }
 
@@ -128,21 +118,42 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// POST /auth/google - Google OAuth / Firebase Authentication Callback
+// POST /auth/google - Google Sign-In via a VERIFIED Firebase ID token.
+// The client sends the Firebase ID token; identity is derived only from its
+// verified claims. Client-supplied email/uid/role are never trusted.
 router.post('/auth/google', async (req, res) => {
-  const { email, full_name, uid, photo_url, role } = req.body;
+  const { idToken, role } = req.body;
 
-  if (!email || !uid) {
-    return res.status(400).json({ status: 'error', message: 'Invalid Google authentication payload.' });
+  if (!idToken) {
+    return res.status(400).json({ status: 'error', message: 'Missing Google authentication token.' });
   }
 
-  const name = full_name && full_name.trim() ? full_name.trim() : email.split('@')[0];
+  // 1) Verify the token with Google before trusting any identity data.
+  let claims;
+  try {
+    claims = await verifyFirebaseIdToken(idToken);
+  } catch (err) {
+    console.error('Google ID token verification failed:', err.message);
+    return res.status(401).json({ status: 'error', message: 'Google authentication failed. Please try again.' });
+  }
+
+  const email = (claims.email || '').trim();
+  if (!email || claims.email_verified === false) {
+    return res.status(400).json({ status: 'error', message: 'Google account email is missing or unverified.' });
+  }
+  const name = (claims.name || '').trim() || email.split('@')[0];
+  const photo_url = claims.picture || null;
+  const uid = claims.sub;
   const usernameBase = email.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '');
+
+  // Only self-service roles may be requested; Admin can never be self-assigned.
+  const requestedRole = String(role || 'Fan').toLowerCase();
+  const roleName = requestedRole === 'organizer' ? 'Organizer' : 'Fan';
 
   try {
     const existing = await db.getOne(
       "SELECT u.*, r.name as role_name FROM users u JOIN roles r ON u.role_id = r.id WHERE LOWER(u.email) = LOWER(?)",
-      [email.trim()]
+      [email]
     );
 
     if (existing) {
@@ -169,16 +180,15 @@ router.post('/auth/google', async (req, res) => {
         username = `${usernameBase}${Math.floor(100 + Math.random() * 900)}`;
       }
 
-      const roleName = role || 'Fan';
       const roleRow = await db.getOne("SELECT id FROM roles WHERE LOWER(name) = LOWER(?)", [roleName]);
       const roleId = roleRow ? roleRow.id : 3;
 
-      const randomPassword = await bcrypt.hash(uid + Date.now(), 10);
+      const randomPassword = await bcrypt.hash(`${uid}${Date.now()}${Math.random()}`, 10);
 
       const result = await db.execute(`
         INSERT INTO users (role_id, full_name, username, email, password_hash, profile_image, status)
         VALUES (?, ?, ?, ?, ?, ?, 'ACTIVE')
-      `, [roleId, name, username, email.trim(), randomPassword, photo_url || null]);
+      `, [roleId, name, username, email, randomPassword, photo_url]);
 
       req.session.userId = result.insertId;
       await logActivity(result.insertId, 'GOOGLE_REGISTER', 'users', result.insertId, `New user registered via Google: @${username}`, req.ip);
@@ -188,7 +198,7 @@ router.post('/auth/google', async (req, res) => {
     }
   } catch (err) {
     console.error('Google Auth backend error:', err);
-    return res.status(500).json({ status: 'error', message: 'Database error during Google Authentication: ' + err.message });
+    return res.status(500).json({ status: 'error', message: 'Database error during Google Authentication.' });
   }
 });
 
@@ -210,16 +220,41 @@ router.get('/profile', requireAuth, async (req, res) => {
 
 // POST /profile
 router.post('/profile', requireAuth, async (req, res) => {
-  const { full_name, location, buddy_preference, profile_image, bio } = req.body;
+  const { 
+    full_name, location, buddy_preference, profile_image, bio,
+    organization_name, organization_type, social_handle, social_url 
+  } = req.body;
   const userId = req.session.userId;
 
   try {
     await db.execute(
-      `UPDATE users SET full_name = ?, location = ?, buddy_preference = ?, profile_image = ?, bio = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
-      [full_name.trim(), location ? location.trim() : '', buddy_preference ? buddy_preference.trim() : '', profile_image ? profile_image.trim() : null, bio ? bio.trim() : '', userId]
+      `UPDATE users SET 
+        full_name = ?, 
+        location = ?, 
+        buddy_preference = ?, 
+        profile_image = ?, 
+        bio = ?, 
+        organization_name = ?,
+        organization_type = ?,
+        social_handle = ?,
+        social_url = ?,
+        updated_at = CURRENT_TIMESTAMP 
+      WHERE id = ?`,
+      [
+        full_name.trim(), 
+        location ? location.trim() : '', 
+        buddy_preference ? buddy_preference.trim() : '', 
+        profile_image ? profile_image.trim() : null, 
+        bio ? bio.trim() : '',
+        organization_name ? organization_name.trim() : null,
+        organization_type ? organization_type.trim() : 'Fanclub',
+        social_handle ? social_handle.trim() : null,
+        social_url ? social_url.trim() : null,
+        userId
+      ]
     );
 
-    req.session.flash = { success: 'Profile information updated successfully!' };
+    req.session.flash = { success: 'Profile & Social Media links updated successfully!' };
     res.redirect('/profile');
   } catch (err) {
     console.error('Profile update error:', err);

@@ -29,6 +29,15 @@
                 <%- helpers.getStatusBadge(calcStatus) %>
                 <%- helpers.getVerificationBadge(event.verification_status) %>
             </div>
+            <% if (event.verification_status === 'SUSPENDED') { %>
+                <div class="mb-3 p-3.5 rounded-2xl bg-rose-600/95 text-white text-xs font-medium flex items-center gap-2.5 backdrop-blur-md border border-rose-400 shadow-lg">
+                    <i class="fas fa-triangle-exclamation text-amber-300 text-lg shrink-0"></i>
+                    <div>
+                        <span class="font-extrabold uppercase tracking-wide">⚠️ Listing Frozen by Moderation:</span>
+                        This listing is currently suspended following a community report. Ticket purchases are halted while evidence is verified with organizers.
+                    </div>
+                </div>
+            <% } %>
             <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mb-2 leading-tight">
                 <%= event.event_name %>
             </h1>
@@ -100,19 +109,23 @@
                         <span>Add to Calendar</span>
                     </a>
 
-                    <button onclick="reportEventPrompt(<%= event.id %>)" 
-                            class="px-3.5 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-500 font-bold text-xs flex items-center shadow-xs transition-all cursor-pointer"
-                            title="Report inaccurate details or outdated info">
-                        <i class="fas fa-flag text-amber-500 me-1"></i>
-                        <span>Report</span>
+                    <button onclick="openReportModal()" 
+                            class="px-3.5 py-2.5 rounded-xl border border-slate-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 text-slate-600 font-bold text-xs flex items-center shadow-xs transition-all cursor-pointer"
+                            title="File a verified community report regarding tickets, scam, or inaccurate info">
+                        <i class="fas fa-flag text-amber-500 me-1.5"></i>
+                        <span>Report Listing</span>
                     </button>
                 </div>
 
-                <% if (event.official_url) { %>
+                <% if (event.official_url && event.verification_status !== 'SUSPENDED') { %>
                     <a href="<%= event.official_url %>" target="_blank" rel="noopener" 
                        class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md flex items-center">
                         <i class="fas fa-ticket me-2 text-pink-400"></i> Official Ticket Link &rarr;
                     </a>
+                <% } else if (event.verification_status === 'SUSPENDED') { %>
+                    <span class="px-5 py-2.5 rounded-xl bg-slate-100 text-slate-400 font-bold text-xs border border-slate-200 flex items-center cursor-not-allowed">
+                        <i class="fas fa-lock me-2 text-rose-500"></i> Ticket Links Disabled
+                    </span>
                 <% } %>
             </div>
 
@@ -432,19 +445,66 @@
                 <% } %>
             </div>
 
-            <!-- Organizer / Fanclub Card -->
+            <!-- Organizer / Fanclub Legitimacy Card -->
+            <% 
+                const displayOrgName = event.promoter_name || event.organization_name || event.submitter_name || (event.organizer_name && event.organizer_name !== 'System Admin' ? event.organizer_name : 'Authorized Tour Production');
+                const rawHandle = event.submitter_social || event.social_handle || '';
+                const cleanHandle = rawHandle.replace(/^@/, '');
+                const orgSocialLink = event.social_url || (rawHandle ? (rawHandle.startsWith('http') ? rawHandle : `https://x.com/${cleanHandle}`) : '');
+                const ticketSec = helpers.getTicketingSecurity(event.official_url, displayOrgName);
+            %>
             <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
-                <h3 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">Organizer Verification</h3>
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <h3 class="text-base font-bold text-slate-900 flex items-center">
+                        <i class="fas fa-shield-halved text-pink-600 me-2"></i> Organizer Legitimacy
+                    </h3>
+                    <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full <%= ticketSec.statusClass %>">
+                        <i class="fas <%= ticketSec.icon %> me-1"></i> <%= ticketSec.badge %>
+                    </span>
+                </div>
+
                 <div>
-                    <div class="font-bold text-sm text-slate-900"><%= event.organization_name || event.organizer_name || 'Community Event' %></div>
-                    <div class="mt-1.5">
-                        <%- helpers.getOrganizerBadge({ is_verified_organizer: event.is_verified_organizer, organization_type: event.organization_type, social_handle: event.social_handle }) %>
+                    <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Host / Promoter</div>
+                    <div class="font-extrabold text-base text-slate-900 mt-0.5"><%= displayOrgName %></div>
+                    
+                    <div class="mt-2.5 flex flex-wrap gap-2">
+                        <% if (event.is_verified_organizer === 1 || event.promoter_name) { %>
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-black bg-emerald-50 text-emerald-800 border border-emerald-300">
+                                <i class="fas fa-certificate text-emerald-500 me-1.5"></i> Verified Entity
+                            </span>
+                        <% } else { %>
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                                <i class="fas fa-users text-slate-400 me-1.5"></i> Community Organizer
+                            </span>
+                        <% } %>
+
+                        <% if (orgSocialLink) { %>
+                            <a href="<%= orgSocialLink %>" target="_blank" rel="noopener noreferrer" 
+                               class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 transition-colors">
+                                <i class="fab fa-x-twitter me-1.5 text-pink-600"></i> <%= rawHandle || 'Official Profile' %>
+                                <i class="fas fa-arrow-up-right-from-square text-[9px] ms-1.5 text-pink-400"></i>
+                            </a>
+                        <% } %>
                     </div>
-                    <% if (event.social_url) { %>
-                        <a href="<%= event.social_url %>" target="_blank" rel="noopener" class="text-xs text-pink-600 font-bold hover:underline block mt-2">
-                            <i class="fab fa-x-twitter me-1"></i> <%= event.social_handle || 'Organizer Social Profile' %>
-                        </a>
-                    <% } %>
+                </div>
+
+                <!-- Anti-Fraud Trust Check -->
+                <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-200/80 space-y-2 text-[11px] text-slate-600">
+                    <div class="font-bold text-slate-800 text-xs flex items-center">
+                        <i class="fas fa-circle-check text-emerald-600 me-1.5"></i> Verified Event Safeguards
+                    </div>
+                    <div class="flex items-start gap-1.5">
+                        <i class="fas fa-check text-emerald-500 text-[10px] mt-0.5"></i>
+                        <span>Ticketing gateway: <strong class="text-slate-800"><%= ticketSec.domain %></strong></span>
+                    </div>
+                    <div class="flex items-start gap-1.5">
+                        <i class="fas fa-check text-emerald-500 text-[10px] mt-0.5"></i>
+                        <span>Submitted with verifiable organizer credentials & social handle</span>
+                    </div>
+                    <div class="flex items-start gap-1.5">
+                        <i class="fas fa-shield text-purple-500 text-[10px] mt-0.5"></i>
+                        <span>Protected by community double-verification reporting system</span>
+                    </div>
                 </div>
             </div>
 
@@ -523,27 +583,103 @@
         }
     }
 
-    async function reportEventPrompt(eventId) {
-        const reason = prompt("Why are you reporting this event listing?\n\n1. Inaccurate Date/Venue\n2. Fake or Unauthorized Event\n3. Outdated Ticket Links\n4. Other\n\nPlease enter the reason:");
-        if (!reason || !reason.trim()) return;
+    function openReportModal() {
+        <% if (!currentUser) { %>
+            const authModal = document.getElementById('report-auth-modal');
+            if (authModal) {
+                authModal.classList.remove('hidden');
+                authModal.classList.add('flex');
+            }
+            return;
+        <% } %>
+        const modal = document.getElementById('report-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+    }
 
-        const details = prompt("Please provide additional context or official correction link (optional):");
+    function closeReportModal() {
+        const modal = document.getElementById('report-modal');
+        if (modal) {
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+        const authModal = document.getElementById('report-auth-modal');
+        if (authModal) {
+            authModal.classList.remove('flex');
+            authModal.classList.add('hidden');
+        }
+    }
+
+    function updateReportCharCount() {
+        const details = document.getElementById('report-details').value;
+        const countSpan = document.getElementById('report-char-count');
+        if (countSpan) countSpan.textContent = details.length;
+        if (details.length >= 20) {
+            countSpan.classList.remove('text-rose-500');
+            countSpan.classList.add('text-emerald-600');
+        } else {
+            countSpan.classList.remove('text-emerald-600');
+            countSpan.classList.add('text-rose-500');
+        }
+    }
+
+    async function submitVerifiedReport(e) {
+        e.preventDefault();
+        const reason = document.getElementById('report-reason').value;
+        const details = document.getElementById('report-details').value.trim();
+        const evidence_url = document.getElementById('report-evidence-url').value.trim();
+        const declaration = document.getElementById('report-declaration').checked;
+        const msgBox = document.getElementById('report-modal-msg');
+        const submitBtn = document.getElementById('report-submit-btn');
+
+        if (!reason) {
+            msgBox.innerHTML = '<div class="p-3 rounded-xl bg-rose-50 text-rose-700 text-xs font-bold border border-rose-200">Please select a violation category.</div>';
+            return;
+        }
+
+        if (details.length < 20) {
+            msgBox.innerHTML = '<div class="p-3 rounded-xl bg-rose-50 text-rose-700 text-xs font-bold border border-rose-200">Detailed explanation must be at least 20 characters.</div>';
+            return;
+        }
+
+        if (!declaration) {
+            msgBox.innerHTML = '<div class="p-3 rounded-xl bg-rose-50 text-rose-700 text-xs font-bold border border-rose-200">You must check and agree to the Good-Faith Anti-Defamation Declaration.</div>';
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Submitting...';
 
         try {
-            const res = await fetch(`/api/events/${eventId}/report`, {
+            const res = await fetch(`/api/events/<%= event.id %>/report`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ reason: reason.trim(), details: details ? details.trim() : '' })
+                body: JSON.stringify({ reason, details, evidence_url, declaration: true })
             });
             const data = await res.json();
+
             if (data.status === 'success') {
-                alert("Thank you! Your report has been submitted to the platform administrator for review.");
+                msgBox.innerHTML = '<div class="p-4 rounded-xl bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200 flex items-center gap-2"><i class="fas fa-circle-check text-emerald-500 text-base"></i> ' + data.message + '</div>';
+                setTimeout(() => {
+                    closeReportModal();
+                    showToast('Report submitted for priority admin review!');
+                }, 2200);
+            } else if (data.status === 'duplicate') {
+                msgBox.innerHTML = '<div class="p-3 rounded-xl bg-amber-50 text-amber-800 text-xs font-bold border border-amber-200"><i class="fas fa-clock me-1 text-amber-500"></i> ' + data.message + '</div>';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Submit Report';
             } else {
-                alert(data.message || 'Error submitting report.');
+                msgBox.innerHTML = '<div class="p-3 rounded-xl bg-rose-50 text-rose-700 text-xs font-bold border border-rose-200">' + (data.message || 'Error submitting report.') + '</div>';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Submit Report';
             }
         } catch (err) {
             console.error(err);
-            alert("Failed to submit report. Please try again.");
+            msgBox.innerHTML = '<div class="p-3 rounded-xl bg-rose-50 text-rose-700 text-xs font-bold border border-rose-200">Network error. Please try again.</div>';
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Submit Report';
         }
     }
 
@@ -764,6 +900,122 @@
             <button onclick="copyShareUrl()" id="share-copy-btn"
                     class="absolute right-1.5 top-1.5 bottom-1.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center transition-all cursor-pointer">
                 <span>Copy</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Multi-Layer Double-Verification Report Modal -->
+<div id="report-modal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-slate-100 max-h-[92vh] overflow-y-auto">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+            <div>
+                <h3 class="text-lg font-black text-slate-900 flex items-center">
+                    <i class="fas fa-shield-halved text-rose-600 me-2.5"></i> Community Safety Report
+                </h3>
+                <p class="text-xs text-slate-500 mt-0.5">Double-Verification Anti-Scam & Accuracy Audit</p>
+            </div>
+            <button onclick="closeReportModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-xs cursor-pointer transition-colors">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
+
+        <form onsubmit="submitVerifiedReport(event)" class="space-y-4">
+            <!-- Layer 1: Authenticated User Gate -->
+            <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-200 flex items-center justify-between text-xs">
+                <div>
+                    <span class="text-slate-400 font-semibold block text-[10px] uppercase tracking-wider">Layer 1: Verified Identity</span>
+                    <span class="font-bold text-slate-800">
+                        <i class="fas fa-user-check text-emerald-500 me-1"></i> 
+                        <%= currentUser ? currentUser.username : 'Guest' %> (<%= currentUser ? currentUser.email : '' %>)
+                    </span>
+                </div>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800">Account Bound</span>
+            </div>
+
+            <!-- Layer 2: Violation Classification -->
+            <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1.5">
+                    Layer 2: Violation Classification <span class="text-rose-500">*</span>
+                </label>
+                <select id="report-reason" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-400 font-medium">
+                    <option value="">-- Select Specific Violation Category --</option>
+                    <option value="SCAM_TICKETS">🚨 Phishing / Fake Ticket Scalper Link (Attempting to steal money or unofficial resale)</option>
+                    <option value="IMPOSTOR_ORGANIZER">🎭 Impostor / Fake Organizer (Unauthorized or fake fanclub identity)</option>
+                    <option value="INACCURATE_SCHEDULE">📅 Inaccurate Venue, Date, or Starting Time</option>
+                    <option value="CANCELLED_EVENT">🚫 Cancelled or Postponed by Artist Agency</option>
+                    <option value="OTHER">⚠️ Other Community Guideline Violation</option>
+                </select>
+            </div>
+
+            <!-- Layer 3: Counter-Evidence & Detailed Description -->
+            <div>
+                <div class="flex items-center justify-between mb-1.5">
+                    <label class="block text-xs font-bold text-slate-800">
+                        Layer 3: Detailed Explanation <span class="text-rose-500">*</span>
+                    </label>
+                    <span class="text-[10px] font-mono font-bold"><span id="report-char-count" class="text-rose-500">0</span> / 20 min characters</span>
+                </div>
+                <textarea id="report-details" rows="3" required oninput="updateReportCharCount()"
+                          placeholder="Explain specifically why this listing is fraudulent or inaccurate. Provide context (minimum 20 characters)..."
+                          class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-400 leading-relaxed"></textarea>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1.5">
+                    Counter-Evidence Proof URL <span class="text-slate-400 font-normal">(Optional but recommended)</span>
+                </label>
+                <div class="relative">
+                    <input type="url" id="report-evidence-url" 
+                           placeholder="https://x.com/official_agency/status/... or venue website"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-400">
+                </div>
+                <p class="text-[10px] text-slate-400 mt-1">Link to official agency tweet, promoter announcement, or cafe cancellation post.</p>
+            </div>
+
+            <!-- Layer 4: Good-Faith Anti-Defamation Declaration -->
+            <div class="bg-rose-50/60 rounded-2xl p-3.5 border border-rose-200 text-xs">
+                <label class="flex items-start gap-2.5 cursor-pointer">
+                    <input type="checkbox" id="report-declaration" required class="mt-0.5 rounded text-rose-600 focus:ring-rose-500">
+                    <span class="text-[11px] text-rose-900 leading-snug">
+                        <strong>Layer 4: Anti-Defamation Declaration:</strong> I declare in good faith that this report contains truthful, verifiable evidence. I acknowledge that submitting false, defamatory, or abusive reports against legitimate fanclubs will result in an immediate permanent ban of my K-Sync account.
+                    </span>
+                </label>
+            </div>
+
+            <div id="report-modal-msg"></div>
+
+            <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
+                <button type="button" onclick="closeReportModal()" class="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs">
+                    Cancel
+                </button>
+                <button type="submit" id="report-submit-btn" class="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md transition-all">
+                    Submit Verified Report
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Authentication Required Notice Modal for Guest Visitors -->
+<div id="report-auth-modal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 text-center">
+        <div class="w-14 h-14 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-2xl mx-auto mb-4">
+            <i class="fas fa-lock"></i>
+        </div>
+        <h3 class="text-lg font-black text-slate-900 mb-1.5">Account Required to Report</h3>
+        <p class="text-xs text-slate-600 leading-relaxed mb-6 font-medium">
+            To protect genuine K-pop fanclubs and organizers from anonymous spam and competitor sabotage, all community reports require double-verification with a registered K-Sync account.
+        </p>
+        <div class="space-y-2.5">
+            <a href="/login?redirect=/events/<%= event.id %>" class="block w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md">
+                Log In to Submit Report
+            </a>
+            <a href="/register" class="block w-full py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs">
+                Create Free Account
+            </a>
+            <button type="button" onclick="closeReportModal()" class="text-xs text-slate-400 hover:text-slate-600 pt-1 font-semibold">
+                Cancel
             </button>
         </div>
     </div>

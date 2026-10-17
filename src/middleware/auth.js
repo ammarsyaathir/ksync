@@ -1,5 +1,6 @@
 // src/middleware/auth.js - Authentication & Role-Based Access Control Middleware
 import db from '../../config/database.js';
+import helpers from '../utils/helpers.js';
 
 /**
  * Middleware that loads the current logged-in user from the session
@@ -8,6 +9,7 @@ import db from '../../config/database.js';
 export async function populateCurrentUser(req, res, next) {
   res.locals.activePath = req.path;
   res.locals.flash = req.session.flash || {};
+  res.locals.helpers = helpers;
   req.session.flash = {}; // Clear flash after exposing to response
 
   if (req.session && req.session.userId) {

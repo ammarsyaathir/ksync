@@ -327,11 +327,13 @@ router.post('/admin/artists/delete', async (req, res) => {
 router.get('/admin/reports', async (req, res) => {
   try {
     const reports = await db.query(`
-      SELECT r.*, u.username, u.full_name, e.event_name, e.tracking_code
+      SELECT r.*, 
+             u.username as reporter_username, u.full_name as reporter_name, u.email as reporter_email,
+             e.event_name, e.tracking_code, e.verification_status as event_verification_status, e.official_url, e.submitter_name, e.submitter_email, e.submitter_social
       FROM reports r
       LEFT JOIN users u ON r.user_id = u.id
       LEFT JOIN events e ON r.event_id = e.id
-      ORDER BY r.created_at DESC
+      ORDER BY CASE WHEN r.status = 'PENDING' THEN 0 ELSE 1 END, r.created_at DESC
     `);
     res.render('admin/reports', { reports, helpers });
   } catch (err) {
@@ -340,7 +342,74 @@ router.get('/admin/reports', async (req, res) => {
   }
 });
 
-// POST /admin/reports/resolve
+// POST /admin/reports/action - Multi-Action Moderation (Freeze, Correct, Dismiss, Ban/Delete)
+router.post('/admin/reports/action', async (req, res) => {
+  const { report_id, action_type, admin_notes } = req.body;
+  const adminId = req.session.userId;
+
+  try {
+    const report = await db.getOne("SELECT * FROM reports WHERE id = ?", [report_id]);
+    if (!report) {
+      req.session.flash = { error: 'Report not found.' };
+      return res.redirect('/admin/reports');
+    }
+
+    const notes = (admin_notes || '').trim();
+
+    if (action_type === 'FREEZE_EVENT') {
+      // Suspend listing immediately - pulls it from public view and disables ticket link
+      await db.execute(
+        "UPDATE events SET verification_status = 'SUSPENDED', updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+        [report.event_id]
+      );
+      await db.execute(
+        "UPDATE reports SET status = 'RESOLVED', admin_action = 'FROZEN_LISTING', admin_notes = ?, resolved_by = ?, resolved_at = CURRENT_TIMESTAMP WHERE id = ?",
+        [notes || 'Listing frozen pending verification', adminId, report_id]
+      );
+      await logActivity(adminId, 'FREEZE_EVENT_REPORT', 'events', report.event_id, `Admin froze event #${report.event_id} due to report #${report_id}: ${notes}`, req.ip);
+      req.session.flash = { success: `Event #${report.event_id} has been SUSPENDED from public discovery. Ticket links locked.` };
+
+    } else if (action_type === 'DISMISS_REPORT') {
+      // Dismiss false or frivolous report - protect legitimate fanclub
+      await db.execute(
+        "UPDATE reports SET status = 'DISMISSED', admin_action = 'DISMISSED_FALSE_REPORT', admin_notes = ?, resolved_by = ?, resolved_at = CURRENT_TIMESTAMP WHERE id = ?",
+        [notes || 'Investigated and confirmed genuine. Report dismissed.', adminId, report_id]
+      );
+      await logActivity(adminId, 'DISMISS_REPORT', 'reports', report_id, `Admin dismissed false report #${report_id}: ${notes}`, req.ip);
+      req.session.flash = { success: `Report #${report_id} dismissed as unsubstantiated. Event remains published.` };
+
+    } else if (action_type === 'DELETE_SCAM') {
+      // Confirmed fraud/scam: reject listing permanently
+      await db.execute(
+        "UPDATE events SET verification_status = 'REJECTED', rejection_reason = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+        ['Confirmed fraud/phishing listing', report.event_id]
+      );
+      await db.execute(
+        "UPDATE reports SET status = 'RESOLVED', admin_action = 'DELETED_CONFIRMED_SCAM', admin_notes = ?, resolved_by = ?, resolved_at = CURRENT_TIMESTAMP WHERE id = ?",
+        [notes || 'Confirmed scam listing rejected permanently.', adminId, report_id]
+      );
+      await logActivity(adminId, 'CONFIRM_SCAM_REPORT', 'events', report.event_id, `Admin confirmed scam for event #${report.event_id} and permanently rejected listing`, req.ip);
+      req.session.flash = { success: `Event #${report.event_id} permanently rejected as fraudulent.` };
+
+    } else {
+      // Standard resolution (e.g. details corrected by admin)
+      await db.execute(
+        "UPDATE reports SET status = 'RESOLVED', admin_action = 'RESOLVED_CORRECTED', admin_notes = ?, resolved_by = ?, resolved_at = CURRENT_TIMESTAMP WHERE id = ?",
+        [notes || 'Report resolved by admin.', adminId, report_id]
+      );
+      await logActivity(adminId, 'RESOLVE_REPORT', 'reports', report_id, `Admin resolved report #${report_id}: ${notes}`, req.ip);
+      req.session.flash = { success: `Report #${report_id} marked as resolved.` };
+    }
+
+    res.redirect('/admin/reports');
+  } catch (err) {
+    console.error('Admin report action error:', err);
+    req.session.flash = { error: 'Failed to process report moderation action.' };
+    res.redirect('/admin/reports');
+  }
+});
+
+// POST /admin/reports/resolve (Legacy compat)
 router.post('/admin/reports/resolve', async (req, res) => {
   const { id } = req.body;
   try {

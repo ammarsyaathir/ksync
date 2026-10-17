@@ -35,21 +35,21 @@ function handleFirebaseGoogleSignIn(selectedRole = 'Fan') {
     }
 
     firebase.auth().signInWithPopup(googleProvider)
-        .then((result) => {
+        .then(async (result) => {
             const user = result.user;
             console.log("Welcome!", user.displayName);
-            
-            // Send authenticated Google user payload to Node.js backend
+
+            // Obtain a signed Firebase ID token. The server verifies this token
+            // and derives the user's identity from it (client identity is not trusted).
+            const idToken = await user.getIdToken();
+
             fetch('/auth/google', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    email: user.email || '',
-                    full_name: user.displayName || '',
-                    uid: user.uid || '',
-                    photo_url: user.photoURL || '',
+                    idToken: idToken,
                     role: selectedRole
                 })
             })

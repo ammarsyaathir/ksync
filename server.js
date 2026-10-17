@@ -5,6 +5,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
+import { randomBytes } from 'node:crypto';
 import { fileURLToPath } from 'url';
 
 // Import Middleware
@@ -44,14 +45,22 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Session Management
+const sessionSecret = process.env.SESSION_SECRET;
+if (!sessionSecret && process.env.NODE_ENV === 'production') {
+  throw new Error('SESSION_SECRET must be set when NODE_ENV=production.');
+}
+const isProduction = process.env.NODE_ENV === 'production';
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'ksync-malaysia-secure-secret-2026',
+  // Never fall back to a hardcoded secret in production; use a random
+  // per-process secret in development so it cannot be guessed.
+  secret: sessionSecret || randomBytes(32).toString('hex'),
   resave: false,
   saveUninitialized: false,
   cookie: {
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     httpOnly: true,
-    secure: false // true if running on HTTPS
+    sameSite: 'lax',
+    secure: isProduction // requires HTTPS; set behind a TLS terminator with `trust proxy`
   }
 }));
 

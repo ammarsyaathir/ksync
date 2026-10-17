@@ -1,88 +1,181 @@
-<%- include('../partials/header', { title: 'Content & Event Reports | K-Sync Admin' }) %>
+<%- include('../partials/header', { title: 'Content & Event Reports Moderation | K-Sync Admin' }) %>
 <%- include('../partials/navbar', { activePath: '/admin/reports' }) %>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-6">
-        <h1 class="text-2xl font-black text-slate-900 tracking-tight flex items-center">
-            <i class="fas fa-flag text-amber-500 me-3"></i> Content & Listing Reports
-        </h1>
-        <p class="text-xs text-slate-500 mt-1">
-            Review user reports on inaccurate event listings or inappropriate community content (Chapter 1 Solution 1.3.3 & Scope 1.6.1).
-        </p>
+    <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <div class="flex items-center space-x-2 mb-2">
+                <span class="px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200">
+                    <i class="fas fa-shield-halved me-1 text-rose-600"></i> Anti-Scam & Trust Moderation
+                </span>
+            </div>
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center">
+                Content & Listing Reports Center
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                Investigate community reports on suspected ticket phishing, impostor organizers, or inaccurate schedules (Chapter 1 Solution 1.3.3 & Scope 1.6.1).
+            </p>
+        </div>
     </div>
 
     <%- include('admin-nav', { activePath: '/admin/reports' }) %>
     <%- include('../partials/flash') %>
 
+    <!-- Statistics Overview -->
+    <% 
+        const pendingCount = reports.filter(r => r.status === 'PENDING').length;
+        const resolvedCount = reports.filter(r => r.status === 'RESOLVED').length;
+        const dismissedCount = reports.filter(r => r.status === 'DISMISSED').length;
+    %>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
+            <div>
+                <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Pending Audit</span>
+                <div class="text-2xl font-black text-amber-600 mt-1"><%= pendingCount %></div>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
+                <i class="fas fa-clock-rotate-left"></i>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
+            <div>
+                <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Actions Taken / Resolved</span>
+                <div class="text-2xl font-black text-emerald-600 mt-1"><%= resolvedCount %></div>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+                <i class="fas fa-circle-check"></i>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
+            <div>
+                <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Dismissed (False/Spam)</span>
+                <div class="text-2xl font-black text-slate-700 mt-1"><%= dismissedCount %></div>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-xl">
+                <i class="fas fa-ban"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reports Table Container -->
     <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="p-6 border-b border-slate-100 flex items-center justify-between">
-            <h2 class="text-base font-bold text-slate-900">Submitted Reports (<%= reports.length %>)</h2>
+            <div>
+                <h2 class="text-base font-bold text-slate-900">Incident & Community Flags Queue</h2>
+                <p class="text-xs text-slate-500 mt-0.5">Every report contains verified account identity, violation class, and counter-evidence.</p>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-bold <%= pendingCount > 0 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800' %>">
+                <%= pendingCount %> Needs Review
+            </span>
         </div>
 
         <% if (!reports || reports.length === 0) { %>
             <div class="py-16 text-center text-slate-400">
                 <i class="fas fa-shield-check text-4xl mb-3 text-emerald-400"></i>
-                <div class="font-bold text-sm text-slate-600">No Pending Reports</div>
-                <div class="text-xs text-slate-400 mt-1">All event listings and discussions are currently in good standing.</div>
+                <div class="font-bold text-sm text-slate-600">No Reports in Queue</div>
+                <div class="text-xs text-slate-400 mt-1">All event listings and organizer details are in good standing.</div>
             </div>
         <% } else { %>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs text-slate-600">
-                    <thead class="bg-slate-50 text-[11px] uppercase font-bold text-slate-400 border-b border-slate-200">
+                    <thead class="bg-slate-50 text-[10px] uppercase font-bold text-slate-400 border-b border-slate-200">
                         <tr>
-                            <th class="p-4">Report ID</th>
-                            <th class="p-4">Reported Event / Target</th>
-                            <th class="p-4">Reason</th>
-                            <th class="p-4">Submitted By</th>
-                            <th class="p-4">Date</th>
-                            <th class="p-4">Status</th>
-                            <th class="p-4 text-right">Action</th>
+                            <th class="p-4">Report & Target</th>
+                            <th class="p-4">Violation & Evidence</th>
+                            <th class="p-4">Reporter Identity</th>
+                            <th class="p-4">Current Status</th>
+                            <th class="p-4">Resolution Audit</th>
+                            <th class="p-4 text-right">Moderator Action</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         <% reports.forEach(function(r) { %>
-                            <tr class="hover:bg-slate-50/50">
-                                <td class="p-4 font-mono font-bold text-slate-900">#<%= r.id %></td>
+                            <tr class="hover:bg-slate-50/50 transition-colors">
                                 <td class="p-4">
+                                    <div class="font-mono text-[10px] text-pink-600 font-bold mb-0.5">#REP-<%= r.id %></div>
                                     <% if (r.event_name) { %>
-                                        <a href="/events/<%= r.event_id %>" target="_blank" class="font-bold text-slate-900 hover:text-pink-600 flex items-center">
-                                            <span><%= r.event_name %></span>
-                                            <i class="fas fa-arrow-up-right-from-square text-[10px] ms-1 text-slate-400"></i>
+                                        <a href="/events/<%= r.event_id %>" target="_blank" class="font-bold text-slate-900 hover:text-pink-600 block text-xs">
+                                            <%= r.event_name %> <i class="fas fa-arrow-up-right-from-square text-[9px] ms-1 text-slate-400"></i>
                                         </a>
-                                        <span class="text-[10px] text-slate-400 font-mono">Ref: <%= r.tracking_code %></span>
+                                        <div class="text-[10px] text-slate-400 font-mono mt-0.5">Ref: <%= r.tracking_code %></div>
+                                        <div class="text-[10px] text-slate-500 mt-1">
+                                            <strong>Host:</strong> <%= r.submitter_name || 'Organizer' %> 
+                                            <% if (r.submitter_social) { %>
+                                                <span class="text-pink-600 font-bold">(<%= r.submitter_social %>)</span>
+                                            <% } %>
+                                        </div>
                                     <% } else { %>
-                                        <span class="text-slate-400 italic">General Content</span>
+                                        <span class="text-slate-400 italic">General Listing</span>
                                     <% } %>
                                 </td>
+
+                                <td class="p-4 max-w-xs">
+                                    <div class="inline-block px-2 py-0.5 rounded-full text-[10px] font-black uppercase mb-1 
+                                        <%= r.reason === 'SCAM_TICKETS' ? 'bg-rose-100 text-rose-800' : 
+                                           (r.reason === 'IMPOSTOR_ORGANIZER' ? 'bg-purple-100 text-purple-800' : 'bg-amber-100 text-amber-800') %>">
+                                        <%= r.reason %>
+                                    </div>
+                                    <div class="text-xs text-slate-800 font-medium leading-snug line-clamp-2" title="<%= r.details %>">
+                                        <%= r.details %>
+                                    </div>
+                                    <% if (r.evidence_url) { %>
+                                        <a href="<%= r.evidence_url %>" target="_blank" rel="noopener noreferrer" 
+                                           class="inline-flex items-center text-[10px] text-pink-600 font-bold hover:underline mt-1.5">
+                                            <i class="fas fa-arrow-up-right-from-square me-1"></i> View Counter-Evidence URL
+                                        </a>
+                                    <% } %>
+                                </td>
+
                                 <td class="p-4">
-                                    <div class="font-semibold text-slate-800"><%= r.reason %></div>
-                                    <% if (r.details) { %>
-                                        <div class="text-[11px] text-slate-500 mt-0.5"><%= r.details %></div>
-                                    <% } %>
+                                    <div class="font-bold text-slate-800">
+                                        <%= r.reporter_username ? '@' + r.reporter_username : 'Community Member' %>
+                                    </div>
+                                    <div class="text-[10px] text-slate-400"><%= r.reporter_email || 'Verified Account' %></div>
+                                    <div class="text-[10px] text-slate-400 font-mono mt-0.5"><%= r.created_at.substring(0, 16) %></div>
                                 </td>
-                                <td class="p-4 font-medium text-slate-700">
-                                    <%= r.username ? '@' + r.username : 'Anonymous Visitor' %>
-                                </td>
-                                <td class="p-4 font-mono text-slate-500">
-                                    <%= r.created_at.substring(0, 10) %>
-                                </td>
+
                                 <td class="p-4">
-                                    <% if (r.status === 'RESOLVED') { %>
-                                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">RESOLVED</span>
+                                    <% if (r.status === 'PENDING') { %>
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping me-1.5"></span> PENDING REVIEW
+                                        </span>
+                                    <% } else if (r.status === 'DISMISSED') { %>
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                                            <i class="fas fa-ban me-1 text-slate-400"></i> DISMISSED
+                                        </span>
                                     <% } else { %>
-                                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">PENDING REVIEW</span>
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                            <i class="fas fa-check me-1 text-emerald-500"></i> RESOLVED
+                                        </span>
                                     <% } %>
                                 </td>
-                                <td class="p-4 text-right">
-                                    <% if (r.status !== 'RESOLVED') { %>
-                                        <form action="/admin/reports/resolve" method="POST" class="inline">
-                                            <input type="hidden" name="id" value="<%= r.id %>">
-                                            <button type="submit" class="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-sm">
-                                                Resolve
-                                            </button>
-                                        </form>
+
+                                <td class="p-4 max-w-xs">
+                                    <% if (r.admin_action) { %>
+                                        <span class="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                                            <%= r.admin_action %>
+                                        </span>
+                                        <% if (r.admin_notes) { %>
+                                            <div class="text-[11px] text-slate-500 mt-1 italic leading-tight">
+                                                "<%= r.admin_notes %>"
+                                            </div>
+                                        <% } %>
                                     <% } else { %>
-                                        <span class="text-xs text-slate-400">Completed</span>
+                                        <span class="text-slate-400 italic text-[11px]">Awaiting investigation</span>
+                                    <% } %>
+                                </td>
+
+                                <td class="p-4 text-right whitespace-nowrap">
+                                    <% if (r.status === 'PENDING') { %>
+                                        <button type="button" 
+                                                onclick="openModerationModal(<%= r.id %>, '<%= (r.event_name || '').replace(/'/g, "\\'") %>', <%= r.event_id %>, '<%= r.reason %>')"
+                                                class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition-all cursor-pointer">
+                                            <i class="fas fa-gavel me-1.5 text-pink-400"></i> Moderate
+                                        </button>
+                                    <% } else { %>
+                                        <span class="text-[11px] font-bold text-slate-400">Closed</span>
                                     <% } %>
                                 </td>
                             </tr>
@@ -93,5 +186,99 @@
         <% } %>
     </div>
 </div>
+
+<!-- Admin Moderation Action Modal -->
+<div id="moderation-modal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-slate-100">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+            <div>
+                <h3 class="text-lg font-black text-slate-900 flex items-center">
+                    <i class="fas fa-gavel text-pink-600 me-2.5"></i> Admin Moderation Decision
+                </h3>
+                <p id="mod-modal-subtitle" class="text-xs text-slate-500 mt-0.5">Take decisive action on reported event listing</p>
+            </div>
+            <button onclick="closeModerationModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-xs cursor-pointer">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
+
+        <form action="/admin/reports/action" method="POST" class="space-y-4">
+            <input type="hidden" name="report_id" id="mod-report-id">
+
+            <!-- Action Select Options -->
+            <div>
+                <label class="block text-xs font-bold text-slate-800 mb-2">Select Remediation Action:</label>
+                <div class="space-y-2">
+                    <label class="flex items-start p-3 rounded-2xl border border-rose-200 bg-rose-50/50 hover:bg-rose-50 cursor-pointer transition-colors">
+                        <input type="radio" name="action_type" value="FREEZE_EVENT" checked class="mt-1 text-rose-600 focus:ring-rose-500">
+                        <div class="ms-3">
+                            <span class="font-extrabold text-xs text-rose-900 block">❄️ Freeze / Suspend Event Listing (Immediate Safety)</span>
+                            <span class="text-[11px] text-rose-700 leading-tight block mt-0.5">Hides event from public search directory and disables all ticket purchasing links to protect Malaysian fans while under review.</span>
+                        </div>
+                    </label>
+
+                    <label class="flex items-start p-3 rounded-2xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition-colors">
+                        <input type="radio" name="action_type" value="DISMISS_REPORT" class="mt-1 text-slate-600 focus:ring-slate-500">
+                        <div class="ms-3">
+                            <span class="font-extrabold text-xs text-slate-900 block">🛡️ Dismiss Report as False / Frivolous (Anti-Harassment)</span>
+                            <span class="text-[11px] text-slate-600 leading-tight block mt-0.5">Report is unsubstantiated or malicious. Protects legitimate fanclub from competitor abuse. Listing stays published.</span>
+                        </div>
+                    </label>
+
+                    <label class="flex items-start p-3 rounded-2xl border border-emerald-200 bg-emerald-50/30 hover:bg-emerald-50/60 cursor-pointer transition-colors">
+                        <input type="radio" name="action_type" value="RESOLVE_OK" class="mt-1 text-emerald-600 focus:ring-emerald-500">
+                        <div class="ms-3">
+                            <span class="font-extrabold text-xs text-emerald-900 block">✅ Resolve & Confirm Information Corrected</span>
+                            <span class="text-[11px] text-emerald-700 leading-tight block mt-0.5">Admin verified date/venue correction or confirmed updated official ticket URL.</span>
+                        </div>
+                    </label>
+
+                    <label class="flex items-start p-3 rounded-2xl border border-rose-300 bg-rose-100/40 hover:bg-rose-100/70 cursor-pointer transition-colors">
+                        <input type="radio" name="action_type" value="DELETE_SCAM" class="mt-1 text-rose-700 focus:ring-rose-600">
+                        <div class="ms-3">
+                            <span class="font-extrabold text-xs text-rose-900 block">🚫 Confirm Scam & Permanently Reject Listing</span>
+                            <span class="text-[11px] text-rose-700 leading-tight block mt-0.5">Confirmed phishing/fake event. Rejects listing permanently and records submitter fraud flag.</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Admin Notes / Audit Trail -->
+            <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1.5">
+                    Moderator Investigation Notes <span class="text-rose-500">*</span>
+                </label>
+                <textarea name="admin_notes" rows="2" required 
+                          placeholder="State reason for action (e.g. Verified with GoLive MY; or Confirmed fake ticket Telegram link)..."
+                          class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900"></textarea>
+            </div>
+
+            <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+                <button type="button" onclick="closeModerationModal()" class="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs">
+                    Cancel
+                </button>
+                <button type="submit" class="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md">
+                    Execute Moderation Action
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModerationModal(reportId, eventName, eventId, reason) {
+        document.getElementById('mod-report-id').value = reportId;
+        document.getElementById('mod-modal-subtitle').textContent = `Target: ${eventName} (#REP-${reportId})`;
+        const modal = document.getElementById('moderation-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeModerationModal() {
+        const modal = document.getElementById('moderation-modal');
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+    }
+</script>
 
 <%- include('../partials/footer') %>

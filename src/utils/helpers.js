@@ -40,6 +40,8 @@ export function getVerificationBadge(status) {
       return `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm"><i class="fas fa-circle-check me-1.5 text-emerald-500"></i> Published Event</span>`;
     case 'PENDING':
       return `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-extrabold bg-amber-50 text-amber-800 border border-amber-200 shadow-sm"><i class="fas fa-clock me-1.5 text-amber-500"></i> Under Review</span>`;
+    case 'SUSPENDED':
+      return `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-extrabold bg-rose-600 text-white border border-rose-700 shadow-sm animate-pulse"><i class="fas fa-triangle-exclamation me-1.5"></i> Suspended Listing</span>`;
     case 'REJECTED':
       return `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-extrabold bg-rose-50 text-rose-700 border border-rose-200 shadow-sm"><i class="fas fa-circle-xmark me-1.5 text-rose-500"></i> Rejected / Hidden</span>`;
     default:
@@ -144,11 +146,74 @@ export async function logActivity(userId, action, entityType = null, entityId = 
   }
 }
 
+/**
+ * Evaluates ticketing domain security against whitelisted official platforms
+ */
+export function getTicketingSecurity(url, promoterName = '') {
+  if (!url) {
+    return {
+      isWhitelisted: false,
+      domain: 'No Direct Link',
+      badge: 'Unverified Channel',
+      statusClass: 'bg-amber-50 text-amber-800 border-amber-200',
+      icon: 'fa-triangle-exclamation text-amber-500'
+    };
+  }
+
+  const whitelistedDomains = [
+    'golive-asia.com',
+    'ticket2u.com.my',
+    'bookmyshow.com',
+    'ticketcharge.com.my',
+    'livenation.my',
+    'starplanet.com.my',
+    'ime.com.my',
+    'goersapp.com',
+    'myticket.asia',
+    'cloudjoi.com',
+    'ibighit.com',
+    'weverse.io'
+  ];
+
+  try {
+    const parsed = new URL(url);
+    const hostname = parsed.hostname.toLowerCase();
+    const matched = whitelistedDomains.some(d => hostname === d || hostname.endsWith('.' + d));
+
+    if (matched) {
+      return {
+        isWhitelisted: true,
+        domain: hostname,
+        badge: 'Official Ticketing Partner',
+        statusClass: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+        icon: 'fa-circle-check text-emerald-500'
+      };
+    } else {
+      return {
+        isWhitelisted: false,
+        domain: hostname,
+        badge: 'Third-Party / Community Channel',
+        statusClass: 'bg-slate-50 text-slate-700 border-slate-200',
+        icon: 'fa-arrow-up-right-from-square text-slate-400'
+      };
+    }
+  } catch (e) {
+    return {
+      isWhitelisted: false,
+      domain: 'Custom Channel',
+      badge: 'Community Channel',
+      statusClass: 'bg-slate-50 text-slate-700 border-slate-200',
+      icon: 'fa-link text-slate-400'
+    };
+  }
+}
+
 export default {
   getCalculatedEventStatus,
   getVerificationBadge,
   getOrganizerBadge,
   getStatusBadge,
+  getTicketingSecurity,
   formatDate,
   formatTime,
   escapeHtml,
