@@ -7,6 +7,7 @@ scratch/
 *.log
 .DS_Store
 Thumbs.db
+~$*.docx
 
 # Local database temporary files & backups
 database/*.db-shm
