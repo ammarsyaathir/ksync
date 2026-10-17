@@ -9,23 +9,22 @@ let transporter = null;
 async function getTransporter() {
   if (transporter) return transporter;
 
-  const {
-    SMTP_HOST,
-    SMTP_PORT,
-    SMTP_USER,
-    SMTP_PASS,
-    SMTP_SECURE
-  } = process.env;
+  const host = (process.env.SMTP_HOST || process.env.STMP_HOST || '').trim();
+  let port = Number(process.env.SMTP_PORT || process.env.STMP_PORT) || 465;
+  if (port === 456) port = 465; // Auto-correct common typo 456 to SSL SMTP port 465
+  const user = (process.env.SMTP_USER || process.env.STMP_USER || '').trim();
+  const pass = (process.env.SMTP_PASS || process.env.STMP_PASS || '').replace(/\s+/g, '');
+  const secure = process.env.SMTP_SECURE === 'true' || port === 465;
 
-  if (SMTP_HOST && SMTP_USER && SMTP_PASS) {
+  if (host && user && pass) {
     // Real SMTP server (Hostinger, Gmail, SendGrid, etc.)
     transporter = nodemailer.createTransport({
-      host: SMTP_HOST,
-      port: Number(SMTP_PORT) || 587,
-      secure: SMTP_SECURE === 'true' || Number(SMTP_PORT) === 465,
+      host,
+      port,
+      secure,
       auth: {
-        user: SMTP_USER.trim(),
-        pass: SMTP_PASS.replace(/\s+/g, '')
+        user,
+        pass
       },
       tls: {
         rejectUnauthorized: false
@@ -33,7 +32,7 @@ async function getTransporter() {
       allowInternalNetworkInterfaces: true,
       dnsTimeout: 5000
     });
-    console.log(`[Email Service] Configured live SMTP transport via ${SMTP_HOST}:${SMTP_PORT || 587} (${SMTP_USER})`);
+    console.log(`[Email Service] Configured live SMTP transport via ${host}:${port} (${user})`);
   } else {
     // Fallback: Test account (Ethereal Email) or mock transport
     try {
@@ -120,8 +119,8 @@ function getEmailTemplate(contentHtml) {
  * Standardized Sender Address Helper
  */
 export function getFromAddress() {
-  const user = (process.env.SMTP_USER || 'noreply@ksync.my').trim();
-  return process.env.EMAIL_FROM || process.env.SMTP_FROM || `"noreply" <${user}>`;
+  const user = (process.env.SMTP_USER || process.env.STMP_USER || 'noreply@ksync.my').trim();
+  return process.env.EMAIL_FROM || process.env.SMTP_FROM || process.env.STMP_FROM || `"noreply" <${user}>`;
 }
 
 // 1. Send Submission Confirmation Email (UC20)
