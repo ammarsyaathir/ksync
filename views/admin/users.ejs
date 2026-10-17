@@ -42,7 +42,7 @@
                             </td>
                             <td class="p-3 text-slate-400 text-[10px]"><%= helpers.formatDate(u.created_at) %></td>
                             <td class="p-3 text-right">
-                                <% if (u.id !== currentUser.id) { %>
+                                <% if (typeof currentUser === 'undefined' || !currentUser || u.id !== currentUser.id) { %>
                                     <form action="/admin/users/delete" method="POST" onsubmit="return confirm('Permanently delete user account?')" class="inline">
                                         <input type="hidden" name="id" value="<%= u.id %>">
                                         <button type="submit" class="p-1.5 text-rose-500 hover:text-rose-700" title="Delete User">

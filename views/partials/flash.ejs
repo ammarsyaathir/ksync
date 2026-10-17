@@ -1,27 +1,28 @@
-<% if (flash && (flash.success || flash.error || flash.warning || flash.info)) { %>
+<% const flashMsg = (typeof flash !== 'undefined' && flash) ? flash : {}; %>
+<% if (flashMsg.success || flashMsg.error || flashMsg.warning || flashMsg.info) { %>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-    <% if (flash.success) { %>
+    <% if (flashMsg.success) { %>
       <div class="p-4 mb-3 text-sm text-emerald-800 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center shadow-sm">
         <i class="fas fa-check-circle text-emerald-500 text-lg me-3"></i>
-        <div class="font-medium"><%= flash.success %></div>
+        <div class="font-medium"><%= flashMsg.success %></div>
       </div>
     <% } %>
-    <% if (flash.error) { %>
+    <% if (flashMsg.error) { %>
       <div class="p-4 mb-3 text-sm text-rose-800 rounded-xl bg-rose-50 border border-rose-200 flex items-center shadow-sm">
         <i class="fas fa-exclamation-circle text-rose-500 text-lg me-3"></i>
-        <div class="font-medium"><%= flash.error %></div>
+        <div class="font-medium"><%= flashMsg.error %></div>
       </div>
     <% } %>
-    <% if (flash.warning) { %>
+    <% if (flashMsg.warning) { %>
       <div class="p-4 mb-3 text-sm text-amber-800 rounded-xl bg-amber-50 border border-amber-200 flex items-center shadow-sm">
         <i class="fas fa-exclamation-triangle text-amber-500 text-lg me-3"></i>
-        <div class="font-medium"><%= flash.warning %></div>
+        <div class="font-medium"><%= flashMsg.warning %></div>
       </div>
     <% } %>
-    <% if (flash.info) { %>
+    <% if (flashMsg.info) { %>
       <div class="p-4 mb-3 text-sm text-blue-800 rounded-xl bg-blue-50 border border-blue-200 flex items-center shadow-sm">
         <i class="fas fa-info-circle text-blue-500 text-lg me-3"></i>
-        <div class="font-medium"><%= flash.info %></div>
+        <div class="font-medium"><%= flashMsg.info %></div>
       </div>
     <% } %>
   </div>
