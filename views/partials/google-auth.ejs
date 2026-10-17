@@ -29,6 +29,13 @@ googleProvider.addScope('profile');
  */
 function handleFirebaseGoogleSignIn(selectedRole = 'Fan') {
     const btn = document.getElementById('google-signin-btn');
+    function resetButton() {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-4 h-4 me-2.5 inline" alt="Google"> Continue with Google';
+        }
+    }
+
     if (btn) {
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Connecting to Google...';
@@ -37,13 +44,15 @@ function handleFirebaseGoogleSignIn(selectedRole = 'Fan') {
     firebase.auth().signInWithPopup(googleProvider)
         .then(async (result) => {
             const user = result.user;
-            console.log("Welcome!", user.displayName);
+            console.log("Firebase Auth success:", user.displayName, user.email);
 
-            // Obtain a signed Firebase ID token. The server verifies this token
-            // and derives the user's identity from it (client identity is not trusted).
+            if (btn) {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Verifying session...';
+            }
+
             const idToken = await user.getIdToken();
 
-            fetch('/auth/google', {
+            const res = await fetch('/auth/google', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -52,41 +61,26 @@ function handleFirebaseGoogleSignIn(selectedRole = 'Fan') {
                     idToken: idToken,
                     role: selectedRole
                 })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    window.location.href = data.redirect || '/';
-                } else {
-                    alert('Google Authentication Error: ' + data.message);
-                    if (btn) {
-                        btn.disabled = false;
-                        btn.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5 me-2.5 inline" alt="Google"> Continue with Google';
-                    }
-                }
-            })
-            .catch(err => {
-                console.error('Backend sync error:', err);
-                alert('Server error processing Google sign in.');
-                if (btn) {
-                    btn.disabled = false;
-                    btn.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5 me-2.5 inline" alt="Google"> Continue with Google';
-                }
             });
+
+            const data = await res.json().catch(() => ({ status: 'error', message: 'Invalid response from server' }));
+            if (res.ok && data.status === 'success') {
+                window.location.href = data.redirect || '/';
+            } else {
+                alert('Google Sign-in Error: ' + (data.message || 'Authentication failed.'));
+                resetButton();
+            }
         })
         .catch((error) => {
-            console.error("Sign-in failed:", error.message);
+            console.error("Firebase Sign-in failed:", error);
             if (error.code === 'auth/popup-closed-by-user') {
-                // User closed popup manually
+                // User closed popup without selecting an account
             } else if (error.code === 'auth/unauthorized-domain') {
-                alert("Firebase Auth: To allow Google login, add '" + window.location.hostname + "' to Authorized Domains in your Firebase Console (Authentication > Settings > Authorized domains).");
+                alert("Firebase Auth Domain Not Authorized: Please add '" + window.location.hostname + "' to Firebase Console > Authentication > Settings > Authorized domains.");
             } else {
-                alert("Google Sign-in Error: " + error.message);
+                alert("Google Sign-In Error (" + error.code + "): " + error.message);
             }
-            if (btn) {
-                btn.disabled = false;
-                btn.innerHTML = '<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5 me-2.5 inline" alt="Google"> Continue with Google';
-            }
+            resetButton();
         });
 }
 </script>

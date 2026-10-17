@@ -61,10 +61,9 @@ router.get('/admin/verifications', async (req, res) => {
     `);
 
     const organizers = await db.query(`
-      SELECT u.*, r.name as role_name 
+      SELECT u.*, COALESCE(u.role, 'FAN') as role, COALESCE(u.role, 'FAN') as role_name 
       FROM users u 
-      JOIN roles r ON u.role_id = r.id 
-      WHERE LOWER(r.name) = 'organizer' OR u.organization_name IS NOT NULL
+      WHERE UPPER(u.role) = 'ORGANIZER' OR u.organization_name IS NOT NULL
       ORDER BY u.created_at DESC
     `);
 
@@ -425,9 +424,8 @@ router.post('/admin/reports/resolve', async (req, res) => {
 router.get('/admin/users', async (req, res) => {
   try {
     const users = await db.query(`
-      SELECT u.*, r.name as role_name 
+      SELECT u.*, COALESCE(u.role, 'FAN') as role, COALESCE(u.role, 'FAN') as role_name 
       FROM users u 
-      JOIN roles r ON u.role_id = r.id 
       ORDER BY u.created_at DESC
     `);
     res.render('admin/users', { users, helpers });

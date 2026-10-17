@@ -70,7 +70,8 @@ router.post('/login', async (req, res) => {
     await logActivity(user.id, 'LOGIN', 'users', user.id, `User @${user.username} logged in successfully`, req.ip);
 
     req.session.flash = { success: `Welcome back, ${user.full_name}!` };
-    const targetUrl = redirect && redirect.startsWith('/') ? redirect : (user.role_id === 1 ? '/admin' : '/');
+    const isAdmin = ((user.role || '').toUpperCase() === 'ADMIN') || user.role_id === 1;
+    const targetUrl = redirect && redirect.startsWith('/') ? redirect : (isAdmin ? '/admin' : '/');
     req.session.save((saveErr) => {
       if (saveErr) console.error('Session save error:', saveErr);
       res.redirect(targetUrl);
@@ -113,13 +114,10 @@ router.post('/register', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    const roleRes = await db.getOne("SELECT id FROM roles WHERE LOWER(name) = 'fan'");
-    const roleId = roleRes ? roleRes.id : 3;
-
     const result = await db.execute(
-      `INSERT INTO users (role_id, full_name, username, email, password_hash, bio, status) 
-       VALUES (?, ?, ?, ?, ?, ?, 'ACTIVE')`,
-      [roleId, full_name.trim(), username.trim(), email.trim(), passwordHash, bio ? bio.trim() : '']
+      `INSERT INTO users (role, full_name, username, email, password_hash, bio, status) 
+       VALUES ('FAN', ?, ?, ?, ?, ?, 'ACTIVE')`,
+      [full_name.trim(), username.trim(), email.trim(), passwordHash, bio ? bio.trim() : '']
     );
 
     req.session.userId = result.insertId;
@@ -168,7 +166,7 @@ router.post('/auth/google', async (req, res) => {
 
   try {
     const existing = await db.getOne(
-      "SELECT u.*, r.name as role_name FROM users u JOIN roles r ON u.role_id = r.id WHERE LOWER(u.email) = LOWER(?)",
+      "SELECT u.*, COALESCE(u.role, 'FAN') as role, COALESCE(u.role, 'FAN') as role_name FROM users u WHERE LOWER(u.email) = LOWER(?)",
       [email]
     );
 
@@ -186,28 +184,26 @@ router.post('/auth/google', async (req, res) => {
       await logActivity(existing.id, 'GOOGLE_LOGIN', 'users', existing.id, 'User logged in via Google Authentication', req.ip);
 
       req.session.flash = { success: `Welcome back, ${existing.full_name}! Signed in with Google.` };
-      const redirect = (existing.role_name && existing.role_name.toLowerCase() === 'admin') ? '/admin' : '/';
+      const roleUpper = (existing.role || existing.role_name || '').toUpperCase();
+      const redirect = roleUpper === 'ADMIN' ? '/admin' : '/';
       req.session.save((saveErr) => {
         if (saveErr) console.error('Session save error:', saveErr);
         return res.json({ status: 'success', redirect, message: 'Login successful' });
       });
     } else {
-      // New user -> register with Google
+      // New user -> register with Google (default role is always FAN)
       let username = usernameBase;
       const checkUser = await db.getOne("SELECT id FROM users WHERE username = ?", [username]);
       if (checkUser) {
         username = `${usernameBase}${Math.floor(100 + Math.random() * 900)}`;
       }
 
-      const roleRow = await db.getOne("SELECT id FROM roles WHERE LOWER(name) = LOWER(?)", [roleName]);
-      const roleId = roleRow ? roleRow.id : 3;
-
       const randomPassword = await bcrypt.hash(`${uid}${Date.now()}${Math.random()}`, 10);
 
       const result = await db.execute(`
-        INSERT INTO users (role_id, full_name, username, email, password_hash, profile_image, status)
-        VALUES (?, ?, ?, ?, ?, ?, 'ACTIVE')
-      `, [roleId, name, username, email, randomPassword, photo_url]);
+        INSERT INTO users (role, full_name, username, email, password_hash, profile_image, status)
+        VALUES ('FAN', ?, ?, ?, ?, ?, 'ACTIVE')
+      `, [name, username, email, randomPassword, photo_url]);
 
       req.session.userId = result.insertId;
       await logActivity(result.insertId, 'GOOGLE_REGISTER', 'users', result.insertId, `New user registered via Google: @${username}`, req.ip);

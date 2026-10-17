@@ -159,8 +159,9 @@ router.post('/chat/:eventId', async (req, res) => {
       }
     }
 
-    const user = await db.getOne("SELECT r.name as role_name FROM users u JOIN roles r ON u.role_id = r.id WHERE u.id = ?", [userId]);
-    const isOrganizer = user && ['organizer', 'admin'].includes(user.role_name.toLowerCase()) ? 1 : 0;
+    const user = await db.getOne("SELECT COALESCE(role, 'FAN') as role FROM users WHERE id = ?", [userId]);
+    const roleUpper = (user && user.role ? user.role : 'FAN').toUpperCase();
+    const isOrganizer = ['ORGANIZER', 'ADMIN'].includes(roleUpper) ? 1 : 0;
 
     const result = await db.execute(`
       INSERT INTO event_chat_messages (event_id, user_id, message, is_organizer)

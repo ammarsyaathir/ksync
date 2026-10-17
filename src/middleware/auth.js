@@ -19,9 +19,8 @@ export async function populateCurrentUser(req, res, next) {
 
     if (req.session && req.session.userId) {
       const user = await db.getOne(`
-        SELECT u.*, r.name as role_name 
+        SELECT u.*, COALESCE(u.role, 'FAN') as role, COALESCE(u.role, 'FAN') as role_name 
         FROM users u 
-        JOIN roles r ON u.role_id = r.id 
         WHERE u.id = ?
       `, [req.session.userId]);
 
@@ -62,7 +61,8 @@ export function requireAuth(req, res, next) {
  * Guard: Requires Admin role
  */
 export function requireAdmin(req, res, next) {
-  if (!req.user || req.user.role_name.toLowerCase() !== 'admin') {
+  const role = (req.user && (req.user.role || req.user.role_name) || '').toUpperCase();
+  if (role !== 'ADMIN') {
     req.session.flash = { error: 'Access denied: Administrator privileges required.' };
     return res.redirect('/');
   }
@@ -73,7 +73,8 @@ export function requireAdmin(req, res, next) {
  * Guard: Requires Organizer or Admin role
  */
 export function requireOrganizer(req, res, next) {
-  if (!req.user || !['organizer', 'admin'].includes(req.user.role_name.toLowerCase())) {
+  const role = (req.user && (req.user.role || req.user.role_name) || '').toUpperCase();
+  if (!['ORGANIZER', 'ADMIN'].includes(role)) {
     req.session.flash = { error: 'Access denied: Organizer privileges required.' };
     return res.redirect('/');
   }

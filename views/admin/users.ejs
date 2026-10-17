@@ -30,8 +30,9 @@
                                 <div class="text-[10px] text-slate-400">@<%= u.username %> &bull; <%= u.email %></div>
                             </td>
                             <td class="p-3">
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold <%= u.role_name === 'Admin' ? 'bg-purple-100 text-purple-800' : (u.role_name === 'Organizer' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700') %>">
-                                    <%= u.role_name %>
+                                <% const displayRole = (u.role || u.role_name || 'FAN').toUpperCase(); %>
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold <%= displayRole === 'ADMIN' ? 'bg-purple-100 text-purple-800' : (displayRole === 'ORGANIZER' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700') %>">
+                                    <%= displayRole === 'ADMIN' ? '👑 Admin' : (displayRole === 'ORGANIZER' ? '🎪 Organizer' : '💖 Fan') %>
                                 </span>
                             </td>
                             <td class="p-3 text-slate-600"><%= u.location || 'Malaysia' %></td>

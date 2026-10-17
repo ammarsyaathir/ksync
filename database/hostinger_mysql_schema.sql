@@ -9,27 +9,13 @@ SET SQL_MODE = 'NO_AUTO_VALUE_ON_ZERO';
 SET time_zone = '+08:00';
 
 -- --------------------------------------------------------
--- 1. Table structure for `roles`
+-- 1. Table structure for `users` (Simplified direct role: ADMIN, ORGANIZER, FAN)
 -- --------------------------------------------------------
 DROP TABLE IF EXISTS `roles`;
-CREATE TABLE `roles` (
-  `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `name` VARCHAR(50) UNIQUE NOT NULL,
-  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO `roles` (`id`, `name`) VALUES 
-(1, 'Admin'),
-(2, 'Organizer'),
-(3, 'Fan');
-
--- --------------------------------------------------------
--- 2. Table structure for `users`
--- --------------------------------------------------------
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `role_id` INT NOT NULL DEFAULT 3,
+  `role` VARCHAR(20) NOT NULL DEFAULT 'FAN',
   `full_name` VARCHAR(100) NOT NULL,
   `username` VARCHAR(50) UNIQUE NOT NULL,
   `email` VARCHAR(100) UNIQUE NOT NULL,
@@ -43,15 +29,14 @@ CREATE TABLE `users` (
   `location` VARCHAR(100) DEFAULT 'Kuala Lumpur',
   `status` VARCHAR(20) DEFAULT 'ACTIVE',
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (`role_id`) REFERENCES `roles`(`id`) ON DELETE RESTRICT
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `users` (`id`, `role_id`, `full_name`, `username`, `email`, `password_hash`, `bio`, `profile_image`, `status`, `created_at`) VALUES (1, 1, 'System Admin', 'admin', 'admin@ksync.my', '$2y$10$wuYGFXOF2Pl4N1uhplTJCuxNURWpwYbIpib79nx4TUSwMon.2R2hO', 'Chief Administrator for K-Sync Malaysia.', '', 'ACTIVE', '2026-09-21 09:06:15');
-INSERT INTO `users` (`id`, `role_id`, `full_name`, `username`, `email`, `password_hash`, `bio`, `profile_image`, `status`, `created_at`) VALUES (2, 2, 'Starline Events Malaysia', 'starline', 'organizer@ksync.my', '$2y$10$wuYGFXOF2Pl4N1uhplTJCuxNURWpwYbIpib79nx4TUSwMon.2R2hO', 'Official K-Pop concert and fan meeting organizer based in Kuala Lumpur.', '', 'ACTIVE', '2026-09-21 09:06:15');
-INSERT INTO `users` (`id`, `role_id`, `full_name`, `username`, `email`, `password_hash`, `bio`, `profile_image`, `status`, `created_at`) VALUES (3, 3, 'Aiman K-Pop Fan', 'aiman_carat', 'fan@ksync.my', '$2y$10$wuYGFXOF2Pl4N1uhplTJCuxNURWpwYbIpib79nx4TUSwMon.2R2hO', 'Passionate K-Pop fan & SEVENTEEN Carat in KL!', '', 'ACTIVE', '2026-09-21 09:06:15');
-INSERT INTO `users` (`id`, `role_id`, `full_name`, `username`, `email`, `password_hash`, `bio`, `profile_image`, `status`, `created_at`) VALUES (4, 3, 'Ammar Syaathir', 'ammarsyaathir', 'ammarsyaathir@gmail.com', '$2y$10$WMqmlRM9nQ0r7CVQXxl.X.vI/1qph7vg7yZqvvMbl1NN583r3YFF2', '', 'https://lh3.googleusercontent.com/a/ACg8ocLHfb6hc_aXwBT2Xp4IR4yq1yXkDbrXB7Du5yBRoJIY8wHuXZWZ=s96-c', 'ACTIVE', '2026-09-21 09:35:23');
-INSERT INTO `users` (`id`, `role_id`, `full_name`, `username`, `email`, `password_hash`, `bio`, `profile_image`, `status`, `created_at`) VALUES (5, 3, 'Google Test Fan', 'kpopfan_google_test', 'kpopfan_google_test@gmail.com', '$2b$10$jU2vKYEREwrsBHQLUmfj2eBWx3MPgEQ.RAbJPXW8IVApt9BjyO8dS', '', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100', 'ACTIVE', '2026-10-16 14:52:53');
+INSERT INTO `users` (`id`, `role`, `full_name`, `username`, `email`, `password_hash`, `bio`, `profile_image`, `status`, `created_at`) VALUES (1, 'ADMIN', 'System Admin', 'admin', 'admin@ksync.my', '$2y$10$wuYGFXOF2Pl4N1uhplTJCuxNURWpwYbIpib79nx4TUSwMon.2R2hO', 'Chief Administrator for K-Sync Malaysia.', '', 'ACTIVE', '2026-09-21 09:06:15');
+INSERT INTO `users` (`id`, `role`, `full_name`, `username`, `email`, `password_hash`, `bio`, `profile_image`, `status`, `created_at`) VALUES (2, 'ORGANIZER', 'Starline Events Malaysia', 'starline', 'organizer@ksync.my', '$2y$10$wuYGFXOF2Pl4N1uhplTJCuxNURWpwYbIpib79nx4TUSwMon.2R2hO', 'Official K-Pop concert and fan meeting organizer based in Kuala Lumpur.', '', 'ACTIVE', '2026-09-21 09:06:15');
+INSERT INTO `users` (`id`, `role`, `full_name`, `username`, `email`, `password_hash`, `bio`, `profile_image`, `status`, `created_at`) VALUES (3, 'FAN', 'Aiman K-Pop Fan', 'aiman_carat', 'fan@ksync.my', '$2y$10$wuYGFXOF2Pl4N1uhplTJCuxNURWpwYbIpib79nx4TUSwMon.2R2hO', 'Passionate K-Pop fan & SEVENTEEN Carat in KL!', '', 'ACTIVE', '2026-09-21 09:06:15');
+INSERT INTO `users` (`id`, `role`, `full_name`, `username`, `email`, `password_hash`, `bio`, `profile_image`, `status`, `created_at`) VALUES (4, 'FAN', 'Ammar Syaathir', 'ammarsyaathir', 'ammarsyaathir@gmail.com', '$2y$10$WMqmlRM9nQ0r7CVQXxl.X.vI/1qph7vg7yZqvvMbl1NN583r3YFF2', '', 'https://lh3.googleusercontent.com/a/ACg8ocLHfb6hc_aXwBT2Xp4IR4yq1yXkDbrXB7Du5yBRoJIY8wHuXZWZ=s96-c', 'ACTIVE', '2026-09-21 09:35:23');
+INSERT INTO `users` (`id`, `role`, `full_name`, `username`, `email`, `password_hash`, `bio`, `profile_image`, `status`, `created_at`) VALUES (5, 'FAN', 'Google Test Fan', 'kpopfan_google_test', 'kpopfan_google_test@gmail.com', '$2b$10$jU2vKYEREwrsBHQLUmfj2eBWx3MPgEQ.RAbJPXW8IVApt9BjyO8dS', '', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100', 'ACTIVE', '2026-10-16 14:52:53');
 
 -- --------------------------------------------------------
 -- 3. Table structure for `artists` (With Idol Member Biodata JSON)
