@@ -51,12 +51,12 @@ CREATE TABLE `users` (
   FOREIGN KEY (`role_id`) REFERENCES `roles`(`id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Initial Seeded Accounts (Passphrases: admin123, fan123)
+-- Initial Seeded Accounts (admin123, organizer123, fan123)
 INSERT INTO `users` (`id`, `role_id`, `full_name`, `username`, `email`, `password_hash`, `bio`, `profile_image`, `organization_name`, `organization_type`, `social_handle`, `social_url`, `is_verified_organizer`, `status`) VALUES 
-(1, 1, 'System Administrator', 'admin', 'admin@ksync.my', '$2a$10$tZk2jCqC4WqR1bZqM3F2UuGz8hL4O4T8N8k4J4J4J4J4J4J4J4J4.', 'Chief Platform Administrator for K-Sync Malaysia.', '', 'K-Sync Platform Authority', 'Promoter', '@ksync_my', 'https://ksync.my', 1, 'ACTIVE'),
-(2, 2, 'Starline Events Malaysia', 'starline', 'organizer@ksync.my', '$2a$10$tZk2jCqC4WqR1bZqM3F2UuGz8hL4O4T8N8k4J4J4J4J4J4J4J4J4.', 'Official K-Pop concert and fan meeting organizer based in Kuala Lumpur.', '', 'Starline Events Malaysia', 'Promoter', '@Starline_MY', 'https://starline.my', 1, 'ACTIVE'),
-(3, 3, 'Aiman K-Pop Fan', 'aiman_carat', 'fan@ksync.my', '$2a$10$mB5Tz5HqUj8FvI9R5E6QO.E4k1A2B3C4D5E6F7G8H9I0J1K2L3M4N', 'SEVENTEEN Carat Malaysia Fan Union Lead', '', 'CARAT Malaysia Fan Union', 'Fanclub', '@Carat_MY', 'https://caratmalaysia.carrd.co', 1, 'ACTIVE'),
-(4, 1, 'Ammar Syaathir', 'ammarsyaathir', 'ammarsyaathir@gmail.com', '$2a$10$tZk2jCqC4WqR1bZqM3F2UuGz8hL4O4T8N8k4J4J4J4J4J4J4J4J4.', 'Platform Admin & Lead Developer.', '', 'K-Sync Malaysia Core', 'Promoter', '@ammarsyaathir', 'https://ksync.my', 1, 'ACTIVE');
+(1, 1, 'System Administrator', 'admin', 'admin@ksync.my', '$2b$10$nMaKST9oUz6BKd9Qyh5M9ufJwS.eUjFTgUlpImV2JklR8jvFJtjcu', 'Chief Platform Administrator for K-Sync Malaysia.', '', 'K-Sync Platform Authority', 'Promoter', '@ksync_my', 'https://ksync.my', 1, 'ACTIVE'),
+(2, 2, 'Starline Events Malaysia', 'starline', 'organizer@ksync.my', '$2b$10$OFB/P0kZB9KHXf/Ygx2EO.W81zfiVw.QVtBHD86XtlSsAtIN7d5Dy', 'Official K-Pop concert and fan meeting organizer based in Kuala Lumpur.', '', 'Starline Events Malaysia', 'Promoter', '@Starline_MY', 'https://starline.my', 1, 'ACTIVE'),
+(3, 3, 'Aiman K-Pop Fan', 'aiman_carat', 'fan@ksync.my', '$2b$10$XBZtbMFaFExmTqUrbfDF9edXz4JLKa4bsmnojT0vjoVra8lqcgg9i', 'SEVENTEEN Carat Malaysia Fan Union Lead', '', 'CARAT Malaysia Fan Union', 'Fanclub', '@Carat_MY', 'https://caratmalaysia.carrd.co', 1, 'ACTIVE'),
+(4, 1, 'Ammar Syaathir', 'ammarsyaathir', 'ammarsyaathir@gmail.com', '$2b$10$nMaKST9oUz6BKd9Qyh5M9ufJwS.eUjFTgUlpImV2JklR8jvFJtjcu', 'Platform Admin & Lead Developer.', '', 'K-Sync Malaysia Core', 'Promoter', '@ammarsyaathir', 'https://ksync.my', 1, 'ACTIVE');
 
 -- --------------------------------------------------------
 -- 3. Table: artists

@@ -71,7 +71,7 @@ app.use(session({
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     httpOnly: true,
     sameSite: 'lax',
-    secure: process.env.COOKIE_SECURE === 'true' // Safe behind LiteSpeed reverse proxy
+    secure: 'auto' // Resilient across Hostinger LiteSpeed reverse proxy & local dev
   }
 }));
 
