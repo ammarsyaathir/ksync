@@ -516,48 +516,39 @@ router.post('/admin/users/delete', async (req, res) => {
   }
 });
 
-// GET /admin/venues - Manage Concert & Event Venues
+// GET /admin/venues - Distinct Concert & Event Venues derived from Events
 router.get('/admin/venues', async (req, res) => {
   try {
-    const venues = await db.query("SELECT * FROM venues ORDER BY name ASC");
+    // Derive venues directly from the events table since venue details are embedded
+    const venues = await db.query(`
+      SELECT 
+        venue_name as name,
+        city,
+        state,
+        address,
+        COUNT(id) as event_count
+      FROM events 
+      WHERE venue_name IS NOT NULL AND TRIM(venue_name) != ''
+      GROUP BY venue_name, city, state, address
+      ORDER BY venue_name ASC
+    `);
     res.render('admin/venues', { venues, helpers });
   } catch (err) {
-    console.error('Error loading venues:', err);
-    res.status(500).send('Error loading venues');
+    console.error('Error loading derived venues from events:', err);
+    res.render('admin/venues', { venues: [], helpers });
   }
 });
 
-// POST /admin/venues/add
+// POST /admin/venues/add - Graceful guidance since venues are embedded in events
 router.post('/admin/venues/add', async (req, res) => {
-  const { name, address, city, state, capacity, transit_info, map_link } = req.body;
-  try {
-    await db.execute(
-      "INSERT INTO venues (name, address, city, state, capacity, transit_info, map_link) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [name.trim(), address || '', city || 'Kuala Lumpur', state || 'W.P. Kuala Lumpur', Number(capacity) || 0, transit_info || '', map_link || '']
-    );
-    await logActivity(req.session.userId, 'CREATE_VENUE', 'venues', null, `Created venue ${name}`, req.ip);
-    req.session.flash = { success: `Venue "${name}" added successfully.` };
-    res.redirect('/admin/venues');
-  } catch (err) {
-    console.error('Error creating venue:', err);
-    req.session.flash = { error: 'Failed to add venue.' };
-    res.redirect('/admin/venues');
-  }
+  req.session.flash = { info: 'Venues are embedded directly in events. You can specify venue details when creating an event.' };
+  res.redirect('/admin/events/create');
 });
 
-// POST /admin/venues/delete
+// POST /admin/venues/delete - Safe fallback
 router.post('/admin/venues/delete', async (req, res) => {
-  const { id } = req.body;
-  try {
-    await db.execute("DELETE FROM venues WHERE id = ?", [id]);
-    await logActivity(req.session.userId, 'DELETE_VENUE', 'venues', id, `Deleted venue #${id}`, req.ip);
-    req.session.flash = { success: 'Venue deleted.' };
-    res.redirect('/admin/venues');
-  } catch (err) {
-    console.error('Error deleting venue:', err);
-    req.session.flash = { error: 'Failed to delete venue.' };
-    res.redirect('/admin/venues');
-  }
+  req.session.flash = { info: 'Venues are linked to event records. Edit or remove the event to update its venue.' };
+  res.redirect('/admin/venues');
 });
 
 // GET /admin/logs - Filterable System Audit Trail Logs

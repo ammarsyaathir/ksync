@@ -137,20 +137,6 @@ router.post('/submit-event', upload.fields([{ name: 'poster_files', maxCount: 4 
       existingCols = null;
     }
 
-    // Backward compatibility for legacy venue_id schema
-    if (existingCols && existingCols.has('venue_id') && !existingCols.has('venue_name')) {
-      try {
-        let v = await db.getOne("SELECT id FROM venues WHERE name = ? LIMIT 1", [venue_name.trim()]);
-        if (!v) {
-          const vRes = await db.execute("INSERT INTO venues (name, city, state, address) VALUES (?, ?, ?, ?)", [
-            venue_name.trim(), city.trim(), state ? state.trim() : '', address ? address.trim() : ''
-          ]);
-          candidateData.venue_id = vRes.insertId;
-        } else {
-          candidateData.venue_id = v.id;
-        }
-      } catch (ve) {}
-    }
 
     const colsToInsert = existingCols 
       ? Object.keys(candidateData).filter(c => existingCols.has(c.toLowerCase()))

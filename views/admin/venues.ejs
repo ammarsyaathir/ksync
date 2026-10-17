@@ -19,70 +19,49 @@
     <%- include('./admin-nav', { activePath: '/admin/venues' }) %>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-        <!-- Add Venue Form Card -->
+        <!-- Venue Model Info & Action Card -->
         <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs h-fit space-y-4">
             <div class="flex items-center space-x-2 border-b border-slate-100 pb-3">
                 <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs font-bold">
-                    <i class="fas fa-plus"></i>
+                    <i class="fas fa-circle-info"></i>
                 </div>
-                <h3 class="text-sm font-bold text-slate-900">Add New Venue</h3>
+                <h3 class="text-sm font-bold text-slate-900">Embedded Venue Model</h3>
             </div>
-            <form action="/admin/venues/add" method="POST" class="space-y-3.5">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Venue Name <span class="text-rose-500">*</span></label>
-                    <input type="text" name="name" required placeholder="e.g. Zepp Kuala Lumpur"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-300">
+            
+            <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                In K-Sync Malaysia, concert venues (<span class="font-bold text-slate-700">Name, City, State, Address</span>) are embedded directly within event records for maximum database performance.
+            </p>
+
+            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 space-y-2 text-xs">
+                <div class="font-bold text-slate-800 flex items-center">
+                    <i class="fas fa-train text-emerald-600 me-1.5"></i> Top Malaysian Transit Hubs:
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Street Address <span class="text-rose-500">*</span></label>
-                    <input type="text" name="address" required placeholder="e.g. BBCC, Jalan Hang Tuah"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-300">
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">City <span class="text-rose-500">*</span></label>
-                        <input type="text" name="city" required value="Kuala Lumpur"
-                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-300">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">State <span class="text-rose-500">*</span></label>
-                        <input type="text" name="state" required value="W.P. Kuala Lumpur"
-                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-300">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Seat Capacity</label>
-                    <input type="number" name="capacity" placeholder="e.g. 2500"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-300">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Transit / LRT / MRT Guide</label>
-                    <input type="text" name="transit_info" placeholder="e.g. LRT Sri Petaling / Monorail Hang Tuah Station"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-300">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Google Maps URL</label>
-                    <input type="url" name="map_link" placeholder="https://maps.google.com/?q=..."
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-300">
-                </div>
-                <button type="submit" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all cursor-pointer">
-                    <i class="fas fa-plus me-1 text-emerald-400"></i> Add Venue
-                </button>
-            </form>
+                <ul class="text-[11px] text-slate-600 space-y-1.5 list-disc list-inside font-medium">
+                    <li><strong class="text-slate-800">Axiata Arena:</strong> LRT Sri Petaling Line</li>
+                    <li><strong class="text-slate-800">Zepp KL:</strong> Hang Tuah LRT & Monorail</li>
+                    <li><strong class="text-slate-800">Mega Star Arena:</strong> MRT Cochrane / Maluri</li>
+                    <li><strong class="text-slate-800">Bukit Jalil Stadium:</strong> LRT Bukit Jalil</li>
+                </ul>
+            </div>
+
+            <a href="/admin/events/create" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer">
+                <i class="fas fa-calendar-plus text-emerald-400"></i>
+                <span>Add Event at a Venue</span>
+            </a>
         </div>
 
-        <!-- Venues List Directory -->
+        <!-- Venues List Directory (Derived from Events) -->
         <div class="lg:col-span-2 bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 class="text-sm font-bold text-slate-900 flex items-center">
-                    <i class="fas fa-map-location-dot text-emerald-500 me-2"></i> Venues Directory (<%= venues.length %>)
+                    <i class="fas fa-map-location-dot text-emerald-500 me-2"></i> Active Venues Directory (<%= venues.length %>)
                 </h3>
             </div>
             <div class="space-y-3">
                 <% if (venues.length === 0) { %>
                     <div class="text-center py-10 text-slate-400 text-xs">
                         <i class="fas fa-map-pin text-2xl text-slate-300 mb-2"></i>
-                        <div>No venues added yet. Use the form to register arenas and cafes.</div>
+                        <div>No venues recorded yet. Create an event to record a concert venue.</div>
                     </div>
                 <% } else { %>
                     <% venues.forEach(function(v) { %>
@@ -90,34 +69,22 @@
                             <div class="space-y-1 min-w-0 flex-1">
                                 <div class="flex items-center space-x-2 flex-wrap gap-y-1">
                                     <h4 class="font-bold text-sm text-slate-900"><%= v.name %></h4>
-                                    <% if (v.capacity && v.capacity > 0) { %>
-                                        <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">
-                                            <i class="fas fa-users me-1"></i><%= v.capacity.toLocaleString() %> Cap
-                                        </span>
-                                    <% } %>
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
+                                        <i class="fas fa-calendar-check me-1"></i><%= v.event_count || 1 %> Event<%= (v.event_count || 1) > 1 ? 's' : '' %>
+                                    </span>
                                 </div>
                                 <div class="text-[11px] text-slate-500 flex items-center">
                                     <i class="fas fa-location-dot text-rose-500 me-1.5 shrink-0"></i>
-                                    <span class="truncate"><%= v.address %>, <%= v.city %>, <%= v.state %></span>
+                                    <span class="truncate"><%= v.address ? (v.address + ', ') : '' %><%= v.city %>, <%= v.state %></span>
                                 </div>
-                                <% if (v.transit_info) { %>
-                                    <div class="text-[11px] text-purple-700 font-medium bg-purple-50/80 px-2.5 py-1 rounded-lg border border-purple-100/60 inline-flex items-center mt-1">
-                                        <i class="fas fa-train me-1.5 text-purple-500 shrink-0"></i> <%= v.transit_info %>
-                                    </div>
-                                <% } %>
                             </div>
                             <div class="flex items-center space-x-1.5 self-end sm:self-start shrink-0">
-                                <% if (v.map_link) { %>
-                                    <a href="<%= v.map_link %>" target="_blank" class="p-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors" title="Open Map">
-                                        <i class="fas fa-map text-xs"></i>
-                                    </a>
-                                <% } %>
-                                <form action="/admin/venues/delete" method="POST" onsubmit="return confirm('Permanently remove this venue?')" class="inline">
-                                    <input type="hidden" name="id" value="<%= v.id %>">
-                                    <button type="submit" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Delete Venue">
-                                        <i class="fas fa-trash-can text-xs"></i>
-                                    </button>
-                                </form>
+                                <a href="https://maps.google.com/?q=<%= encodeURIComponent(v.name + ' ' + (v.city || 'Malaysia')) %>" target="_blank" rel="noopener noreferrer" class="p-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-xl border border-emerald-200/60 transition-colors" title="Open Google Maps">
+                                    <i class="fas fa-map-location-dot text-xs"></i>
+                                </a>
+                                <a href="/admin/events?search=<%= encodeURIComponent(v.name) %>" class="px-3 py-1.5 text-xs font-bold bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 rounded-xl transition-all shadow-xs flex items-center">
+                                    <i class="fas fa-eye text-emerald-600 me-1.5"></i> View Events
+                                </a>
                             </div>
                         </div>
                     <% }); %>
