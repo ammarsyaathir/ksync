@@ -1,55 +1,101 @@
 <%- include('../partials/header', { title: 'Manage Users | K-Sync Admin' }) %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+    <!-- Header -->
     <div class="mb-6">
-        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">System Users & Roles</h1>
-        <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Manage user accounts, roles (Admin, Organizer, Fan), and active statuses.</p>
+        <div class="flex items-center space-x-2 mb-2">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-white shadow-sm border border-slate-700">
+                <i class="fas fa-users-gear me-1.5 text-indigo-400"></i> Member Governance
+            </span>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                <%= users.length %> Accounts Total
+            </span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">System Users & Access Control</h1>
+        <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Manage member accounts, role privileges (Admin, Organizer, Fan), locations, and active account statuses.</p>
     </div>
 
     <!-- Admin Nav -->
     <%- include('./admin-nav', { activePath: '/admin/users' }) %>
 
-    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs text-slate-700">
-                <thead class="bg-slate-50 text-slate-500 uppercase font-bold text-[10px] border-b border-slate-200">
+    <!-- Filter & Table Card -->
+    <div class="bg-white rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-200/80 shadow-xs space-y-4">
+        <!-- Search & Filter Bar -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-100">
+            <div class="relative flex-1 max-w-md">
+                <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" id="userSearchInput" onkeyup="filterUsersTable()" placeholder="Search by name, @username, email, or role..."
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+            </div>
+            <div class="text-[11px] text-slate-500 font-medium">
+                Showing <strong id="visibleUserCount" class="text-slate-800"><%= users.length %></strong> user(s)
+            </div>
+        </div>
+
+        <!-- Responsive Table Container -->
+        <div class="overflow-x-auto rounded-2xl border border-slate-100">
+            <table class="w-full text-left text-xs text-slate-700 min-w-[680px]" id="usersTable">
+                <thead class="bg-slate-50/80 text-slate-500 uppercase font-bold text-[10px] border-b border-slate-200">
                     <tr>
-                        <th class="p-3">User</th>
-                        <th class="p-3">Role</th>
-                        <th class="p-3">Location</th>
-                        <th class="p-3">Status</th>
-                        <th class="p-3">Joined</th>
-                        <th class="p-3 text-right">Action</th>
+                        <th class="p-3.5">User Identity</th>
+                        <th class="p-3.5">System Role</th>
+                        <th class="p-3.5">Location</th>
+                        <th class="p-3.5">Account Status</th>
+                        <th class="p-3.5">Registered Date</th>
+                        <th class="p-3.5 text-right">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     <% users.forEach(function(u) { %>
-                        <tr class="hover:bg-slate-50/50">
-                            <td class="p-3">
-                                <div class="font-bold text-slate-900"><%= u.full_name %></div>
-                                <div class="text-[10px] text-slate-400">@<%= u.username %> &bull; <%= u.email %></div>
+                        <tr class="hover:bg-slate-50/60 transition-colors user-row">
+                            <td class="p-3.5">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-9 h-9 rounded-full bg-slate-200 shrink-0 overflow-hidden border border-slate-300 flex items-center justify-center font-bold text-slate-600 text-xs">
+                                        <% if (u.profile_image) { %>
+                                            <img src="<%= u.profile_image %>" alt="" class="w-full h-full object-cover" onerror="this.style.display='none'">
+                                        <% } else { %>
+                                            <%= (u.full_name || u.username || 'U').charAt(0).toUpperCase() %>
+                                        <% } %>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div class="font-bold text-slate-900 truncate"><%= u.full_name %></div>
+                                        <div class="text-[11px] text-slate-400 truncate">@<%= u.username %> &bull; <%= u.email %></div>
+                                    </div>
+                                </div>
                             </td>
-                            <td class="p-3">
+                            <td class="p-3.5">
                                 <% const displayRole = (u.role || u.role_name || 'FAN').toUpperCase(); %>
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold <%= displayRole === 'ADMIN' ? 'bg-purple-100 text-purple-800' : (displayRole === 'ORGANIZER' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700') %>">
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase inline-flex items-center
+                                    <%= displayRole === 'ADMIN' ? 'bg-purple-100 text-purple-800 border border-purple-200' :
+                                       (displayRole === 'ORGANIZER' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
+                                       'bg-slate-100 text-slate-700 border border-slate-200') %>">
                                     <%= displayRole === 'ADMIN' ? '👑 Admin' : (displayRole === 'ORGANIZER' ? '🎪 Organizer' : '💖 Fan') %>
                                 </span>
                             </td>
-                            <td class="p-3 text-slate-600"><%= u.location || 'Malaysia' %></td>
-                            <td class="p-3">
-                                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            <td class="p-3.5 text-slate-600">
+                                <i class="fas fa-location-dot text-rose-400 me-1 text-[10px]"></i>
+                                <%= u.location || 'Malaysia' %>
+                            </td>
+                            <td class="p-3.5">
+                                <span class="px-2.5 py-0.5 rounded-md text-[10px] font-bold inline-flex items-center
+                                    <%= (u.status || 'ACTIVE') === 'ACTIVE' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200' %>">
+                                    <span class="w-1.5 h-1.5 rounded-full <%= (u.status || 'ACTIVE') === 'ACTIVE' ? 'bg-emerald-500' : 'bg-rose-500' %> me-1.5"></span>
                                     <%= u.status || 'ACTIVE' %>
                                 </span>
                             </td>
-                            <td class="p-3 text-slate-400 text-[10px]"><%= helpers.formatDate(u.created_at) %></td>
-                            <td class="p-3 text-right">
+                            <td class="p-3.5 text-slate-500 text-[11px]">
+                                <%= helpers.formatDate(u.created_at) %>
+                            </td>
+                            <td class="p-3.5 text-right whitespace-nowrap">
                                 <% if (typeof currentUser === 'undefined' || !currentUser || u.id !== currentUser.id) { %>
-                                    <form action="/admin/users/delete" method="POST" onsubmit="return confirm('Permanently delete user account?')" class="inline">
+                                    <form action="/admin/users/delete" method="POST" onsubmit="return confirm('Permanently delete account for @<%= u.username %>?')" class="inline">
                                         <input type="hidden" name="id" value="<%= u.id %>">
-                                        <button type="submit" class="p-1.5 text-rose-500 hover:text-rose-700" title="Delete User">
+                                        <button type="submit" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Delete User">
                                             <i class="fas fa-trash-can text-xs"></i>
                                         </button>
                                     </form>
+                                <% } else { %>
+                                    <span class="text-[10px] text-slate-400 italic">Current User</span>
                                 <% } %>
                             </td>
                         </tr>
@@ -59,5 +105,25 @@
         </div>
     </div>
 </div>
+
+<script>
+function filterUsersTable() {
+    const input = document.getElementById("userSearchInput");
+    const filter = input.value.toLowerCase();
+    const rows = document.querySelectorAll(".user-row");
+    let count = 0;
+
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        if (text.includes(filter)) {
+            row.style.display = "";
+            count++;
+        } else {
+            row.style.display = "none";
+        }
+    });
+    document.getElementById("visibleUserCount").innerText = count;
+}
+</script>
 
 <%- include('../partials/footer') %>

@@ -1,23 +1,29 @@
 <%- include('../partials/header', { title: 'Content & Event Reports Moderation | K-Sync Admin' }) %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+    <!-- Header -->
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <div class="flex items-center space-x-2 mb-2">
-                <span class="px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200">
-                    <i class="fas fa-shield-halved me-1 text-rose-600"></i> Anti-Scam & Trust Moderation
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-white shadow-sm border border-slate-700">
+                    <i class="fas fa-shield-halved me-1.5 text-rose-400"></i> Anti-Scam & Trust Moderation
+                </span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                    <%= reports.length %> Total Flags
                 </span>
             </div>
-            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center">
-                Content & Listing Reports Center
-            </h1>
-            <p class="text-xs sm:text-sm text-slate-500 mt-1">
-                Investigate community reports on suspected ticket phishing, impostor organizers, or inaccurate schedules (Chapter 1 Solution 1.3.3 & Scope 1.6.1).
-            </p>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Content & Listing Reports Center</h1>
+            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Investigate community reports on suspected ticket phishing, impostor organizers, or inaccurate schedules.</p>
+        </div>
+        <div class="flex items-center gap-2 self-start sm:self-auto">
+            <span class="px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold border border-slate-200 inline-flex items-center">
+                <i class="fas fa-triangle-exclamation text-amber-500 me-1.5"></i> Live Moderation Queue
+            </span>
         </div>
     </div>
 
-    <%- include('admin-nav', { activePath: '/admin/reports' }) %>
+    <!-- Admin Nav -->
+    <%- include('./admin-nav', { activePath: '/admin/reports' }) %>
 
     <!-- Statistics Overview -->
     <% 
@@ -26,75 +32,94 @@
         const dismissedCount = reports.filter(r => r.status === 'DISMISSED').length;
     %>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
+        <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs flex items-center justify-between">
             <div>
                 <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Pending Audit</span>
-                <div class="text-2xl font-black text-amber-600 mt-1"><%= pendingCount %></div>
+                <div class="text-2xl sm:text-3xl font-black text-amber-600 mt-1"><%= pendingCount %></div>
+                <div class="text-[11px] text-slate-500 mt-0.5">Requires moderator inspection</div>
             </div>
-            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
+            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl shrink-0">
                 <i class="fas fa-clock-rotate-left"></i>
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
+        <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs flex items-center justify-between">
             <div>
-                <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Actions Taken / Resolved</span>
-                <div class="text-2xl font-black text-emerald-600 mt-1"><%= resolvedCount %></div>
+                <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Actions Resolved</span>
+                <div class="text-2xl sm:text-3xl font-black text-emerald-600 mt-1"><%= resolvedCount %></div>
+                <div class="text-[11px] text-slate-500 mt-0.5">Corrected or frozen listings</div>
             </div>
-            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shrink-0">
                 <i class="fas fa-circle-check"></i>
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
+        <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs flex items-center justify-between">
             <div>
-                <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Dismissed (False/Spam)</span>
-                <div class="text-2xl font-black text-slate-700 mt-1"><%= dismissedCount %></div>
+                <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Dismissed Flags</span>
+                <div class="text-2xl sm:text-3xl font-black text-slate-700 mt-1"><%= dismissedCount %></div>
+                <div class="text-[11px] text-slate-500 mt-0.5">False or abusive reports</div>
             </div>
-            <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-xl">
+            <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-600 flex items-center justify-center text-xl shrink-0">
                 <i class="fas fa-ban"></i>
             </div>
         </div>
     </div>
 
     <!-- Reports Table Container -->
-    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+    <div class="bg-white rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-200/80 shadow-xs space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
             <div>
-                <h2 class="text-base font-bold text-slate-900">Incident & Community Flags Queue</h2>
+                <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center">
+                    <i class="fas fa-list-check text-purple-600 me-2"></i> Incident & Community Flags Queue
+                </h2>
                 <p class="text-xs text-slate-500 mt-0.5">Every report contains verified account identity, violation class, and counter-evidence.</p>
             </div>
-            <span class="px-3 py-1 rounded-full text-xs font-bold <%= pendingCount > 0 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800' %>">
+            <span class="px-3.5 py-1 rounded-full text-xs font-bold <%= pendingCount > 0 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800' %> self-start sm:self-auto">
                 <%= pendingCount %> Needs Review
             </span>
         </div>
 
         <% if (!reports || reports.length === 0) { %>
             <div class="py-16 text-center text-slate-400">
-                <i class="fas fa-shield-check text-4xl mb-3 text-emerald-400"></i>
-                <div class="font-bold text-sm text-slate-600">No Reports in Queue</div>
+                <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center text-xl mx-auto mb-2">
+                    <i class="fas fa-shield-check"></i>
+                </div>
+                <div class="font-bold text-sm text-slate-700">No Reports in Queue</div>
                 <div class="text-xs text-slate-400 mt-1">All event listings and organizer details are in good standing.</div>
             </div>
         <% } else { %>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs text-slate-600">
-                    <thead class="bg-slate-50 text-[10px] uppercase font-bold text-slate-400 border-b border-slate-200">
+            <!-- Client-Side Quick Search Bar -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">
+                <div class="relative flex-1 max-w-md">
+                    <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="reportSearchInput" onkeyup="filterReportsTable()" placeholder="Filter by target event, violation, reporter, or status..."
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+                </div>
+                <div class="text-[11px] text-slate-500 font-medium">
+                    Showing <strong id="visibleReportCount" class="text-slate-800"><%= reports.length %></strong> report(s)
+                </div>
+            </div>
+
+            <div class="overflow-x-auto rounded-2xl border border-slate-100">
+                <table class="w-full text-left text-xs text-slate-700 min-w-[850px]" id="reportsTable">
+                    <thead class="bg-slate-50/80 text-slate-500 uppercase font-bold text-[10px] border-b border-slate-200">
                         <tr>
-                            <th class="p-4">Report & Target</th>
-                            <th class="p-4">Violation & Evidence</th>
-                            <th class="p-4">Reporter Identity</th>
-                            <th class="p-4">Current Status</th>
-                            <th class="p-4">Resolution Audit</th>
-                            <th class="p-4 text-right">Moderator Action</th>
+                            <th class="p-3.5">Report & Target</th>
+                            <th class="p-3.5">Violation & Evidence</th>
+                            <th class="p-3.5">Reporter Identity</th>
+                            <th class="p-3.5">Current Status</th>
+                            <th class="p-3.5">Resolution Audit</th>
+                            <th class="p-3.5 text-right">Moderator Action</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         <% reports.forEach(function(r) { %>
-                            <tr class="hover:bg-slate-50/50 transition-colors">
-                                <td class="p-4">
+                            <tr class="hover:bg-slate-50/60 transition-colors report-row">
+                                <td class="p-3.5">
                                     <div class="font-mono text-[10px] text-pink-600 font-bold mb-0.5">#REP-<%= r.id %></div>
                                     <% if (r.event_name) { %>
-                                        <a href="/events/<%= r.event_id %>" target="_blank" class="font-bold text-slate-900 hover:text-pink-600 block text-xs">
+                                        <a href="/events/<%= r.event_id %>" target="_blank" class="font-bold text-slate-900 hover:text-pink-600 transition-colors block text-xs">
                                             <%= r.event_name %> <i class="fas fa-arrow-up-right-from-square text-[9px] ms-1 text-slate-400"></i>
                                         </a>
                                         <div class="text-[10px] text-slate-400 font-mono mt-0.5">Ref: <%= r.tracking_code %></div>
@@ -109,10 +134,10 @@
                                     <% } %>
                                 </td>
 
-                                <td class="p-4 max-w-xs">
+                                <td class="p-3.5 max-w-xs">
                                     <div class="inline-block px-2 py-0.5 rounded-full text-[10px] font-black uppercase mb-1 
-                                        <%= r.reason === 'SCAM_TICKETS' ? 'bg-rose-100 text-rose-800' : 
-                                           (r.reason === 'IMPOSTOR_ORGANIZER' ? 'bg-purple-100 text-purple-800' : 'bg-amber-100 text-amber-800') %>">
+                                        <%= r.reason === 'SCAM_TICKETS' ? 'bg-rose-100 text-rose-800 border border-rose-200' : 
+                                           (r.reason === 'IMPOSTOR_ORGANIZER' ? 'bg-purple-100 text-purple-800 border border-purple-200' : 'bg-amber-100 text-amber-800 border border-amber-200') %>">
                                         <%= r.reason %>
                                     </div>
                                     <div class="text-xs text-slate-800 font-medium leading-snug line-clamp-2" title="<%= r.details %>">
@@ -126,15 +151,15 @@
                                     <% } %>
                                 </td>
 
-                                <td class="p-4">
+                                <td class="p-3.5">
                                     <div class="font-bold text-slate-800">
                                         <%= r.reporter_username ? '@' + r.reporter_username : 'Community Member' %>
                                     </div>
                                     <div class="text-[10px] text-slate-400"><%= r.reporter_email || 'Verified Account' %></div>
-                                    <div class="text-[10px] text-slate-400 font-mono mt-0.5"><%= r.created_at.substring(0, 16) %></div>
+                                    <div class="text-[10px] text-slate-400 font-mono mt-0.5"><%= r.created_at ? r.created_at.substring(0, 16) : '' %></div>
                                 </td>
 
-                                <td class="p-4">
+                                <td class="p-3.5">
                                     <% if (r.status === 'PENDING') { %>
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-200">
                                             <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping me-1.5"></span> PENDING REVIEW
@@ -150,9 +175,9 @@
                                     <% } %>
                                 </td>
 
-                                <td class="p-4 max-w-xs">
+                                <td class="p-3.5 max-w-xs">
                                     <% if (r.admin_action) { %>
-                                        <span class="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                                        <span class="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
                                             <%= r.admin_action %>
                                         </span>
                                         <% if (r.admin_notes) { %>
@@ -165,15 +190,19 @@
                                     <% } %>
                                 </td>
 
-                                <td class="p-4 text-right whitespace-nowrap">
+                                <td class="p-3.5 text-right whitespace-nowrap">
                                     <% if (r.status === 'PENDING') { %>
                                         <button type="button" 
-                                                onclick="openModerationModal(<%= r.id %>, '<%= (r.event_name || '').replace(/'/g, "\\'") %>', <%= r.event_id %>, '<%= r.reason %>')"
-                                                class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition-all cursor-pointer">
+                                                data-id="<%= r.id %>"
+                                                data-name="<%= r.event_name || '' %>"
+                                                data-event-id="<%= r.event_id || '' %>"
+                                                data-reason="<%= r.reason || '' %>"
+                                                onclick="handleModerateClick(this)"
+                                                class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs transition-all inline-flex items-center cursor-pointer">
                                             <i class="fas fa-gavel me-1.5 text-pink-400"></i> Moderate
                                         </button>
                                     <% } else { %>
-                                        <span class="text-[11px] font-bold text-slate-400">Closed</span>
+                                        <span class="text-[11px] font-bold text-slate-400 px-2 py-1 rounded-lg bg-slate-50 border border-slate-200/60 inline-block">Closed</span>
                                     <% } %>
                                 </td>
                             </tr>
@@ -186,16 +215,19 @@
 </div>
 
 <!-- Admin Moderation Action Modal -->
-<div id="moderation-modal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs hidden items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-slate-100">
-        <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
-            <div>
-                <h3 class="text-lg font-black text-slate-900 flex items-center">
-                    <i class="fas fa-gavel text-pink-600 me-2.5"></i> Admin Moderation Decision
-                </h3>
-                <p id="mod-modal-subtitle" class="text-xs text-slate-500 mt-0.5">Take decisive action on reported event listing</p>
+<div id="moderation-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-5 sm:p-7 max-w-lg w-full shadow-2xl border border-slate-100 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg shrink-0">
+                    <i class="fas fa-gavel"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">Admin Moderation Decision</h3>
+                    <p id="mod-modal-subtitle" class="text-xs text-slate-500 mt-0.5">Take decisive action on reported event listing</p>
+                </div>
             </div>
-            <button onclick="closeModerationModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-xs cursor-pointer">
+            <button onclick="closeModerationModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-xs transition-all cursor-pointer">
                 <i class="fas fa-xmark"></i>
             </button>
         </div>
@@ -211,7 +243,7 @@
                         <input type="radio" name="action_type" value="FREEZE_EVENT" checked class="mt-1 text-rose-600 focus:ring-rose-500">
                         <div class="ms-3">
                             <span class="font-extrabold text-xs text-rose-900 block">❄️ Freeze / Suspend Event Listing (Immediate Safety)</span>
-                            <span class="text-[11px] text-rose-700 leading-tight block mt-0.5">Hides event from public search directory and disables all ticket purchasing links to protect Malaysian fans while under review.</span>
+                            <span class="text-[11px] text-rose-700 leading-tight block mt-0.5">Hides event from public search directory and disables all ticket purchasing links to protect fans while under review.</span>
                         </div>
                     </label>
 
@@ -246,17 +278,17 @@
                 <label class="block text-xs font-bold text-slate-800 mb-1.5">
                     Moderator Investigation Notes <span class="text-rose-500">*</span>
                 </label>
-                <textarea name="admin_notes" rows="2" required 
+                <textarea name="admin_notes" rows="2.5" required 
                           placeholder="State reason for action (e.g. Verified with GoLive MY; or Confirmed fake ticket Telegram link)..."
-                          class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900"></textarea>
+                          class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300"></textarea>
             </div>
 
             <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
-                <button type="button" onclick="closeModerationModal()" class="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs">
+                <button type="button" onclick="closeModerationModal()" class="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs transition-all cursor-pointer">
                     Cancel
                 </button>
-                <button type="submit" class="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md">
-                    Execute Moderation Action
+                <button type="submit" class="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all cursor-pointer">
+                    Execute Action
                 </button>
             </div>
         </form>
@@ -264,9 +296,17 @@
 </div>
 
 <script>
+    function handleModerateClick(btn) {
+        const reportId = btn.dataset.id;
+        const eventName = btn.dataset.name;
+        const eventId = btn.dataset.eventId;
+        const reason = btn.dataset.reason;
+        openModerationModal(reportId, eventName, eventId, reason);
+    }
+
     function openModerationModal(reportId, eventName, eventId, reason) {
         document.getElementById('mod-report-id').value = reportId;
-        document.getElementById('mod-modal-subtitle').textContent = `Target: ${eventName} (#REP-${reportId})`;
+        document.getElementById('mod-modal-subtitle').textContent = `Target: ${eventName || 'General Event'} (#REP-${reportId})`;
         const modal = document.getElementById('moderation-modal');
         modal.classList.remove('hidden');
         modal.classList.add('flex');
@@ -276,6 +316,23 @@
         const modal = document.getElementById('moderation-modal');
         modal.classList.remove('flex');
         modal.classList.add('hidden');
+    }
+
+    function filterReportsTable() {
+        const query = (document.getElementById('reportSearchInput').value || '').toLowerCase().trim();
+        const rows = document.querySelectorAll('#reportsTable tbody tr.report-row');
+        let visible = 0;
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            if (!query || text.includes(query)) {
+                row.style.display = '';
+                visible++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        const countEl = document.getElementById('visibleReportCount');
+        if (countEl) countEl.innerText = visible;
     }
 </script>
 

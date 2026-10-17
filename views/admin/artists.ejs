@@ -1,68 +1,97 @@
 <%- include('../partials/header', { title: 'Manage Artists | K-Sync Admin' }) %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+    <!-- Header -->
     <div class="mb-6">
-        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">K-Pop Artists & Groups</h1>
-        <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Manage artist catalog, agencies, and group profiles.</p>
+        <div class="flex items-center space-x-2 mb-2">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-white shadow-sm border border-slate-700">
+                <i class="fas fa-microphone-lines me-1.5 text-purple-400"></i> Talent Directory
+            </span>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                <%= artists.length %> Artists Registered
+            </span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">K-Pop Artists & Groups Catalog</h1>
+        <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Manage artist master records, entertainment agencies, group formats, and official visual banners.</p>
     </div>
 
     <!-- Admin Nav -->
     <%- include('./admin-nav', { activePath: '/admin/artists' }) %>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Add Artist Form -->
-        <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm h-fit space-y-4">
-            <h3 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">Add New Artist / Group</h3>
-            <form action="/admin/artists/add" method="POST" class="space-y-4">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+        <!-- Add Artist Form Card -->
+        <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs h-fit space-y-4">
+            <div class="flex items-center space-x-2 border-b border-slate-100 pb-3">
+                <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xs font-bold">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <h3 class="text-sm font-bold text-slate-900">Add New Artist / Group</h3>
+            </div>
+            <form action="/admin/artists/add" method="POST" class="space-y-3.5">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Artist / Group Name</label>
-                    <input type="text" name="name" required placeholder="e.g. NewJeans"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Artist / Group Name <span class="text-rose-500">*</span></label>
+                    <input type="text" name="name" required placeholder="e.g. NewJeans / aespa"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Group Type</label>
-                    <select name="group_type" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs">
+                    <select name="group_type" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
                         <option value="Boy Group">Boy Group</option>
                         <option value="Girl Group">Girl Group</option>
                         <option value="Soloist">Soloist</option>
+                        <option value="Band / Instrumental">Band / Instrumental</option>
                         <option value="Co-ed Group">Co-ed Group</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Agency</label>
-                    <input type="text" name="agency" placeholder="e.g. ADOR / HYBE"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Entertainment Agency</label>
+                    <input type="text" name="agency" placeholder="e.g. HYBE / SM Entertainment / JYP"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Profile Image URL</label>
-                    <input type="url" name="image_url" placeholder="https://..."
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs">
+                    <input type="url" name="image_url" placeholder="https://images.unsplash.com/..."
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+                    <span class="text-[10px] text-slate-400">Direct image link (JPG, PNG, WebP)</span>
                 </div>
-                <button type="submit" class="w-full py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs shadow hover:bg-slate-800">
-                    Add Artist
+                <button type="submit" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all cursor-pointer">
+                    <i class="fas fa-plus me-1 text-purple-400"></i> Add Artist
                 </button>
             </form>
         </div>
 
-        <!-- Artists Grid -->
-        <div class="lg:col-span-2 bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
-            <h3 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4">Artists Directory</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <!-- Artists Grid Card -->
+        <div class="lg:col-span-2 bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                <h3 class="text-sm font-bold text-slate-900 flex items-center">
+                    <i class="fas fa-users-viewfinder text-purple-500 me-2"></i> Artists Directory (<%= artists.length %>)
+                </h3>
+                <div class="relative w-full sm:w-60">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="artistSearchInput" onkeyup="filterArtists()" placeholder="Search artist or agency..."
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="artistsGrid">
                 <% artists.forEach(function(a) { %>
-                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
+                    <div class="p-3.5 rounded-2xl bg-slate-50/80 hover:bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-3 transition-colors artist-card">
                         <div class="flex items-center space-x-3 min-w-0">
-                            <div class="w-12 h-12 rounded-full overflow-hidden bg-slate-200 shrink-0 border border-slate-300">
-                                <img src="<%= a.image_url %>" alt="" class="w-full h-full object-cover"
+                            <div class="w-12 h-12 rounded-full overflow-hidden bg-slate-200 shrink-0 border-2 border-white shadow-xs">
+                                <img src="<%= a.image_url || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&auto=format&fit=crop' %>" 
+                                     alt="<%= a.name %>" class="w-full h-full object-cover"
                                      onerror="this.src='https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&auto=format&fit=crop'">
                             </div>
                             <div class="min-w-0">
-                                <h4 class="font-bold text-xs text-slate-900 truncate"><%= a.name %></h4>
-                                <div class="text-[10px] text-purple-600 font-semibold"><%= a.group_type %> &bull; <%= a.agency || 'Independent' %></div>
+                                <h4 class="font-bold text-xs text-slate-900 truncate artist-name"><%= a.name %></h4>
+                                <div class="text-[10px] text-purple-600 font-semibold truncate artist-agency">
+                                    <%= a.group_type %> &bull; <%= a.agency || 'Independent' %>
+                                </div>
                             </div>
                         </div>
-                        <form action="/admin/artists/delete" method="POST" onsubmit="return confirm('Delete artist?')" class="inline">
+                        <form action="/admin/artists/delete" method="POST" onsubmit="return confirm('Permanently delete <%= a.name %>?')" class="inline shrink-0">
                             <input type="hidden" name="id" value="<%= a.id %>">
-                            <button type="submit" class="p-1.5 text-rose-500 hover:text-rose-700">
+                            <button type="submit" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Delete Artist">
                                 <i class="fas fa-trash-can text-xs"></i>
                             </button>
                         </form>
@@ -72,5 +101,18 @@
         </div>
     </div>
 </div>
+
+<script>
+function filterArtists() {
+    const input = document.getElementById("artistSearchInput");
+    const filter = input.value.toLowerCase();
+    const cards = document.querySelectorAll(".artist-card");
+
+    cards.forEach(card => {
+        const text = card.innerText.toLowerCase();
+        card.style.display = text.includes(filter) ? "" : "none";
+    });
+}
+</script>
 
 <%- include('../partials/footer') %>

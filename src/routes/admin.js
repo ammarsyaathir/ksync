@@ -516,6 +516,50 @@ router.post('/admin/users/delete', async (req, res) => {
   }
 });
 
+// GET /admin/venues - Manage Concert & Event Venues
+router.get('/admin/venues', async (req, res) => {
+  try {
+    const venues = await db.query("SELECT * FROM venues ORDER BY name ASC");
+    res.render('admin/venues', { venues, helpers });
+  } catch (err) {
+    console.error('Error loading venues:', err);
+    res.status(500).send('Error loading venues');
+  }
+});
+
+// POST /admin/venues/add
+router.post('/admin/venues/add', async (req, res) => {
+  const { name, address, city, state, capacity, transit_info, map_link } = req.body;
+  try {
+    await db.execute(
+      "INSERT INTO venues (name, address, city, state, capacity, transit_info, map_link) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [name.trim(), address || '', city || 'Kuala Lumpur', state || 'W.P. Kuala Lumpur', Number(capacity) || 0, transit_info || '', map_link || '']
+    );
+    await logActivity(req.session.userId, 'CREATE_VENUE', 'venues', null, `Created venue ${name}`, req.ip);
+    req.session.flash = { success: `Venue "${name}" added successfully.` };
+    res.redirect('/admin/venues');
+  } catch (err) {
+    console.error('Error creating venue:', err);
+    req.session.flash = { error: 'Failed to add venue.' };
+    res.redirect('/admin/venues');
+  }
+});
+
+// POST /admin/venues/delete
+router.post('/admin/venues/delete', async (req, res) => {
+  const { id } = req.body;
+  try {
+    await db.execute("DELETE FROM venues WHERE id = ?", [id]);
+    await logActivity(req.session.userId, 'DELETE_VENUE', 'venues', id, `Deleted venue #${id}`, req.ip);
+    req.session.flash = { success: 'Venue deleted.' };
+    res.redirect('/admin/venues');
+  } catch (err) {
+    console.error('Error deleting venue:', err);
+    req.session.flash = { error: 'Failed to delete venue.' };
+    res.redirect('/admin/venues');
+  }
+});
+
 // GET /admin/logs - Filterable System Audit Trail Logs
 router.get('/admin/logs', async (req, res) => {
   const { action, q } = req.query;

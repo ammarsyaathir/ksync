@@ -1,72 +1,105 @@
 <%- include('../partials/header', { title: 'Manage Events | K-Sync Admin' }) %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+    <!-- Header -->
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Manage Events</h1>
-            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Update event schedule status (Upcoming, Ongoing, Postponed, Cancelled) or remove listings.</p>
+            <div class="flex items-center space-x-2 mb-2">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-white shadow-sm border border-slate-700">
+                    <i class="fas fa-calendar-days me-1.5 text-purple-400"></i> Event Directory
+                </span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                    <%= events.length %> Listings Total
+                </span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Manage Events Catalog</h1>
+            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Update concert live statuses (Upcoming, Ongoing, Postponed, Cancelled), preview live pages, or remove listings.</p>
         </div>
-        <a href="/submit-event" class="px-5 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow flex items-center">
-            <i class="fas fa-plus me-1.5 text-pink-400"></i> New Event
+        <a href="/submit-event" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all flex items-center self-start sm:self-auto shrink-0">
+            <i class="fas fa-plus me-1.5 text-pink-400"></i> New Event Submission
         </a>
     </div>
 
     <!-- Admin Nav -->
     <%- include('./admin-nav', { activePath: '/admin/events' }) %>
 
-    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs text-slate-700">
-                <thead class="bg-slate-50 text-slate-500 uppercase font-bold text-[10px] border-b border-slate-200">
+    <!-- Filter & Table Card -->
+    <div class="bg-white rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-200/80 shadow-xs space-y-4">
+        <!-- Client-Side Quick Search Bar -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-100">
+            <div class="relative flex-1 max-w-md">
+                <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" id="eventSearchInput" onkeyup="filterEventsTable()" placeholder="Quick filter by event name, artist, venue, or status..."
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+            </div>
+            <div class="text-[11px] text-slate-500 font-medium">
+                Showing <strong id="visibleEventCount" class="text-slate-800"><%= events.length %></strong> event(s)
+            </div>
+        </div>
+
+        <!-- Table Container with Horizontal Scroll on Mobile -->
+        <div class="overflow-x-auto rounded-2xl border border-slate-100">
+            <table class="w-full text-left text-xs text-slate-700 min-w-[760px]" id="eventsTable">
+                <thead class="bg-slate-50/80 text-slate-500 uppercase font-bold text-[10px] border-b border-slate-200">
                     <tr>
-                        <th class="p-3">ID</th>
-                        <th class="p-3">Event Title</th>
-                        <th class="p-3">Artist / Category</th>
-                        <th class="p-3">Date & Venue</th>
-                        <th class="p-3">Verification</th>
-                        <th class="p-3">Status</th>
-                        <th class="p-3 text-right">Actions</th>
+                        <th class="p-3.5">ID</th>
+                        <th class="p-3.5">Event Title</th>
+                        <th class="p-3.5">Artist & Category</th>
+                        <th class="p-3.5">Date & Venue</th>
+                        <th class="p-3.5">Verification</th>
+                        <th class="p-3.5">Schedule Status</th>
+                        <th class="p-3.5 text-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     <% events.forEach(function(ev) { %>
-                        <tr class="hover:bg-slate-50/50">
-                            <td class="p-3 font-mono font-bold text-slate-400">#<%= ev.id %></td>
-                            <td class="p-3">
-                                <div class="font-bold text-slate-900 hover:text-pink-600">
-                                    <a href="/events/<%= ev.id %>"><%= ev.event_name %></a>
+                        <tr class="hover:bg-slate-50/60 transition-colors event-row">
+                            <td class="p-3.5 font-mono font-bold text-slate-400">#<%= ev.id %></td>
+                            <td class="p-3.5 max-w-[240px]">
+                                <a href="/events/<%= ev.id %>" class="font-bold text-slate-900 hover:text-pink-600 transition-colors block truncate" title="<%= ev.event_name %>">
+                                    <%= ev.event_name %>
+                                </a>
+                                <div class="text-[10px] text-slate-400 flex items-center space-x-1.5 mt-0.5">
+                                    <% if (ev.tracking_code) { %>
+                                        <span class="font-mono text-purple-600 font-semibold"><%= ev.tracking_code %></span>
+                                    <% } %>
                                 </div>
                             </td>
-                            <td class="p-3">
-                                <div class="font-bold text-purple-600"><%= ev.artist_name || 'Multiple' %></div>
-                                <div class="text-[10px] text-slate-400"><%= ev.category_name %></div>
+                            <td class="p-3.5">
+                                <div class="font-bold text-purple-600"><%= ev.artist_name || 'Multiple / Festival' %></div>
+                                <div class="text-[10px] text-slate-500"><%= ev.category_name %></div>
                             </td>
-                            <td class="p-3">
-                                <div><%= helpers.formatDate(ev.event_date) %></div>
-                                <div class="text-[10px] text-slate-400"><%= ev.venue_name %>, <%= ev.city %></div>
+                            <td class="p-3.5">
+                                <div class="font-bold text-slate-800"><%= helpers.formatDate(ev.event_date) %></div>
+                                <div class="text-[10px] text-slate-500 truncate max-w-[180px]"><%= ev.venue_name || 'Venue TBA' %>, <%= ev.city %></div>
                             </td>
-                            <td class="p-3">
+                            <td class="p-3.5">
                                 <%- helpers.getVerificationBadge(ev.verification_status) %>
                             </td>
-                            <td class="p-3">
+                            <td class="p-3.5">
                                 <form action="/admin/events/update-status" method="POST" class="inline">
                                     <input type="hidden" name="event_id" value="<%= ev.id %>">
-                                    <select name="event_status" onchange="this.form.submit()" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-[11px] font-bold text-slate-800">
+                                    <select name="event_status" onchange="this.form.submit()" class="bg-slate-50 border border-slate-200/90 rounded-lg px-2.5 py-1 text-[11px] font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-200 cursor-pointer">
                                         <option value="UPCOMING" <%= ev.event_status === 'UPCOMING' ? 'selected' : '' %>>Upcoming</option>
-                                        <option value="ONGOING" <%= ev.event_status === 'ONGOING' ? 'selected' : '' %>>Ongoing</option>
+                                        <option value="ONGOING" <%= ev.event_status === 'ONGOING' ? 'selected' : '' %>>Ongoing (Live)</option>
                                         <option value="COMPLETED" <%= ev.event_status === 'COMPLETED' ? 'selected' : '' %>>Completed</option>
                                         <option value="POSTPONED" <%= ev.event_status === 'POSTPONED' ? 'selected' : '' %>>Postponed</option>
                                         <option value="CANCELLED" <%= ev.event_status === 'CANCELLED' ? 'selected' : '' %>>Cancelled</option>
                                     </select>
                                 </form>
                             </td>
-                            <td class="p-3 text-right">
-                                <form action="/admin/events/delete" method="POST" onsubmit="return confirm('Permanently delete this event?')" class="inline">
-                                    <input type="hidden" name="event_id" value="<%= ev.id %>">
-                                    <button type="submit" class="p-2 text-rose-500 hover:text-rose-700 rounded-lg hover:bg-rose-50" title="Delete">
-                                        <i class="fas fa-trash-can"></i>
-                                    </button>
-                                </form>
+                            <td class="p-3.5 text-right whitespace-nowrap">
+                                <div class="flex items-center justify-end space-x-1.5">
+                                    <a href="/events/<%= ev.id %>" target="_blank" class="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors" title="View Public Page">
+                                        <i class="fas fa-arrow-up-right-from-square text-xs"></i>
+                                    </a>
+                                    <form action="/admin/events/delete" method="POST" onsubmit="return confirm('Permanently delete this event and its associated bookmarks/chats?')" class="inline">
+                                        <input type="hidden" name="event_id" value="<%= ev.id %>">
+                                        <button type="submit" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Delete Listing">
+                                            <i class="fas fa-trash-can text-xs"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     <% }); %>
@@ -75,5 +108,25 @@
         </div>
     </div>
 </div>
+
+<script>
+function filterEventsTable() {
+    const input = document.getElementById("eventSearchInput");
+    const filter = input.value.toLowerCase();
+    const rows = document.querySelectorAll(".event-row");
+    let count = 0;
+
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        if (text.includes(filter)) {
+            row.style.display = "";
+            count++;
+        } else {
+            row.style.display = "none";
+        }
+    });
+    document.getElementById("visibleEventCount").innerText = count;
+}
+</script>
 
 <%- include('../partials/footer') %>
