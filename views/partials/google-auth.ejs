@@ -79,7 +79,7 @@ function handleFirebaseGoogleSignIn(selectedRole = 'Fan') {
             if (error.code === 'auth/popup-closed-by-user') {
                 // User closed popup manually
             } else if (error.code === 'auth/unauthorized-domain') {
-                alert("Firebase Auth Note: To complete Google login on localhost, ensure 'localhost' is added to Authorized Domains in your Firebase Console (Authentication > Settings > Authorized domains).");
+                alert("Firebase Auth: To allow Google login, add '" + window.location.hostname + "' to Authorized Domains in your Firebase Console (Authentication > Settings > Authorized domains).");
             } else {
                 alert("Google Sign-in Error: " + error.message);
             }
