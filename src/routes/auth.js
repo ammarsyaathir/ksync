@@ -13,6 +13,11 @@ const router = express.Router();
 const registrationOtpStore = new Map();
 const passwordResetStore = new Map();
 
+// Rate limiting tracker for login attempts (Max 5 failed attempts per 15 minutes)
+const loginAttemptTracker = new Map();
+const MAX_FAILED_ATTEMPTS = 5;
+const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
+
 // GET /login
 router.get('/login', (req, res) => {
   if (req.session && req.session.userId) {
@@ -30,6 +35,32 @@ router.post('/login', async (req, res) => {
     return res.redirect('/login');
   }
 
+  const clientKey = `${req.ip}_${(username || '').trim().toLowerCase()}`;
+  const now = Date.now();
+  const attemptInfo = loginAttemptTracker.get(clientKey);
+
+  // Check if client is currently locked out
+  if (attemptInfo && attemptInfo.attempts >= MAX_FAILED_ATTEMPTS) {
+    if (now < attemptInfo.lockedUntil) {
+      const remainingMins = Math.ceil((attemptInfo.lockedUntil - now) / 60000);
+      req.session.flash = { 
+        error: `Security Lockout: Too many failed login attempts. Please wait ${remainingMins} minute(s) before trying again.` 
+      };
+      return res.redirect('/login');
+    } else {
+      loginAttemptTracker.delete(clientKey);
+    }
+  }
+
+  const registerFailedAttempt = () => {
+    const prevAttempts = (attemptInfo && now < attemptInfo.lockedUntil) ? attemptInfo.attempts : 0;
+    const currentAttempts = prevAttempts + 1;
+    loginAttemptTracker.set(clientKey, {
+      attempts: currentAttempts,
+      lockedUntil: now + LOCKOUT_DURATION
+    });
+  };
+
   try {
     const user = await db.getOne(
       "SELECT * FROM users WHERE LOWER(username) = LOWER(?) OR LOWER(email) = LOWER(?)",
@@ -37,6 +68,7 @@ router.post('/login', async (req, res) => {
     );
 
     if (!user) {
+      registerFailedAttempt();
       req.session.flash = { error: 'Invalid username/email or password.' };
       return res.redirect('/login');
     }
@@ -66,9 +98,13 @@ router.post('/login', async (req, res) => {
     }
 
     if (!isMatch) {
+      registerFailedAttempt();
       req.session.flash = { error: 'Invalid username/email or password.' };
       return res.redirect('/login');
     }
+
+    // Clear failed attempts counter upon successful authentication
+    loginAttemptTracker.delete(clientKey);
 
     // Set session
     req.session.userId = user.id;
