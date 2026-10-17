@@ -29,7 +29,9 @@ async function getTransporter() {
       },
       tls: {
         rejectUnauthorized: false
-      }
+      },
+      allowInternalNetworkInterfaces: true,
+      dnsTimeout: 5000
     });
     console.log(`[Email Service] Configured live SMTP transport via ${SMTP_HOST}:${SMTP_PORT || 587} (${SMTP_USER})`);
   } else {
@@ -114,6 +116,14 @@ function getEmailTemplate(contentHtml) {
   `;
 }
 
+/**
+ * Standardized Sender Address Helper
+ */
+export function getFromAddress() {
+  const user = (process.env.SMTP_USER || 'noreply@ksync.my').trim();
+  return process.env.EMAIL_FROM || process.env.SMTP_FROM || `"noreply" <${user}>`;
+}
+
 // 1. Send Submission Confirmation Email (UC20)
 export async function sendSubmissionConfirmationEmail({
   to,
@@ -127,7 +137,7 @@ export async function sendSubmissionConfirmationEmail({
     const client = await getTransporter();
     const appBaseUrl = process.env.APP_BASE_URL || 'http://localhost:8000';
     const trackingLink = `${appBaseUrl}/check-submission?code=${encodeURIComponent(trackingCode)}`;
-    const fromAddress = process.env.EMAIL_FROM || '"K-Sync Malaysia" <noreply@ksync.my>';
+    const fromAddress = getFromAddress();
 
     const htmlContent = `
       <div style="text-align: center;">
@@ -202,7 +212,7 @@ export async function sendEventApprovalEmail({
     const client = await getTransporter();
     const appBaseUrl = process.env.APP_BASE_URL || 'http://localhost:8000';
     const eventUrl = `${appBaseUrl}/events/${eventId}`;
-    const fromAddress = process.env.EMAIL_FROM || '"K-Sync Malaysia" <noreply@ksync.my>';
+    const fromAddress = getFromAddress();
 
     const htmlContent = `
       <div style="text-align: center;">
@@ -228,6 +238,7 @@ export async function sendEventApprovalEmail({
 
     const info = await client.sendMail({
       from: fromAddress,
+      replyTo: 'noreply@ksync.my',
       to,
       subject: `🎉 [K-Sync Malaysia] Your Event '${eventName}' Has Been Approved & Published!`,
       text: `Hi ${name},\n\nGreat news! Your event '${eventName}' has been verified and is now live on K-Sync Malaysia.\n\nView it live: ${eventUrl}\n\nThank you,\nK-Sync Malaysia Team`,
@@ -254,7 +265,7 @@ export async function sendEventRejectionEmail({
     const client = await getTransporter();
     const appBaseUrl = process.env.APP_BASE_URL || 'http://localhost:8000';
     const trackerUrl = `${appBaseUrl}/check-submission?code=${encodeURIComponent(trackingCode)}`;
-    const fromAddress = process.env.EMAIL_FROM || '"K-Sync Malaysia" <noreply@ksync.my>';
+    const fromAddress = getFromAddress();
 
     const htmlContent = `
       <div style="text-align: center;">
@@ -285,6 +296,7 @@ export async function sendEventRejectionEmail({
 
     const info = await client.sendMail({
       from: fromAddress,
+      replyTo: 'noreply@ksync.my',
       to,
       subject: `[K-Sync Malaysia] Update on Event Submission '${eventName}' (Ref: ${trackingCode})`,
       text: `Hi ${name},\n\nRegarding your event submission '${eventName}' (Ref: ${trackingCode}):\n\nThe review team provided the following feedback:\n"${reason}"\n\nPlease visit the tracking portal to correct and resubmit your event: ${trackerUrl}\n\nThank you,\nK-Sync Malaysia Team`,
@@ -305,7 +317,7 @@ export async function sendEventRejectionEmail({
 export async function sendRegistrationOtpEmail({ to, name = 'K-Pop Fan', otp }) {
   try {
     const client = await getTransporter();
-    const fromAddress = process.env.SMTP_FROM || `"K-Sync Malaysia" <${process.env.SMTP_USER || 'no-reply@ksync.my'}>`;
+    const fromAddress = getFromAddress();
 
     const htmlContent = `
       <div style="text-align: center;">
@@ -330,6 +342,7 @@ export async function sendRegistrationOtpEmail({ to, name = 'K-Pop Fan', otp }) 
 
     const info = await client.sendMail({
       from: fromAddress,
+      replyTo: 'noreply@ksync.my',
       to,
       subject: `[K-Sync Malaysia] ${otp} is your verification code`,
       text: `Hi ${name},\n\nYour K-Sync Malaysia registration verification code is: ${otp}\n\nThis code expires in 10 minutes.\n\nThank you,\nK-Sync Malaysia Team`,
@@ -350,7 +363,7 @@ export async function sendRegistrationOtpEmail({ to, name = 'K-Pop Fan', otp }) 
 export async function sendPasswordResetEmail({ to, name = 'User', resetCode, resetUrl }) {
   try {
     const client = await getTransporter();
-    const fromAddress = process.env.SMTP_FROM || `"K-Sync Malaysia" <${process.env.SMTP_USER || 'no-reply@ksync.my'}>`;
+    const fromAddress = getFromAddress();
 
     const htmlContent = `
       <div style="text-align: center;">
@@ -379,6 +392,7 @@ export async function sendPasswordResetEmail({ to, name = 'User', resetCode, res
 
     const info = await client.sendMail({
       from: fromAddress,
+      replyTo: 'noreply@ksync.my',
       to,
       subject: `[K-Sync Malaysia] Password Reset Code: ${resetCode}`,
       text: `Hi ${name},\n\nYour K-Sync Malaysia password reset code is: ${resetCode}\n\nReset link: ${resetUrl}\n\nThis code expires in 15 minutes. If you did not request this, you can ignore this email.\n\nThank you,\nK-Sync Malaysia Team`,
