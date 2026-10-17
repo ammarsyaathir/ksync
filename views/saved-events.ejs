@@ -53,7 +53,7 @@
                         <div>
                             <div class="text-xs font-bold text-purple-600 mb-1"><%= event.artist_name || 'Various Artists' %></div>
                             <h3 class="text-base font-bold text-slate-900 line-clamp-2">
-                                <a href="/events/<%= event.id %>" class="hover:text-pink-600 transition-colors">
+                                <a href="<%= helpers.getEventUrl(event) %>" class="hover:text-pink-600 transition-colors">
                                     <%= event.event_name %>
                                 </a>
                             </h3>
@@ -63,7 +63,7 @@
                             <div><i class="fas fa-location-dot me-1.5 text-rose-500"></i> <%= event.venue_name %>, <%= event.city %></div>
                         </div>
                         <div class="pt-3 border-t border-slate-100 flex justify-end">
-                            <a href="/events/<%= event.id %>" class="px-4 py-1.5 rounded-xl bg-pink-50 text-pink-700 font-bold text-xs hover:bg-pink-600 hover:text-white transition-all">
+                            <a href="<%= helpers.getEventUrl(event) %>" class="px-4 py-1.5 rounded-xl bg-pink-50 text-pink-700 font-bold text-xs hover:bg-pink-600 hover:text-white transition-all">
                                 View Event Details &rarr;
                             </a>
                         </div>

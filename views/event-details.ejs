@@ -110,7 +110,8 @@
                         <span><%= isSaved ? 'Saved' : 'Save Event' %></span>
                     </button>
                     
-                    <button onclick="openShareModal('<%= event.event_name.replace(/'/g, "\\'") %>')" 
+                    <% const eventSlug = helpers.slugify(event.event_name) || event.id; %>
+                    <button onclick="openShareModal('<%= event.event_name.replace(/'/g, "\\'") %>', '<%= eventSlug %>')" 
                             class="px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center shadow-xs transition-all cursor-pointer">
                         <i class="fas fa-share-nodes me-1.5 text-pink-500"></i>
                         <span>Share</span>
@@ -741,12 +742,15 @@
     }
 
     // Share Modal Logic
-    function openShareModal(eventName) {
-        const url = window.location.href;
+    function openShareModal(eventName, eventSlug) {
+        const origin = window.location.origin;
+        const slug = eventSlug || '<%= helpers.slugify(event.event_name) || event.id %>';
+        const url = origin + '/events/' + slug;
+
         if (navigator.share && /mobile|android|iphone/i.test(navigator.userAgent)) {
             navigator.share({
                 title: eventName,
-                text: 'Check out ' + eventName + ' on K-Sync Malaysia!',
+                text: 'Check out ' + eventName + ' on K-Sync Malaysia: ' + url,
                 url: url
             }).catch(() => {});
             return;
@@ -769,6 +773,14 @@
             content.classList.add('scale-100', 'opacity-100');
         }, 10);
     }
+
+    // Auto-update browser URL bar from /events/24 to /events/name-of-event
+    document.addEventListener('DOMContentLoaded', () => {
+        const cleanSlug = '<%= helpers.slugify(event.event_name) || event.id %>';
+        if (cleanSlug && !window.location.pathname.endsWith('/' + cleanSlug)) {
+            window.history.replaceState({}, '', '/events/' + cleanSlug);
+        }
+    });
 
     function closeShareModal() {
         const modal = document.getElementById('share-modal');

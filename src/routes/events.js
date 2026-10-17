@@ -127,12 +127,12 @@ router.get('/events', async (req, res) => {
   }
 });
 
-// GET /events/:id - Event Details
-router.get('/events/:id', async (req, res) => {
-  const eventId = Number(req.params.id);
+// GET /events/:idOrSlug - Event Details by ID or Name Slug
+router.get('/events/:idOrSlug', async (req, res) => {
+  const param = (req.params.idOrSlug || '').trim();
 
   try {
-    const event = await db.getOne(`
+    const baseQuery = `
       SELECT e.*, 
              a.name as artist_name, a.group_type, a.image_url as artist_image, a.description as artist_description, a.agency as artist_agency, a.members as artist_members,
              c.name as category_name, c.badge_color,
@@ -142,13 +142,45 @@ router.get('/events/:id', async (req, res) => {
       LEFT JOIN artists a ON e.artist_id = a.id
       LEFT JOIN event_categories c ON e.category_id = c.id
       LEFT JOIN users u ON e.organizer_id = u.id
-      WHERE e.id = ?
-    `, [eventId]);
+    `;
+
+    let event = null;
+
+    // 1. Check numeric ID (e.g. /events/24)
+    if (/^\d+$/.test(param)) {
+      event = await db.getOne(`${baseQuery} WHERE e.id = ?`, [Number(param)]);
+    }
+
+    // 2. Check prefixed ID (e.g. /events/24-seventeen-right-here)
+    if (!event && /^\d+-/.test(param)) {
+      const idPrefix = parseInt(param.split('-')[0], 10);
+      event = await db.getOne(`${baseQuery} WHERE e.id = ?`, [idPrefix]);
+    }
+
+    // 3. Check exact slug column (e.g. /events/seventeen-right-here)
+    if (!event) {
+      try {
+        event = await db.getOne(`${baseQuery} WHERE e.slug = ?`, [param]);
+      } catch (e) {
+        // Column may be pending in remote MySQL
+      }
+    }
+
+    // 4. Fallback: match by dynamically slugified event_name
+    if (!event) {
+      const candidates = await db.query("SELECT id, event_name FROM events");
+      const matched = candidates.find(c => helpers.slugify(c.event_name) === param);
+      if (matched) {
+        event = await db.getOne(`${baseQuery} WHERE e.id = ?`, [matched.id]);
+      }
+    }
 
     if (!event) {
       req.session.flash = { error: 'Event not found.' };
       return res.redirect('/events');
     }
+
+    const eventId = event.id;
 
     // Check if current user saved the event
     let isSavedEvent = false;

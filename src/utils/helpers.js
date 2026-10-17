@@ -213,6 +213,31 @@ export function getTicketingSecurity(url, promoterName = '') {
   }
 }
 
+/**
+ * Generates clean, human-readable SEO slug from event title
+ */
+export function slugify(text) {
+  if (!text) return '';
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/[\[\]\(\)\{\}]/g, ' ')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+/**
+ * Returns canonical event URL path using human-readable slug
+ */
+export function getEventUrl(event) {
+  if (!event) return '/events';
+  const slug = (event.slug && event.slug.trim()) ? event.slug.trim() : slugify(event.event_name);
+  return slug ? `/events/${slug}` : `/events/${event.id}`;
+}
+
 export default {
   getCalculatedEventStatus,
   getVerificationBadge,
@@ -222,5 +247,7 @@ export default {
   formatDate,
   formatTime,
   escapeHtml,
-  logActivity
+  logActivity,
+  slugify,
+  getEventUrl
 };

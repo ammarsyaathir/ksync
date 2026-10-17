@@ -94,6 +94,7 @@ CREATE TABLE `events` (
   `artist_id` INT,
   `category_id` INT NOT NULL,
   `event_name` VARCHAR(200) NOT NULL,
+  `slug` VARCHAR(200) DEFAULT NULL,
   `description` TEXT,
   `event_date` DATE NOT NULL,
   `start_time` TIME NOT NULL,
