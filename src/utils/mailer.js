@@ -299,8 +299,105 @@ export async function sendEventRejectionEmail({
   }
 }
 
+/**
+ * 4. Send Registration Verification OTP Email
+ */
+export async function sendRegistrationOtpEmail({ to, name = 'K-Pop Fan', otp }) {
+  try {
+    const client = await getTransporter();
+    const fromAddress = process.env.SMTP_FROM || `"K-Sync Malaysia" <${process.env.SMTP_USER || 'no-reply@ksync.my'}>`;
+
+    const htmlContent = `
+      <div style="text-align: center;">
+        <span class="badge badge-verified">Verification Code</span>
+        <h2 style="color: #ffffff; margin-top: 4px; font-size: 22px;">Welcome to K-Sync Malaysia!</h2>
+        <p style="color: #9ca3af; font-size: 14px;">Let's verify your email address to activate your account</p>
+      </div>
+
+      <p style="color: #d1d5db; font-size: 15px;">Hi <strong>${name}</strong>,</p>
+      <p style="color: #d1d5db; font-size: 14px;">Thank you for joining Malaysia's centralized K-Pop event platform. Please use the following 6-digit verification code to complete your registration:</p>
+
+      <div class="code-card">
+        <div class="code-label">YOUR ONE-TIME VERIFICATION CODE</div>
+        <div class="code-value">${otp}</div>
+        <div style="font-size: 12px; color: #9ca3af; margin-top: 8px;">⏱️ Valid for 10 minutes. Please do not share this code with anyone.</div>
+      </div>
+
+      <p style="color: #9ca3af; font-size: 13px; line-height: 1.5;">Once verified, you will be able to bookmark concerts, receive real-time D-Day countdown alerts, join concert buddy chats, and submit community cup-sleeve & cafe events.</p>
+
+      <p style="font-size: 12px; color: #6b7280; text-align: center; margin-top: 24px;">If you did not initiate this registration request, please disregard this email.</p>
+    `;
+
+    const info = await client.sendMail({
+      from: fromAddress,
+      to,
+      subject: `[K-Sync Malaysia] ${otp} is your verification code`,
+      text: `Hi ${name},\n\nYour K-Sync Malaysia registration verification code is: ${otp}\n\nThis code expires in 10 minutes.\n\nThank you,\nK-Sync Malaysia Team`,
+      html: getEmailTemplate(htmlContent)
+    });
+
+    console.log(`[Email Service] Registration OTP sent to: ${to} (MessageId: ${info.messageId})`);
+    return { success: true, messageId: info.messageId };
+  } catch (err) {
+    console.error(`[Email Service Error] Failed to send OTP to ${to}:`, err);
+    return { success: false, error: err.message };
+  }
+}
+
+/**
+ * 5. Send Password Reset Email with OTP Code & Direct Link
+ */
+export async function sendPasswordResetEmail({ to, name = 'User', resetCode, resetUrl }) {
+  try {
+    const client = await getTransporter();
+    const fromAddress = process.env.SMTP_FROM || `"K-Sync Malaysia" <${process.env.SMTP_USER || 'no-reply@ksync.my'}>`;
+
+    const htmlContent = `
+      <div style="text-align: center;">
+        <span class="badge" style="background-color: rgba(244, 63, 94, 0.2); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.4);">Security Alert</span>
+        <h2 style="color: #ffffff; margin-top: 4px; font-size: 22px;">Reset Your Password</h2>
+        <p style="color: #9ca3af; font-size: 14px;">We received a request to reset your K-Sync Malaysia account password</p>
+      </div>
+
+      <p style="color: #d1d5db; font-size: 15px;">Hi <strong>${name}</strong>,</p>
+      <p style="color: #d1d5db; font-size: 14px;">You requested to reset your password for your account associated with <strong>${to}</strong>. Use the 6-digit reset code below or click the button to proceed:</p>
+
+      <div class="code-card" style="border-color: #f43f5e;">
+        <div class="code-label">PASSWORD RESET CODE</div>
+        <div class="code-value" style="color: #f43f5e;">${resetCode}</div>
+        <div style="font-size: 12px; color: #9ca3af; margin-top: 8px;">⏱️ This reset code will expire in 15 minutes.</div>
+      </div>
+
+      <div class="button-wrapper">
+        <a href="${resetUrl}" class="btn" style="background: linear-gradient(135deg, #f43f5e 0%, #a855f7 100%);">Reset My Password →</a>
+      </div>
+
+      <p style="font-size: 12px; color: #6b7280; text-align: center;">Direct Link: <a href="${resetUrl}" style="color: #f43f5e;">${resetUrl}</a></p>
+
+      <p style="font-size: 12px; color: #6b7280; text-align: center; margin-top: 24px;">If you did not request a password reset, no action is needed. Your existing password remains secure.</p>
+    `;
+
+    const info = await client.sendMail({
+      from: fromAddress,
+      to,
+      subject: `[K-Sync Malaysia] Password Reset Code: ${resetCode}`,
+      text: `Hi ${name},\n\nYour K-Sync Malaysia password reset code is: ${resetCode}\n\nReset link: ${resetUrl}\n\nThis code expires in 15 minutes. If you did not request this, you can ignore this email.\n\nThank you,\nK-Sync Malaysia Team`,
+      html: getEmailTemplate(htmlContent)
+    });
+
+    console.log(`[Email Service] Password reset email sent to: ${to} (MessageId: ${info.messageId})`);
+    return { success: true, messageId: info.messageId };
+  } catch (err) {
+    console.error(`[Email Service Error] Failed to send password reset email to ${to}:`, err);
+    return { success: false, error: err.message };
+  }
+}
+
 export default {
   sendSubmissionConfirmationEmail,
   sendEventApprovalEmail,
-  sendEventRejectionEmail
+  sendEventRejectionEmail,
+  sendRegistrationOtpEmail,
+  sendPasswordResetEmail
 };
+

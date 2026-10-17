@@ -1,0 +1,50 @@
+<%- include('partials/header', { title: 'Verify Email | K-Sync Malaysia' }) %>
+
+<div class="max-w-md mx-auto px-4 py-16">
+    <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl space-y-6">
+        <div class="text-center">
+            <div class="w-14 h-14 rounded-2xl bg-pink-50 border border-pink-200 text-pink-600 flex items-center justify-center text-2xl mx-auto mb-3 shadow-xs">
+                <i class="fas fa-envelope-open-text"></i>
+            </div>
+            <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Verify Your Email</h1>
+            <p class="text-xs text-slate-500 mt-1.5 font-medium leading-relaxed">
+                We sent a 6-digit verification code to<br>
+                <strong class="text-slate-900 font-extrabold"><%= email %></strong>
+            </p>
+        </div>
+
+        <form action="/verify-email" method="POST" class="space-y-4">
+            <input type="hidden" name="email" value="<%= email %>">
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 text-center mb-2">Enter 6-Digit OTP Code</label>
+                <div class="relative max-w-[260px] mx-auto">
+                    <input type="text" name="otp" required maxlength="6" autofocus
+                           inputmode="numeric" pattern="[0-9]{6}" placeholder="••••••"
+                           class="w-full bg-slate-50 border-2 border-slate-200 focus:border-pink-500 rounded-2xl py-3 text-center text-2xl font-mono font-black tracking-[0.5em] text-slate-900 focus:outline-none focus:ring-4 focus:ring-pink-100 transition-all">
+                </div>
+                <span class="block text-[11px] text-slate-400 text-center mt-2">Check your inbox & spam folder (code valid for 10 mins).</span>
+            </div>
+
+            <button type="submit" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-extrabold shadow transition-all cursor-pointer flex items-center justify-center">
+                <span>Verify & Activate Account &rarr;</span>
+            </button>
+        </form>
+
+        <!-- Resend OTP option -->
+        <div class="pt-4 border-t border-slate-100 text-center space-y-2">
+            <p class="text-xs text-slate-500">Didn't receive the email code?</p>
+            <form action="/resend-otp" method="POST" class="inline">
+                <input type="hidden" name="email" value="<%= email %>">
+                <button type="submit" class="text-xs font-extrabold text-pink-600 hover:text-pink-700 hover:underline cursor-pointer">
+                    <i class="fas fa-rotate-right me-1"></i> Resend Verification Code
+                </button>
+            </form>
+            <div class="text-[11px] text-slate-400">
+                Wrong email? <a href="/register" class="text-slate-600 font-bold hover:underline">Change registration email</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
