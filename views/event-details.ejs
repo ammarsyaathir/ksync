@@ -278,36 +278,58 @@
                         </span>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-3.5">
                         <% members.forEach(function(member) { %>
-                            <div class="bg-slate-50/70 hover:bg-white rounded-2xl p-4 border border-slate-200/80 hover:border-purple-300 hover:shadow-md transition-all group">
-                                <div class="flex items-start gap-3.5">
-                                    <div class="w-16 h-16 rounded-2xl overflow-hidden bg-slate-200 flex-shrink-0 border-2 border-white shadow-sm">
-                                        <img src="<%= member.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop' %>" 
-                                             alt="<%= member.stage_name %>" 
-                                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                            <div class="bg-slate-50/70 hover:bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 hover:border-purple-300 hover:shadow-md transition-all group">
+                                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                    <!-- Left: Photo + Identity -->
+                                    <div class="flex items-center gap-3.5 sm:gap-4 md:w-72 shrink-0">
+                                        <div class="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl overflow-hidden bg-slate-200 shrink-0 border-2 border-white shadow-sm">
+                                            <img src="<%= member.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop' %>" 
+                                                 alt="<%= member.stage_name %>" 
+                                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="flex items-center gap-2 mb-0.5">
+                                                <h4 class="text-base sm:text-lg font-extrabold text-slate-900 truncate"><%= member.stage_name %></h4>
+                                                <% if (member.mbti) { %>
+                                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-pink-100 text-pink-700 uppercase tracking-wider shrink-0">
+                                                        <%= member.mbti %>
+                                                    </span>
+                                                <% } %>
+                                            </div>
+                                            <p class="text-xs text-slate-500 font-medium truncate mb-1"><%= member.birth_name %></p>
+                                            <span class="text-[11px] text-purple-700 font-bold bg-purple-50 rounded-lg px-2.5 py-0.5 inline-block border border-purple-100 truncate max-w-full">
+                                                <%= member.position %>
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div class="flex-1 min-w-0">
-                                        <div class="flex items-center justify-between gap-1 mb-0.5">
-                                            <h4 class="text-base font-extrabold text-slate-900 truncate"><%= member.stage_name %></h4>
-                                            <% if (member.mbti) { %>
-                                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-pink-100 text-pink-700 uppercase tracking-wider flex-shrink-0">
-                                                    <%= member.mbti %>
-                                                </span>
-                                            <% } %>
+
+                                    <!-- Right: 6-cell horizontal biodata chips -->
+                                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-xs text-slate-600 md:border-l md:border-slate-200/80 md:ps-6 pt-3 md:pt-0 border-t border-slate-200/60 md:border-t-0 flex-1">
+                                        <div class="bg-white/90 rounded-xl p-2 border border-slate-100 shadow-2xs">
+                                            <div class="text-[10px] font-bold text-slate-400 uppercase">DOB</div>
+                                            <div class="font-bold text-slate-800 text-[11px] truncate"><%= member.dob || '-' %></div>
                                         </div>
-                                        <p class="text-xs text-slate-500 font-medium truncate mb-1.5"><%= member.birth_name %></p>
-                                        <div class="text-[11px] text-purple-700 font-bold bg-purple-50 rounded-lg px-2.5 py-1 inline-block mb-3 border border-purple-100">
-                                            <%= member.position %>
+                                        <div class="bg-white/90 rounded-xl p-2 border border-slate-100 shadow-2xs">
+                                            <div class="text-[10px] font-bold text-slate-400 uppercase">Zodiac</div>
+                                            <div class="font-bold text-slate-800 text-[11px] truncate"><%= member.zodiac || '-' %></div>
                                         </div>
-                                        
-                                        <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-[11px] text-slate-600 border-t border-slate-200/60 pt-2.5">
-                                            <div><span class="text-slate-400">DOB:</span> <strong class="text-slate-700"><%= member.dob || '-' %></strong></div>
-                                            <div><span class="text-slate-400">Zodiac:</span> <strong class="text-slate-700"><%= member.zodiac || '-' %></strong></div>
-                                            <div><span class="text-slate-400">Height:</span> <strong class="text-slate-700"><%= member.height || '-' %></strong></div>
-                                            <div><span class="text-slate-400">Blood:</span> <strong class="text-slate-700"><%= member.blood_type || '-' %></strong></div>
-                                            <div class="col-span-2 truncate"><span class="text-slate-400">Nationality:</span> <strong class="text-slate-700"><%= member.nationality || '-' %></strong></div>
-                                            <div class="col-span-2 truncate"><span class="text-slate-400">Active:</span> <strong class="text-slate-700"><%= member.years_active || '-' %></strong></div>
+                                        <div class="bg-white/90 rounded-xl p-2 border border-slate-100 shadow-2xs">
+                                            <div class="text-[10px] font-bold text-slate-400 uppercase">Height</div>
+                                            <div class="font-bold text-slate-800 text-[11px] truncate"><%= member.height || '-' %></div>
+                                        </div>
+                                        <div class="bg-white/90 rounded-xl p-2 border border-slate-100 shadow-2xs">
+                                            <div class="text-[10px] font-bold text-slate-400 uppercase">Blood</div>
+                                            <div class="font-bold text-slate-800 text-[11px] truncate"><%= member.blood_type || '-' %></div>
+                                        </div>
+                                        <div class="bg-white/90 rounded-xl p-2 border border-slate-100 shadow-2xs">
+                                            <div class="text-[10px] font-bold text-slate-400 uppercase">Nationality</div>
+                                            <div class="font-bold text-slate-800 text-[11px] truncate"><%= member.nationality || '-' %></div>
+                                        </div>
+                                        <div class="bg-white/90 rounded-xl p-2 border border-slate-100 shadow-2xs">
+                                            <div class="text-[10px] font-bold text-slate-400 uppercase">Active</div>
+                                            <div class="font-bold text-slate-800 text-[11px] truncate"><%= member.years_active || '-' %></div>
                                         </div>
                                     </div>
                                 </div>

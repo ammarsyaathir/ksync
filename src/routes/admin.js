@@ -92,10 +92,18 @@ router.post('/admin/verifications/approve-event', async (req, res) => {
       ? verification_notes.trim() 
       : 'Cross-verified with official source.';
 
-    await db.execute(
-      "UPDATE events SET verification_status = 'VERIFIED', trust_level = ?, admin_verification_notes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-      [assignedTrust, notes, event_id]
-    );
+    try {
+      await db.execute(
+        "UPDATE events SET verification_status = 'VERIFIED', trust_level = ?, admin_verification_notes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+        [assignedTrust, notes, event_id]
+      );
+    } catch (updateErr) {
+      // Fallback if trust_level or admin_verification_notes column doesn't exist yet in remote MySQL
+      await db.execute(
+        "UPDATE events SET verification_status = 'VERIFIED', updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+        [event_id]
+      );
+    }
 
     await logActivity(adminId, 'APPROVE_EVENT', 'events', event_id, `Admin approved event #${event_id} [Trust: ${assignedTrust}] - Notes: ${notes}`, req.ip);
 
@@ -127,10 +135,17 @@ router.post('/admin/verifications/reject-event', async (req, res) => {
   try {
     const ev = await db.getOne("SELECT * FROM events WHERE id = ?", [event_id]);
 
-    await db.execute(
-      "UPDATE events SET verification_status = 'REJECTED', rejection_reason = ?, admin_verification_notes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-      [reason.trim(), `Rejected: ${reason.trim()}`, event_id]
-    );
+    try {
+      await db.execute(
+        "UPDATE events SET verification_status = 'REJECTED', rejection_reason = ?, admin_verification_notes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+        [reason.trim(), `Rejected: ${reason.trim()}`, event_id]
+      );
+    } catch (rejectErr) {
+      await db.execute(
+        "UPDATE events SET verification_status = 'REJECTED', rejection_reason = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+        [reason.trim(), event_id]
+      );
+    }
 
     await logActivity(adminId, 'REJECT_EVENT', 'events', event_id, `Admin rejected event #${event_id}: ${reason.trim()}`, req.ip);
 

@@ -82,39 +82,71 @@ router.post('/submit-event', upload.single('poster_file'), async (req, res) => {
   }
 
   try {
-    const result = await db.execute(`
-      INSERT INTO events (
-        organizer_id, artist_id, category_id,
-        event_name, description, event_date, start_time, end_time,
-        venue_name, address, city, state, ticket_info, event_rules, official_url,
-        poster_image, event_status, verification_status, trust_level, tracking_code,
-        submitter_name, submitter_email, evidence_link, organizer_name, organizer_social_url, organizer_type
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'UPCOMING', 'PENDING', 'PENDING', ?, ?, ?, ?, ?, ?, ?)
-    `, [
+    const candidateData = {
       organizer_id,
-      artist_id ? Number(artist_id) : null,
-      Number(category_id),
-      event_name.trim(),
-      description ? description.trim() : '',
+      artist_id: artist_id ? Number(artist_id) : null,
+      category_id: Number(category_id),
+      event_name: event_name.trim(),
+      slug: helpers.slugify(event_name),
+      description: description ? description.trim() : '',
       event_date,
       start_time,
-      end_time || null,
-      venue_name.trim(),
-      address ? address.trim() : '',
-      city.trim(),
-      state ? state.trim() : '',
-      ticket_info ? ticket_info.trim() : '',
-      event_rules ? event_rules.trim() : '',
-      official_url ? official_url.trim() : '',
+      end_time: end_time || null,
+      venue_name: venue_name.trim(),
+      address: address ? address.trim() : '',
+      city: city.trim(),
+      state: state ? state.trim() : '',
+      ticket_info: ticket_info ? ticket_info.trim() : '',
+      event_rules: event_rules ? event_rules.trim() : '',
+      official_url: official_url ? official_url.trim() : '',
       poster_image,
+      event_status: 'UPCOMING',
+      verification_status: 'PENDING',
+      trust_level: 'PENDING',
       tracking_code,
-      submitter_name.trim(),
-      submitter_email.trim(),
-      evidence_link.trim(),
-      organizer_name ? organizer_name.trim() : submitter_name.trim(),
-      organizer_social_url ? organizer_social_url.trim() : '',
-      organizer_type ? organizer_type.trim() : 'Fanclub'
-    ]);
+      submitter_name: submitter_name.trim(),
+      submitter_email: submitter_email.trim(),
+      evidence_link: evidence_link ? evidence_link.trim() : '',
+      organizer_name: organizer_name ? organizer_name.trim() : submitter_name.trim(),
+      organizer_social_url: organizer_social_url ? organizer_social_url.trim() : '',
+      organizer_type: organizer_type ? organizer_type.trim() : 'Fanclub'
+    };
+
+    let existingCols = null;
+    try {
+      const isMy = db.isMySQL();
+      const rows = await db.query(isMy ? "SHOW COLUMNS FROM events" : "PRAGMA table_info(events)");
+      existingCols = new Set(rows.map(r => (r.Field || r.name || '').toLowerCase()));
+    } catch (colErr) {
+      existingCols = null;
+    }
+
+    // Backward compatibility for legacy venue_id schema
+    if (existingCols && existingCols.has('venue_id') && !existingCols.has('venue_name')) {
+      try {
+        let v = await db.getOne("SELECT id FROM venues WHERE name = ? LIMIT 1", [venue_name.trim()]);
+        if (!v) {
+          const vRes = await db.execute("INSERT INTO venues (name, city, state, address) VALUES (?, ?, ?, ?)", [
+            venue_name.trim(), city.trim(), state ? state.trim() : '', address ? address.trim() : ''
+          ]);
+          candidateData.venue_id = vRes.insertId;
+        } else {
+          candidateData.venue_id = v.id;
+        }
+      } catch (ve) {}
+    }
+
+    const colsToInsert = existingCols 
+      ? Object.keys(candidateData).filter(c => existingCols.has(c.toLowerCase()))
+      : Object.keys(candidateData);
+
+    const placeholders = colsToInsert.map(() => '?').join(', ');
+    const params = colsToInsert.map(c => candidateData[c]);
+
+    const result = await db.execute(`
+      INSERT INTO events (${colsToInsert.join(', ')})
+      VALUES (${placeholders})
+    `, params);
 
     await logActivity(
       organizer_id,
