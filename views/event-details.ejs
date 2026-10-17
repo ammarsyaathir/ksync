@@ -181,83 +181,60 @@
                 </div>
             <% } %>
 
-            <!-- Concert Day Survival & Fan Prep Checklist Card -->
-            <div class="bg-gradient-to-b from-emerald-50/50 via-white to-white rounded-3xl p-6 sm:p-8 border border-emerald-200/90 shadow-sm space-y-5">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 gap-2">
+            <!-- Official Event Posters & Visual Gallery (Flexible 1-4 Posters: Square, Portrait, Landscape) -->
+            <% 
+                const eventPosters = (typeof posters !== 'undefined' && posters && posters.length > 0) 
+                    ? posters 
+                    : [event.poster_image || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop'];
+            %>
+            <div class="bg-white rounded-3xl p-5 sm:p-7 lg:p-8 border border-slate-200 shadow-sm space-y-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
                     <div>
-                        <h3 class="text-lg font-bold text-slate-900 flex items-center">
-                            <i class="fas fa-clipboard-check text-emerald-600 me-2.5"></i> Concert Day Survival Checklist
+                        <h3 class="text-lg sm:text-xl font-bold text-slate-900 flex items-center">
+                            <i class="fas fa-images text-pink-600 me-2.5"></i> Official Event Posters & Visuals
                         </h3>
-                        <p class="text-xs text-slate-500 mt-1">Interactive checklist for attendees. Items are automatically saved to your browser.</p>
+                        <p class="text-xs text-slate-500 mt-1">Official high-resolution promotional posters, seating chart, and event guidelines. Click any poster to view full size.</p>
                     </div>
-                    <span id="checklist-count-label" class="text-xs font-bold px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full self-start sm:self-auto">
-                        0 / 7 Prepared (0%)
+                    <span class="self-start sm:self-auto px-3.5 py-1 rounded-full text-xs font-bold bg-pink-50 text-pink-700 border border-pink-200 shrink-0">
+                        <%= eventPosters.length %> <%= eventPosters.length === 1 ? 'Poster' : 'Posters / Notices' %>
                     </span>
                 </div>
 
-                <!-- Progress Bar -->
-                <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                    <div id="checklist-progress-bar" class="bg-gradient-to-r from-emerald-500 to-teal-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
-                </div>
-
-                <!-- Checklist Items -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                    <label class="p-3.5 rounded-2xl bg-white border border-slate-200 flex items-start space-x-3 cursor-pointer hover:border-emerald-300 transition-all shadow-xs group">
-                        <input type="checkbox" onchange="updateChecklistProgress()" class="chk-item rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 mt-0.5" data-id="e_<%= event.id %>_ticket">
-                        <div class="text-xs font-bold text-slate-800">
-                            <span class="block group-hover:text-emerald-700 transition-colors"><i class="fas fa-ticket text-amber-500 me-1.5"></i> E-Ticket / Wristband Barcode</span>
-                            <span class="text-[10px] text-slate-400 font-normal block mt-0.5">Screenshot or save PDF offline on your phone.</span>
-                        </div>
-                    </label>
-
-                    <label class="p-3.5 rounded-2xl bg-white border border-slate-200 flex items-start space-x-3 cursor-pointer hover:border-emerald-300 transition-all shadow-xs group">
-                        <input type="checkbox" onchange="updateChecklistProgress()" class="chk-item rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 mt-0.5" data-id="e_<%= event.id %>_nric">
-                        <div class="text-xs font-bold text-slate-800">
-                            <span class="block group-hover:text-emerald-700 transition-colors"><i class="fas fa-id-card text-indigo-500 me-1.5"></i> NRIC / Passport ID</span>
-                            <span class="text-[10px] text-slate-400 font-normal block mt-0.5">Required for identity verification at entry gates.</span>
-                        </div>
-                    </label>
-
-                    <label class="p-3.5 rounded-2xl bg-white border border-slate-200 flex items-start space-x-3 cursor-pointer hover:border-emerald-300 transition-all shadow-xs group">
-                        <input type="checkbox" onchange="updateChecklistProgress()" class="chk-item rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 mt-0.5" data-id="e_<%= event.id %>_lightstick">
-                        <div class="text-xs font-bold text-slate-800">
-                            <span class="block group-hover:text-emerald-700 transition-colors"><i class="fas fa-wand-sparkles text-pink-500 me-1.5"></i> Official Lightstick + Batteries</span>
-                            <span class="text-[10px] text-slate-400 font-normal block mt-0.5">Bring 3x fresh AAA batteries (load them before entering).</span>
-                        </div>
-                    </label>
-
-                    <label class="p-3.5 rounded-2xl bg-white border border-slate-200 flex items-start space-x-3 cursor-pointer hover:border-emerald-300 transition-all shadow-xs group">
-                        <input type="checkbox" onchange="updateChecklistProgress()" class="chk-item rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 mt-0.5" data-id="e_<%= event.id %>_powerbank">
-                        <div class="text-xs font-bold text-slate-800">
-                            <span class="block group-hover:text-emerald-700 transition-colors"><i class="fas fa-battery-three-quarters text-emerald-500 me-1.5"></i> Power Bank (&lt; 20,000mAh)</span>
-                            <span class="text-[10px] text-slate-400 font-normal block mt-0.5">Keep phone charged for concert clips and Grab ride home.</span>
-                        </div>
-                    </label>
-
-                    <label class="p-3.5 rounded-2xl bg-white border border-slate-200 flex items-start space-x-3 cursor-pointer hover:border-emerald-300 transition-all shadow-xs group">
-                        <input type="checkbox" onchange="updateChecklistProgress()" class="chk-item rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 mt-0.5" data-id="e_<%= event.id %>_bag">
-                        <div class="text-xs font-bold text-slate-800">
-                            <span class="block group-hover:text-emerald-700 transition-colors"><i class="fas fa-bag-shopping text-purple-500 me-1.5"></i> Compact Bag (Max A4 Size)</span>
-                            <span class="text-[10px] text-slate-400 font-normal block mt-0.5">Most Malaysian arenas ban large backpacks at security.</span>
-                        </div>
-                    </label>
-
-                    <label class="p-3.5 rounded-2xl bg-white border border-slate-200 flex items-start space-x-3 cursor-pointer hover:border-emerald-300 transition-all shadow-xs group">
-                        <input type="checkbox" onchange="updateChecklistProgress()" class="chk-item rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 mt-0.5" data-id="e_<%= event.id %>_shoes">
-                        <div class="text-xs font-bold text-slate-800">
-                            <span class="block group-hover:text-emerald-700 transition-colors"><i class="fas fa-shoe-prints text-amber-600 me-1.5"></i> Comfortable Shoes</span>
-                            <span class="text-[10px] text-slate-400 font-normal block mt-0.5">Expect 2–4 hours of standing in queue and pit zones.</span>
-                        </div>
-                    </label>
-
-                    <label class="p-3.5 rounded-2xl bg-white border border-slate-200 flex items-start space-x-3 cursor-pointer hover:border-emerald-300 transition-all shadow-xs group sm:col-span-2">
-                        <input type="checkbox" onchange="updateChecklistProgress()" class="chk-item rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 mt-0.5" data-id="e_<%= event.id %>_transit">
-                        <div class="text-xs font-bold text-slate-800">
-                            <span class="block group-hover:text-emerald-700 transition-colors"><i class="fas fa-route text-rose-500 me-1.5"></i> Public Transit / Grab Route Planned</span>
-                            <span class="text-[10px] text-slate-400 font-normal block mt-0.5">Check LRT extension hours or pre-agree on designated pickup point.</span>
-                        </div>
-                    </label>
-                </div>
+                <% if (eventPosters.length === 1) { %>
+                    <!-- Single Hero Poster (Any Aspect Ratio: Square, Portrait, Landscape) -->
+                    <div class="relative bg-slate-950/5 rounded-2xl p-2 sm:p-4 border border-slate-200/80 flex items-center justify-center overflow-hidden group">
+                        <img src="<%= eventPosters[0] %>" alt="<%= event.event_name %> Poster"
+                             class="max-h-[580px] w-auto max-w-full rounded-xl object-contain shadow-md cursor-pointer hover:scale-[1.01] transition-transform duration-300"
+                             onclick="openLightbox('<%= eventPosters[0] %>', '<%= event.event_name.replace(/'/g, "\\'") %>')">
+                        <button onclick="openLightbox('<%= eventPosters[0] %>', '<%= event.event_name.replace(/'/g, "\\'") %>')"
+                                class="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 px-4 py-2 rounded-xl bg-slate-900/80 hover:bg-slate-900 text-white text-xs font-bold backdrop-blur-md flex items-center shadow-lg transition-all cursor-pointer">
+                            <i class="fas fa-magnifying-glass-plus me-1.5 text-pink-400"></i> Click to Enlarge
+                        </button>
+                    </div>
+                <% } else { %>
+                    <!-- Multi-Poster Gallery Grid (2 to 4 Posters / Seating Map / Notices) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                        <% eventPosters.forEach(function(imgUrl, idx) { %>
+                            <div class="relative bg-slate-950/5 rounded-2xl p-3 sm:p-4 border border-slate-200/80 flex flex-col justify-between overflow-hidden group transition-all hover:border-pink-300 hover:shadow-md">
+                                <div class="flex items-center justify-between mb-2.5 px-1">
+                                    <span class="text-[11px] font-extrabold text-slate-600 uppercase tracking-wider flex items-center">
+                                        <i class="fas fa-image me-1.5 text-pink-500"></i>
+                                        <%= idx === 0 ? 'Main Official Poster' : (idx === 1 ? 'Notice / Seating Map' : 'Visual #' + (idx + 1)) %>
+                                    </span>
+                                    <button onclick="openLightbox('<%= imgUrl %>', '<%= event.event_name.replace(/'/g, "\\'") %> - Visual #<%= idx + 1 %>')"
+                                            class="text-xs font-bold text-pink-600 hover:text-pink-700 flex items-center cursor-pointer">
+                                        <i class="fas fa-expand me-1"></i> Fullscreen
+                                    </button>
+                                </div>
+                                <div class="flex items-center justify-center min-h-[280px] sm:min-h-[340px] max-h-[460px] overflow-hidden rounded-xl bg-white/70 p-2">
+                                    <img src="<%= imgUrl %>" alt="<%= event.event_name %> - Visual #<%= idx + 1 %>"
+                                         class="max-h-[440px] w-auto max-w-full object-contain rounded-lg shadow-sm cursor-pointer group-hover:scale-[1.02] transition-transform duration-300"
+                                         onclick="openLightbox('<%= imgUrl %>', '<%= event.event_name.replace(/'/g, "\\'") %> - Visual #<%= idx + 1 %>')">
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } %>
             </div>
 
             <!-- Idol Group Members & Biodata (Same Table 'artists.members') -->
@@ -890,43 +867,29 @@
         setInterval(updateCountdown, 1000);
     }
 
-    // Interactive Checklist Progress & LocalStorage
-    function updateChecklistProgress() {
-        const items = document.querySelectorAll('.chk-item');
-        let checkedCount = 0;
-
-        items.forEach(item => {
-            const id = item.getAttribute('data-id');
-            if (item.checked) {
-                checkedCount++;
-                localStorage.setItem(id, '1');
-            } else {
-                localStorage.removeItem(id);
-            }
-        });
-
-        const total = items.length;
-        const percentage = total > 0 ? Math.round((checkedCount / total) * 100) : 0;
-
-        const label = document.getElementById('checklist-count-label');
-        const progressBar = document.getElementById('checklist-progress-bar');
-
-        if (label) label.textContent = `${checkedCount} / ${total} Prepared (${percentage}%)`;
-        if (progressBar) progressBar.style.width = `${percentage}%`;
+    // Lightbox Fullscreen Viewer Logic
+    function openLightbox(imgSrc, title) {
+        const modal = document.getElementById('lightbox-modal');
+        if (!modal) return;
+        document.getElementById('lightbox-img').src = imgSrc;
+        document.getElementById('lightbox-title').textContent = title || 'Official Event Poster';
+        document.getElementById('lightbox-download').href = imgSrc;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
     }
 
-    function loadChecklistState() {
-        const items = document.querySelectorAll('.chk-item');
-        items.forEach(item => {
-            const id = item.getAttribute('data-id');
-            if (localStorage.getItem(id) === '1') {
-                item.checked = true;
-            }
-        });
-        updateChecklistProgress();
+    function closeLightbox() {
+        const modal = document.getElementById('lightbox-modal');
+        if (!modal) return;
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
     }
 
-    document.addEventListener('DOMContentLoaded', loadChecklistState);
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeLightbox();
+    });
 </script>
 
 <!-- Interactive Share Modal -->
@@ -1162,6 +1125,29 @@
             <button type="button" onclick="closeReportModal()" class="text-xs text-slate-400 hover:text-slate-600 pt-1 font-semibold">
                 Cancel
             </button>
+        </div>
+    </div>
+</div>
+
+<!-- Fullscreen Poster Lightbox Modal -->
+<div id="lightbox-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden items-center justify-center p-2 sm:p-6" onclick="closeLightbox()">
+    <div class="relative max-w-5xl max-h-[96vh] w-full flex flex-col items-center justify-center" onclick="event.stopPropagation()">
+        <div class="w-full flex items-center justify-between text-white pb-3 px-3">
+            <h4 id="lightbox-title" class="text-sm font-extrabold truncate pr-4 text-slate-100 flex items-center">
+                <i class="fas fa-image me-2 text-pink-400"></i>
+                <span>Official Event Poster</span>
+            </h4>
+            <div class="flex items-center space-x-2 shrink-0">
+                <a id="lightbox-download" href="#" target="_blank" download class="px-3.5 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 text-white text-xs font-bold flex items-center transition-colors">
+                    <i class="fas fa-download me-1.5 text-pink-400"></i> Open Original
+                </a>
+                <button onclick="closeLightbox()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-sm cursor-pointer transition-colors" title="Close (Esc)">
+                    <i class="fas fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+        <div class="max-h-[86vh] w-full flex items-center justify-center overflow-auto p-2 bg-slate-950/40 rounded-2xl border border-white/10">
+            <img id="lightbox-img" src="" alt="Enlarged Poster" class="max-h-[82vh] w-auto max-w-full object-contain rounded-xl shadow-2xl">
         </div>
     </div>
 </div>

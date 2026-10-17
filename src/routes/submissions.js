@@ -26,8 +26,8 @@ router.get('/submit-event', async (req, res) => {
   }
 });
 
-// POST /submit-event - Process Model 2 Submission
-router.post('/submit-event', upload.single('poster_file'), async (req, res) => {
+// POST /submit-event - Process Model 2 Submission (Supports 1 to 4 Posters / Seating Plans)
+router.post('/submit-event', upload.fields([{ name: 'poster_files', maxCount: 4 }, { name: 'poster_file', maxCount: 1 }]), async (req, res) => {
   const {
     submitter_name,
     submitter_email,
@@ -63,13 +63,28 @@ router.post('/submit-event', upload.single('poster_file'), async (req, res) => {
     return res.redirect('/submit-event');
   }
 
-  // Determine poster image
-  let poster_image = 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop';
-  if (req.file) {
-    poster_image = '/uploads/' + req.file.filename;
-  } else if (poster_url && poster_url.trim()) {
-    poster_image = poster_url.trim();
+  // Determine poster images (1 to 4 images supported)
+  let uploadedPosters = [];
+  if (req.files) {
+    if (req.files.poster_files && req.files.poster_files.length > 0) {
+      uploadedPosters = req.files.poster_files.map(f => '/uploads/' + f.filename);
+    } else if (req.files.poster_file && req.files.poster_file.length > 0) {
+      uploadedPosters = req.files.poster_file.map(f => '/uploads/' + f.filename);
+    }
+  } else if (req.file) {
+    uploadedPosters = ['/uploads/' + req.file.filename];
   }
+
+  if (uploadedPosters.length === 0 && poster_url && poster_url.trim()) {
+    uploadedPosters = poster_url.split(',').map(u => u.trim()).filter(Boolean);
+  }
+
+  if (uploadedPosters.length === 0) {
+    uploadedPosters = ['https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop'];
+  }
+
+  const poster_image = uploadedPosters[0];
+  const gallery_images = JSON.stringify(uploadedPosters);
 
   // Generate completely unpredictable 6-character random tracking code (e.g. KS-2026-7F3K9Q)
   const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
@@ -100,6 +115,7 @@ router.post('/submit-event', upload.single('poster_file'), async (req, res) => {
       event_rules: event_rules ? event_rules.trim() : '',
       official_url: official_url ? official_url.trim() : '',
       poster_image,
+      gallery_images,
       event_status: 'UPCOMING',
       verification_status: 'PENDING',
       trust_level: 'PENDING',

@@ -223,9 +223,24 @@ router.get('/events/:idOrSlug', async (req, res) => {
       }
     }
 
+    // Parse event posters & visual gallery (supports 1 to 4 posters/seating plans)
+    let posters = [];
+    if (event.gallery_images) {
+      try {
+        posters = typeof event.gallery_images === 'string' ? JSON.parse(event.gallery_images) : event.gallery_images;
+        if (!Array.isArray(posters)) posters = [posters];
+      } catch (e) {
+        posters = String(event.gallery_images).split(',').map(s => s.trim()).filter(Boolean);
+      }
+    }
+    if ((!posters || posters.length === 0) && event.poster_image) {
+      posters = [event.poster_image];
+    }
+
     res.render('event-details', {
       event,
       members,
+      posters,
       isSavedEvent,
       isInterested,
       interestCount,

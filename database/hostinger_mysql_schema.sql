@@ -109,6 +109,7 @@ CREATE TABLE `events` (
   `event_rules` TEXT,
   `official_url` VARCHAR(255),
   `poster_image` VARCHAR(255),
+  `gallery_images` LONGTEXT NULL,
   `event_status` VARCHAR(30) DEFAULT 'UPCOMING',
   `verification_status` VARCHAR(30) DEFAULT 'PENDING',
   `trust_level` VARCHAR(30) DEFAULT 'PENDING',
