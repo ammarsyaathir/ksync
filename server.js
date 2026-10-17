@@ -42,6 +42,16 @@ app.set('views', path.join(__dirname, 'views'));
 // Trust reverse proxies (Hostinger LiteSpeed / Cloudflare CDN)
 app.set('trust proxy', 1);
 
+// Security Hardening: Disable X-Powered-By & inject HTTP Security Headers
+app.disable('x-powered-by');
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
+
 // Core Middlewares
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));

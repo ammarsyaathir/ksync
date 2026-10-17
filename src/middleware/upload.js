@@ -24,12 +24,20 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowed = /jpeg|jpg|png|webp|gif|pdf/;
+  const allowedExts = new Set(['.jpeg', '.jpg', '.png', '.webp', '.gif', '.pdf']);
+  const allowedMimes = new Set([
+    'image/jpeg',
+    'image/pjpeg',
+    'image/png',
+    'image/webp',
+    'image/gif',
+    'application/pdf'
+  ]);
   const ext = path.extname(file.originalname).toLowerCase();
-  if (allowed.test(ext) || allowed.test(file.mimetype)) {
+  if (allowedExts.has(ext) && allowedMimes.has((file.mimetype || '').toLowerCase())) {
     cb(null, true);
   } else {
-    cb(new Error('Only images (JPEG, PNG, WebP, GIF) and PDF files are allowed.'));
+    cb(new Error('Invalid file upload. Only verified images (JPEG, PNG, WebP, GIF) and PDF files are allowed.'));
   }
 };
 

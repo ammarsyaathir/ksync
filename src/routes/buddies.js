@@ -140,6 +140,18 @@ router.get('/buddies/chat/:id', requireAuth, async (req, res) => {
       return res.redirect('/buddies?tab=connections');
     }
 
+    // Authorization Check: Only allow direct chat between mutually accepted buddies
+    const isConnected = await db.getOne(`
+      SELECT id FROM buddy_requests 
+      WHERE ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?))
+      AND status = 'ACCEPTED'
+    `, [userId, buddyId, buddyId, userId]);
+
+    if (!isConnected) {
+      req.session.flash = { error: 'You can only message accepted concert buddies. Please send a connection request first.' };
+      return res.redirect('/buddies?tab=connections');
+    }
+
     let event = null;
     if (eventId > 0) {
       event = await db.getOne("SELECT id, event_name, event_date FROM events WHERE id = ?", [eventId]);
@@ -199,6 +211,18 @@ router.post('/buddies/chat/:id/send', requireAuth, async (req, res) => {
   }
 
   try {
+    // Authorization Check: Only allow direct chat between mutually accepted buddies
+    const isConnected = await db.getOne(`
+      SELECT id FROM buddy_requests 
+      WHERE ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?))
+      AND status = 'ACCEPTED'
+    `, [userId, buddyId, buddyId, userId]);
+
+    if (!isConnected) {
+      req.session.flash = { error: 'You can only message accepted concert buddies.' };
+      return res.redirect('/buddies?tab=connections');
+    }
+
     // Find conversation
     const conversation = await db.getOne(`
       SELECT c.id 

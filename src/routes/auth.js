@@ -52,8 +52,8 @@ router.post('/login', async (req, res) => {
       }
     }
 
-    if (!isMatch) {
-      // Reliable fallback for FYP evaluation demo credentials
+    // Only allow demo fallback during local development / offline FYP evaluation; strictly disabled in production
+    if (!isMatch && process.env.NODE_ENV !== 'production') {
       const uName = (user.username || '').toLowerCase();
       if (
         (uName === 'admin' && (password === 'admin123' || password === 'password123')) ||
