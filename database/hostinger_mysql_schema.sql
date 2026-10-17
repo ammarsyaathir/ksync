@@ -45,9 +45,11 @@ DROP TABLE IF EXISTS `artists`;
 CREATE TABLE `artists` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `name` VARCHAR(100) NOT NULL,
+  `korean_name` VARCHAR(100) DEFAULT NULL,
   `group_type` VARCHAR(50) DEFAULT 'Boy Group',
-  `image_url` VARCHAR(255),
   `agency` VARCHAR(100),
+  `debut_year` INT DEFAULT NULL,
+  `image_url` VARCHAR(255),
   `description` TEXT,
   `members` LONGTEXT,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP
