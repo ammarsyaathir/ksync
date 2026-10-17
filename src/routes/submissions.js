@@ -65,7 +65,11 @@ router.post('/submit-event', upload.single('poster_file'), async (req, res) => {
   const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
   const tracking_code = `KS-2026-${randomSuffix}`;
 
-  const organizer_id = (req.session && req.session.userId) ? req.session.userId : 2; // Default organizer id for guest submissions
+  let organizer_id = (req.session && req.session.userId) ? req.session.userId : null;
+  if (!organizer_id) {
+    const defaultUser = await db.getOne("SELECT id FROM users ORDER BY id ASC LIMIT 1");
+    organizer_id = defaultUser ? defaultUser.id : 1;
+  }
 
   try {
     const result = await db.execute(`
