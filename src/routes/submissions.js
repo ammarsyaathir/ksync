@@ -74,16 +74,15 @@ router.post('/submit-event', upload.single('poster_file'), async (req, res) => {
   try {
     const result = await db.execute(`
       INSERT INTO events (
-        organizer_id, artist_id, category_id, venue_id,
+        organizer_id, artist_id, category_id,
         event_name, description, event_date, start_time, end_time,
         venue_name, address, city, state, ticket_info, event_rules, official_url,
         poster_image, event_status, verification_status, tracking_code, submitter_name, submitter_email
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'UPCOMING', 'PENDING', ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'UPCOMING', 'PENDING', ?, ?, ?)
     `, [
       organizer_id,
       artist_id ? Number(artist_id) : null,
       Number(category_id),
-      null, // venue_id
       event_name.trim(),
       description ? description.trim() : '',
       event_date,
