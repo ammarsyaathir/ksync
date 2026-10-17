@@ -45,11 +45,21 @@ router.post('/submit-event', upload.single('poster_file'), async (req, res) => {
     ticket_info,
     event_rules,
     official_url,
-    poster_url
+    poster_url,
+    evidence_link,
+    organizer_name,
+    organizer_social_url,
+    organizer_type,
+    declaration_confirmed
   } = req.body;
 
   if (!event_name || !category_id || !event_date || !start_time || !venue_name || !city || !submitter_name || !submitter_email) {
-    req.session.flash = { error: 'Please fill in all mandatory fields.' };
+    req.session.flash = { error: 'Please fill in all mandatory event and contact fields.' };
+    return res.redirect('/submit-event');
+  }
+
+  if (!evidence_link || !evidence_link.trim()) {
+    req.session.flash = { error: 'Proof of authenticity (official announcement / evidence link) is mandatory to prevent false submissions.' };
     return res.redirect('/submit-event');
   }
 
@@ -61,7 +71,7 @@ router.post('/submit-event', upload.single('poster_file'), async (req, res) => {
     poster_image = poster_url.trim();
   }
 
-  // Generate unique tracking code e.g. KS-2026-X7Y8Z
+  // Generate completely unpredictable 6-character random tracking code (e.g. KS-2026-7F3K9Q)
   const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
   const tracking_code = `KS-2026-${randomSuffix}`;
 
@@ -77,8 +87,9 @@ router.post('/submit-event', upload.single('poster_file'), async (req, res) => {
         organizer_id, artist_id, category_id,
         event_name, description, event_date, start_time, end_time,
         venue_name, address, city, state, ticket_info, event_rules, official_url,
-        poster_image, event_status, verification_status, tracking_code, submitter_name, submitter_email
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'UPCOMING', 'PENDING', ?, ?, ?)
+        poster_image, event_status, verification_status, trust_level, tracking_code,
+        submitter_name, submitter_email, evidence_link, organizer_name, organizer_social_url, organizer_type
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'UPCOMING', 'PENDING', 'PENDING', ?, ?, ?, ?, ?, ?, ?)
     `, [
       organizer_id,
       artist_id ? Number(artist_id) : null,
@@ -98,7 +109,11 @@ router.post('/submit-event', upload.single('poster_file'), async (req, res) => {
       poster_image,
       tracking_code,
       submitter_name.trim(),
-      submitter_email.trim()
+      submitter_email.trim(),
+      evidence_link.trim(),
+      organizer_name ? organizer_name.trim() : submitter_name.trim(),
+      organizer_social_url ? organizer_social_url.trim() : '',
+      organizer_type ? organizer_type.trim() : 'Fanclub'
     ]);
 
     await logActivity(

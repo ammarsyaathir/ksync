@@ -161,7 +161,7 @@ export async function sendSubmissionConfirmationEmail({
         </tr>
       </table>
 
-      <p style="color: #d1d5db; font-size: 14px;">Our administration team reviews all organizer submissions to ensure ticketing authenticity and venue safety. You will receive another email as soon as your event is approved.</p>
+      <p style="color: #d1d5db; font-size: 14px;">Our administration team reviews all submissions to verify official event announcements, schedule accuracy, and authenticity before publishing. You will receive another email as soon as your event is approved.</p>
 
       <div class="button-wrapper">
         <a href="${trackingLink}" class="btn">Track Submission Online →</a>

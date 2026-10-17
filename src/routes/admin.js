@@ -80,18 +80,24 @@ router.get('/admin/verifications', async (req, res) => {
 
 // POST /admin/verifications/approve-event - Approve Model 2 Submission
 router.post('/admin/verifications/approve-event', async (req, res) => {
-  const { event_id } = req.body;
+  const { event_id, trust_level, verification_notes } = req.body;
   const adminId = req.session.userId;
 
   try {
     const ev = await db.getOne("SELECT * FROM events WHERE id = ?", [event_id]);
+    const assignedTrust = (trust_level && ['OFFICIAL', 'COMMUNITY'].includes(trust_level.toUpperCase())) 
+      ? trust_level.toUpperCase() 
+      : 'OFFICIAL';
+    const notes = verification_notes && verification_notes.trim() 
+      ? verification_notes.trim() 
+      : 'Cross-verified with official source.';
 
     await db.execute(
-      "UPDATE events SET verification_status = 'VERIFIED', updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-      [event_id]
+      "UPDATE events SET verification_status = 'VERIFIED', trust_level = ?, admin_verification_notes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+      [assignedTrust, notes, event_id]
     );
 
-    await logActivity(adminId, 'APPROVE_EVENT', 'events', event_id, `Admin approved event #${event_id} live to public directory`, req.ip);
+    await logActivity(adminId, 'APPROVE_EVENT', 'events', event_id, `Admin approved event #${event_id} [Trust: ${assignedTrust}] - Notes: ${notes}`, req.ip);
 
     // Send Real Approval Email to Organizer/Submitter (UC20 / UC22)
     if (ev && ev.submitter_email) {
@@ -104,7 +110,7 @@ router.post('/admin/verifications/approve-event', async (req, res) => {
       }).catch(e => console.error('[Admin Verification] Approval email send error:', e.message));
     }
 
-    req.session.flash = { success: `Event #${event_id} approved and published live to public discovery!` };
+    req.session.flash = { success: `Event #${event_id} verified & published live [Trust: ${assignedTrust}]!` };
     res.redirect('/admin/verifications');
   } catch (err) {
     console.error('Approve event error:', err);
@@ -122,8 +128,8 @@ router.post('/admin/verifications/reject-event', async (req, res) => {
     const ev = await db.getOne("SELECT * FROM events WHERE id = ?", [event_id]);
 
     await db.execute(
-      "UPDATE events SET verification_status = 'REJECTED', rejection_reason = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-      [reason.trim(), event_id]
+      "UPDATE events SET verification_status = 'REJECTED', rejection_reason = ?, admin_verification_notes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+      [reason.trim(), `Rejected: ${reason.trim()}`, event_id]
     );
 
     await logActivity(adminId, 'REJECT_EVENT', 'events', event_id, `Admin rejected event #${event_id}: ${reason.trim()}`, req.ip);

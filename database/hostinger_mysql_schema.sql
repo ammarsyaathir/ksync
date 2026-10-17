@@ -90,7 +90,7 @@ INSERT INTO `event_categories` (`id`, `name`, `slug`, `badge_color`, `descriptio
 DROP TABLE IF EXISTS `events`;
 CREATE TABLE `events` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `organizer_id` INT NOT NULL DEFAULT 2,
+  `organizer_id` INT NULL DEFAULT NULL,
   `artist_id` INT,
   `category_id` INT NOT NULL,
   `event_name` VARCHAR(200) NOT NULL,
@@ -108,13 +108,19 @@ CREATE TABLE `events` (
   `poster_image` VARCHAR(255),
   `event_status` VARCHAR(30) DEFAULT 'UPCOMING',
   `verification_status` VARCHAR(30) DEFAULT 'PENDING',
+  `trust_level` VARCHAR(30) DEFAULT 'PENDING',
   `rejection_reason` TEXT,
+  `admin_verification_notes` TEXT,
   `tracking_code` VARCHAR(50) UNIQUE,
   `submitter_name` VARCHAR(150),
   `submitter_email` VARCHAR(150),
+  `evidence_link` VARCHAR(255),
+  `organizer_name` VARCHAR(150),
+  `organizer_social_url` VARCHAR(255),
+  `organizer_type` VARCHAR(50) DEFAULT 'Fanclub',
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (`organizer_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT,
+  FOREIGN KEY (`organizer_id`) REFERENCES `users`(`id`) ON DELETE SET NULL,
   FOREIGN KEY (`artist_id`) REFERENCES `artists`(`id`) ON DELETE SET NULL,
   FOREIGN KEY (`category_id`) REFERENCES `event_categories`(`id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

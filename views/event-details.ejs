@@ -32,6 +32,16 @@
                 </span>
                 <%- helpers.getStatusBadge(calcStatus) %>
                 <%- helpers.getVerificationBadge(event.verification_status) %>
+                <% const trust = (event.trust_level || '').toUpperCase(); %>
+                <% if (trust === 'OFFICIAL') { %>
+                    <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500 text-white shadow-sm flex items-center gap-1.5 border border-emerald-400">
+                        <i class="fas fa-shield-halved text-amber-300"></i> Verified – Official Source
+                    </span>
+                <% } else if (trust === 'COMMUNITY') { %>
+                    <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-purple-600 text-white shadow-sm flex items-center gap-1.5 border border-purple-400">
+                        <i class="fas fa-users text-pink-300"></i> Verified – Community Event
+                    </span>
+                <% } %>
             </div>
             <% if (event.verification_status === 'SUSPENDED') { %>
                 <div class="mb-3 p-3.5 rounded-2xl bg-rose-600/95 text-white text-xs font-medium flex items-center gap-2.5 backdrop-blur-md border border-rose-400 shadow-lg">

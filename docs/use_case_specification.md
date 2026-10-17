@@ -114,7 +114,31 @@ Include / extend relationships
 | Approve Submission      | `«include»`          | Publish Approved Event        | Use if approval automatically publishes the event. If the administrator publishes it in a separate later action, model the use cases separately. |
 | Reject Submission       | No mandatory include | Receive Decision Notification | The notification is triggered by the decision process but may be handled asynchronously by the system.                                           |
 
-For fairness, define verification criteria such as the availability of official source links, consistency of the event date and venue, and whether the submitted event falls within the system's scope. Record the decision and reason in the audit log. This helps reduce unexplained or inconsistent decisions.
+For fairness, define verification criteria such as the availability of official source links, consistency of the event date and venue, and whether the submitted event falls within the system's scope. Record the decision and reason in the audit log. This helps reduce unexplained or inconsistent decisions.
+
+
+### Admin Multi-Source Cross-Verification Protocol & Decision Table
+
+To eliminate fake, misleading, or deceptive submissions while retaining frictionless Model 2 public submission, the System Admin executes the following cross-verification protocol:
+
+**Core Verification Principle**: Approve an event *only* if its core details (Artist, Date, Malaysian Venue) can be matched to an authoritative source that the submitter does not control.
+
+| What the Admin Finds | Assigned Trust Level | Public Badge | Action & Notification |
+| :--- | :--- | :--- | :--- |
+| **2 or more independent official sources match** (e.g. Artist Weverse/Agency tour schedule + Malaysian promoter announcement/ticketing page + Venue calendar) | `OFFICIAL` | 🛡️ **Verified – Official Source** | **Approve & Publish**. Real-time notification email sent with tracking status updated to `VERIFIED`. |
+| **Only the organizer's own post**, but from a genuine Malaysian fanclub account with active history (>3 months, past cupsleeve/fan projects) | `COMMUNITY` | 🎪 **Verified – Community Event** | **Approve & Publish**. Badge informs fans that it is community-organized. |
+| **No independent source, brand-new suspicious account (<30 days), or mismatched date/venue** | `REJECTED` | *(Hidden from Public)* | **Reject Submission**. System records rejection reason; submitter receives email notification with instructions to provide valid evidence (UC23). |
+| **The same event already exists in directory** | `REJECTED` | *(Hidden from Public)* | **Reject as Duplicate**. Point submitter to existing listing. |
+
+#### Required Event Submission & Authenticity Fields
+- `evidence_link` (*Required*): Primary URL link to the official announcement (Weverse, X, Instagram, Ticketing platform).
+- `organizer_name` (*Required*): Entity or fanclub organizing the event.
+- `organizer_social_url` (*Required*): Link to organizer's active social profile for account age and project history auditing.
+- `organizer_type` (*Required*): Categorized as `Fanclub`, `Event Company`, `Venue`, or `Agency`.
+- `trust_level` (*System-Assigned*): `OFFICIAL` (Official Source) or `COMMUNITY` (Community Event).
+- `admin_verification_notes` (*Audit Trail*): Admin notes documenting which independent sources were checked (stored for FYP audit defense).
+- `organizer_id` (*Nullable*): Set to `NULL` for guest community submissions.
+
 
 ## E. Published event management
 
