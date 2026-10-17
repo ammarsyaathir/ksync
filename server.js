@@ -39,6 +39,9 @@ if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// Trust reverse proxies (Hostinger LiteSpeed / Cloudflare CDN)
+app.set('trust proxy', 1);
+
 // Core Middlewares
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -49,7 +52,6 @@ const sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret && process.env.NODE_ENV === 'production') {
   throw new Error('SESSION_SECRET must be set when NODE_ENV=production.');
 }
-const isProduction = process.env.NODE_ENV === 'production';
 app.use(session({
   // Never fall back to a hardcoded secret in production; use a random
   // per-process secret in development so it cannot be guessed.
@@ -60,7 +62,7 @@ app.use(session({
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     httpOnly: true,
     sameSite: 'lax',
-    secure: isProduction // requires HTTPS; set behind a TLS terminator with `trust proxy`
+    secure: process.env.COOKIE_SECURE === 'true' // Safe behind LiteSpeed reverse proxy
   }
 }));
 
