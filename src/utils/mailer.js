@@ -226,7 +226,7 @@ export async function sendEventApprovalEmail({
         <div style="font-size: 12px; color: #9ca3af; margin-top: 8px;">Reference Code: ${trackingCode}</div>
       </div>
 
-      <p style="color: #d1d5db; font-size: 14px;">Fans across Malaysia can now discover your event, RSVP, bookmark it to their countdown schedule, and connect with concert buddies!</p>
+      <p style="color: #d1d5db; font-size: 14px;">Fans across Malaysia can now discover your event, RSVP, and bookmark it to their personal countdown schedule!</p>
 
       <div class="button-wrapper">
         <a href="${eventUrl}" class="btn" style="background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);">View Your Live Event Page →</a>
@@ -334,7 +334,7 @@ export async function sendRegistrationOtpEmail({ to, name = 'K-Pop Fan', otp }) 
         <div style="font-size: 12px; color: #9ca3af; margin-top: 8px;">⏱️ Valid for 10 minutes. Please do not share this code with anyone.</div>
       </div>
 
-      <p style="color: #9ca3af; font-size: 13px; line-height: 1.5;">Once verified, you will be able to bookmark concerts, receive real-time D-Day countdown alerts, join concert buddy chats, and submit community cup-sleeve & cafe events.</p>
+      <p style="color: #9ca3af; font-size: 13px; line-height: 1.5;">Once verified, you will be able to bookmark concerts, receive real-time D-Day countdown alerts, and submit community cup-sleeve & cafe events.</p>
 
       <p style="font-size: 12px; color: #6b7280; text-align: center; margin-top: 24px;">If you did not initiate this registration request, please disregard this email.</p>
     `;

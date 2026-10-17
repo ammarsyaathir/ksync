@@ -4,7 +4,7 @@
     <div class="mb-8 border-b border-slate-200 pb-6 flex items-center justify-between">
         <div>
             <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Account Profile</h1>
-            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Manage your personal fan identity, concert buddy preferences, and security.</p>
+            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Manage your personal fan identity, notifications, and security.</p>
         </div>
         <div>
             <span class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white">
@@ -54,7 +54,7 @@
                 <div class="mt-4 pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-600 text-left">
                     <div><span class="font-bold text-slate-700">Email:</span> <%= currentUser.email %></div>
                     <div><span class="font-bold text-slate-700">Location:</span> <%= currentUser.location || 'Kuala Lumpur' %></div>
-                    <div><span class="font-bold text-slate-700">Buddy Status:</span> <%= currentUser.buddy_preference || 'Looking for event buddy' %></div>
+                    <div><span class="font-bold text-slate-700">Role Status:</span> Verified Member</div>
                 </div>
             </div>
         </div>
@@ -81,9 +81,9 @@
                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Concert Buddy Preference</label>
-                            <input type="text" name="buddy_preference" value="<%= currentUser.buddy_preference || 'Looking for concert buddies' %>"
-                                   placeholder="e.g. Cat 1 / VIP seatmate, carpool from PJ"
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Favorite K-Pop Bias / Interests</label>
+                            <input type="text" name="buddy_preference" value="<%= currentUser.buddy_preference || '' %>"
+                                   placeholder="e.g. SEVENTEEN, TWICE, NewJeans, VIP Standing"
                                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900">
                         </div>
                     </div>

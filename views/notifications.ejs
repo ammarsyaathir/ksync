@@ -15,7 +15,7 @@
                     </span>
                 <% } %>
             </h1>
-            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Real-time alerts for your saved concerts, D-Day countdowns, submission statuses, and buddy requests.</p>
+            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Real-time alerts for your saved concerts, D-Day countdowns, submission statuses, and organizer announcements.</p>
         </div>
         
         <div class="flex items-center space-x-2">
@@ -87,10 +87,6 @@
                     iconClass = 'fa-triangle-exclamation text-amber-600';
                     iconBg = 'bg-amber-100 border-amber-200';
                     categoryLabel = 'Action Required';
-                } else if (msg.includes('Buddy') || msg.includes('buddy')) {
-                    iconClass = 'fa-user-group text-blue-600';
-                    iconBg = 'bg-blue-100 border-blue-200';
-                    categoryLabel = 'Concert Buddy';
                 } else if (msg.includes('Status Update') || msg.includes('marked as')) {
                     iconClass = 'fa-bullhorn text-indigo-600';
                     iconBg = 'bg-indigo-100 border-indigo-200';
