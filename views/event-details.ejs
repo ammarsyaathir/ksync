@@ -6,9 +6,12 @@
     const userObj = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : null;
     
     // Calendar URL generation
-    const dateFormatted = (event.event_date || '').replace(/-/g, '');
-    const startTimeFormatted = (event.start_time || '18:00:00').replace(/:/g, '').substring(0, 4) + '00';
-    const endTimeFormatted = (event.end_time || '22:00:00').replace(/:/g, '').substring(0, 4) + '00';
+    const rawDate = (event.event_date instanceof Date) 
+        ? event.event_date.toISOString().split('T')[0] 
+        : String(event.event_date || '');
+    const dateFormatted = rawDate.replace(/-/g, '');
+    const startTimeFormatted = String(event.start_time || '18:00:00').replace(/:/g, '').substring(0, 4) + '00';
+    const endTimeFormatted = String(event.end_time || '22:00:00').replace(/:/g, '').substring(0, 4) + '00';
     const gCalDates = `${dateFormatted}T${startTimeFormatted}/${dateFormatted}T${endTimeFormatted}`;
     const gCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.event_name)}&dates=${gCalDates}&details=${encodeURIComponent(event.description || 'K-Pop Event in Malaysia')}&location=${encodeURIComponent(event.venue_name + ', ' + event.city)}`;
     const mapQuery = encodeURIComponent(`${event.venue_name} ${event.address || ''} ${event.city} Malaysia`);

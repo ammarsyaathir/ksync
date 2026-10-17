@@ -32,6 +32,7 @@ if (isUsingMySQL) {
       connectionLimit: 10,
       queueLimit: 0,
       charset: 'utf8mb4',
+      dateStrings: true,
       ssl: process.env.DB_SSL === 'false' ? false : { rejectUnauthorized: false }
     });
     console.log(`🔌 Initialized MySQL Pool [${process.env.DB_NAME}] at ${process.env.DB_HOST}`);

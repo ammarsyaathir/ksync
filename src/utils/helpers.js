@@ -5,17 +5,20 @@ import db from '../../config/database.js';
  * Calculates event status (UPCOMING, ONGOING, COMPLETED) dynamically based on date & time
  */
 export function getCalculatedEventStatus(event) {
+  if (!event) return 'UPCOMING';
   if (['POSTPONED', 'CANCELLED'].includes(event.event_status)) {
     return event.event_status;
   }
 
-  const eventDate = event.event_date;
-  const startTime = event.start_time || '00:00:00';
-  const endTime = event.end_time || '23:59:59';
+  const rawDate = (event.event_date instanceof Date)
+    ? event.event_date.toISOString().split('T')[0]
+    : String(event.event_date || '');
+  const startTime = typeof event.start_time === 'string' ? event.start_time : String(event.start_time || '00:00:00');
+  const endTime = typeof event.end_time === 'string' ? event.end_time : String(event.end_time || '23:59:59');
 
   try {
-    const startDateTime = new Date(`${eventDate}T${startTime}`);
-    const endDateTime = new Date(`${eventDate}T${endTime}`);
+    const startDateTime = new Date(`${rawDate}T${startTime}`);
+    const endDateTime = new Date(`${rawDate}T${endTime}`);
     const now = new Date();
 
     if (now < startDateTime) {
@@ -94,10 +97,11 @@ export function getStatusBadge(status) {
 export function formatDate(dateStr) {
   if (!dateStr) return '';
   try {
-    const d = new Date(dateStr);
+    const d = dateStr instanceof Date ? dateStr : new Date(dateStr);
+    if (isNaN(d.getTime())) return String(dateStr);
     return d.toLocaleDateString('en-MY', { day: 'numeric', month: 'short', year: 'numeric' });
   } catch (e) {
-    return dateStr;
+    return String(dateStr);
   }
 }
 
@@ -107,7 +111,8 @@ export function formatDate(dateStr) {
 export function formatTime(timeStr) {
   if (!timeStr) return '';
   try {
-    const parts = timeStr.split(':');
+    const str = String(timeStr);
+    const parts = str.split(':');
     let hours = parseInt(parts[0], 10);
     const minutes = parts[1] || '00';
     const ampm = hours >= 12 ? 'PM' : 'AM';
@@ -115,7 +120,7 @@ export function formatTime(timeStr) {
     hours = hours ? hours : 12;
     return `${hours}:${minutes} ${ampm}`;
   } catch (e) {
-    return timeStr;
+    return String(timeStr);
   }
 }
 

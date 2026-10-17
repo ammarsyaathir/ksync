@@ -172,7 +172,7 @@ router.get('/events/:id', async (req, res) => {
     // Check 24-hour post-event lock
     let isChatLocked = false;
     try {
-      const eventDateStr = event.event_date;
+      const eventDateStr = event.event_date instanceof Date ? event.event_date.toISOString().split('T')[0] : String(event.event_date || '');
       const endTimeStr = event.end_time || '23:59:59';
       const eventEndTimestamp = new Date(`${eventDateStr}T${endTimeStr}`).getTime();
       const cutoffTime = eventEndTimestamp + (24 * 60 * 60 * 1000);
