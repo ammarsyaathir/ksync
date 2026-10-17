@@ -117,12 +117,12 @@
                         <span>Share</span>
                     </button>
 
-                    <a href="<%= gCalUrl %>" target="_blank" rel="noopener" 
-                       class="px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center shadow-xs transition-all"
-                       title="Add to Google Calendar">
+                    <button onclick="openCalendarModal()" 
+                            class="px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center shadow-xs transition-all cursor-pointer"
+                            title="Add to Phone Calendar or Google Calendar">
                         <i class="far fa-calendar-plus me-1.5 text-purple-600"></i>
                         <span>Add to Calendar</span>
-                    </a>
+                    </button>
 
                     <button onclick="openReportModal()" 
                             class="px-3.5 py-2.5 rounded-xl border border-slate-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 text-slate-600 font-bold text-xs flex items-center shadow-xs transition-all cursor-pointer"
@@ -815,6 +815,28 @@
         }, 200);
     }
 
+    function openCalendarModal() {
+        const modal = document.getElementById('calendar-modal');
+        const content = document.getElementById('calendar-modal-content');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        setTimeout(() => {
+            content.classList.remove('scale-95', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+
+    function closeCalendarModal() {
+        const modal = document.getElementById('calendar-modal');
+        const content = document.getElementById('calendar-modal-content');
+        content.classList.remove('scale-100', 'opacity-100');
+        content.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }, 200);
+    }
+
     function copyShareUrl() {
         const input = document.getElementById('share-url-input');
         input.select();
@@ -949,6 +971,81 @@
                     class="absolute right-1.5 top-1.5 bottom-1.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center transition-all cursor-pointer">
                 <span>Copy</span>
             </button>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive Add to Calendar Modal (Phone Native .ICS & Google) -->
+<div id="calendar-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 transform transition-all scale-95 opacity-0 duration-200" id="calendar-modal-content">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+            <h3 class="text-lg font-bold text-slate-900 flex items-center">
+                <i class="far fa-calendar-plus text-purple-600 me-2.5"></i> Add to Calendar
+            </h3>
+            <button onclick="closeCalendarModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-xs cursor-pointer transition-colors">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
+
+        <p class="text-xs text-slate-600 mb-5 leading-relaxed font-medium">
+            Save <strong><%= event.event_name %></strong> to your phone device calendar or Google Calendar with automatic alarms before the concert.
+        </p>
+
+        <!-- Calendar Options -->
+        <div class="space-y-3 mb-4">
+            <!-- Option 1: Mobile Phone Native Calendar (.ics - iPhone & Android) -->
+            <a href="/events/<%= helpers.slugify(event.event_name) || event.id %>/calendar.ics" 
+               class="flex items-center justify-between p-4 rounded-2xl bg-purple-50 hover:bg-purple-100 border border-purple-200/80 transition-all group">
+                <div class="flex items-center space-x-3.5">
+                    <div class="w-11 h-11 rounded-xl bg-purple-600 text-white flex items-center justify-center text-lg shadow-sm group-hover:scale-105 transition-transform">
+                        <i class="fas fa-mobile-screen-button"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs font-black text-slate-900 flex items-center">
+                            <span>Phone / Apple Calendar (.ics)</span>
+                            <span class="ms-2 px-2 py-0.5 rounded text-[10px] font-extrabold bg-purple-200 text-purple-800">Phone Native</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 mt-0.5">Saves to iPhone / Samsung calendar with 24h & 2h alarm reminders</p>
+                    </div>
+                </div>
+                <i class="fas fa-download text-purple-600 group-hover:translate-y-0.5 transition-transform ms-2"></i>
+            </a>
+
+            <!-- Option 2: Google Calendar App / Web -->
+            <a href="<%= gCalUrl %>" target="_blank" rel="noopener"
+               class="flex items-center justify-between p-4 rounded-2xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 transition-all group">
+                <div class="flex items-center space-x-3.5">
+                    <div class="w-11 h-11 rounded-xl bg-white border border-slate-200 text-blue-600 flex items-center justify-center text-lg shadow-xs group-hover:scale-105 transition-transform">
+                        <i class="fab fa-google"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs font-black text-slate-900">Google Calendar</div>
+                        <p class="text-[11px] text-slate-500 mt-0.5">Syncs directly into Google Calendar app or web account</p>
+                    </div>
+                </div>
+                <i class="fas fa-arrow-up-right-from-square text-slate-400 group-hover:text-blue-600 transition-colors ms-2"></i>
+            </a>
+
+            <!-- Option 3: Outlook / Office 365 -->
+            <a href="https://outlook.live.com/calendar/0/deeplink/compose?subject=<%= encodeURIComponent(event.event_name) %>&startdt=<%= rawDate %>T<%= startTimeFormatted %>&enddt=<%= rawDate %>T<%= endTimeFormatted %>&location=<%= encodeURIComponent(event.venue_name + ', ' + event.city) %>&body=<%= encodeURIComponent(event.description || 'K-Pop Event in Malaysia') %>" 
+               target="_blank" rel="noopener"
+               class="flex items-center justify-between p-4 rounded-2xl bg-slate-50 hover:bg-sky-50 border border-slate-200 hover:border-sky-200 transition-all group">
+                <div class="flex items-center space-x-3.5">
+                    <div class="w-11 h-11 rounded-xl bg-white border border-slate-200 text-sky-600 flex items-center justify-center text-lg shadow-xs group-hover:scale-105 transition-transform">
+                        <i class="fab fa-microsoft"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs font-black text-slate-900">Outlook / Office 365</div>
+                        <p class="text-[11px] text-slate-500 mt-0.5">Sync to Microsoft Outlook on smartphone or desktop</p>
+                    </div>
+                </div>
+                <i class="fas fa-arrow-up-right-from-square text-slate-400 group-hover:text-sky-600 transition-colors ms-2"></i>
+            </a>
+        </div>
+
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-[11px] text-slate-500 flex items-center">
+            <i class="fas fa-bell text-amber-500 me-2 text-xs"></i>
+            <span>Includes 2 automated device alerts: 1 day before & 2 hours before showtime.</span>
         </div>
     </div>
 </div>

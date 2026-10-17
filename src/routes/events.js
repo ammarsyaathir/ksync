@@ -241,4 +241,85 @@ router.get('/events/:idOrSlug', async (req, res) => {
   }
 });
 
+// GET /events/:idOrSlug/calendar.ics - Mobile Device Calendar (.ics) with Automatic Reminder Alarms
+router.get('/events/:idOrSlug/calendar.ics', async (req, res) => {
+  const param = (req.params.idOrSlug || '').trim();
+
+  try {
+    let event = null;
+    if (/^\d+$/.test(param)) {
+      event = await db.getOne("SELECT * FROM events WHERE id = ?", [Number(param)]);
+    }
+    if (!event && /^\d+-/.test(param)) {
+      const idPrefix = parseInt(param.split('-')[0], 10);
+      event = await db.getOne("SELECT * FROM events WHERE id = ?", [idPrefix]);
+    }
+    if (!event) {
+      try {
+        event = await db.getOne("SELECT * FROM events WHERE slug = ?", [param]);
+      } catch (e) {}
+    }
+    if (!event) {
+      const all = await db.query("SELECT id, event_name, event_date, start_time, end_time, venue_name, city, description FROM events");
+      const matched = all.find(c => helpers.slugify(c.event_name) === param);
+      if (matched) event = matched;
+    }
+
+    if (!event) {
+      return res.status(404).send('Event not found');
+    }
+
+    const rawDate = (event.event_date instanceof Date)
+      ? event.event_date.toISOString().split('T')[0]
+      : String(event.event_date || '');
+    const dateClean = rawDate.replace(/-/g, '');
+    const startTimeClean = String(event.start_time || '18:00:00').replace(/:/g, '').substring(0, 4) + '00';
+    const endTimeClean = String(event.end_time || '22:00:00').replace(/:/g, '').substring(0, 4) + '00';
+
+    const slug = helpers.slugify(event.event_name) || `event-${event.id}`;
+    const appUrl = (process.env.APP_BASE_URL || 'https://ksync.my') + `/events/${slug}`;
+    const cleanDesc = (event.description || 'K-Pop Event in Malaysia').replace(/\r?\n/g, '\\n') + `\\n\\nOfficial Event Link: ${appUrl}`;
+    const cleanLocation = `${event.venue_name || 'K-Pop Venue'}, ${event.city || 'Malaysia'}`;
+
+    const icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//K-Sync Malaysia//K-Pop Event Directory//EN',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'X-WR-CALNAME:K-Sync Malaysia Events',
+      'X-WR-TIMEZONE:Asia/Kuala_Lumpur',
+      'BEGIN:VEVENT',
+      `UID:ksync-event-${event.id}@ksync.my`,
+      `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
+      `DTSTART;TZID=Asia/Kuala_Lumpur:${dateClean}T${startTimeClean}`,
+      `DTEND;TZID=Asia/Kuala_Lumpur:${dateClean}T${endTimeClean}`,
+      `SUMMARY:${event.event_name}`,
+      `DESCRIPTION:${cleanDesc}`,
+      `LOCATION:${cleanLocation}`,
+      `URL:${appUrl}`,
+      'STATUS:CONFIRMED',
+      'BEGIN:VALARM',
+      'TRIGGER:-P1D',
+      'ACTION:DISPLAY',
+      `DESCRIPTION:Reminder: ${event.event_name} is tomorrow!`,
+      'END:VALARM',
+      'BEGIN:VALARM',
+      'TRIGGER:-PT2H',
+      'ACTION:DISPLAY',
+      `DESCRIPTION:Reminder: ${event.event_name} starts in 2 hours!`,
+      'END:VALARM',
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\r\n');
+
+    res.setHeader('Content-Type', 'text/calendar; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${slug}.ics"`);
+    res.send(icsContent);
+  } catch (err) {
+    console.error('Error generating calendar .ics:', err);
+    res.status(500).send('Error generating calendar file');
+  }
+});
+
 export default router;
