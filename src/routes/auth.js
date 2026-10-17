@@ -70,8 +70,11 @@ router.post('/login', async (req, res) => {
     await logActivity(user.id, 'LOGIN', 'users', user.id, `User @${user.username} logged in successfully`, req.ip);
 
     req.session.flash = { success: `Welcome back, ${user.full_name}!` };
-    const targetUrl = redirect && redirect.startsWith('/') ? redirect : '/';
-    res.redirect(targetUrl);
+    const targetUrl = redirect && redirect.startsWith('/') ? redirect : (user.role_id === 1 ? '/admin' : '/');
+    req.session.save((saveErr) => {
+      if (saveErr) console.error('Session save error:', saveErr);
+      res.redirect(targetUrl);
+    });
   } catch (err) {
     console.error('Login error:', err);
     req.session.flash = { error: 'An error occurred during sign-in. Please try again.' };
@@ -183,8 +186,11 @@ router.post('/auth/google', async (req, res) => {
       await logActivity(existing.id, 'GOOGLE_LOGIN', 'users', existing.id, 'User logged in via Google Authentication', req.ip);
 
       req.session.flash = { success: `Welcome back, ${existing.full_name}! Signed in with Google.` };
-      const redirect = existing.role_name.toLowerCase() === 'admin' ? '/admin' : '/';
-      return res.json({ status: 'success', redirect, message: 'Login successful' });
+      const redirect = (existing.role_name && existing.role_name.toLowerCase() === 'admin') ? '/admin' : '/';
+      req.session.save((saveErr) => {
+        if (saveErr) console.error('Session save error:', saveErr);
+        return res.json({ status: 'success', redirect, message: 'Login successful' });
+      });
     } else {
       // New user -> register with Google
       let username = usernameBase;
@@ -207,7 +213,10 @@ router.post('/auth/google', async (req, res) => {
       await logActivity(result.insertId, 'GOOGLE_REGISTER', 'users', result.insertId, `New user registered via Google: @${username}`, req.ip);
 
       req.session.flash = { success: 'Account created with Google! Welcome to K-Sync Malaysia.' };
-      return res.json({ status: 'success', redirect: '/', message: 'Account created successfully' });
+      req.session.save((saveErr) => {
+        if (saveErr) console.error('Session save error:', saveErr);
+        return res.json({ status: 'success', redirect: '/', message: 'Account created successfully' });
+      });
     }
   } catch (err) {
     console.error('Google Auth backend error:', err);

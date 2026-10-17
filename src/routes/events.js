@@ -199,7 +199,9 @@ router.get('/events/:id', async (req, res) => {
       interestCount,
       chatMessages,
       isChatLocked,
-      helpers
+      helpers,
+      currentUser: res.locals.currentUser || null,
+      activePath: '/events'
     });
   } catch (err) {
     console.error('Event details error:', err);

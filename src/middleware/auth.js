@@ -7,13 +7,17 @@ import helpers from '../utils/helpers.js';
  * and exposes currentUser, flash messages, and helper functions to all EJS templates.
  */
 export async function populateCurrentUser(req, res, next) {
-  res.locals.activePath = req.path;
-  res.locals.flash = req.session.flash || {};
-  res.locals.helpers = helpers;
-  req.session.flash = {}; // Clear flash after exposing to response
+  try {
+    res.locals.activePath = req.path || '';
+    res.locals.flash = (req.session && req.session.flash) || {};
+    res.locals.helpers = helpers;
+    res.locals.currentUser = null;
+    res.locals.unreadCount = 0;
+    if (req.session) {
+      req.session.flash = {};
+    }
 
-  if (req.session && req.session.userId) {
-    try {
+    if (req.session && req.session.userId) {
       const user = await db.getOne(`
         SELECT u.*, r.name as role_name 
         FROM users u 
@@ -33,19 +37,13 @@ export async function populateCurrentUser(req, res, next) {
         res.locals.unreadCount = unread ? unread.count : 0;
       } else {
         req.session.userId = null;
-        res.locals.currentUser = null;
-        res.locals.unreadCount = 0;
       }
-    } catch (e) {
-      console.error('Error populating user:', e.message);
-      res.locals.currentUser = null;
-      res.locals.unreadCount = 0;
     }
-  } else {
+  } catch (e) {
+    console.error('Error populating user:', e.message);
     res.locals.currentUser = null;
     res.locals.unreadCount = 0;
   }
-
   next();
 }
 

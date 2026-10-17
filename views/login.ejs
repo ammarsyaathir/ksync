@@ -10,7 +10,7 @@
             <p class="text-xs text-slate-500 mt-1 font-medium">Log in to your K-Sync Malaysia account</p>
         </div>
 
-        <form action="/login" method="POST" class="space-y-4">
+        <form id="login-form" action="/login" method="POST" class="space-y-4">
             <input type="hidden" name="redirect" value="<%= redirect || '' %>">
 
             <div>
@@ -31,7 +31,7 @@
                 </div>
             </div>
 
-            <button type="submit" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-extrabold shadow transition-all">
+            <button type="submit" id="login-submit-btn" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-extrabold shadow transition-all cursor-pointer">
                 Sign In &rarr;
             </button>
         </form>
@@ -44,24 +44,31 @@
 
         <!-- Google Authentication Button -->
         <button type="button" id="google-signin-btn" onclick="handleFirebaseGoogleSignIn('Fan')"
-                class="w-full py-2.5 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all shadow-xs flex items-center justify-center">
+                class="w-full py-2.5 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all shadow-xs flex items-center justify-center cursor-pointer">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-4 h-4 me-2.5 inline" alt="Google">
             <span>Continue with Google</span>
         </button>
 
         <!-- Quick FYP Demo Accounts Box -->
         <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center">
-                <i class="fas fa-key text-pink-500 me-1.5"></i> FYP Demo Credentials:
+            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                <span><i class="fas fa-key text-pink-500 me-1.5"></i> FYP Demo Credentials:</span>
+                <span class="text-[9px] text-emerald-600 font-extrabold uppercase">1-Click Instant Sign In</span>
             </div>
             <div class="grid grid-cols-2 gap-2 text-[11px]">
-                <button type="button" onclick="fillCreds('admin', 'admin123')" class="p-2 bg-white rounded-lg border border-slate-200 text-left hover:border-purple-300 transition-colors">
-                    <div class="font-bold text-purple-700">👑 Admin</div>
-                    <div class="text-slate-500 text-[10px]">admin / admin123</div>
+                <button type="button" onclick="fillCreds('admin', 'admin123')" class="p-2.5 bg-white rounded-xl border border-slate-200 text-left hover:border-purple-400 hover:bg-purple-50/60 transition-all cursor-pointer shadow-xs group">
+                    <div class="font-bold text-purple-700 flex items-center justify-between">
+                        <span>👑 Admin</span>
+                        <span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-100 text-purple-700 font-bold group-hover:bg-purple-200">1-Click</span>
+                    </div>
+                    <div class="text-slate-500 text-[10px] mt-0.5">admin / admin123</div>
                 </button>
-                <button type="button" onclick="fillCreds('aiman_carat', 'fan123')" class="p-2 bg-white rounded-lg border border-slate-200 text-left hover:border-pink-300 transition-colors">
-                    <div class="font-bold text-pink-700">💖 Fan</div>
-                    <div class="text-slate-500 text-[10px]">aiman_carat / fan123</div>
+                <button type="button" onclick="fillCreds('aiman_carat', 'fan123')" class="p-2.5 bg-white rounded-xl border border-slate-200 text-left hover:border-pink-400 hover:bg-pink-50/60 transition-all cursor-pointer shadow-xs group">
+                    <div class="font-bold text-pink-700 flex items-center justify-between">
+                        <span>💖 Fan</span>
+                        <span class="text-[9px] px-1.5 py-0.2 rounded bg-pink-100 text-pink-700 font-bold group-hover:bg-pink-200">1-Click</span>
+                    </div>
+                    <div class="text-slate-500 text-[10px] mt-0.5">aiman_carat / fan123</div>
                 </button>
             </div>
         </div>
@@ -75,8 +82,18 @@
 
 <script>
     function fillCreds(u, p) {
-        document.querySelector('input[name="username"]').value = u;
-        document.querySelector('input[name="password"]').value = p;
+        const uInput = document.querySelector('input[name="username"]');
+        const pInput = document.querySelector('input[name="password"]');
+        const submitBtn = document.getElementById('login-submit-btn');
+        if (uInput && pInput) {
+            uInput.value = u;
+            pInput.value = p;
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Signing in as @' + u + '...';
+            }
+            document.getElementById('login-form').submit();
+        }
     }
 </script>
 
