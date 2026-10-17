@@ -238,6 +238,118 @@ export function getEventUrl(event) {
   return slug ? `/events/${slug}` : `/events/${event.id}`;
 }
 
+/**
+ * Dispatches an in-app notification to a user
+ */
+export async function createNotification(userId, message, eventId = null, title = null) {
+  if (!userId) return;
+  try {
+    // Try inserting with event_id
+    await db.execute(
+      "INSERT INTO notifications (user_id, event_id, message, is_read, created_at) VALUES (?, ?, ?, 0, CURRENT_TIMESTAMP)",
+      [userId, eventId || null, message]
+    );
+  } catch (err) {
+    try {
+      // Fallback if schema uses title/link
+      await db.execute(
+        "INSERT INTO notifications (user_id, title, message, link, is_read, created_at) VALUES (?, ?, ?, ?, 0, CURRENT_TIMESTAMP)",
+        [userId, title || 'K-Sync Notification', message, eventId ? `/events/${eventId}` : null]
+      );
+    } catch (err2) {
+      console.error('Notification write fallback error:', err2.message);
+    }
+  }
+}
+
+/**
+ * Notifies all fans who have saved/bookmarked a specific event
+ */
+export async function notifyEventFollowers(eventId, message, title = 'Event Update') {
+  if (!eventId) return;
+  try {
+    const followers = await db.query("SELECT user_id FROM saved_events WHERE event_id = ?", [eventId]);
+    for (const f of followers) {
+      await createNotification(f.user_id, message, eventId, title);
+    }
+  } catch (err) {
+    console.error('Error notifying event followers:', err.message);
+  }
+}
+
+/**
+ * Notifies all administrators
+ */
+export async function notifyAdmins(message, eventId = null, title = 'Admin Alert') {
+  try {
+    const admins = await db.query("SELECT id FROM users WHERE UPPER(role) = 'ADMIN' OR role_id = 1");
+    for (const admin of admins) {
+      await createNotification(admin.id, message, eventId, title);
+    }
+  } catch (err) {
+    console.error('Error notifying admins:', err.message);
+  }
+}
+
+/**
+ * Evaluates upcoming saved events for a user and generates D-7, D-1, and D-Day reminders (once per day)
+ */
+export async function generateEventRemindersForUser(userId) {
+  if (!userId) return;
+  try {
+    const saved = await db.query(`
+      SELECT e.id, e.event_name, e.event_date, e.venue_name
+      FROM saved_events s
+      JOIN events e ON s.event_id = e.id
+      WHERE s.user_id = ? AND e.event_date >= CURRENT_DATE
+    `, [userId]);
+
+    if (!saved || saved.length === 0) return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    for (const ev of saved) {
+      if (!ev.event_date) continue;
+      const evDate = new Date(ev.event_date);
+      evDate.setHours(0, 0, 0, 0);
+      const diffDays = Math.round((evDate - today) / (1000 * 60 * 60 * 24));
+
+      let reminderTag = null;
+      let reminderMsg = null;
+      let reminderTitle = null;
+
+      if (diffDays === 0) {
+        reminderTag = 'D-Day';
+        reminderTitle = '🎉 D-Day is TODAY!';
+        reminderMsg = `🎉 D-Day is TODAY! '${ev.event_name}' is happening today at ${ev.venue_name || 'the venue'}. Have an amazing time!`;
+      } else if (diffDays === 1) {
+        reminderTag = 'D-1';
+        reminderTitle = '🚨 D-1 Alert';
+        reminderMsg = `🚨 D-1 Alert: Tomorrow is '${ev.event_name}'! Double-check your tickets, venue transit route, and lightstick batteries!`;
+      } else if (diffDays <= 7 && diffDays > 1) {
+        reminderTag = `D-${diffDays}`;
+        reminderTitle = `⏳ D-${diffDays} Countdown`;
+        reminderMsg = `⏳ D-${diffDays} Countdown: Only ${diffDays} days left until '${ev.event_name}' on ${formatDate(ev.event_date)}!`;
+      }
+
+      if (reminderTag && reminderMsg) {
+        const existing = await db.getOne(
+          "SELECT id FROM notifications WHERE user_id = ? AND event_id = ? AND message LIKE ? AND created_at LIKE ?",
+          [userId, ev.id, `%${reminderTag}%`, `${todayStr}%`]
+        );
+
+        if (!existing) {
+          await createNotification(userId, reminderMsg, ev.id, reminderTitle);
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Error generating event reminders:', err.message);
+  }
+}
+
 export default {
   getCalculatedEventStatus,
   getVerificationBadge,
@@ -248,6 +360,11 @@ export default {
   formatTime,
   escapeHtml,
   logActivity,
+  createNotification,
+  notifyEventFollowers,
+  notifyAdmins,
+  generateEventRemindersForUser,
   slugify,
   getEventUrl
 };
+

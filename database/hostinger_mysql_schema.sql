@@ -203,9 +203,10 @@ DROP TABLE IF EXISTS `notifications`;
 CREATE TABLE `notifications` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `user_id` INT NOT NULL,
-  `title` VARCHAR(150) NOT NULL,
+  `event_id` INT NULL,
+  `title` VARCHAR(150) NULL,
   `message` TEXT NOT NULL,
-  `link` VARCHAR(255),
+  `link` VARCHAR(255) NULL,
   `is_read` TINYINT(1) DEFAULT 0,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE

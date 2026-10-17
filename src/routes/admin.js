@@ -2,7 +2,7 @@
 import express from 'express';
 import db from '../../config/database.js';
 import { requireAdmin } from '../middleware/auth.js';
-import { logActivity } from '../utils/helpers.js';
+import { logActivity, createNotification, notifyEventFollowers } from '../utils/helpers.js';
 import helpers from '../utils/helpers.js';
 import { sendEventApprovalEmail, sendEventRejectionEmail } from '../utils/mailer.js';
 
@@ -116,6 +116,25 @@ router.post('/admin/verifications/approve-event', async (req, res) => {
         eventId: event_id,
         trackingCode: ev.tracking_code
       }).catch(e => console.error('[Admin Verification] Approval email send error:', e.message));
+
+      // In-app notification if submitter is a registered user
+      try {
+        let submitterUserId = ev.organizer_id;
+        if (!submitterUserId) {
+          const userObj = await db.getOne("SELECT id FROM users WHERE LOWER(email) = LOWER(?)", [ev.submitter_email.trim()]);
+          if (userObj) submitterUserId = userObj.id;
+        }
+        if (submitterUserId) {
+          await createNotification(
+            submitterUserId,
+            `🎉 Congratulations! Your event submission '${ev.event_name}' was verified & published live!`,
+            event_id,
+            'Event Verified & Published'
+          );
+        }
+      } catch (notifErr) {
+        console.error('Submitter approval notification error:', notifErr.message);
+      }
     }
 
     req.session.flash = { success: `Event #${event_id} verified & published live [Trust: ${assignedTrust}]!` };
@@ -158,6 +177,25 @@ router.post('/admin/verifications/reject-event', async (req, res) => {
         trackingCode: ev.tracking_code,
         reason: reason.trim()
       }).catch(e => console.error('[Admin Verification] Rejection email send error:', e.message));
+
+      // In-app notification if submitter is a registered user
+      try {
+        let submitterUserId = ev.organizer_id;
+        if (!submitterUserId) {
+          const userObj = await db.getOne("SELECT id FROM users WHERE LOWER(email) = LOWER(?)", [ev.submitter_email.trim()]);
+          if (userObj) submitterUserId = userObj.id;
+        }
+        if (submitterUserId) {
+          await createNotification(
+            submitterUserId,
+            `⚠️ Action Required: Your event '${ev.event_name}' was not approved: ${reason.trim()} (Tracking Code: ${ev.tracking_code}). You can update your submission and resubmit.`,
+            event_id,
+            'Submission Action Required'
+          );
+        }
+      } catch (notifErr) {
+        console.error('Submitter rejection notification error:', notifErr.message);
+      }
     }
 
     req.session.flash = { warning: `Event #${event_id} rejected. Reason recorded for submitter.` };
@@ -236,8 +274,19 @@ router.post('/admin/events/update-status', async (req, res) => {
   const adminId = req.session.userId;
 
   try {
+    const ev = await db.getOne("SELECT event_name FROM events WHERE id = ?", [event_id]);
     await db.execute("UPDATE events SET event_status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?", [event_status, event_id]);
     await logActivity(adminId, 'UPDATE_EVENT_STATUS', 'events', event_id, `Updated status of event #${event_id} to ${event_status}`, req.ip);
+
+    // Notify all fans who bookmarked/saved this event
+    if (ev) {
+      notifyEventFollowers(
+        event_id,
+        `📢 Event Status Update: '${ev.event_name}' is now marked as ${event_status}.`,
+        'Concert Status Update'
+      ).catch(e => console.error('Follower status notification error:', e.message));
+    }
+
     req.session.flash = { success: 'Event status updated.' };
     res.redirect('/admin/events');
   } catch (err) {
@@ -467,18 +516,47 @@ router.post('/admin/users/delete', async (req, res) => {
   }
 });
 
-// GET /admin/logs
+// GET /admin/logs - Filterable System Audit Trail Logs
 router.get('/admin/logs', async (req, res) => {
+  const { action, q } = req.query;
   try {
-    const logs = await db.query(`
+    let sql = `
       SELECT l.*, u.username 
       FROM activity_logs l 
       LEFT JOIN users u ON l.user_id = u.id 
-      ORDER BY l.created_at DESC 
-      LIMIT 100
-    `);
-    res.render('admin/logs', { logs, helpers });
+    `;
+    const params = [];
+    const conditions = [];
+
+    if (action && action.trim()) {
+      conditions.push("l.action = ?");
+      params.push(action.trim());
+    }
+
+    if (q && q.trim()) {
+      conditions.push("(l.description LIKE ? OR u.username LIKE ? OR l.ip_address LIKE ?)");
+      const term = `%${q.trim()}%`;
+      params.push(term, term, term);
+    }
+
+    if (conditions.length > 0) {
+      sql += " WHERE " + conditions.join(" AND ");
+    }
+
+    sql += " ORDER BY l.created_at DESC LIMIT 150";
+
+    const logs = await db.query(sql, params);
+    const actionTypes = await db.query("SELECT DISTINCT action FROM activity_logs ORDER BY action ASC");
+
+    res.render('admin/logs', { 
+      logs, 
+      helpers,
+      selectedAction: action || '',
+      searchQuery: q || '',
+      actionTypes: actionTypes.map(a => a.action)
+    });
   } catch (err) {
+    console.error('Admin logs error:', err);
     res.status(500).send('Error loading audit logs');
   }
 });

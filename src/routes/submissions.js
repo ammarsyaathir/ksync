@@ -3,7 +3,7 @@ import express from 'express';
 import crypto from 'crypto';
 import db from '../../config/database.js';
 import upload from '../middleware/upload.js';
-import { logActivity } from '../utils/helpers.js';
+import { logActivity, notifyAdmins } from '../utils/helpers.js';
 import helpers from '../utils/helpers.js';
 import { sendSubmissionConfirmationEmail } from '../utils/mailer.js';
 
@@ -184,6 +184,13 @@ router.post('/submit-event', upload.fields([{ name: 'poster_files', maxCount: 4 
         trackingCode: tracking_code
       }).catch(e => console.error('[Submission Route] Confirmation email delivery error:', e.message));
     }
+
+    // In-app notification to all Admins about pending verification
+    notifyAdmins(
+      `📋 New Submission: '${event_name.trim()}' by ${submitter_name.trim()} (${submitter_email || 'No email'}) is waiting for verification.`,
+      result.insertId,
+      'New Event Submission'
+    ).catch(e => console.error('Admin notification error:', e.message));
 
     res.redirect(`/submission-success?code=${encodeURIComponent(tracking_code)}`);
   } catch (err) {
