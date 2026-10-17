@@ -6,15 +6,13 @@
 // (email/uid) is used. No Firebase service account is required for verification.
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 
-const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'k-sync-malaysia';
-
 // Google's public keys for Firebase ID tokens.
 const GOOGLE_JWKS = createRemoteJWKSet(
   new URL('https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com')
 );
 
 export function isGoogleAuthConfigured() {
-  return Boolean(FIREBASE_PROJECT_ID);
+  return true;
 }
 
 /**
@@ -28,10 +26,21 @@ export async function verifyFirebaseIdToken(idToken) {
     throw new Error('Missing ID token');
   }
 
-  const { payload } = await jwtVerify(idToken, GOOGLE_JWKS, {
-    issuer: `https://securetoken.google.com/${FIREBASE_PROJECT_ID}`,
-    audience: FIREBASE_PROJECT_ID
-  });
+  // Cryptographically verify Google signature
+  const { payload } = await jwtVerify(idToken, GOOGLE_JWKS);
+
+  // Allow standard K-Sync project variants: 'k-sync-malaysia' or 'ksync-malaysia'
+  const allowedProjects = ['k-sync-malaysia', 'ksync-malaysia'];
+  if (process.env.FIREBASE_PROJECT_ID && !allowedProjects.includes(process.env.FIREBASE_PROJECT_ID)) {
+    allowedProjects.push(process.env.FIREBASE_PROJECT_ID);
+  }
+
+  const isValidAudience = allowedProjects.includes(payload.aud);
+  const isValidIssuer = allowedProjects.some(proj => payload.iss === `https://securetoken.google.com/${proj}`);
+
+  if (!isValidAudience || !isValidIssuer) {
+    throw new Error(`Token audience or issuer mismatch. Expected one of [${allowedProjects.join(', ')}], got aud=${payload.aud}, iss=${payload.iss}`);
+  }
 
   if (!payload.sub || typeof payload.sub !== 'string') {
     throw new Error('Token is missing a valid subject');

@@ -134,7 +134,7 @@ router.post('/auth/google', async (req, res) => {
     claims = await verifyFirebaseIdToken(idToken);
   } catch (err) {
     console.error('Google ID token verification failed:', err.message);
-    return res.status(401).json({ status: 'error', message: 'Google authentication failed. Please try again.' });
+    return res.status(401).json({ status: 'error', message: 'Google authentication failed: ' + err.message });
   }
 
   const email = (claims.email || '').trim();
