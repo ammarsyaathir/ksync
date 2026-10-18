@@ -1,10 +1,12 @@
 <%- include('../partials/header', { title: 'Admin Dashboard | K-Sync Malaysia' }) %>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-    <!-- Header with Breadcrumbs & Action -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+    <%- include('../partials/flash') %>
+
+    <!-- Standard Header with Breadcrumbs & Action -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
         <div>
-            <div class="flex items-center space-x-2 mb-2">
+            <div class="flex items-center space-x-2 mb-2 flex-wrap gap-y-1">
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-white shadow-sm border border-slate-700">
                     <i class="fas fa-shield-halved me-1.5 text-purple-400"></i> Admin Portal
                 </span>
@@ -15,116 +17,116 @@
             <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">System Administrator Dashboard</h1>
             <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Platform overview, verification queue, content moderation & security audit trail.</p>
         </div>
-        <div class="flex items-center space-x-2 self-start sm:self-auto shrink-0">
+        <div class="flex items-center space-x-2 self-start md:self-auto shrink-0 flex-wrap gap-2">
             <% if (pendingSubmissionsCount > 0) { %>
-                <a href="/admin/verifications" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold text-xs shadow-md shadow-amber-500/20 flex items-center transition-all">
+                <a href="/admin/verifications" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs shadow-md shadow-amber-500/20 flex items-center transition-all cursor-pointer">
                     <i class="fas fa-bell me-2 animate-bounce"></i> <%= pendingSubmissionsCount %> Pending Review
                 </a>
             <% } %>
-            <a href="/submit-event" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all flex items-center">
+            <a href="/submit-event" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all flex items-center cursor-pointer">
                 <i class="fas fa-plus me-1.5 text-pink-400"></i> New Event
             </a>
         </div>
     </div>
 
     <!-- Admin Nav -->
-    <%- include('./admin-nav', { activePath: '/admin', pendingCount: pendingSubmissionsCount }) %>
+    <%- include('./admin-nav', { activePath: '/admin' }) %>
 
-    <!-- Metric Stat Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div class="p-5 rounded-3xl bg-white border border-pink-200/80 shadow-xs relative overflow-hidden group hover:shadow-md transition-all">
-            <div class="absolute -right-3 -top-3 w-20 h-20 bg-pink-500/10 rounded-full blur-xl group-hover:bg-pink-500/20 transition-all"></div>
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-bold text-pink-700 uppercase tracking-wider">Total Events</span>
-                <div class="w-10 h-10 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center text-sm font-black border border-pink-100">
+    <!-- Metric Stat Cards (2 columns on mobile, 4 on desktop) -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
+        <div class="p-4 sm:p-5 rounded-3xl bg-white border border-pink-200/80 shadow-xs relative overflow-hidden group hover:shadow-md transition-all">
+            <div class="absolute -right-3 -top-3 w-16 sm:w-20 h-16 sm:h-20 bg-pink-500/10 rounded-full blur-xl group-hover:bg-pink-500/20 transition-all"></div>
+            <div class="flex items-center justify-between mb-2 sm:mb-3">
+                <span class="text-[10px] sm:text-xs font-bold text-pink-700 uppercase tracking-wider">Total Events</span>
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center text-xs sm:text-sm font-black border border-pink-100">
                     <i class="fas fa-calendar-star"></i>
                 </div>
             </div>
-            <div class="text-3xl font-black text-slate-900"><%= totalEvents %></div>
-            <div class="text-[11px] text-slate-500 font-medium mt-1">Concerts & Fan Gatherings</div>
+            <div class="text-2xl sm:text-3xl font-black text-slate-900"><%= totalEvents %></div>
+            <div class="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-1 truncate">Concerts & Fan Meetings</div>
         </div>
 
-        <div class="p-5 rounded-3xl bg-white border border-amber-200/80 shadow-xs relative overflow-hidden group hover:shadow-md transition-all">
-            <div class="absolute -right-3 -top-3 w-20 h-20 bg-amber-500/10 rounded-full blur-xl group-hover:bg-amber-500/20 transition-all"></div>
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-bold text-amber-700 uppercase tracking-wider">Pending Review</span>
-                <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-sm font-black border border-amber-100">
+        <div class="p-4 sm:p-5 rounded-3xl bg-white border border-amber-200/80 shadow-xs relative overflow-hidden group hover:shadow-md transition-all">
+            <div class="absolute -right-3 -top-3 w-16 sm:w-20 h-16 sm:h-20 bg-amber-500/10 rounded-full blur-xl group-hover:bg-amber-500/20 transition-all"></div>
+            <div class="flex items-center justify-between mb-2 sm:mb-3">
+                <span class="text-[10px] sm:text-xs font-bold text-amber-700 uppercase tracking-wider">Pending Review</span>
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xs sm:text-sm font-black border border-amber-100">
                     <i class="fas fa-clock"></i>
                 </div>
             </div>
-            <div class="text-3xl font-black text-slate-900"><%= pendingSubmissionsCount %></div>
-            <div class="text-[11px] text-slate-500 font-medium mt-1">Awaiting Model 2 approval</div>
+            <div class="text-2xl sm:text-3xl font-black text-slate-900"><%= pendingSubmissionsCount %></div>
+            <div class="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-1 truncate">Awaiting approval</div>
         </div>
 
-        <div class="p-5 rounded-3xl bg-white border border-purple-200/80 shadow-xs relative overflow-hidden group hover:shadow-md transition-all">
-            <div class="absolute -right-3 -top-3 w-20 h-20 bg-purple-500/10 rounded-full blur-xl group-hover:bg-purple-500/20 transition-all"></div>
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-bold text-purple-700 uppercase tracking-wider">Registered Users</span>
-                <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-sm font-black border border-purple-100">
+        <div class="p-4 sm:p-5 rounded-3xl bg-white border border-purple-200/80 shadow-xs relative overflow-hidden group hover:shadow-md transition-all">
+            <div class="absolute -right-3 -top-3 w-16 sm:w-20 h-16 sm:h-20 bg-purple-500/10 rounded-full blur-xl group-hover:bg-purple-500/20 transition-all"></div>
+            <div class="flex items-center justify-between mb-2 sm:mb-3">
+                <span class="text-[10px] sm:text-xs font-bold text-purple-700 uppercase tracking-wider">Members</span>
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xs sm:text-sm font-black border border-purple-100">
                     <i class="fas fa-users"></i>
                 </div>
             </div>
-            <div class="text-3xl font-black text-slate-900"><%= totalUsers %></div>
-            <div class="text-[11px] text-slate-500 font-medium mt-1">Fans & Organizers</div>
+            <div class="text-2xl sm:text-3xl font-black text-slate-900"><%= totalUsers %></div>
+            <div class="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-1 truncate">Fans & Organizers</div>
         </div>
 
-        <div class="p-5 rounded-3xl bg-white border border-emerald-200/80 shadow-xs relative overflow-hidden group hover:shadow-md transition-all">
-            <div class="absolute -right-3 -top-3 w-20 h-20 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition-all"></div>
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-bold text-emerald-700 uppercase tracking-wider">Verified Fanclubs</span>
-                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm font-black border border-emerald-100">
+        <div class="p-4 sm:p-5 rounded-3xl bg-white border border-emerald-200/80 shadow-xs relative overflow-hidden group hover:shadow-md transition-all">
+            <div class="absolute -right-3 -top-3 w-16 sm:w-20 h-16 sm:h-20 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition-all"></div>
+            <div class="flex items-center justify-between mb-2 sm:mb-3">
+                <span class="text-[10px] sm:text-xs font-bold text-emerald-700 uppercase tracking-wider">Verified Bases</span>
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs sm:text-sm font-black border border-emerald-100">
                     <i class="fas fa-certificate"></i>
                 </div>
             </div>
-            <div class="text-3xl font-black text-slate-900"><%= verifiedFanclubs %></div>
-            <div class="text-[11px] text-slate-500 font-medium mt-1">Authenticated Malaysian bases</div>
+            <div class="text-2xl sm:text-3xl font-black text-slate-900"><%= verifiedFanclubs %></div>
+            <div class="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-1 truncate">Verified Fanclubs</div>
         </div>
     </div>
 
     <!-- Quick Administrative Shortcuts Grid -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
-        <a href="/admin/verifications" class="p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-pink-300 hover:shadow-sm transition-all text-center group">
-            <div class="w-9 h-9 mx-auto rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center text-xs mb-2 group-hover:scale-110 transition-transform">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3 mb-8">
+        <a href="/admin/verifications" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-pink-300 hover:shadow-sm transition-all text-center group cursor-pointer">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
                 <i class="fas fa-check-double"></i>
             </div>
-            <div class="text-xs font-bold text-slate-800">Verify Submissions</div>
+            <div class="text-xs font-bold text-slate-800">Verify Queue</div>
         </a>
-        <a href="/admin/events" class="p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-purple-300 hover:shadow-sm transition-all text-center group">
-            <div class="w-9 h-9 mx-auto rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xs mb-2 group-hover:scale-110 transition-transform">
+        <a href="/admin/events" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-purple-300 hover:shadow-sm transition-all text-center group cursor-pointer">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
                 <i class="fas fa-calendar-days"></i>
             </div>
-            <div class="text-xs font-bold text-slate-800">Manage Events</div>
+            <div class="text-xs font-bold text-slate-800">All Events</div>
         </a>
-        <a href="/admin/categories" class="p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-sm transition-all text-center group">
-            <div class="w-9 h-9 mx-auto rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs mb-2 group-hover:scale-110 transition-transform">
+        <a href="/admin/categories" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-sm transition-all text-center group cursor-pointer">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
                 <i class="fas fa-layer-group"></i>
             </div>
             <div class="text-xs font-bold text-slate-800">Categories</div>
         </a>
-        <a href="/admin/artists" class="p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-pink-300 hover:shadow-sm transition-all text-center group">
-            <div class="w-9 h-9 mx-auto rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center text-xs mb-2 group-hover:scale-110 transition-transform">
+        <a href="/admin/artists" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-pink-300 hover:shadow-sm transition-all text-center group cursor-pointer">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
                 <i class="fas fa-microphone-lines"></i>
             </div>
             <div class="text-xs font-bold text-slate-800">Artists</div>
         </a>
-        <a href="/admin/venues" class="p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-emerald-300 hover:shadow-sm transition-all text-center group">
-            <div class="w-9 h-9 mx-auto rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs mb-2 group-hover:scale-110 transition-transform">
+        <a href="/admin/venues" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-emerald-300 hover:shadow-sm transition-all text-center group cursor-pointer">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
                 <i class="fas fa-location-dot"></i>
             </div>
             <div class="text-xs font-bold text-slate-800">Venues & Transit</div>
         </a>
-        <a href="/admin/logs" class="p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-amber-300 hover:shadow-sm transition-all text-center group">
-            <div class="w-9 h-9 mx-auto rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xs mb-2 group-hover:scale-110 transition-transform">
+        <a href="/admin/logs" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-amber-300 hover:shadow-sm transition-all text-center group cursor-pointer">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
                 <i class="fas fa-clock-rotate-left"></i>
             </div>
-            <div class="text-xs font-bold text-slate-800">Security Logs</div>
+            <div class="text-xs font-bold text-slate-800">Audit Logs</div>
         </a>
     </div>
 
     <!-- Two-Column Review & Logs Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
         <!-- Pending Submissions Preview -->
-        <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
+        <div class="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 class="text-sm font-bold text-slate-900 flex items-center">
                     <i class="fas fa-clock text-amber-500 me-2"></i> Submissions Awaiting Approval
@@ -132,7 +134,7 @@
                 <a href="/admin/verifications" class="text-xs font-bold text-pink-600 hover:text-pink-700 hover:underline">View All &rarr;</a>
             </div>
 
-            <% if (pendingList.length === 0) { %>
+            <% if (!pendingList || pendingList.length === 0) { %>
                 <div class="text-center py-10 text-slate-400 text-xs">
                     <div class="w-12 h-12 mx-auto rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center text-xl mb-3">
                         <i class="fas fa-circle-check"></i>
@@ -145,9 +147,9 @@
                     <% pendingList.forEach(function(ev) { %>
                         <div class="p-3.5 rounded-2xl bg-slate-50/80 hover:bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors">
                             <div class="min-w-0 flex-1">
-                                <div class="flex items-center space-x-2 mb-1">
+                                <div class="flex items-center space-x-2 mb-1 flex-wrap gap-y-1">
                                     <span class="text-[10px] font-mono text-pink-600 font-bold bg-pink-50 px-2 py-0.5 rounded-md border border-pink-100">
-                                        <%= ev.tracking_code || 'NO-REF' %>
+                                        <%= ev.tracking_code || 'REF#' + ev.id %>
                                     </span>
                                     <span class="text-[11px] text-slate-500 font-medium">
                                         <%= helpers.formatDate(ev.event_date) %>
@@ -155,10 +157,10 @@
                                 </div>
                                 <div class="text-xs sm:text-sm font-bold text-slate-900 truncate"><%= ev.event_name %></div>
                                 <div class="text-[11px] text-slate-500 mt-0.5 truncate">
-                                    By <strong class="text-slate-700"><%= ev.submitter_name %></strong> &bull; <%= ev.venue_name || ev.city %>
+                                    By <strong class="text-slate-700"><%= ev.submitter_name %></strong> &bull; <%= ev.venue_name || ev.city || 'Malaysia' %>
                                 </div>
                             </div>
-                            <a href="/admin/verifications" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold shadow-xs shrink-0 text-center transition-all">
+                            <a href="/admin/verifications" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold shadow-xs shrink-0 text-center transition-all cursor-pointer">
                                 Review &rarr;
                             </a>
                         </div>
@@ -168,7 +170,7 @@
         </div>
 
         <!-- Recent Audit Trail Logs -->
-        <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
+        <div class="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 class="text-sm font-bold text-slate-900 flex items-center">
                     <i class="fas fa-list-check text-purple-600 me-2"></i> Recent Activity Audit Logs
@@ -177,7 +179,7 @@
             </div>
 
             <div class="space-y-2.5">
-                <% if (recentLogs.length === 0) { %>
+                <% if (!recentLogs || recentLogs.length === 0) { %>
                     <div class="text-center py-10 text-slate-400 text-xs">
                         <i class="fas fa-clipboard-list text-2xl text-slate-300 mb-2"></i>
                         <div>No activity logs recorded yet.</div>
@@ -187,7 +189,7 @@
                         <div class="p-3 rounded-2xl bg-slate-50/80 border border-slate-100 flex items-start justify-between text-xs hover:bg-slate-50 transition-colors">
                             <div class="min-w-0 pr-2">
                                 <div class="flex items-center space-x-1.5 flex-wrap gap-y-1">
-                                    <span class="font-extrabold text-[11px] px-2 py-0.5 rounded-md bg-slate-200 text-slate-800"><%= l.action %></span>
+                                    <span class="font-extrabold text-[10px] px-2 py-0.5 rounded-md bg-slate-200 text-slate-800"><%= l.action %></span>
                                     <span class="text-slate-700 text-[11px] font-medium truncate"><%= l.description %></span>
                                 </div>
                                 <div class="text-[10px] text-slate-400 mt-1 flex items-center space-x-1.5">

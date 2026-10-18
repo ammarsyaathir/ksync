@@ -1,18 +1,27 @@
 <%- include('../partials/header', { title: 'Manage Users | K-Sync Admin' }) %>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-    <!-- Header -->
-    <div class="mb-6">
-        <div class="flex items-center space-x-2 mb-2">
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-white shadow-sm border border-slate-700">
-                <i class="fas fa-users-gear me-1.5 text-indigo-400"></i> Member Governance
-            </span>
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
-                <%= users.length %> Accounts Total
-            </span>
+    <%- include('../partials/flash') %>
+
+    <!-- Standard Header with Breadcrumbs & Action -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+        <div>
+            <div class="flex items-center space-x-2 mb-2 flex-wrap gap-y-1">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-white shadow-sm border border-slate-700">
+                    <i class="fas fa-users-gear me-1.5 text-indigo-400"></i> Member Governance
+                </span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                    <%= users.length %> Accounts Total
+                </span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">System Users & Access Control</h1>
+            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Manage member accounts, role privileges (Admin, Organizer, Fan), locations, and active account statuses.</p>
         </div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">System Users & Access Control</h1>
-        <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Manage member accounts, role privileges (Admin, Organizer, Fan), locations, and active account statuses.</p>
+        <div class="flex items-center space-x-2 self-start md:self-auto shrink-0">
+            <a href="/admin/verifications" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center cursor-pointer">
+                <i class="fas fa-certificate me-1.5 text-pink-600"></i> Fanclub Badges
+            </a>
+        </div>
     </div>
 
     <!-- Admin Nav -->
@@ -21,21 +30,34 @@
     <!-- Filter & Table Card -->
     <div class="bg-white rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-200/80 shadow-xs space-y-4">
         <!-- Search & Filter Bar -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-100">
-            <div class="relative flex-1 max-w-md">
-                <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                <input type="text" id="userSearchInput" onkeyup="filterUsersTable()" placeholder="Search by name, @username, email, or role..."
-                       class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-1 max-w-2xl">
+                <div class="relative flex-1">
+                    <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="userSearchInput" onkeyup="filterUsersTable()" placeholder="Search by name, @username, email, or location..."
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                </div>
+
+                <div class="w-full sm:w-44 shrink-0">
+                    <select id="userRoleFilter" onchange="filterUsersTable()" 
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 cursor-pointer">
+                        <option value="">All Roles</option>
+                        <option value="ADMIN">Admins</option>
+                        <option value="ORGANIZER">Organizers</option>
+                        <option value="FAN">Fans</option>
+                    </select>
+                </div>
             </div>
-            <div class="text-[11px] text-slate-500 font-medium">
-                Showing <strong id="visibleUserCount" class="text-slate-800"><%= users.length %></strong> user(s)
+
+            <div class="text-[11px] text-slate-500 font-medium self-end sm:self-auto">
+                Showing <strong id="visibleUserCount" class="text-slate-900"><%= users.length %></strong> of <%= users.length %> users
             </div>
         </div>
 
         <!-- Responsive Table Container -->
         <div class="overflow-x-auto rounded-2xl border border-slate-100">
-            <table class="w-full text-left text-xs text-slate-700 min-w-[680px]" id="usersTable">
-                <thead class="bg-slate-50/80 text-slate-500 uppercase font-bold text-[10px] border-b border-slate-200">
+            <table class="w-full text-left text-xs text-slate-700 min-w-[700px]" id="usersTable">
+                <thead class="bg-slate-50/80 text-slate-500 uppercase font-bold text-[10px] tracking-wider border-b border-slate-200">
                     <tr>
                         <th class="p-3.5">User Identity</th>
                         <th class="p-3.5">System Role</th>
@@ -46,11 +68,22 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
-                    <% users.forEach(function(u) { %>
-                        <tr class="hover:bg-slate-50/60 transition-colors user-row">
+                    <% if (users.length === 0) { %>
+                        <tr>
+                            <td colspan="6" class="p-10 text-center text-slate-400">
+                                No registered user accounts found.
+                            </td>
+                        </tr>
+                    <% } %>
+                    <% users.forEach(function(u) { 
+                        const displayRole = (u.role || u.role_name || 'FAN').toUpperCase();
+                    %>
+                        <tr class="hover:bg-slate-50/60 transition-colors user-row"
+                            data-text="<%= ((u.full_name || '') + ' ' + (u.username || '') + ' ' + (u.email || '') + ' ' + (u.location || '')).toLowerCase() %>"
+                            data-role="<%= displayRole %>">
                             <td class="p-3.5">
                                 <div class="flex items-center space-x-3">
-                                    <div class="w-9 h-9 rounded-full bg-slate-200 shrink-0 overflow-hidden border border-slate-300 flex items-center justify-center font-bold text-slate-600 text-xs">
+                                    <div class="w-9 h-9 rounded-full bg-slate-200 shrink-0 overflow-hidden border border-slate-300 flex items-center justify-center font-bold text-slate-600 text-xs shadow-xs">
                                         <% if (u.profile_image) { %>
                                             <img src="<%= u.profile_image %>" alt="" class="w-full h-full object-cover" onerror="this.style.display='none'">
                                         <% } else { %>
@@ -58,13 +91,12 @@
                                         <% } %>
                                     </div>
                                     <div class="min-w-0">
-                                        <div class="font-bold text-slate-900 truncate"><%= u.full_name %></div>
-                                        <div class="text-[11px] text-slate-400 truncate">@<%= u.username %> &bull; <%= u.email %></div>
+                                        <div class="font-bold text-slate-900 truncate max-w-[180px]"><%= u.full_name || u.username %></div>
+                                        <div class="text-[11px] text-slate-400 truncate max-w-[180px]">@<%= u.username %> &bull; <%= u.email %></div>
                                     </div>
                                 </div>
                             </td>
                             <td class="p-3.5">
-                                <% const displayRole = (u.role || u.role_name || 'FAN').toUpperCase(); %>
                                 <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase inline-flex items-center
                                     <%= displayRole === 'ADMIN' ? 'bg-purple-100 text-purple-800 border border-purple-200' :
                                        (displayRole === 'ORGANIZER' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
@@ -90,12 +122,12 @@
                                 <% if (typeof currentUser === 'undefined' || !currentUser || u.id !== currentUser.id) { %>
                                     <form action="/admin/users/delete" method="POST" onsubmit="return confirm('Permanently delete account for @<%= u.username %>?')" class="inline">
                                         <input type="hidden" name="id" value="<%= u.id %>">
-                                        <button type="submit" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Delete User">
+                                        <button type="submit" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer" title="Delete User">
                                             <i class="fas fa-trash-can text-xs"></i>
                                         </button>
                                     </form>
                                 <% } else { %>
-                                    <span class="text-[10px] text-slate-400 italic">Current User</span>
+                                    <span class="text-[10px] text-slate-400 italic px-2 py-1 rounded bg-slate-50 border border-slate-200/60">Current Admin</span>
                                 <% } %>
                             </td>
                         </tr>
@@ -108,14 +140,19 @@
 
 <script>
 function filterUsersTable() {
-    const input = document.getElementById("userSearchInput");
-    const filter = input.value.toLowerCase();
+    const q = (document.getElementById("userSearchInput").value || '').toLowerCase().trim();
+    const role = (document.getElementById("userRoleFilter").value || '').toUpperCase().trim();
     const rows = document.querySelectorAll(".user-row");
     let count = 0;
 
     rows.forEach(row => {
-        const text = row.innerText.toLowerCase();
-        if (text.includes(filter)) {
+        const text = row.getAttribute('data-text') || '';
+        const rowRole = row.getAttribute('data-role') || '';
+
+        const matchesText = !q || text.includes(q);
+        const matchesRole = !role || rowRole === role;
+
+        if (matchesText && matchesRole) {
             row.style.display = "";
             count++;
         } else {

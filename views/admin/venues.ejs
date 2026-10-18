@@ -1,18 +1,27 @@
 <%- include('../partials/header', { title: 'Manage Venues | K-Sync Admin' }) %>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-    <!-- Header -->
-    <div class="mb-6">
-        <div class="flex items-center space-x-2 mb-2">
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-white shadow-sm border border-slate-700">
-                <i class="fas fa-location-dot me-1.5 text-emerald-400"></i> Venues & Transit
-            </span>
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                <%= venues.length %> Venues Recorded
-            </span>
+    <%- include('../partials/flash') %>
+
+    <!-- Standard Header with Breadcrumbs & Action -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+        <div>
+            <div class="flex items-center space-x-2 mb-2 flex-wrap gap-y-1">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-white shadow-sm border border-slate-700">
+                    <i class="fas fa-location-dot me-1.5 text-emerald-400"></i> Venues & Transit
+                </span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <%= venues.length %> Venues Recorded
+                </span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Malaysian Concert & Event Venues</h1>
+            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Manage preset concert arenas, stadiums, and public transit navigation (LRT, MRT, Monorail, KTM).</p>
         </div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Malaysian Concert & Event Venues</h1>
-        <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Manage preset concert arenas, stadiums, and public transit navigation (LRT, MRT, Monorail, KTM).</p>
+        <div class="flex items-center space-x-2 self-start md:self-auto shrink-0">
+            <a href="/submit-event" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all flex items-center cursor-pointer">
+                <i class="fas fa-plus me-1.5 text-pink-400"></i> Add Event at Venue
+            </a>
+        </div>
     </div>
 
     <!-- Admin Nav -->
@@ -25,7 +34,7 @@
                 <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs font-bold">
                     <i class="fas fa-circle-info"></i>
                 </div>
-                <h3 class="text-sm font-bold text-slate-900">Embedded Venue Model</h3>
+                <h3 class="text-sm font-bold text-slate-900">Embedded Venue Architecture</h3>
             </div>
             
             <p class="text-xs text-slate-500 leading-relaxed font-medium">
@@ -40,11 +49,11 @@
                     <li><strong class="text-slate-800">Axiata Arena:</strong> LRT Sri Petaling Line</li>
                     <li><strong class="text-slate-800">Zepp KL:</strong> Hang Tuah LRT & Monorail</li>
                     <li><strong class="text-slate-800">Mega Star Arena:</strong> MRT Cochrane / Maluri</li>
-                    <li><strong class="text-slate-800">Bukit Jalil Stadium:</strong> LRT Bukit Jalil</li>
+                    <li><strong class="text-slate-800">Bukit Jalil Stadium:</strong> LRT Bukit Jalil Gate A</li>
                 </ul>
             </div>
 
-            <a href="/admin/events/create" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer">
+            <a href="/submit-event" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center space-x-1.5 cursor-pointer">
                 <i class="fas fa-calendar-plus text-emerald-400"></i>
                 <span>Add Event at a Venue</span>
             </a>
@@ -52,12 +61,18 @@
 
         <!-- Venues List Directory (Derived from Events) -->
         <div class="lg:col-span-2 bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
                 <h3 class="text-sm font-bold text-slate-900 flex items-center">
                     <i class="fas fa-map-location-dot text-emerald-500 me-2"></i> Active Venues Directory (<%= venues.length %>)
                 </h3>
+                <div class="relative w-full sm:w-60">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="venueSearchInput" onkeyup="filterVenues()" placeholder="Search venue, city, or state..."
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-300">
+                </div>
             </div>
-            <div class="space-y-3">
+
+            <div class="space-y-3" id="venuesList">
                 <% if (venues.length === 0) { %>
                     <div class="text-center py-10 text-slate-400 text-xs">
                         <i class="fas fa-map-pin text-2xl text-slate-300 mb-2"></i>
@@ -65,7 +80,8 @@
                     </div>
                 <% } else { %>
                     <% venues.forEach(function(v) { %>
-                        <div class="p-4 rounded-2xl bg-slate-50/80 hover:bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-start justify-between gap-3 transition-colors">
+                        <div class="p-4 rounded-2xl bg-slate-50/80 hover:bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-start justify-between gap-3 transition-colors venue-card"
+                             data-text="<%= (v.name + ' ' + (v.city || '') + ' ' + (v.state || '') + ' ' + (v.address || '')).toLowerCase() %>">
                             <div class="space-y-1 min-w-0 flex-1">
                                 <div class="flex items-center space-x-2 flex-wrap gap-y-1">
                                     <h4 class="font-bold text-sm text-slate-900"><%= v.name %></h4>
@@ -93,5 +109,16 @@
         </div>
     </div>
 </div>
+
+<script>
+function filterVenues() {
+    const q = (document.getElementById('venueSearchInput').value || '').toLowerCase().trim();
+    const cards = document.querySelectorAll('.venue-card');
+    cards.forEach(card => {
+        const text = card.getAttribute('data-text') || '';
+        card.style.display = (!q || text.includes(q)) ? '' : 'none';
+    });
+}
+</script>
 
 <%- include('../partials/footer') %>

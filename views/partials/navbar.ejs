@@ -1,7 +1,7 @@
 <%
     const user = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : null;
     const path = (typeof activePath !== 'undefined' && activePath) ? activePath : '';
-    const userRole = (user && user.role_name) ? String(user.role_name).toLowerCase() : '';
+    const userRole = (user && (user.role || user.role_name)) ? String(user.role || user.role_name).toLowerCase() : '';
     const userInit = (user && user.full_name) ? user.full_name.trim().charAt(0).toUpperCase() : 'U';
     const userFirstName = (user && user.full_name) ? user.full_name.trim().split(' ')[0] : 'User';
     const unread = (typeof unreadCount !== 'undefined') ? Number(unreadCount) : 0;

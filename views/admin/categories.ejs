@@ -1,18 +1,27 @@
 <%- include('../partials/header', { title: 'Manage Categories | K-Sync Admin' }) %>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-    <!-- Header -->
-    <div class="mb-6">
-        <div class="flex items-center space-x-2 mb-2">
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-white shadow-sm border border-slate-700">
-                <i class="fas fa-layer-group me-1.5 text-pink-400"></i> Taxonomy Master
-            </span>
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-pink-50 text-pink-700 border border-pink-200">
-                <%= categories.length %> Active Types
-            </span>
+    <%- include('../partials/flash') %>
+
+    <!-- Standard Header with Breadcrumbs & Action -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+        <div>
+            <div class="flex items-center space-x-2 mb-2 flex-wrap gap-y-1">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-white shadow-sm border border-slate-700">
+                    <i class="fas fa-layer-group me-1.5 text-pink-400"></i> Taxonomy Master
+                </span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-pink-50 text-pink-700 border border-pink-200">
+                    <%= categories.length %> Active Types
+                </span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">K-Pop Event Categories</h1>
+            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Manage event classification taxonomies (Concerts, Fan Meetings, Cupsleeve Events, Exhibitions).</p>
         </div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">K-Pop Event Categories</h1>
-        <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Manage event classification taxonomies (Concerts, Fan Meetings, Cupsleeve Events, Exhibitions).</p>
+        <div class="flex items-center space-x-2 self-start md:self-auto shrink-0">
+            <a href="/admin/events" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center cursor-pointer">
+                <i class="fas fa-calendar-days me-1.5 text-purple-600"></i> View Events Catalog
+            </a>
+        </div>
     </div>
 
     <!-- Admin Nav -->
@@ -30,26 +39,27 @@
             <form action="/admin/categories/add" method="POST" class="space-y-3.5">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Category Name <span class="text-rose-500">*</span></label>
-                    <input type="text" name="name" required placeholder="e.g. Pop-up Store & Cafe"
+                    <input type="text" name="name" id="categoryNameInput" required placeholder="e.g. Pop-up Store & Cafe"
                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-300">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">URL Slug <span class="text-rose-500">*</span></label>
-                    <input type="text" name="slug" required placeholder="e.g. pop-up-store"
+                    <input type="text" name="slug" id="categorySlugInput" required placeholder="e.g. pop-up-store"
                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-mono focus:outline-none focus:ring-2 focus:ring-pink-300">
-                    <span class="text-[10px] text-slate-400">Used in search URLs e.g. /events?category=pop-up-store</span>
+                    <span class="text-[10px] text-slate-400">Used in URLs e.g. /events?category=pop-up-store</span>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Badge Color Theme</label>
-                    <select name="badge_color" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                    <select name="badge_color" id="badgeColorSelect" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-300 cursor-pointer">
                         <option value="purple">Purple (Concerts / Arena Shows)</option>
                         <option value="pink">Pink (Fan Meetings)</option>
                         <option value="rose">Rose (Cupsleeve / Cafe Gatherings)</option>
                         <option value="amber">Amber (Birthday Celebrations)</option>
-                        <option value="indigo">Indigo (Fan Projects / Film Screenings)</option>
+                        <option value="indigo">Indigo (Fan Projects / Screenings)</option>
                         <option value="emerald">Emerald (Workshops / Pop-ups)</option>
                     </select>
                 </div>
+
                 <button type="submit" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all cursor-pointer">
                     <i class="fas fa-plus me-1 text-pink-400"></i> Add Category
                 </button>
@@ -58,14 +68,20 @@
 
         <!-- Categories Table Card -->
         <div class="lg:col-span-2 bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
                 <h3 class="text-sm font-bold text-slate-900 flex items-center">
                     <i class="fas fa-tags text-pink-500 me-2"></i> Existing Categories (<%= categories.length %>)
                 </h3>
+                <div class="relative w-full sm:w-60">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="categorySearchInput" onkeyup="filterCategories()" placeholder="Search category name or slug..."
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                </div>
             </div>
+
             <div class="overflow-x-auto rounded-2xl border border-slate-100">
-                <table class="w-full text-left text-xs text-slate-700 min-w-[500px]">
-                    <thead class="bg-slate-50/80 text-slate-500 uppercase font-bold text-[10px] border-b border-slate-200">
+                <table class="w-full text-left text-xs text-slate-700 min-w-[500px]" id="categoriesTable">
+                    <thead class="bg-slate-50/80 text-slate-500 uppercase font-bold text-[10px] tracking-wider border-b border-slate-200">
                         <tr>
                             <th class="p-3.5">ID</th>
                             <th class="p-3.5">Category Name</th>
@@ -76,8 +92,17 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
+                        <% if (categories.length === 0) { %>
+                            <tr>
+                                <td colspan="6" class="p-8 text-center text-slate-400">
+                                    No categories registered yet.
+                                </td>
+                            </tr>
+                        <% } %>
                         <% categories.forEach(function(c) { %>
-                            <tr class="hover:bg-slate-50/60 transition-colors">
+                            <tr class="hover:bg-slate-50/60 transition-colors category-row"
+                                data-name="<%= (c.name || '').toLowerCase() %>"
+                                data-slug="<%= (c.slug || '').toLowerCase() %>">
                                 <td class="p-3.5 font-mono font-bold text-slate-400">#<%= c.id %></td>
                                 <td class="p-3.5 font-bold text-slate-900"><%= c.name %></td>
                                 <td class="p-3.5 font-mono text-[11px] text-slate-500"><%= c.slug %></td>
@@ -100,7 +125,7 @@
                                 <td class="p-3.5 text-right">
                                     <form action="/admin/categories/delete" method="POST" onsubmit="return confirm('Delete this category? Events linked to it will remain.')" class="inline">
                                         <input type="hidden" name="id" value="<%= c.id %>">
-                                        <button type="submit" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Delete Category">
+                                        <button type="submit" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer" title="Delete Category">
                                             <i class="fas fa-trash-can text-xs"></i>
                                         </button>
                                     </form>
@@ -113,5 +138,35 @@
         </div>
     </div>
 </div>
+
+<script>
+function filterCategories() {
+    const q = (document.getElementById('categorySearchInput').value || '').toLowerCase().trim();
+    const rows = document.querySelectorAll('.category-row');
+    rows.forEach(row => {
+        const name = row.getAttribute('data-name') || '';
+        const slug = row.getAttribute('data-slug') || '';
+        if (!q || name.includes(q) || slug.includes(q)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+// Auto slug generation from category name
+document.getElementById('categoryNameInput')?.addEventListener('input', function(e) {
+    const slugInput = document.getElementById('categorySlugInput');
+    if (slugInput && !slugInput.dataset.manual) {
+        slugInput.value = e.target.value.toLowerCase().trim()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/[\s_-]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
+});
+document.getElementById('categorySlugInput')?.addEventListener('input', function() {
+    this.dataset.manual = 'true';
+});
+</script>
 
 <%- include('../partials/footer') %>

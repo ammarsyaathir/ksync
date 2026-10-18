@@ -11,6 +11,20 @@ const router = express.Router();
 // Apply requireAdmin guard to all /admin/* routes
 router.use('/admin', requireAdmin);
 
+// Global Admin Context Middleware: inject live pending counters for admin navigation
+router.use('/admin', async (req, res, next) => {
+  try {
+    const pendingEventsRow = await db.getOne("SELECT count(id) as count FROM events WHERE verification_status = 'PENDING'");
+    const pendingReportsRow = await db.getOne("SELECT count(id) as count FROM reports WHERE status = 'PENDING'");
+    res.locals.adminPendingVerifications = pendingEventsRow ? Number(pendingEventsRow.count) : 0;
+    res.locals.adminPendingReports = pendingReportsRow ? Number(pendingReportsRow.count) : 0;
+  } catch (e) {
+    res.locals.adminPendingVerifications = 0;
+    res.locals.adminPendingReports = 0;
+  }
+  next();
+});
+
 // GET /admin - Admin Dashboard
 router.get('/admin', async (req, res) => {
   try {

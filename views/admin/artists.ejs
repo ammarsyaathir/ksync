@@ -1,18 +1,27 @@
 <%- include('../partials/header', { title: 'Manage Artists | K-Sync Admin' }) %>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-    <!-- Header -->
-    <div class="mb-6">
-        <div class="flex items-center space-x-2 mb-2">
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-white shadow-sm border border-slate-700">
-                <i class="fas fa-microphone-lines me-1.5 text-purple-400"></i> Talent Directory
-            </span>
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
-                <%= artists.length %> Artists Registered
-            </span>
+    <%- include('../partials/flash') %>
+
+    <!-- Standard Header with Breadcrumbs & Action -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+        <div>
+            <div class="flex items-center space-x-2 mb-2 flex-wrap gap-y-1">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-white shadow-sm border border-slate-700">
+                    <i class="fas fa-microphone-lines me-1.5 text-purple-400"></i> Talent Directory
+                </span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                    <%= artists.length %> Artists Registered
+                </span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">K-Pop Artists & Groups Catalog</h1>
+            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Manage artist master records, entertainment agencies, group formats, and official visual banners.</p>
         </div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">K-Pop Artists & Groups Catalog</h1>
-        <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Manage artist master records, entertainment agencies, group formats, and official visual banners.</p>
+        <div class="flex items-center space-x-2 self-start md:self-auto shrink-0">
+            <a href="/admin/events" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center cursor-pointer">
+                <i class="fas fa-calendar-days me-1.5 text-purple-600"></i> View Events Catalog
+            </a>
+        </div>
     </div>
 
     <!-- Admin Nav -->
@@ -30,12 +39,12 @@
             <form action="/admin/artists/add" method="POST" class="space-y-3.5">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Artist / Group Name <span class="text-rose-500">*</span></label>
-                    <input type="text" name="name" required placeholder="e.g. NewJeans / aespa"
+                    <input type="text" name="name" required placeholder="e.g. SEVENTEEN / aespa"
                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Group Type</label>
-                    <select name="group_type" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+                    <select name="group_type" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300 cursor-pointer">
                         <option value="Boy Group">Boy Group</option>
                         <option value="Girl Group">Girl Group</option>
                         <option value="Soloist">Soloist</option>
@@ -45,15 +54,16 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Entertainment Agency</label>
-                    <input type="text" name="agency" placeholder="e.g. HYBE / SM Entertainment / JYP"
+                    <input type="text" name="agency" placeholder="e.g. Pledis Entertainment / HYBE"
                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Profile Image URL</label>
-                    <input type="url" name="image_url" placeholder="https://images.unsplash.com/..."
+                    <input type="url" name="image_url" id="artistImageUrlInput" placeholder="https://images.unsplash.com/..."
                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
                     <span class="text-[10px] text-slate-400">Direct image link (JPG, PNG, WebP)</span>
                 </div>
+
                 <button type="submit" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all cursor-pointer">
                     <i class="fas fa-plus me-1 text-purple-400"></i> Add Artist
                 </button>
@@ -74,6 +84,11 @@
             </div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="artistsGrid">
+                <% if (artists.length === 0) { %>
+                    <div class="col-span-full py-12 text-center text-slate-400 text-xs">
+                        No artists added yet. Use the form to register your first group or soloist.
+                    </div>
+                <% } %>
                 <% artists.forEach(function(a) { %>
                     <div class="p-3.5 rounded-2xl bg-slate-50/80 hover:bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-3 transition-colors artist-card">
                         <div class="flex items-center space-x-3 min-w-0">
@@ -91,7 +106,7 @@
                         </div>
                         <form action="/admin/artists/delete" method="POST" onsubmit="return confirm('Permanently delete <%= a.name %>?')" class="inline shrink-0">
                             <input type="hidden" name="id" value="<%= a.id %>">
-                            <button type="submit" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Delete Artist">
+                            <button type="submit" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer" title="Delete Artist">
                                 <i class="fas fa-trash-can text-xs"></i>
                             </button>
                         </form>
@@ -104,8 +119,7 @@
 
 <script>
 function filterArtists() {
-    const input = document.getElementById("artistSearchInput");
-    const filter = input.value.toLowerCase();
+    const filter = (document.getElementById("artistSearchInput").value || '').toLowerCase().trim();
     const cards = document.querySelectorAll(".artist-card");
 
     cards.forEach(card => {
