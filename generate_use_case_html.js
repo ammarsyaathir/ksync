@@ -59,29 +59,6 @@ const useCases = [
   },
   {
     id: 'UC03',
-    name: 'Log Out',
-    module: 'A. Account & Profile Management',
-    primaryActor: 'Registered Fan / System Admin',
-    secondaryActors: 'None',
-    purpose: 'Terminates the user active session, revoking session tokens and clearing cookies to prevent unauthorized access on shared devices.',
-    trigger: 'User clicks the "Log Out" link in the profile dropdown or header.',
-    preconditions: 'User is currently authenticated.',
-    postconditions: 'The session record is destroyed on the server, session cookies are cleared, and the user is redirected to the home page as a Guest.',
-    basicFlow: [
-      'User selects "Log Out" from the user menu.',
-      'Client sends a request to GET /logout.',
-      'Server destroys the session store data for req.session.',
-      'Server clears the session identifier cookie in the HTTP response headers.',
-      'System redirects the user to the home page (/) with a logout confirmation flash notification.'
-    ],
-    altFlows: [
-      '2a. Session already expired: System redirects to the home page with no error.'
-    ],
-    rules: 'Session invalidation must occur on the server side, not merely on the client.',
-    route: 'GET /logout'
-  },
-  {
-    id: 'UC04',
     name: 'Manage Profile',
     module: 'A. Account & Profile Management',
     primaryActor: 'Registered Fan',
@@ -107,7 +84,7 @@ const useCases = [
 
   // Module B: Event Discovery & Information
   {
-    id: 'UC05',
+    id: 'UC04',
     name: 'Browse Events',
     module: 'B. Event Discovery & Information',
     primaryActor: 'Visitor (Guest) / Registered Fan',
@@ -130,7 +107,7 @@ const useCases = [
     route: 'GET /, GET /events'
   },
   {
-    id: 'UC06',
+    id: 'UC05',
     name: 'Search Events',
     module: 'B. Event Discovery & Information',
     primaryActor: 'Visitor (Guest) / Registered Fan',
@@ -153,7 +130,7 @@ const useCases = [
     route: 'GET /events?search={keyword}'
   },
   {
-    id: 'UC07',
+    id: 'UC06',
     name: 'Filter Events',
     module: 'B. Event Discovery & Information',
     primaryActor: 'Visitor (Guest) / Registered Fan',
@@ -175,7 +152,7 @@ const useCases = [
     route: 'GET /events?category={slug}&artist={id}&location={city}'
   },
   {
-    id: 'UC08',
+    id: 'UC07',
     name: 'View Event Details',
     module: 'B. Event Discovery & Information',
     primaryActor: 'Visitor (Guest) / Registered Fan',
@@ -199,11 +176,11 @@ const useCases = [
     route: 'GET /events/:idOrSlug'
   },
 
-  // Module C: Saved Events (Personal Bookmarks)
+  // Module C: Saved & Shared Events
   {
-    id: 'UC09',
+    id: 'UC08',
     name: 'Save / Unsave Event',
-    module: 'C. Saved Events',
+    module: 'C. Saved & Shared Events',
     primaryActor: 'Registered Fan',
     secondaryActors: 'None',
     purpose: 'Enables authenticated fans to toggle an event in their personal bookmark list for quick access and tracking.',
@@ -226,9 +203,9 @@ const useCases = [
     route: 'POST /api/events/:id/save'
   },
   {
-    id: 'UC10',
+    id: 'UC09',
     name: 'View Saved Events',
-    module: 'C. Saved Events',
+    module: 'C. Saved & Shared Events',
     primaryActor: 'Registered Fan',
     secondaryActors: 'None',
     purpose: 'Displays a dedicated personal dashboard containing all events bookmarked by the logged-in fan.',
@@ -246,6 +223,31 @@ const useCases = [
     ],
     rules: 'Fans cannot view other users\' private saved event lists.',
     route: 'GET /saved-events'
+  },
+  {
+    id: 'UC10',
+    name: 'Share Event',
+    module: 'C. Saved & Shared Events',
+    primaryActor: 'Visitor (Guest) / Registered Fan',
+    secondaryActors: 'WhatsApp, Telegram, X (Twitter), Facebook, Native Web Share API',
+    purpose: 'Enables fans and visitors to broadcast verified event details to friends or social media groups via native mobile share, social buttons, or one-click URL copying.',
+    trigger: 'User clicks the "Share" button on an event details page or catalog card.',
+    preconditions: 'The event listing is published and viewable.',
+    postconditions: 'Interactive sharing modal is displayed, or native OS share sheet is activated with pre-formatted event title and verified link.',
+    basicFlow: [
+      'User clicks the "Share" button on an event details page.',
+      'If on a mobile browser supporting navigator.share, system opens the native mobile share sheet.',
+      'If on a desktop browser, system opens the interactive Share Modal.',
+      'System generates instant social share links for WhatsApp, X (Twitter), Telegram, and Facebook with encoded title and venue.',
+      'System provides a dedicated one-click "Copy" button that writes the canonical event URL to the user\'s clipboard.',
+      'System displays a confirmation toast notification: "Event link copied to clipboard!"'
+    ],
+    altFlows: [
+      '2a. Native Share Cancelled: If the user cancels the OS share sheet, system remains on the event page with zero disruption.',
+      '5a. Clipboard Permission Blocked: System highlights the URL input field for easy manual copy (Ctrl+C).'
+    ],
+    rules: 'Shared links always point to canonical, verified event URLs (/events/:slug) free of tracking bloat.',
+    route: 'Client-side modal & Web Share API (views/event-details.ejs#share-modal)'
   },
 
   // Module D: Public Event Submission (Model 2: Without Account)

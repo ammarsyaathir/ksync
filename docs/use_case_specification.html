@@ -141,14 +141,7 @@
                             
                                 <li>
                                     <a href="#UC03" class="text-pink-600 hover:text-pink-800 font-semibold hover:underline flex items-center justify-between">
-                                        <span>UC03: Log Out</span>
-                                        <i class="fas fa-chevron-right text-[9px] text-slate-400"></i>
-                                    </a>
-                                </li>
-                            
-                                <li>
-                                    <a href="#UC04" class="text-pink-600 hover:text-pink-800 font-semibold hover:underline flex items-center justify-between">
-                                        <span>UC04: Manage Profile</span>
+                                        <span>UC03: Manage Profile</span>
                                         <i class="fas fa-chevron-right text-[9px] text-slate-400"></i>
                                     </a>
                                 </li>
@@ -161,29 +154,29 @@
                         <ul class="space-y-1">
                             
                                 <li>
+                                    <a href="#UC04" class="text-pink-600 hover:text-pink-800 font-semibold hover:underline flex items-center justify-between">
+                                        <span>UC04: Browse Events</span>
+                                        <i class="fas fa-chevron-right text-[9px] text-slate-400"></i>
+                                    </a>
+                                </li>
+                            
+                                <li>
                                     <a href="#UC05" class="text-pink-600 hover:text-pink-800 font-semibold hover:underline flex items-center justify-between">
-                                        <span>UC05: Browse Events</span>
+                                        <span>UC05: Search Events</span>
                                         <i class="fas fa-chevron-right text-[9px] text-slate-400"></i>
                                     </a>
                                 </li>
                             
                                 <li>
                                     <a href="#UC06" class="text-pink-600 hover:text-pink-800 font-semibold hover:underline flex items-center justify-between">
-                                        <span>UC06: Search Events</span>
+                                        <span>UC06: Filter Events</span>
                                         <i class="fas fa-chevron-right text-[9px] text-slate-400"></i>
                                     </a>
                                 </li>
                             
                                 <li>
                                     <a href="#UC07" class="text-pink-600 hover:text-pink-800 font-semibold hover:underline flex items-center justify-between">
-                                        <span>UC07: Filter Events</span>
-                                        <i class="fas fa-chevron-right text-[9px] text-slate-400"></i>
-                                    </a>
-                                </li>
-                            
-                                <li>
-                                    <a href="#UC08" class="text-pink-600 hover:text-pink-800 font-semibold hover:underline flex items-center justify-between">
-                                        <span>UC08: View Event Details</span>
+                                        <span>UC07: View Event Details</span>
                                         <i class="fas fa-chevron-right text-[9px] text-slate-400"></i>
                                     </a>
                                 </li>
@@ -192,19 +185,26 @@
                     </div>
                   
                     <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
-                        <h3 class="font-extrabold text-slate-900 truncate" title="C. Saved Events">C. Saved Events</h3>
+                        <h3 class="font-extrabold text-slate-900 truncate" title="C. Saved & Shared Events">C. Saved & Shared Events</h3>
                         <ul class="space-y-1">
                             
                                 <li>
+                                    <a href="#UC08" class="text-pink-600 hover:text-pink-800 font-semibold hover:underline flex items-center justify-between">
+                                        <span>UC08: Save / Unsave Event</span>
+                                        <i class="fas fa-chevron-right text-[9px] text-slate-400"></i>
+                                    </a>
+                                </li>
+                            
+                                <li>
                                     <a href="#UC09" class="text-pink-600 hover:text-pink-800 font-semibold hover:underline flex items-center justify-between">
-                                        <span>UC09: Save / Unsave Event</span>
+                                        <span>UC09: View Saved Events</span>
                                         <i class="fas fa-chevron-right text-[9px] text-slate-400"></i>
                                     </a>
                                 </li>
                             
                                 <li>
                                     <a href="#UC10" class="text-pink-600 hover:text-pink-800 font-semibold hover:underline flex items-center justify-between">
-                                        <span>UC10: View Saved Events</span>
+                                        <span>UC10: Share Event</span>
                                         <i class="fas fa-chevron-right text-[9px] text-slate-400"></i>
                                     </a>
                                 </li>
@@ -549,77 +549,6 @@
                             <span class="px-3 py-1 rounded-xl bg-pink-100 text-pink-800 font-extrabold text-xs tracking-wider border border-pink-200">
                                 UC03
                             </span>
-                            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">Log Out</h3>
-                        </div>
-                        <span class="self-start sm:self-auto px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                            A. Account & Profile Management
-                        </span>
-                    </div>
-
-                    <!-- Specification Table -->
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs border-collapse">
-                            <tbody>
-                                <tr class="border-b border-slate-100">
-                                    <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 w-48 rounded-l-xl">Primary Actor</th>
-                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Registered Fan / System Admin</td>
-                                </tr>
-                                <tr class="border-b border-slate-100">
-                                    <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Secondary Actors</th>
-                                    <td class="py-2.5 px-3 text-slate-600">None</td>
-                                </tr>
-                                <tr class="border-b border-slate-100">
-                                    <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Short Purpose</th>
-                                    <td class="py-2.5 px-3 text-slate-700 leading-relaxed">Terminates the user active session, revoking session tokens and clearing cookies to prevent unauthorized access on shared devices.</td>
-                                </tr>
-                                <tr class="border-b border-slate-100">
-                                    <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Trigger</th>
-                                    <td class="py-2.5 px-3 text-slate-600">User clicks the "Log Out" link in the profile dropdown or header.</td>
-                                </tr>
-                                <tr class="border-b border-slate-100">
-                                    <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Preconditions</th>
-                                    <td class="py-2.5 px-3 text-slate-600">User is currently authenticated.</td>
-                                </tr>
-                                <tr class="border-b border-slate-100">
-                                    <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Postconditions (Success)</th>
-                                    <td class="py-2.5 px-3 text-slate-700 font-medium">The session record is destroyed on the server, session cookies are cleared, and the user is redirected to the home page as a Guest.</td>
-                                </tr>
-                                <tr class="border-b border-slate-100">
-                                    <th class="py-3 px-3 font-bold text-slate-900 bg-slate-50 align-top">Main Success Scenario (Basic Flow)</th>
-                                    <td class="py-3 px-3 text-slate-700">
-                                        <ol class="list-decimal list-inside space-y-1 leading-relaxed">
-                                            <li>User selects "Log Out" from the user menu.</li><li>Client sends a request to GET /logout.</li><li>Server destroys the session store data for req.session.</li><li>Server clears the session identifier cookie in the HTTP response headers.</li><li>System redirects the user to the home page (/) with a logout confirmation flash notification.</li>
-                                        </ol>
-                                    </td>
-                                </tr>
-                                <tr class="border-b border-slate-100">
-                                    <th class="py-3 px-3 font-bold text-slate-900 bg-slate-50 align-top">Alternative / Exceptional Flows</th>
-                                    <td class="py-3 px-3 text-slate-600">
-                                        <ul class="list-disc list-inside space-y-1 leading-relaxed">
-                                            <li>2a. Session already expired: System redirects to the home page with no error.</li>
-                                        </ul>
-                                    </td>
-                                </tr>
-                                <tr class="border-b border-slate-100">
-                                    <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Business Rules & Security</th>
-                                    <td class="py-2.5 px-3 text-slate-600 font-medium">Session invalidation must occur on the server side, not merely on the client.</td>
-                                </tr>
-                                <tr>
-                                    <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 rounded-bl-xl">Implemented Route(s)</th>
-                                    <td class="py-2.5 px-3 text-pink-700 font-mono font-bold">GET /logout</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </article>
-            
-                <article id="UC04" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4 page-break">
-                    <!-- Card Top Header -->
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
-                        <div class="flex items-center gap-3">
-                            <span class="px-3 py-1 rounded-xl bg-pink-100 text-pink-800 font-extrabold text-xs tracking-wider border border-pink-200">
-                                UC04
-                            </span>
                             <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">Manage Profile</h3>
                         </div>
                         <span class="self-start sm:self-auto px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
@@ -684,12 +613,12 @@
                     </div>
                 </article>
             
-                <article id="UC05" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4 page-break">
+                <article id="UC04" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4 page-break">
                     <!-- Card Top Header -->
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
                         <div class="flex items-center gap-3">
                             <span class="px-3 py-1 rounded-xl bg-pink-100 text-pink-800 font-extrabold text-xs tracking-wider border border-pink-200">
-                                UC05
+                                UC04
                             </span>
                             <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">Browse Events</h3>
                         </div>
@@ -755,12 +684,12 @@
                     </div>
                 </article>
             
-                <article id="UC06" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4 page-break">
+                <article id="UC05" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4 page-break">
                     <!-- Card Top Header -->
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
                         <div class="flex items-center gap-3">
                             <span class="px-3 py-1 rounded-xl bg-pink-100 text-pink-800 font-extrabold text-xs tracking-wider border border-pink-200">
-                                UC06
+                                UC05
                             </span>
                             <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">Search Events</h3>
                         </div>
@@ -826,12 +755,12 @@
                     </div>
                 </article>
             
-                <article id="UC07" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4 page-break">
+                <article id="UC06" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4 page-break">
                     <!-- Card Top Header -->
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
                         <div class="flex items-center gap-3">
                             <span class="px-3 py-1 rounded-xl bg-pink-100 text-pink-800 font-extrabold text-xs tracking-wider border border-pink-200">
-                                UC07
+                                UC06
                             </span>
                             <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">Filter Events</h3>
                         </div>
@@ -897,12 +826,12 @@
                     </div>
                 </article>
             
-                <article id="UC08" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4 page-break">
+                <article id="UC07" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4 page-break">
                     <!-- Card Top Header -->
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
                         <div class="flex items-center gap-3">
                             <span class="px-3 py-1 rounded-xl bg-pink-100 text-pink-800 font-extrabold text-xs tracking-wider border border-pink-200">
-                                UC08
+                                UC07
                             </span>
                             <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">View Event Details</h3>
                         </div>
@@ -968,17 +897,17 @@
                     </div>
                 </article>
             
-                <article id="UC09" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4 page-break">
+                <article id="UC08" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4 page-break">
                     <!-- Card Top Header -->
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
                         <div class="flex items-center gap-3">
                             <span class="px-3 py-1 rounded-xl bg-pink-100 text-pink-800 font-extrabold text-xs tracking-wider border border-pink-200">
-                                UC09
+                                UC08
                             </span>
                             <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">Save / Unsave Event</h3>
                         </div>
                         <span class="self-start sm:self-auto px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                            C. Saved Events
+                            C. Saved & Shared Events
                         </span>
                     </div>
 
@@ -1039,17 +968,17 @@
                     </div>
                 </article>
             
-                <article id="UC10" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4 page-break">
+                <article id="UC09" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4 page-break">
                     <!-- Card Top Header -->
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
                         <div class="flex items-center gap-3">
                             <span class="px-3 py-1 rounded-xl bg-pink-100 text-pink-800 font-extrabold text-xs tracking-wider border border-pink-200">
-                                UC10
+                                UC09
                             </span>
                             <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">View Saved Events</h3>
                         </div>
                         <span class="self-start sm:self-auto px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                            C. Saved Events
+                            C. Saved & Shared Events
                         </span>
                     </div>
 
@@ -1104,6 +1033,77 @@
                                 <tr>
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 rounded-bl-xl">Implemented Route(s)</th>
                                     <td class="py-2.5 px-3 text-pink-700 font-mono font-bold">GET /saved-events</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+            
+                <article id="UC10" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4 page-break">
+                    <!-- Card Top Header -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
+                        <div class="flex items-center gap-3">
+                            <span class="px-3 py-1 rounded-xl bg-pink-100 text-pink-800 font-extrabold text-xs tracking-wider border border-pink-200">
+                                UC10
+                            </span>
+                            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">Share Event</h3>
+                        </div>
+                        <span class="self-start sm:self-auto px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                            C. Saved & Shared Events
+                        </span>
+                    </div>
+
+                    <!-- Specification Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <tbody>
+                                <tr class="border-b border-slate-100">
+                                    <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 w-48 rounded-l-xl">Primary Actor</th>
+                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Visitor (Guest) / Registered Fan</td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Secondary Actors</th>
+                                    <td class="py-2.5 px-3 text-slate-600">WhatsApp, Telegram, X (Twitter), Facebook, Native Web Share API</td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Short Purpose</th>
+                                    <td class="py-2.5 px-3 text-slate-700 leading-relaxed">Enables fans and visitors to broadcast verified event details to friends or social media groups via native mobile share, social buttons, or one-click URL copying.</td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Trigger</th>
+                                    <td class="py-2.5 px-3 text-slate-600">User clicks the "Share" button on an event details page or catalog card.</td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Preconditions</th>
+                                    <td class="py-2.5 px-3 text-slate-600">The event listing is published and viewable.</td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Postconditions (Success)</th>
+                                    <td class="py-2.5 px-3 text-slate-700 font-medium">Interactive sharing modal is displayed, or native OS share sheet is activated with pre-formatted event title and verified link.</td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <th class="py-3 px-3 font-bold text-slate-900 bg-slate-50 align-top">Main Success Scenario (Basic Flow)</th>
+                                    <td class="py-3 px-3 text-slate-700">
+                                        <ol class="list-decimal list-inside space-y-1 leading-relaxed">
+                                            <li>User clicks the "Share" button on an event details page.</li><li>If on a mobile browser supporting navigator.share, system opens the native mobile share sheet.</li><li>If on a desktop browser, system opens the interactive Share Modal.</li><li>System generates instant social share links for WhatsApp, X (Twitter), Telegram, and Facebook with encoded title and venue.</li><li>System provides a dedicated one-click "Copy" button that writes the canonical event URL to the user's clipboard.</li><li>System displays a confirmation toast notification: "Event link copied to clipboard!"</li>
+                                        </ol>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <th class="py-3 px-3 font-bold text-slate-900 bg-slate-50 align-top">Alternative / Exceptional Flows</th>
+                                    <td class="py-3 px-3 text-slate-600">
+                                        <ul class="list-disc list-inside space-y-1 leading-relaxed">
+                                            <li>2a. Native Share Cancelled: If the user cancels the OS share sheet, system remains on the event page with zero disruption.</li><li>5a. Clipboard Permission Blocked: System highlights the URL input field for easy manual copy (Ctrl+C).</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Business Rules & Security</th>
+                                    <td class="py-2.5 px-3 text-slate-600 font-medium">Shared links always point to canonical, verified event URLs (/events/:slug) free of tracking bloat.</td>
+                                </tr>
+                                <tr>
+                                    <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 rounded-bl-xl">Implemented Route(s)</th>
+                                    <td class="py-2.5 px-3 text-pink-700 font-mono font-bold">Client-side modal & Web Share API (views/event-details.ejs#share-modal)</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -2653,15 +2653,6 @@
                         
                             <tr>
                                 <td class="p-2.5 font-bold text-pink-700">UC03</td>
-                                <td class="p-2.5 font-sans font-semibold text-slate-900">Log Out</td>
-                                <td class="p-2.5 font-sans">Registered Fan / System Admin</td>
-                                <td class="p-2.5 text-slate-600">GET /logout</td>
-                                <td class="p-2.5 text-slate-500">views/*</td>
-                                <td class="p-2.5 text-emerald-800 font-semibold">users</td>
-                            </tr>
-                        
-                            <tr>
-                                <td class="p-2.5 font-bold text-pink-700">UC04</td>
                                 <td class="p-2.5 font-sans font-semibold text-slate-900">Manage Profile</td>
                                 <td class="p-2.5 font-sans">Registered Fan</td>
                                 <td class="p-2.5 text-slate-600">GET /profile, POST /profile</td>
@@ -2670,7 +2661,7 @@
                             </tr>
                         
                             <tr>
-                                <td class="p-2.5 font-bold text-pink-700">UC05</td>
+                                <td class="p-2.5 font-bold text-pink-700">UC04</td>
                                 <td class="p-2.5 font-sans font-semibold text-slate-900">Browse Events</td>
                                 <td class="p-2.5 font-sans">Visitor (Guest) / Registered Fan</td>
                                 <td class="p-2.5 text-slate-600">GET /, GET /events</td>
@@ -2679,7 +2670,7 @@
                             </tr>
                         
                             <tr>
-                                <td class="p-2.5 font-bold text-pink-700">UC06</td>
+                                <td class="p-2.5 font-bold text-pink-700">UC05</td>
                                 <td class="p-2.5 font-sans font-semibold text-slate-900">Search Events</td>
                                 <td class="p-2.5 font-sans">Visitor (Guest) / Registered Fan</td>
                                 <td class="p-2.5 text-slate-600">GET /events?search={keyword}</td>
@@ -2688,7 +2679,7 @@
                             </tr>
                         
                             <tr>
-                                <td class="p-2.5 font-bold text-pink-700">UC07</td>
+                                <td class="p-2.5 font-bold text-pink-700">UC06</td>
                                 <td class="p-2.5 font-sans font-semibold text-slate-900">Filter Events</td>
                                 <td class="p-2.5 font-sans">Visitor (Guest) / Registered Fan</td>
                                 <td class="p-2.5 text-slate-600">GET /events?category={slug}&artist={id}&location={city}</td>
@@ -2697,7 +2688,7 @@
                             </tr>
                         
                             <tr>
-                                <td class="p-2.5 font-bold text-pink-700">UC08</td>
+                                <td class="p-2.5 font-bold text-pink-700">UC07</td>
                                 <td class="p-2.5 font-sans font-semibold text-slate-900">View Event Details</td>
                                 <td class="p-2.5 font-sans">Visitor (Guest) / Registered Fan</td>
                                 <td class="p-2.5 text-slate-600">GET /events/:idOrSlug</td>
@@ -2706,7 +2697,7 @@
                             </tr>
                         
                             <tr>
-                                <td class="p-2.5 font-bold text-pink-700">UC09</td>
+                                <td class="p-2.5 font-bold text-pink-700">UC08</td>
                                 <td class="p-2.5 font-sans font-semibold text-slate-900">Save / Unsave Event</td>
                                 <td class="p-2.5 font-sans">Registered Fan</td>
                                 <td class="p-2.5 text-slate-600">POST /api/events/:id/save</td>
@@ -2715,10 +2706,19 @@
                             </tr>
                         
                             <tr>
-                                <td class="p-2.5 font-bold text-pink-700">UC10</td>
+                                <td class="p-2.5 font-bold text-pink-700">UC09</td>
                                 <td class="p-2.5 font-sans font-semibold text-slate-900">View Saved Events</td>
                                 <td class="p-2.5 font-sans">Registered Fan</td>
                                 <td class="p-2.5 text-slate-600">GET /saved-events</td>
+                                <td class="p-2.5 text-slate-500">views/*</td>
+                                <td class="p-2.5 text-emerald-800 font-semibold">saved_events</td>
+                            </tr>
+                        
+                            <tr>
+                                <td class="p-2.5 font-bold text-pink-700">UC10</td>
+                                <td class="p-2.5 font-sans font-semibold text-slate-900">Share Event</td>
+                                <td class="p-2.5 font-sans">Visitor (Guest) / Registered Fan</td>
+                                <td class="p-2.5 text-slate-600">Client-side modal & Web Share API (views/event-details.ejs#share-modal)</td>
                                 <td class="p-2.5 text-slate-500">views/*</td>
                                 <td class="p-2.5 text-emerald-800 font-semibold">saved_events</td>
                             </tr>
