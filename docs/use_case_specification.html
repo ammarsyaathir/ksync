@@ -65,7 +65,7 @@
                         <i class="fas fa-list-check text-pink-400"></i> 30 Core Use Cases
                     </span>
                     <span class="px-3 py-1.5 rounded-xl bg-white/10 border border-white/15 text-slate-200 flex items-center gap-1.5">
-                        <i class="fas fa-users text-purple-400"></i> 4 Human Actors (Visitor, Fan, Submitter, Admin)
+                        <i class="fas fa-users text-purple-400"></i> 3 Human Actors (Fan / Guest, Organizer / Submitter, System Administrator)
                     </span>
                     <span class="px-3 py-1.5 rounded-xl bg-white/10 border border-white/15 text-slate-200 flex items-center gap-1.5">
                         <i class="fas fa-cubes text-blue-400"></i> 8 Functional Packages (A through H)
@@ -91,7 +91,7 @@
                         <i class="fas fa-check-circle text-emerald-600"></i> Strictly Included & Justified Scope
                     </h3>
                     <ul class="space-y-1.5 list-disc list-inside">
-                        <li><strong>Account & Auth:</strong> Registration, Login, Logout, Profile management.</li>
+                        <li><strong>Account & Auth:</strong> Registration, Login (Email / Google Sign-In), Profile management.</li>
                         <li><strong>Event Discovery:</strong> Full discovery, search, multi-filter, and event dossier details.</li>
                         <li><strong>Model 2 Public Submission:</strong> Open submissions without account, tracked via tracking codes.</li>
                         <li><strong>Admin Verification:</strong> Evidence inspection, trust badges, rejection justification.</li>
@@ -134,7 +134,7 @@
                             
                                 <li>
                                     <a href="#UC02" class="text-pink-600 hover:text-pink-800 font-semibold hover:underline flex items-center justify-between">
-                                        <span>UC02: Log In</span>
+                                        <span>UC02: Log In (Email / Google Sign-In)</span>
                                         <i class="fas fa-chevron-right text-[9px] text-slate-400"></i>
                                     </a>
                                 </li>
@@ -218,14 +218,14 @@
                             
                                 <li>
                                     <a href="#UC11" class="text-pink-600 hover:text-pink-800 font-semibold hover:underline flex items-center justify-between">
-                                        <span>UC11: Submit Event</span>
+                                        <span>UC11: Submit Event (Provide Event Details)</span>
                                         <i class="fas fa-chevron-right text-[9px] text-slate-400"></i>
                                     </a>
                                 </li>
                             
                                 <li>
                                     <a href="#UC12" class="text-pink-600 hover:text-pink-800 font-semibold hover:underline flex items-center justify-between">
-                                        <span>UC12: Check Submission Status</span>
+                                        <span>UC12: Check Submission Status (Tracking Code)</span>
                                         <i class="fas fa-chevron-right text-[9px] text-slate-400"></i>
                                     </a>
                                 </li>
@@ -267,7 +267,7 @@
                             
                                 <li>
                                     <a href="#UC17" class="text-pink-600 hover:text-pink-800 font-semibold hover:underline flex items-center justify-between">
-                                        <span>UC17: Reject Submission</span>
+                                        <span>UC17: Reject Submission (Mandatory Reason)</span>
                                         <i class="fas fa-chevron-right text-[9px] text-slate-400"></i>
                                     </a>
                                 </li>
@@ -372,7 +372,7 @@
                             
                                 <li>
                                     <a href="#UC29" class="text-pink-600 hover:text-pink-800 font-semibold hover:underline flex items-center justify-between">
-                                        <span>UC29: Report Content or Event</span>
+                                        <span>UC29: Report Event</span>
                                         <i class="fas fa-chevron-right text-[9px] text-slate-400"></i>
                                     </a>
                                 </li>
@@ -420,7 +420,7 @@
                             <tbody>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 w-48 rounded-l-xl">Primary Actor</th>
-                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Visitor (Guest)</td>
+                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Fan / Guest</td>
                                 </tr>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Secondary Actors</th>
@@ -428,7 +428,7 @@
                                 </tr>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Short Purpose</th>
-                                    <td class="py-2.5 px-3 text-slate-700 leading-relaxed">Allows a new user to create a personal fan account to access interactive features like saving events, participating in discussions, and filing reports.</td>
+                                    <td class="py-2.5 px-3 text-slate-700 leading-relaxed">Allows a visitor to create a personal fan account to access interactive features like saving events, participating in discussions, and filing reports.</td>
                                 </tr>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Trigger</th>
@@ -478,7 +478,7 @@
                             <span class="px-3 py-1 rounded-xl bg-pink-100 text-pink-800 font-extrabold text-xs tracking-wider border border-pink-200">
                                 UC02
                             </span>
-                            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">Log In</h3>
+                            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">Log In (Email / Google Sign-In)</h3>
                         </div>
                         <span class="self-start sm:self-auto px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                             A. Account & Profile Management
@@ -491,7 +491,7 @@
                             <tbody>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 w-48 rounded-l-xl">Primary Actor</th>
-                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Visitor / Registered Fan / System Admin</td>
+                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Fan / Guest / System Admin</td>
                                 </tr>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Secondary Actors</th>
@@ -499,7 +499,7 @@
                                 </tr>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Short Purpose</th>
-                                    <td class="py-2.5 px-3 text-slate-700 leading-relaxed">Authenticates a returning user or administrator using their email/username and password, establishing a secure HTTP session.</td>
+                                    <td class="py-2.5 px-3 text-slate-700 leading-relaxed">Authenticates a returning user or administrator using their email/username and password, or Google Sign-In token, establishing a secure HTTP session.</td>
                                 </tr>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Trigger</th>
@@ -517,7 +517,7 @@
                                     <th class="py-3 px-3 font-bold text-slate-900 bg-slate-50 align-top">Main Success Scenario (Basic Flow)</th>
                                     <td class="py-3 px-3 text-slate-700">
                                         <ol class="list-decimal list-inside space-y-1 leading-relaxed">
-                                            <li>User accesses the Login page (/login).</li><li>System renders the login form accepting Username/Email and Password.</li><li>User inputs their credentials and submits the form.</li><li>System queries the database for an active user matching the provided username or email.</li><li>System compares the submitted password against the stored bcrypt password_hash.</li><li>Upon match, system binds the user session with userId, username, and role (FAN or ADMIN).</li><li>System redirects the user to the dashboard (if Admin) or the requested page (if Fan).</li>
+                                            <li>User accesses the Login page (/login).</li><li>System renders the login form accepting Username/Email and Password, as well as a "Sign in with Google" button.</li><li>User inputs their credentials (or completes Google OAuth flow) and submits the form.</li><li>System queries the database for an active user matching the provided username or email.</li><li>System compares the submitted password against the stored bcrypt password_hash (or validates Google ID token).</li><li>Upon match, system binds the user session with userId, username, and role (FAN or ADMIN).</li><li>System redirects the user to the dashboard (if Admin) or the requested page (if Fan).</li>
                                         </ol>
                                     </td>
                                 </tr>
@@ -562,7 +562,7 @@
                             <tbody>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 w-48 rounded-l-xl">Primary Actor</th>
-                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Registered Fan</td>
+                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Fan / Guest</td>
                                 </tr>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Secondary Actors</th>
@@ -633,7 +633,7 @@
                             <tbody>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 w-48 rounded-l-xl">Primary Actor</th>
-                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Visitor (Guest) / Registered Fan</td>
+                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Fan / Guest</td>
                                 </tr>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Secondary Actors</th>
@@ -704,7 +704,7 @@
                             <tbody>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 w-48 rounded-l-xl">Primary Actor</th>
-                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Visitor (Guest) / Registered Fan</td>
+                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Fan / Guest</td>
                                 </tr>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Secondary Actors</th>
@@ -775,7 +775,7 @@
                             <tbody>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 w-48 rounded-l-xl">Primary Actor</th>
-                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Visitor (Guest) / Registered Fan</td>
+                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Fan / Guest</td>
                                 </tr>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Secondary Actors</th>
@@ -846,7 +846,7 @@
                             <tbody>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 w-48 rounded-l-xl">Primary Actor</th>
-                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Visitor (Guest) / Registered Fan</td>
+                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Fan / Guest</td>
                                 </tr>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Secondary Actors</th>
@@ -917,7 +917,7 @@
                             <tbody>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 w-48 rounded-l-xl">Primary Actor</th>
-                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Registered Fan</td>
+                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Fan / Guest</td>
                                 </tr>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Secondary Actors</th>
@@ -988,7 +988,7 @@
                             <tbody>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 w-48 rounded-l-xl">Primary Actor</th>
-                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Registered Fan</td>
+                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Fan / Guest</td>
                                 </tr>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Secondary Actors</th>
@@ -1059,7 +1059,7 @@
                             <tbody>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 w-48 rounded-l-xl">Primary Actor</th>
-                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Visitor (Guest) / Registered Fan</td>
+                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Fan / Guest</td>
                                 </tr>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Secondary Actors</th>
@@ -1117,7 +1117,7 @@
                             <span class="px-3 py-1 rounded-xl bg-pink-100 text-pink-800 font-extrabold text-xs tracking-wider border border-pink-200">
                                 UC11
                             </span>
-                            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">Submit Event</h3>
+                            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">Submit Event (Provide Event Details)</h3>
                         </div>
                         <span class="self-start sm:self-auto px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                             D. Public Event Submission (Without Account)
@@ -1130,7 +1130,7 @@
                             <tbody>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 w-48 rounded-l-xl">Primary Actor</th>
-                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Public Submitter (Visitor / Fanclub Organizer)</td>
+                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Organizer / Submitter</td>
                                 </tr>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Secondary Actors</th>
@@ -1188,7 +1188,7 @@
                             <span class="px-3 py-1 rounded-xl bg-pink-100 text-pink-800 font-extrabold text-xs tracking-wider border border-pink-200">
                                 UC12
                             </span>
-                            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">Check Submission Status</h3>
+                            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">Check Submission Status (Tracking Code)</h3>
                         </div>
                         <span class="self-start sm:self-auto px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                             D. Public Event Submission (Without Account)
@@ -1201,7 +1201,7 @@
                             <tbody>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 w-48 rounded-l-xl">Primary Actor</th>
-                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Public Submitter</td>
+                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Organizer / Submitter</td>
                                 </tr>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Secondary Actors</th>
@@ -1272,7 +1272,7 @@
                             <tbody>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 w-48 rounded-l-xl">Primary Actor</th>
-                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Public Submitter</td>
+                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Organizer / Submitter</td>
                                 </tr>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Secondary Actors</th>
@@ -1543,7 +1543,7 @@
                             <span class="px-3 py-1 rounded-xl bg-pink-100 text-pink-800 font-extrabold text-xs tracking-wider border border-pink-200">
                                 UC17
                             </span>
-                            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">Reject Submission</h3>
+                            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">Reject Submission (Mandatory Reason)</h3>
                         </div>
                         <span class="self-start sm:self-auto px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                             E. Submission Review & Verification
@@ -2124,7 +2124,7 @@
                             <tbody>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 w-48 rounded-l-xl">Primary Actor</th>
-                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Visitor (Guest) / Registered Fan</td>
+                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Fan / Guest</td>
                                 </tr>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Secondary Actors</th>
@@ -2195,7 +2195,7 @@
                             <tbody>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 w-48 rounded-l-xl">Primary Actor</th>
-                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Registered Fan</td>
+                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Fan / Guest</td>
                                 </tr>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Secondary Actors</th>
@@ -2266,7 +2266,7 @@
                             <tbody>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 w-48 rounded-l-xl">Primary Actor</th>
-                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Registered Fan</td>
+                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Fan / Guest</td>
                                 </tr>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Secondary Actors</th>
@@ -2337,7 +2337,7 @@
                             <tbody>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 w-48 rounded-l-xl">Primary Actor</th>
-                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Registered Fan / System Admin</td>
+                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Fan / Guest / System Administrator</td>
                                 </tr>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Secondary Actors</th>
@@ -2395,7 +2395,7 @@
                             <span class="px-3 py-1 rounded-xl bg-pink-100 text-pink-800 font-extrabold text-xs tracking-wider border border-pink-200">
                                 UC29
                             </span>
-                            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">Report Content or Event</h3>
+                            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900">Report Event</h3>
                         </div>
                         <span class="self-start sm:self-auto px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                             H. Content Moderation & Governance
@@ -2408,7 +2408,7 @@
                             <tbody>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50 w-48 rounded-l-xl">Primary Actor</th>
-                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Registered Fan</td>
+                                    <td class="py-2.5 px-3 text-slate-700 font-semibold">Fan / Guest</td>
                                 </tr>
                                 <tr class="border-b border-slate-100">
                                     <th class="py-2.5 px-3 font-bold text-slate-900 bg-slate-50">Secondary Actors</th>
@@ -2544,68 +2544,59 @@
                     <thead class="bg-slate-900 text-white font-bold">
                         <tr>
                             <th class="p-3">Functional Module</th>
-                            <th class="p-3 text-center">Visitor (Guest)</th>
-                            <th class="p-3 text-center">Public Submitter</th>
-                            <th class="p-3 text-center">Registered Fan</th>
+                            <th class="p-3 text-center">Fan / Guest</th>
+                            <th class="p-3 text-center">Organizer / Submitter</th>
                             <th class="p-3 text-center">System Administrator</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 text-slate-700">
                         <tr>
-                            <td class="p-3 font-bold">A. Account & Auth (Register, Log In, Log Out)</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Register/Login</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Register/Login</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Full Profile</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Admin Auth</td>
+                            <td class="p-3 font-bold">A. Account & Profile Management</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Register, Log In, Manage Profile</td>
+                            <td class="p-3 text-center text-slate-400">N/A (No Account Needed)</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Admin Log In</td>
                         </tr>
                         <tr>
-                            <td class="p-3 font-bold">B. Event Discovery (Browse, Search, Filter, Details)</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Read Only</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Read Only</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Full Read</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Full Read</td>
+                            <td class="p-3 font-bold">B. Event Discovery & Information</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Browse, Search, Filter, View Details</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Browse & View Details</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Full Access</td>
                         </tr>
                         <tr>
-                            <td class="p-3 font-bold">C. Saved Events (Bookmarks)</td>
-                            <td class="p-3 text-center text-rose-500"><i class="fas fa-xmark"></i> Login Req.</td>
-                            <td class="p-3 text-center text-rose-500"><i class="fas fa-xmark"></i> Login Req.</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Personal List</td>
+                            <td class="p-3 font-bold">C. Saved & Shared Events</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Share (Public); Save & View Saved (Authenticated)</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Share Event</td>
                             <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Available</td>
                         </tr>
                         <tr>
                             <td class="p-3 font-bold">D. Public Event Submission (Model 2: No Account)</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Submit & Track</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Submit & Resubmit</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Submit & Resubmit</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Full Override</td>
+                            <td class="p-3 text-center text-slate-400">Can act as Submitter</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Submit Event, Check Status, Correct & Resubmit</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Full Review & Audit</td>
                         </tr>
                         <tr>
-                            <td class="p-3 font-bold">E. Review & Verification (Queue, Approve, Reject)</td>
+                            <td class="p-3 font-bold">E. Submission Review & Verification</td>
                             <td class="p-3 text-center text-rose-500"><i class="fas fa-xmark"></i> Forbidden</td>
                             <td class="p-3 text-center text-rose-500"><i class="fas fa-xmark"></i> Forbidden</td>
-                            <td class="p-3 text-center text-rose-500"><i class="fas fa-xmark"></i> Forbidden</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-shield"></i> Sole Authority</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-shield"></i> Sole Authority (Approve, Reject, Verify)</td>
                         </tr>
                         <tr>
-                            <td class="p-3 font-bold">F. Published Event Management (Edit, Status, Venues)</td>
+                            <td class="p-3 font-bold">F. Published Event Management</td>
                             <td class="p-3 text-center text-rose-500"><i class="fas fa-xmark"></i> Forbidden</td>
                             <td class="p-3 text-center text-rose-500"><i class="fas fa-xmark"></i> Forbidden</td>
-                            <td class="p-3 text-center text-rose-500"><i class="fas fa-xmark"></i> Forbidden</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-shield"></i> Sole Authority</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-shield"></i> Sole Authority (Edit, Status, Taxonomy)</td>
                         </tr>
                         <tr>
-                            <td class="p-3 font-bold">G. Community Discussions (Read, Post, Reply, Delete)</td>
-                            <td class="p-3 text-center text-amber-600 font-bold"><i class="fas fa-eye"></i> Read Only</td>
-                            <td class="p-3 text-center text-amber-600 font-bold"><i class="fas fa-eye"></i> Read Only</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Post, Reply, Own Delete</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Full Moderation Delete</td>
+                            <td class="p-3 font-bold">G. Fan Community Discussions</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Read (Public); Post, Reply, Delete Own (Authenticated)</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Read / Reply to Event Threads</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Full Moderation (Delete Any Comment)</td>
                         </tr>
                         <tr>
-                            <td class="p-3 font-bold">H. Content Moderation (Report Flagging & Actions)</td>
-                            <td class="p-3 text-center text-rose-500"><i class="fas fa-xmark"></i> Login Req.</td>
-                            <td class="p-3 text-center text-rose-500"><i class="fas fa-xmark"></i> Login Req.</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-flag"></i> Submit Report</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-gavel"></i> Investigate & Dismiss/Ban</td>
+                            <td class="p-3 font-bold">H. Content Moderation & Governance</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-flag"></i> Submit Report (Authenticated)</td>
+                            <td class="p-3 text-center text-rose-500"><i class="fas fa-xmark"></i> Login Required to Report</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-gavel"></i> Sole Authority (Investigate & Enforce)</td>
                         </tr>
                     </tbody>
                 </table>
@@ -2636,7 +2627,7 @@
                             <tr>
                                 <td class="p-2.5 font-bold text-pink-700">UC01</td>
                                 <td class="p-2.5 font-sans font-semibold text-slate-900">Register Account</td>
-                                <td class="p-2.5 font-sans">Visitor (Guest)</td>
+                                <td class="p-2.5 font-sans">Fan / Guest</td>
                                 <td class="p-2.5 text-slate-600">GET /register, POST /register</td>
                                 <td class="p-2.5 text-slate-500">views/*</td>
                                 <td class="p-2.5 text-emerald-800 font-semibold">users</td>
@@ -2644,8 +2635,8 @@
                         
                             <tr>
                                 <td class="p-2.5 font-bold text-pink-700">UC02</td>
-                                <td class="p-2.5 font-sans font-semibold text-slate-900">Log In</td>
-                                <td class="p-2.5 font-sans">Visitor / Registered Fan / System Admin</td>
+                                <td class="p-2.5 font-sans font-semibold text-slate-900">Log In (Email / Google Sign-In)</td>
+                                <td class="p-2.5 font-sans">Fan / Guest / System Admin</td>
                                 <td class="p-2.5 text-slate-600">GET /login, POST /login, POST /auth/google</td>
                                 <td class="p-2.5 text-slate-500">views/*</td>
                                 <td class="p-2.5 text-emerald-800 font-semibold">users</td>
@@ -2654,7 +2645,7 @@
                             <tr>
                                 <td class="p-2.5 font-bold text-pink-700">UC03</td>
                                 <td class="p-2.5 font-sans font-semibold text-slate-900">Manage Profile</td>
-                                <td class="p-2.5 font-sans">Registered Fan</td>
+                                <td class="p-2.5 font-sans">Fan / Guest</td>
                                 <td class="p-2.5 text-slate-600">GET /profile, POST /profile</td>
                                 <td class="p-2.5 text-slate-500">views/*</td>
                                 <td class="p-2.5 text-emerald-800 font-semibold">users</td>
@@ -2663,7 +2654,7 @@
                             <tr>
                                 <td class="p-2.5 font-bold text-pink-700">UC04</td>
                                 <td class="p-2.5 font-sans font-semibold text-slate-900">Browse Events</td>
-                                <td class="p-2.5 font-sans">Visitor (Guest) / Registered Fan</td>
+                                <td class="p-2.5 font-sans">Fan / Guest</td>
                                 <td class="p-2.5 text-slate-600">GET /, GET /events</td>
                                 <td class="p-2.5 text-slate-500">views/*</td>
                                 <td class="p-2.5 text-emerald-800 font-semibold">events, artists, venues</td>
@@ -2672,7 +2663,7 @@
                             <tr>
                                 <td class="p-2.5 font-bold text-pink-700">UC05</td>
                                 <td class="p-2.5 font-sans font-semibold text-slate-900">Search Events</td>
-                                <td class="p-2.5 font-sans">Visitor (Guest) / Registered Fan</td>
+                                <td class="p-2.5 font-sans">Fan / Guest</td>
                                 <td class="p-2.5 text-slate-600">GET /events?search={keyword}</td>
                                 <td class="p-2.5 text-slate-500">views/*</td>
                                 <td class="p-2.5 text-emerald-800 font-semibold">events, artists, venues</td>
@@ -2681,7 +2672,7 @@
                             <tr>
                                 <td class="p-2.5 font-bold text-pink-700">UC06</td>
                                 <td class="p-2.5 font-sans font-semibold text-slate-900">Filter Events</td>
-                                <td class="p-2.5 font-sans">Visitor (Guest) / Registered Fan</td>
+                                <td class="p-2.5 font-sans">Fan / Guest</td>
                                 <td class="p-2.5 text-slate-600">GET /events?category={slug}&artist={id}&location={city}</td>
                                 <td class="p-2.5 text-slate-500">views/*</td>
                                 <td class="p-2.5 text-emerald-800 font-semibold">events, artists, venues</td>
@@ -2690,7 +2681,7 @@
                             <tr>
                                 <td class="p-2.5 font-bold text-pink-700">UC07</td>
                                 <td class="p-2.5 font-sans font-semibold text-slate-900">View Event Details</td>
-                                <td class="p-2.5 font-sans">Visitor (Guest) / Registered Fan</td>
+                                <td class="p-2.5 font-sans">Fan / Guest</td>
                                 <td class="p-2.5 text-slate-600">GET /events/:idOrSlug</td>
                                 <td class="p-2.5 text-slate-500">views/*</td>
                                 <td class="p-2.5 text-emerald-800 font-semibold">events, artists, venues</td>
@@ -2699,7 +2690,7 @@
                             <tr>
                                 <td class="p-2.5 font-bold text-pink-700">UC08</td>
                                 <td class="p-2.5 font-sans font-semibold text-slate-900">Save / Unsave Event</td>
-                                <td class="p-2.5 font-sans">Registered Fan</td>
+                                <td class="p-2.5 font-sans">Fan / Guest</td>
                                 <td class="p-2.5 text-slate-600">POST /api/events/:id/save</td>
                                 <td class="p-2.5 text-slate-500">views/*</td>
                                 <td class="p-2.5 text-emerald-800 font-semibold">saved_events</td>
@@ -2708,7 +2699,7 @@
                             <tr>
                                 <td class="p-2.5 font-bold text-pink-700">UC09</td>
                                 <td class="p-2.5 font-sans font-semibold text-slate-900">View Saved Events</td>
-                                <td class="p-2.5 font-sans">Registered Fan</td>
+                                <td class="p-2.5 font-sans">Fan / Guest</td>
                                 <td class="p-2.5 text-slate-600">GET /saved-events</td>
                                 <td class="p-2.5 text-slate-500">views/*</td>
                                 <td class="p-2.5 text-emerald-800 font-semibold">saved_events</td>
@@ -2717,7 +2708,7 @@
                             <tr>
                                 <td class="p-2.5 font-bold text-pink-700">UC10</td>
                                 <td class="p-2.5 font-sans font-semibold text-slate-900">Share Event</td>
-                                <td class="p-2.5 font-sans">Visitor (Guest) / Registered Fan</td>
+                                <td class="p-2.5 font-sans">Fan / Guest</td>
                                 <td class="p-2.5 text-slate-600">Client-side modal & Web Share API (views/event-details.ejs#share-modal)</td>
                                 <td class="p-2.5 text-slate-500">views/*</td>
                                 <td class="p-2.5 text-emerald-800 font-semibold">saved_events</td>
@@ -2725,8 +2716,8 @@
                         
                             <tr>
                                 <td class="p-2.5 font-bold text-pink-700">UC11</td>
-                                <td class="p-2.5 font-sans font-semibold text-slate-900">Submit Event</td>
-                                <td class="p-2.5 font-sans">Public Submitter (Visitor / Fanclub Organizer)</td>
+                                <td class="p-2.5 font-sans font-semibold text-slate-900">Submit Event (Provide Event Details)</td>
+                                <td class="p-2.5 font-sans">Organizer / Submitter</td>
                                 <td class="p-2.5 text-slate-600">GET /submit-event, POST /submit-event, GET /submission-success</td>
                                 <td class="p-2.5 text-slate-500">views/submit-event.ejs</td>
                                 <td class="p-2.5 text-emerald-800 font-semibold">users</td>
@@ -2734,8 +2725,8 @@
                         
                             <tr>
                                 <td class="p-2.5 font-bold text-pink-700">UC12</td>
-                                <td class="p-2.5 font-sans font-semibold text-slate-900">Check Submission Status</td>
-                                <td class="p-2.5 font-sans">Public Submitter</td>
+                                <td class="p-2.5 font-sans font-semibold text-slate-900">Check Submission Status (Tracking Code)</td>
+                                <td class="p-2.5 font-sans">Organizer / Submitter</td>
                                 <td class="p-2.5 text-slate-600">GET /check-submission</td>
                                 <td class="p-2.5 text-slate-500">views/*</td>
                                 <td class="p-2.5 text-emerald-800 font-semibold">users</td>
@@ -2744,7 +2735,7 @@
                             <tr>
                                 <td class="p-2.5 font-bold text-pink-700">UC13</td>
                                 <td class="p-2.5 font-sans font-semibold text-slate-900">Correct and Resubmit Event</td>
-                                <td class="p-2.5 font-sans">Public Submitter</td>
+                                <td class="p-2.5 font-sans">Organizer / Submitter</td>
                                 <td class="p-2.5 text-slate-600">POST /check-submission/resubmit</td>
                                 <td class="p-2.5 text-slate-500">views/submit-event.ejs</td>
                                 <td class="p-2.5 text-emerald-800 font-semibold">users</td>
@@ -2779,7 +2770,7 @@
                         
                             <tr>
                                 <td class="p-2.5 font-bold text-pink-700">UC17</td>
-                                <td class="p-2.5 font-sans font-semibold text-slate-900">Reject Submission</td>
+                                <td class="p-2.5 font-sans font-semibold text-slate-900">Reject Submission (Mandatory Reason)</td>
                                 <td class="p-2.5 font-sans">System Administrator</td>
                                 <td class="p-2.5 text-slate-600">POST /admin/verifications/reject-event</td>
                                 <td class="p-2.5 text-slate-500">views/admin/*</td>
@@ -2852,7 +2843,7 @@
                             <tr>
                                 <td class="p-2.5 font-bold text-pink-700">UC25</td>
                                 <td class="p-2.5 font-sans font-semibold text-slate-900">View Event Discussion</td>
-                                <td class="p-2.5 font-sans">Visitor (Guest) / Registered Fan</td>
+                                <td class="p-2.5 font-sans">Fan / Guest</td>
                                 <td class="p-2.5 text-slate-600">GET /events/:idOrSlug#discussion</td>
                                 <td class="p-2.5 text-slate-500">views/*</td>
                                 <td class="p-2.5 text-emerald-800 font-semibold">event_chat_messages</td>
@@ -2861,7 +2852,7 @@
                             <tr>
                                 <td class="p-2.5 font-bold text-pink-700">UC26</td>
                                 <td class="p-2.5 font-sans font-semibold text-slate-900">Create Discussion Post</td>
-                                <td class="p-2.5 font-sans">Registered Fan</td>
+                                <td class="p-2.5 font-sans">Fan / Guest</td>
                                 <td class="p-2.5 text-slate-600">POST /api/chat/:eventId</td>
                                 <td class="p-2.5 text-slate-500">views/*</td>
                                 <td class="p-2.5 text-emerald-800 font-semibold">event_chat_messages</td>
@@ -2870,7 +2861,7 @@
                             <tr>
                                 <td class="p-2.5 font-bold text-pink-700">UC27</td>
                                 <td class="p-2.5 font-sans font-semibold text-slate-900">Reply to Discussion</td>
-                                <td class="p-2.5 font-sans">Registered Fan</td>
+                                <td class="p-2.5 font-sans">Fan / Guest</td>
                                 <td class="p-2.5 text-slate-600">POST /api/chat/:eventId (with parent_id)</td>
                                 <td class="p-2.5 text-slate-500">views/*</td>
                                 <td class="p-2.5 text-emerald-800 font-semibold">event_chat_messages</td>
@@ -2879,7 +2870,7 @@
                             <tr>
                                 <td class="p-2.5 font-bold text-pink-700">UC28</td>
                                 <td class="p-2.5 font-sans font-semibold text-slate-900">Delete Own Comment</td>
-                                <td class="p-2.5 font-sans">Registered Fan / System Admin</td>
+                                <td class="p-2.5 font-sans">Fan / Guest / System Administrator</td>
                                 <td class="p-2.5 text-slate-600">DELETE /api/chat/:messageId, POST /api/chat/:messageId/delete</td>
                                 <td class="p-2.5 text-slate-500">views/*</td>
                                 <td class="p-2.5 text-emerald-800 font-semibold">event_chat_messages</td>
@@ -2887,8 +2878,8 @@
                         
                             <tr>
                                 <td class="p-2.5 font-bold text-pink-700">UC29</td>
-                                <td class="p-2.5 font-sans font-semibold text-slate-900">Report Content or Event</td>
-                                <td class="p-2.5 font-sans">Registered Fan</td>
+                                <td class="p-2.5 font-sans font-semibold text-slate-900">Report Event</td>
+                                <td class="p-2.5 font-sans">Fan / Guest</td>
                                 <td class="p-2.5 text-slate-600">POST /api/events/:id/report</td>
                                 <td class="p-2.5 text-slate-500">views/*</td>
                                 <td class="p-2.5 text-emerald-800 font-semibold">reports</td>

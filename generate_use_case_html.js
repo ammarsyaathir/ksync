@@ -8,9 +8,9 @@ const useCases = [
     id: 'UC01',
     name: 'Register Account',
     module: 'A. Account & Profile Management',
-    primaryActor: 'Visitor (Guest)',
+    primaryActor: 'Fan / Guest',
     secondaryActors: 'None (Optional Google OAuth Provider)',
-    purpose: 'Allows a new user to create a personal fan account to access interactive features like saving events, participating in discussions, and filing reports.',
+    purpose: 'Allows a visitor to create a personal fan account to access interactive features like saving events, participating in discussions, and filing reports.',
     trigger: 'User clicks the "Register" button on the navigation bar.',
     preconditions: 'The user is not currently logged into any active session.',
     postconditions: 'A new user record with role "FAN" is inserted into the database with a bcrypt-hashed password, and the user is redirected to log in or logged in automatically.',
@@ -33,20 +33,20 @@ const useCases = [
   },
   {
     id: 'UC02',
-    name: 'Log In',
+    name: 'Log In (Email / Google Sign-In)',
     module: 'A. Account & Profile Management',
-    primaryActor: 'Visitor / Registered Fan / System Admin',
+    primaryActor: 'Fan / Guest / System Admin',
     secondaryActors: 'Google Identity Provider (Optional)',
-    purpose: 'Authenticates a returning user or administrator using their email/username and password, establishing a secure HTTP session.',
+    purpose: 'Authenticates a returning user or administrator using their email/username and password, or Google Sign-In token, establishing a secure HTTP session.',
     trigger: 'User clicks "Log In" and submits credentials on the login page.',
     preconditions: 'User has an existing registered account.',
     postconditions: 'An authenticated server-side session is created with userId and role, and the user is redirected to their intended destination or home page.',
     basicFlow: [
       'User accesses the Login page (/login).',
-      'System renders the login form accepting Username/Email and Password.',
-      'User inputs their credentials and submits the form.',
+      'System renders the login form accepting Username/Email and Password, as well as a "Sign in with Google" button.',
+      'User inputs their credentials (or completes Google OAuth flow) and submits the form.',
       'System queries the database for an active user matching the provided username or email.',
-      'System compares the submitted password against the stored bcrypt password_hash.',
+      'System compares the submitted password against the stored bcrypt password_hash (or validates Google ID token).',
       'Upon match, system binds the user session with userId, username, and role (FAN or ADMIN).',
       'System redirects the user to the dashboard (if Admin) or the requested page (if Fan).'
     ],
@@ -61,7 +61,7 @@ const useCases = [
     id: 'UC03',
     name: 'Manage Profile',
     module: 'A. Account & Profile Management',
-    primaryActor: 'Registered Fan',
+    primaryActor: 'Fan / Guest',
     secondaryActors: 'None',
     purpose: 'Allows a fan to view and update personal profile attributes such as full name, bio, profile image URL, and social handle.',
     trigger: 'User clicks "My Profile" from the account navigation menu.',
@@ -87,7 +87,7 @@ const useCases = [
     id: 'UC04',
     name: 'Browse Events',
     module: 'B. Event Discovery & Information',
-    primaryActor: 'Visitor (Guest) / Registered Fan',
+    primaryActor: 'Fan / Guest',
     secondaryActors: 'None',
     purpose: 'Presents a curated, chronological directory of all published Malaysian K-Pop events with high-resolution posters and status badges.',
     trigger: 'User visits the home page (/) or clicks "Events" in the top navigation bar.',
@@ -110,7 +110,7 @@ const useCases = [
     id: 'UC05',
     name: 'Search Events',
     module: 'B. Event Discovery & Information',
-    primaryActor: 'Visitor (Guest) / Registered Fan',
+    primaryActor: 'Fan / Guest',
     secondaryActors: 'None',
     purpose: 'Enables users to quickly locate specific concerts, fan meetings, or festivals by typing keywords matching event titles, artists, or venues.',
     trigger: 'User types into the search input box and submits the query.',
@@ -133,7 +133,7 @@ const useCases = [
     id: 'UC06',
     name: 'Filter Events',
     module: 'B. Event Discovery & Information',
-    primaryActor: 'Visitor (Guest) / Registered Fan',
+    primaryActor: 'Fan / Guest',
     secondaryActors: 'None',
     purpose: 'Allows users to narrow event listings by specific categories (Concert, Fan Meeting, Festival), artist groups, or geographic cities/states.',
     trigger: 'User selects a category pill, artist dropdown, or city filter on the events page.',
@@ -155,7 +155,7 @@ const useCases = [
     id: 'UC07',
     name: 'View Event Details',
     module: 'B. Event Discovery & Information',
-    primaryActor: 'Visitor (Guest) / Registered Fan',
+    primaryActor: 'Fan / Guest',
     secondaryActors: 'None',
     purpose: 'Displays the comprehensive single event dossier, including official posters gallery, schedule, venue map, ticket tiers, idol biodata, and authenticity badge.',
     trigger: 'User clicks on an event card from the home or events directory.',
@@ -181,7 +181,7 @@ const useCases = [
     id: 'UC08',
     name: 'Save / Unsave Event',
     module: 'C. Saved & Shared Events',
-    primaryActor: 'Registered Fan',
+    primaryActor: 'Fan / Guest',
     secondaryActors: 'None',
     purpose: 'Enables authenticated fans to toggle an event in their personal bookmark list for quick access and tracking.',
     trigger: 'Fan clicks the bookmark (heart/star) icon on an event card or details page.',
@@ -206,7 +206,7 @@ const useCases = [
     id: 'UC09',
     name: 'View Saved Events',
     module: 'C. Saved & Shared Events',
-    primaryActor: 'Registered Fan',
+    primaryActor: 'Fan / Guest',
     secondaryActors: 'None',
     purpose: 'Displays a dedicated personal dashboard containing all events bookmarked by the logged-in fan.',
     trigger: 'Fan clicks "Saved Events" in their profile navigation menu.',
@@ -228,7 +228,7 @@ const useCases = [
     id: 'UC10',
     name: 'Share Event',
     module: 'C. Saved & Shared Events',
-    primaryActor: 'Visitor (Guest) / Registered Fan',
+    primaryActor: 'Fan / Guest',
     secondaryActors: 'WhatsApp, Telegram, X (Twitter), Facebook, Native Web Share API',
     purpose: 'Enables fans and visitors to broadcast verified event details to friends or social media groups via native mobile share, social buttons, or one-click URL copying.',
     trigger: 'User clicks the "Share" button on an event details page or catalog card.',
@@ -253,9 +253,9 @@ const useCases = [
   // Module D: Public Event Submission (Model 2: Without Account)
   {
     id: 'UC11',
-    name: 'Submit Event',
+    name: 'Submit Event (Provide Event Details)',
     module: 'D. Public Event Submission (Without Account)',
-    primaryActor: 'Public Submitter (Visitor / Fanclub Organizer)',
+    primaryActor: 'Organizer / Submitter',
     secondaryActors: 'Email Service (SMTP Transactional Mailer)',
     purpose: 'Enables any fanclub leader, promoter, or fan to submit a Malaysian K-Pop event without creating an account, supplying mandatory evidence links and posters.',
     trigger: 'User clicks "Submit Event" on the main navigation bar.',
@@ -282,9 +282,9 @@ const useCases = [
   },
   {
     id: 'UC12',
-    name: 'Check Submission Status',
+    name: 'Check Submission Status (Tracking Code)',
     module: 'D. Public Event Submission (Without Account)',
-    primaryActor: 'Public Submitter',
+    primaryActor: 'Organizer / Submitter',
     secondaryActors: 'None',
     purpose: 'Enables a submitter to check the current review stage (Pending, Verified, or Rejected) of their submitted event using their unique tracking code or email.',
     trigger: 'Submitter enters their tracking code into the submission status tracker.',
@@ -308,7 +308,7 @@ const useCases = [
     id: 'UC13',
     name: 'Correct and Resubmit Event',
     module: 'D. Public Event Submission (Without Account)',
-    primaryActor: 'Public Submitter',
+    primaryActor: 'Organizer / Submitter',
     secondaryActors: 'None',
     purpose: 'Allows a submitter whose event was rejected or marked with issues to update incorrect details, update evidence links, and resubmit for admin re-review.',
     trigger: 'Submitter clicks "Correct and Resubmit" from the status tracker page.',
@@ -403,7 +403,7 @@ const useCases = [
   },
   {
     id: 'UC17',
-    name: 'Reject Submission',
+    name: 'Reject Submission (Mandatory Reason)',
     module: 'E. Submission Review & Verification',
     primaryActor: 'System Administrator',
     secondaryActors: 'Email Service (SMTP Transactional Mailer)',
@@ -603,7 +603,7 @@ const useCases = [
     id: 'UC25',
     name: 'View Event Discussion',
     module: 'G. Fan Community Discussions',
-    primaryActor: 'Visitor (Guest) / Registered Fan',
+    primaryActor: 'Fan / Guest',
     secondaryActors: 'None',
     purpose: 'Enables fans and visitors to read contextual, 1-level threaded questions, logistical tips, and answers posted beneath any specific event listing.',
     trigger: 'User scrolls down to the "#discussion" section on any single event details page.',
@@ -626,7 +626,7 @@ const useCases = [
     id: 'UC26',
     name: 'Create Discussion Post',
     module: 'G. Fan Community Discussions',
-    primaryActor: 'Registered Fan',
+    primaryActor: 'Fan / Guest',
     secondaryActors: 'None',
     purpose: 'Allows authenticated fans to post a root question, transportation tip, or general query regarding an event.',
     trigger: 'Fan writes a message in the discussion box and clicks "Post Comment".',
@@ -653,7 +653,7 @@ const useCases = [
     id: 'UC27',
     name: 'Reply to Discussion',
     module: 'G. Fan Community Discussions',
-    primaryActor: 'Registered Fan',
+    primaryActor: 'Fan / Guest',
     secondaryActors: 'None',
     purpose: 'Enables fans, submitters, or administrators to post a direct 1-level nested reply to an existing question or topic starter.',
     trigger: 'Fan clicks the "[Reply]" button beneath an existing comment.',
@@ -677,7 +677,7 @@ const useCases = [
     id: 'UC28',
     name: 'Delete Own Comment',
     module: 'G. Fan Community Discussions',
-    primaryActor: 'Registered Fan / System Admin',
+    primaryActor: 'Fan / Guest / System Administrator',
     secondaryActors: 'None',
     purpose: 'Allows a fan to delete their own discussion comment or reply, and allows administrators to remove offending messages during moderation.',
     trigger: 'User clicks the trash icon on their own comment.',
@@ -702,9 +702,9 @@ const useCases = [
   // Module H: Content Moderation & Governance
   {
     id: 'UC29',
-    name: 'Report Content or Event',
+    name: 'Report Event',
     module: 'H. Content Moderation & Governance',
-    primaryActor: 'Registered Fan',
+    primaryActor: 'Fan / Guest',
     secondaryActors: 'None',
     purpose: 'Enables fans to report suspicious ticket scalper links, deceptive event listings, cancelled shows, or abusive discussion messages to platform administrators.',
     trigger: 'Fan clicks the "Report Event" button or flags a comment.',
@@ -822,7 +822,7 @@ const html = `<!DOCTYPE html>
                         <i class="fas fa-list-check text-pink-400"></i> 30 Core Use Cases
                     </span>
                     <span class="px-3 py-1.5 rounded-xl bg-white/10 border border-white/15 text-slate-200 flex items-center gap-1.5">
-                        <i class="fas fa-users text-purple-400"></i> 4 Human Actors (Visitor, Fan, Submitter, Admin)
+                        <i class="fas fa-users text-purple-400"></i> 3 Human Actors (Fan / Guest, Organizer / Submitter, System Administrator)
                     </span>
                     <span class="px-3 py-1.5 rounded-xl bg-white/10 border border-white/15 text-slate-200 flex items-center gap-1.5">
                         <i class="fas fa-cubes text-blue-400"></i> 8 Functional Packages (A through H)
@@ -848,7 +848,7 @@ const html = `<!DOCTYPE html>
                         <i class="fas fa-check-circle text-emerald-600"></i> Strictly Included & Justified Scope
                     </h3>
                     <ul class="space-y-1.5 list-disc list-inside">
-                        <li><strong>Account & Auth:</strong> Registration, Login, Logout, Profile management.</li>
+                        <li><strong>Account & Auth:</strong> Registration, Login (Email / Google Sign-In), Profile management.</li>
                         <li><strong>Event Discovery:</strong> Full discovery, search, multi-filter, and event dossier details.</li>
                         <li><strong>Model 2 Public Submission:</strong> Open submissions without account, tracked via tracking codes.</li>
                         <li><strong>Admin Verification:</strong> Evidence inspection, trust badges, rejection justification.</li>
@@ -994,68 +994,59 @@ const html = `<!DOCTYPE html>
                     <thead class="bg-slate-900 text-white font-bold">
                         <tr>
                             <th class="p-3">Functional Module</th>
-                            <th class="p-3 text-center">Visitor (Guest)</th>
-                            <th class="p-3 text-center">Public Submitter</th>
-                            <th class="p-3 text-center">Registered Fan</th>
+                            <th class="p-3 text-center">Fan / Guest</th>
+                            <th class="p-3 text-center">Organizer / Submitter</th>
                             <th class="p-3 text-center">System Administrator</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 text-slate-700">
                         <tr>
-                            <td class="p-3 font-bold">A. Account & Auth (Register, Log In, Log Out)</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Register/Login</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Register/Login</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Full Profile</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Admin Auth</td>
+                            <td class="p-3 font-bold">A. Account & Profile Management</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Register, Log In, Manage Profile</td>
+                            <td class="p-3 text-center text-slate-400">N/A (No Account Needed)</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Admin Log In</td>
                         </tr>
                         <tr>
-                            <td class="p-3 font-bold">B. Event Discovery (Browse, Search, Filter, Details)</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Read Only</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Read Only</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Full Read</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Full Read</td>
+                            <td class="p-3 font-bold">B. Event Discovery & Information</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Browse, Search, Filter, View Details</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Browse & View Details</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Full Access</td>
                         </tr>
                         <tr>
-                            <td class="p-3 font-bold">C. Saved Events (Bookmarks)</td>
-                            <td class="p-3 text-center text-rose-500"><i class="fas fa-xmark"></i> Login Req.</td>
-                            <td class="p-3 text-center text-rose-500"><i class="fas fa-xmark"></i> Login Req.</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Personal List</td>
+                            <td class="p-3 font-bold">C. Saved & Shared Events</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Share (Public); Save & View Saved (Authenticated)</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Share Event</td>
                             <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Available</td>
                         </tr>
                         <tr>
                             <td class="p-3 font-bold">D. Public Event Submission (Model 2: No Account)</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Submit & Track</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Submit & Resubmit</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Submit & Resubmit</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Full Override</td>
+                            <td class="p-3 text-center text-slate-400">Can act as Submitter</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Submit Event, Check Status, Correct & Resubmit</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Full Review & Audit</td>
                         </tr>
                         <tr>
-                            <td class="p-3 font-bold">E. Review & Verification (Queue, Approve, Reject)</td>
+                            <td class="p-3 font-bold">E. Submission Review & Verification</td>
                             <td class="p-3 text-center text-rose-500"><i class="fas fa-xmark"></i> Forbidden</td>
                             <td class="p-3 text-center text-rose-500"><i class="fas fa-xmark"></i> Forbidden</td>
-                            <td class="p-3 text-center text-rose-500"><i class="fas fa-xmark"></i> Forbidden</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-shield"></i> Sole Authority</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-shield"></i> Sole Authority (Approve, Reject, Verify)</td>
                         </tr>
                         <tr>
-                            <td class="p-3 font-bold">F. Published Event Management (Edit, Status, Venues)</td>
+                            <td class="p-3 font-bold">F. Published Event Management</td>
                             <td class="p-3 text-center text-rose-500"><i class="fas fa-xmark"></i> Forbidden</td>
                             <td class="p-3 text-center text-rose-500"><i class="fas fa-xmark"></i> Forbidden</td>
-                            <td class="p-3 text-center text-rose-500"><i class="fas fa-xmark"></i> Forbidden</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-shield"></i> Sole Authority</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-shield"></i> Sole Authority (Edit, Status, Taxonomy)</td>
                         </tr>
                         <tr>
-                            <td class="p-3 font-bold">G. Community Discussions (Read, Post, Reply, Delete)</td>
-                            <td class="p-3 text-center text-amber-600 font-bold"><i class="fas fa-eye"></i> Read Only</td>
-                            <td class="p-3 text-center text-amber-600 font-bold"><i class="fas fa-eye"></i> Read Only</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Post, Reply, Own Delete</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Full Moderation Delete</td>
+                            <td class="p-3 font-bold">G. Fan Community Discussions</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Read (Public); Post, Reply, Delete Own (Authenticated)</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Read / Reply to Event Threads</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-check"></i> Full Moderation (Delete Any Comment)</td>
                         </tr>
                         <tr>
-                            <td class="p-3 font-bold">H. Content Moderation (Report Flagging & Actions)</td>
-                            <td class="p-3 text-center text-rose-500"><i class="fas fa-xmark"></i> Login Req.</td>
-                            <td class="p-3 text-center text-rose-500"><i class="fas fa-xmark"></i> Login Req.</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-flag"></i> Submit Report</td>
-                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-gavel"></i> Investigate & Dismiss/Ban</td>
+                            <td class="p-3 font-bold">H. Content Moderation & Governance</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-flag"></i> Submit Report (Authenticated)</td>
+                            <td class="p-3 text-center text-rose-500"><i class="fas fa-xmark"></i> Login Required to Report</td>
+                            <td class="p-3 text-center text-emerald-600 font-bold"><i class="fas fa-gavel"></i> Sole Authority (Investigate & Enforce)</td>
                         </tr>
                     </tbody>
                 </table>

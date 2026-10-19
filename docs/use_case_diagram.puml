@@ -10,15 +10,11 @@ skinparam roundcorner 10
 title K-Sync Malaysia: System Use Case Diagram (30 Core Use Cases)\nA Centralized Platform for K-Pop Event Information and Fan Community Discussions
 
 ' ==============================================================================
-' ACTORS (Human Actors Only - Zero Artificial Internal System Actors)
+' ACTORS (3 Human Actors Only - System Actor Removed as Requested)
 ' ==============================================================================
-actor "Visitor\n(Guest)" as Visitor #LightSkyBlue
-actor "Registered Fan" as Fan #DeepSkyBlue
-actor "Public Submitter\n(No Account)" as Submitter #SandyBrown
+actor "Fan / Guest" as FanGuest #LightSkyBlue
+actor "Organizer / Submitter\n(No Account)" as Submitter #SandyBrown
 actor "System Administrator" as Admin #MediumOrchid
-
-' Inheritance Hierarchy: Registered Fan inherits public browsing abilities from Visitor
-Visitor <|-- Fan
 
 ' ==============================================================================
 ' SYSTEM BOUNDARY
@@ -30,7 +26,7 @@ rectangle "K-Sync Malaysia System (ksync.my)" {
     ' --------------------------------------------------------------------------
     package "A. Account & Profile Management" {
         usecase "UC01: Register Account" as UC01
-        usecase "UC02: Log In" as UC02
+        usecase "UC02: Log In\n(Email / Google Sign-In)" as UC02
         usecase "UC03: Manage Profile" as UC03
     }
 
@@ -50,15 +46,16 @@ rectangle "K-Sync Malaysia System (ksync.my)" {
     package "C. Saved & Shared Events" {
         usecase "UC08: Save / Unsave Event" as UC08
         usecase "UC09: View Saved Events" as UC09
-        usecase "UC10: Share Event" as UC10
+        usecase "UC10: Share Event\n(WhatsApp, X, Telegram, Copy Link)" as UC10
     }
 
     ' --------------------------------------------------------------------------
-    ' Module D: Public Event Submission (Model 2: Without Account) (3 UCs)
+    ' Module D: Public Event Submission (Without Account) (3 UCs)
     ' --------------------------------------------------------------------------
     package "D. Public Event Submission (Without Account)" {
-        usecase "UC11: Submit Event" as UC11
-        usecase "UC12: Check Submission Status" as UC12
+        usecase "UC11: Submit Event\n(Model 2: No Account)" as UC11
+        usecase "Provide Event Details\n& Supporting Evidence" as UC11_Details
+        usecase "UC12: Check Submission Status\n(Tracking Code)" as UC12
         usecase "UC13: Correct and Resubmit Event" as UC13
     }
 
@@ -68,8 +65,8 @@ rectangle "K-Sync Malaysia System (ksync.my)" {
     package "E. Submission Review & Verification" {
         usecase "UC14: View Pending Submissions" as UC14
         usecase "UC15: Review Event Submission" as UC15
-        usecase "UC16: Approve & Publish Submission" as UC16
-        usecase "UC17: Reject Submission" as UC17
+        usecase "UC16: Approve and Publish Submission" as UC16
+        usecase "UC17: Reject Submission\n(Mandatory Reason)" as UC17
         usecase "UC18: Manage Verified Organizer Status" as UC18
     }
 
@@ -82,7 +79,7 @@ rectangle "K-Sync Malaysia System (ksync.my)" {
         usecase "UC21: Unpublish / Delete Event" as UC21
         usecase "UC22: Manage Event Categories" as UC22
         usecase "UC23: Manage Venues" as UC23
-        usecase "UC24: Manage Artists & Member Profiles" as UC24
+        usecase "UC24: Manage Artists and Member Profiles" as UC24
     }
 
     ' --------------------------------------------------------------------------
@@ -91,7 +88,7 @@ rectangle "K-Sync Malaysia System (ksync.my)" {
     package "G. Fan Community Discussions" {
         usecase "UC25: View Event Discussion" as UC25
         usecase "UC26: Create Discussion Post" as UC26
-        usecase "UC27: Reply to Discussion" as UC27
+        usecase "UC27: Reply to Discussion\n(1-Level Nested)" as UC27
         usecase "UC28: Delete Own Comment" as UC28
     }
 
@@ -99,39 +96,37 @@ rectangle "K-Sync Malaysia System (ksync.my)" {
     ' Module H: Content Moderation & Governance (2 UCs)
     ' --------------------------------------------------------------------------
     package "H. Content Moderation & Governance" {
-        usecase "UC29: Report Content or Event" as UC29
-        usecase "UC30: Investigate & Moderate Report" as UC30
+        usecase "UC29: Report Event" as UC29
+        usecase "UC30: Investigate and Moderate Report" as UC30
     }
 }
 
 ' ==============================================================================
-' ACTOR TO USE CASE ASSOCIATIONS
+' ACTOR ASSOCIATIONS
 ' ==============================================================================
 
-' 1. Visitor Associations (Public Access)
-Visitor --> UC01
-Visitor --> UC02
-Visitor --> UC04
-Visitor --> UC05
-Visitor --> UC06
-Visitor --> UC07
-Visitor --> UC10
-Visitor --> UC25
+' 1. Fan / Guest Associations
+FanGuest --> UC01
+FanGuest --> UC02
+FanGuest --> UC03
+FanGuest --> UC04
+FanGuest --> UC05
+FanGuest --> UC06
+FanGuest --> UC07
+FanGuest --> UC08
+FanGuest --> UC09
+FanGuest --> UC10
+FanGuest --> UC25
+FanGuest --> UC26
+FanGuest --> UC27
+FanGuest --> UC28
+FanGuest --> UC29
 
-' 2. Registered Fan Associations (Authenticated Privileges)
-Fan --> UC03
-Fan --> UC08
-Fan --> UC09
-Fan --> UC26
-Fan --> UC27
-Fan --> UC28
-Fan --> UC29
-
-' 3. Public Submitter Associations (Model 2: Frictionless Public Submissions)
+' 2. Organizer / Submitter Associations (Model 2)
 Submitter --> UC11
 Submitter --> UC12
 
-' 4. System Administrator Associations (Full Moderation & Catalog Governance)
+' 3. System Administrator Associations
 Admin --> UC02
 Admin --> UC14
 Admin --> UC15
@@ -148,11 +143,10 @@ Admin --> UC28
 Admin --> UC30
 
 ' ==============================================================================
-' UML «extend» RELATIONSHIPS (Conditional Optional Flows)
-' In strict UML, the dashed arrow points FROM extending usecase TO base usecase.
+' UML RELATIONSHIPS: «include» and «extend»
 ' ==============================================================================
+UC11 ..> UC11_Details : <<include>>
 UC13 ..> UC12 : <<extend>>
 UC29 ..> UC07 : <<extend>>
-UC29 ..> UC25 : <<extend>>
 
 @enduml
