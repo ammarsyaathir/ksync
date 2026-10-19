@@ -1133,3 +1133,5 @@ const html = `<!DOCTYPE html>
 
 fs.writeFileSync(path.resolve('docs/use_case_specification.html'), html);
 console.log('Successfully generated docs/use_case_specification.html! Total use cases documented:', useCases.length);
+
+export { useCases };
