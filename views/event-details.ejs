@@ -42,6 +42,9 @@
                         <i class="fas fa-users text-pink-300"></i> Verified – Community Event
                     </span>
                 <% } %>
+                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/10 backdrop-blur-md text-slate-200 border border-white/20 flex items-center gap-1.5">
+                    <i class="fas fa-clock-rotate-left text-pink-400"></i> Updated <%= helpers.timeAgo(event.updated_at || event.created_at) %>
+                </span>
             </div>
             <% if (event.verification_status === 'SUSPENDED') { %>
                 <div class="mb-3 p-3.5 rounded-2xl bg-rose-600/95 text-white text-xs font-medium flex items-center gap-2.5 backdrop-blur-md border border-rose-400 shadow-lg">
@@ -58,7 +61,14 @@
             <div class="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-slate-200 font-medium">
                 <span class="flex items-center"><i class="fas fa-microphone-lines me-1.5 text-pink-400"></i> <%= event.artist_name || 'Multiple Artists' %></span>
                 <span class="flex items-center"><i class="fas fa-calendar-day me-1.5 text-purple-400"></i> <%= helpers.formatDate(event.event_date) %></span>
-                <span class="flex items-center"><i class="fas fa-location-dot me-1.5 text-rose-400"></i> <%= event.venue_name %>, <%= event.city %></span>
+                <span class="flex items-center">
+                    <i class="fas fa-location-dot me-1.5 text-rose-400"></i> <%= event.venue_name %>, <%= event.city %>
+                    <a href="https://www.google.com/maps/search/?api=1&query=<%= encodeURIComponent(event.venue_name + ' ' + (event.city || 'Malaysia')) %>" 
+                       target="_blank" rel="noopener noreferrer" 
+                       class="ms-2 px-2 py-0.5 rounded-lg bg-white/10 hover:bg-white/20 text-pink-300 hover:text-white text-[11px] font-bold border border-white/20 transition-all inline-flex items-center gap-1">
+                        <i class="fas fa-map-location-dot text-[10px]"></i> Maps ↗
+                    </a>
+                </span>
             </div>
         </div>
     </div>
@@ -180,6 +190,41 @@
                     <% } %>
                 </div>
             <% } %>
+
+            <!-- Accessibility & Special Facilities (80% Demand in User Research) -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <h3 class="text-base sm:text-lg font-bold text-slate-900 flex items-center">
+                        <i class="fas fa-universal-access text-pink-600 me-2.5"></i> Accessibility & Special Facilities
+                    </h3>
+                    <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-pink-50 text-pink-700 border border-pink-200">
+                        Fan Inclusivity
+                    </span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-xs">
+                    <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-2.5">
+                        <i class="fas fa-wheelchair text-purple-600 text-base shrink-0 mt-0.5"></i>
+                        <div>
+                            <strong class="text-slate-900 block font-bold mb-0.5">OKU / Wheelchair Access</strong>
+                            <p class="text-slate-600 leading-relaxed">Dedicated ramp access, accessible passenger lifts, and reserved viewing zones for wheelchair users.</p>
+                        </div>
+                    </div>
+                    <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-2.5">
+                        <i class="fas fa-bolt-lightning text-amber-500 text-base shrink-0 mt-0.5"></i>
+                        <div>
+                            <strong class="text-slate-900 block font-bold mb-0.5">Sensory & Strobe Warning</strong>
+                            <p class="text-slate-600 leading-relaxed">Stage performance features sudden loud pyrotechnics, heavy bass, and high-intensity strobe lighting.</p>
+                        </div>
+                    </div>
+                    <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-2.5">
+                        <i class="fas fa-kit-medical text-rose-500 text-base shrink-0 mt-0.5"></i>
+                        <div>
+                            <strong class="text-slate-900 block font-bold mb-0.5">Medical & Assistance</strong>
+                            <p class="text-slate-600 leading-relaxed">Certified first-aid paramedical booths on-site and priority seating assistance for expectant mothers.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Official Event Posters & Visual Gallery (Flexible 1-4 Posters: Square, Portrait, Landscape) -->
             <% 
@@ -338,6 +383,15 @@
                             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block me-1.5"></span> Open Discussion
                         </span>
                     <% } %>
+                </div>
+
+                <!-- Community Discussion Safety Guidelines (Requirement R-42) -->
+                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs text-slate-500 flex items-start gap-2.5">
+                    <i class="fas fa-shield-halved text-pink-500 text-sm shrink-0 mt-0.5"></i>
+                    <div class="leading-relaxed">
+                        <strong class="text-slate-800">Community Discussion Guidelines:</strong>
+                        Feel free to ask questions and share concert advice. Unofficial ticket reselling, scalping, harassment, and unverified rumors are strictly prohibited and subject to immediate moderation.
+                    </div>
                 </div>
 
                 <!-- Input Box (Posting Area) -->
@@ -590,12 +644,10 @@
                         </div>
                         <div>
                             <div class="font-bold text-slate-900"><%= event.venue_name %></div>
-                            <div class="text-slate-600"><%= event.address %>, <%= event.city %>, <%= event.state %></div>
-                            <% if (event.map_link) { %>
-                                <a href="<%= event.map_link %>" target="_blank" rel="noopener" class="text-pink-600 font-bold hover:underline inline-block mt-1">
-                                    <i class="fas fa-arrow-up-right-from-square me-1"></i> Open Google Maps
-                                </a>
-                            <% } %>
+                            <% const mapUrl = event.map_link || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(event.venue_name + ' ' + (event.city || 'Malaysia'))); %>
+                            <a href="<%= mapUrl %>" target="_blank" rel="noopener noreferrer" class="text-pink-600 font-bold hover:underline inline-flex items-center gap-1 mt-1.5">
+                                <i class="fas fa-arrow-up-right-from-square text-[10px]"></i> Open in Google Maps ↗
+                            </a>
                         </div>
                     </div>
 

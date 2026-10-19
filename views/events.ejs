@@ -159,7 +159,14 @@
 
                         <!-- Card Footer -->
                         <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-                            <span class="text-[11px] text-emerald-700 font-bold flex items-center"><i class="fas fa-circle-check me-1 text-emerald-600"></i> Verified</span>
+                            <div class="flex flex-col">
+                                <span class="text-[11px] text-emerald-700 font-bold flex items-center">
+                                    <i class="fas fa-circle-check me-1 text-emerald-600"></i> Verified
+                                </span>
+                                <span class="text-[10px] text-slate-400">
+                                    Updated <%= helpers.timeAgo(event.updated_at || event.created_at) %>
+                                </span>
+                            </div>
                             <a href="<%= helpers.getEventUrl(event) %>" 
                                class="px-4 py-1.5 rounded-xl bg-pink-50 hover:bg-pink-600 text-pink-700 hover:text-white text-xs font-bold transition-all shadow-sm">
                                 View Details &rarr;
