@@ -132,15 +132,15 @@ router.get('/chat/:eventId', async (req, res) => {
   }
 });
 
-// POST /api/chat/:eventId - Post Chat Message with 24h Closure Enforcement
+// POST /api/chat/:eventId - Post Discussion Comment or Reply
 router.post('/chat/:eventId', async (req, res) => {
   if (!req.session || !req.session.userId) {
-    return res.status(401).json({ status: 'unauthorized', message: 'Please log in to chat.' });
+    return res.status(401).json({ status: 'unauthorized', message: 'Please log in to join the discussion.' });
   }
 
   const eventId = Number(req.params.eventId);
   const userId = req.session.userId;
-  const { message } = req.body;
+  const { message, parent_id } = req.body;
 
   if (!message || !message.trim()) {
     return res.status(400).json({ status: 'error', message: 'Message content is required.' });
@@ -148,25 +148,33 @@ router.post('/chat/:eventId', async (req, res) => {
 
   try {
     // Enforce 24h post-event closure rule
-    const event = await db.getOne("SELECT event_date, end_time FROM events WHERE id = ?", [eventId]);
+    const event = await db.getOne("SELECT event_date, end_time, organizer_id FROM events WHERE id = ?", [eventId]);
     if (event) {
       const eventDateStr = event.event_date;
       const endTimeStr = event.end_time || '23:59:59';
       const eventEndTimestamp = new Date(`${eventDateStr}T${endTimeStr}`).getTime();
       const cutoffTime = eventEndTimestamp + (24 * 60 * 60 * 1000);
       if (Date.now() > cutoffTime) {
-        return res.status(403).json({ status: 'error', message: 'Chat is permanently closed (24h post-event limit reached).' });
+        return res.status(403).json({ status: 'error', message: 'Discussion is closed (24h post-event limit reached).' });
       }
     }
 
     const user = await db.getOne("SELECT COALESCE(role, 'FAN') as role FROM users WHERE id = ?", [userId]);
     const roleUpper = (user && user.role ? user.role : 'FAN').toUpperCase();
-    const isOrganizer = ['ORGANIZER', 'ADMIN'].includes(roleUpper) ? 1 : 0;
+    const isOrganizer = (event && event.organizer_id === userId) || ['ORGANIZER', 'ADMIN'].includes(roleUpper) ? 1 : 0;
+
+    let validParentId = null;
+    if (parent_id) {
+      const parent = await db.getOne("SELECT id, event_id FROM event_chat_messages WHERE id = ?", [Number(parent_id)]);
+      if (parent && parent.event_id === eventId) {
+        validParentId = parent.id;
+      }
+    }
 
     const result = await db.execute(`
-      INSERT INTO event_chat_messages (event_id, user_id, message, is_organizer)
-      VALUES (?, ?, ?, ?)
-    `, [eventId, userId, message.trim(), isOrganizer]);
+      INSERT INTO event_chat_messages (event_id, user_id, parent_id, message, is_organizer)
+      VALUES (?, ?, ?, ?, ?)
+    `, [eventId, userId, validParentId, message.trim(), isOrganizer]);
 
     return res.json({ status: 'success', messageId: result.insertId });
   } catch (err) {
@@ -174,5 +182,38 @@ router.post('/chat/:eventId', async (req, res) => {
     return res.status(500).json({ status: 'error', message: err.message });
   }
 });
+
+// DELETE & POST /api/chat/:messageId/delete - Delete Comment (Author or Admin)
+const handleDeleteComment = async (req, res) => {
+  if (!req.session || !req.session.userId) {
+    return res.status(401).json({ status: 'unauthorized', message: 'Authentication required.' });
+  }
+
+  const messageId = Number(req.params.messageId);
+  const userId = req.session.userId;
+  const userRole = (req.session.userRole || '').toUpperCase();
+
+  try {
+    const msg = await db.getOne("SELECT * FROM event_chat_messages WHERE id = ?", [messageId]);
+    if (!msg) {
+      return res.status(404).json({ status: 'error', message: 'Comment not found.' });
+    }
+
+    if (msg.user_id !== userId && userRole !== 'ADMIN') {
+      return res.status(403).json({ status: 'forbidden', message: 'You are not authorized to delete this comment.' });
+    }
+
+    // Delete comment and its replies
+    await db.execute("DELETE FROM event_chat_messages WHERE id = ? OR parent_id = ?", [messageId, messageId]);
+
+    return res.json({ status: 'success', message: 'Comment deleted successfully.' });
+  } catch (err) {
+    console.error('API delete chat error:', err);
+    return res.status(500).json({ status: 'error', message: err.message });
+  }
+};
+
+router.delete('/chat/:messageId', handleDeleteComment);
+router.post('/chat/:messageId/delete', handleDeleteComment);
 
 export default router;

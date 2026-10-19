@@ -125,6 +125,73 @@ export function formatTime(timeStr) {
 }
 
 /**
+ * Formats a timestamp into relative human-readable time (e.g. "2 hours ago", "Just now")
+ */
+export function timeAgo(dateInput) {
+  if (!dateInput) return '';
+  try {
+    const d = dateInput instanceof Date ? dateInput : new Date(dateInput);
+    if (isNaN(d.getTime())) return String(dateInput);
+    const now = new Date();
+    const diffSec = Math.floor((now.getTime() - d.getTime()) / 1000);
+    if (diffSec < 45) return 'Just now';
+    const diffMin = Math.floor(diffSec / 60);
+    if (diffMin < 60) return `${diffMin} ${diffMin === 1 ? 'min' : 'mins'} ago`;
+    const diffHours = Math.floor(diffMin / 60);
+    if (diffHours < 24) return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`;
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    return formatDate(d);
+  } catch (e) {
+    return String(dateInput);
+  }
+}
+
+const MEMBER_MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+/**
+ * Format a member's `members.dob` value for display.
+ * "1994-09-12" (MySQL DATE / SQLite TEXT) -> "September 12, 1994".
+ * Already-formatted strings are passed through untouched.
+ */
+export function formatMemberDob(value) {
+  if (!value) return '';
+  const s = String(value);
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return s;
+  const month = MEMBER_MONTHS[Number(m[2]) - 1];
+  if (!month) return s;
+  return `${month} ${Number(m[3])}, ${m[1]}`;
+}
+
+/**
+ * Map a normalised `members` table row onto the shape the event-details view
+ * expects (identical keys to the legacy `artists.members` JSON objects).
+ * height_cm -> "181 cm", debut_year -> "2013–present".
+ */
+export function normaliseMemberRow(row) {
+  const height = row.height_cm === null || row.height_cm === undefined || row.height_cm === '' ? null : Number(row.height_cm);
+  const year = row.debut_year === null || row.debut_year === undefined || row.debut_year === '' ? null : Number(row.debut_year);
+  const active = row.is_active === 0 || row.is_active === '0' || row.is_active === false ? false : true;
+
+  return {
+    stage_name: row.stage_name,
+    birth_name: row.birth_name,
+    group: row.group_name,
+    position: row.position,
+    dob: formatMemberDob(row.dob),
+    zodiac: row.zodiac,
+    height: Number.isFinite(height) ? `${height} cm` : '',
+    blood_type: row.blood_type,
+    mbti: row.mbti,
+    nationality: row.nationality,
+    years_active: year === null || !Number.isFinite(year) ? '' : (active ? `${year}–present` : `${year}`),
+    photo: row.photo
+  };
+}
+
+/**
  * Escape HTML special chars to prevent XSS
  */
 export function escapeHtml(str) {
@@ -358,6 +425,9 @@ export default {
   getTicketingSecurity,
   formatDate,
   formatTime,
+  timeAgo,
+  formatMemberDob,
+  normaliseMemberRow,
   escapeHtml,
   logActivity,
   createNotification,

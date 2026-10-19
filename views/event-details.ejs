@@ -237,7 +237,7 @@
                 <% } %>
             </div>
 
-            <!-- Idol Group Members & Biodata (Same Table 'artists.members') -->
+            <!-- Idol Group Members & Biodata (from the `members` table, FK -> artists.id) -->
             <% if (typeof members !== 'undefined' && members && members.length > 0) { %>
                 <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-6 border-b border-slate-100 gap-2">
@@ -316,78 +316,244 @@
                 </div>
             <% } %>
 
-            <!-- 24-Hour Event Live Group Chat Room -->
-            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-                <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+            <!-- Event-Based Community Discussion (1-Level Threaded Q&A Forum) -->
+            <div id="discussion" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                <!-- Discussion Section Header -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
                     <div>
                         <h2 class="text-xl font-bold text-slate-900 flex items-center">
-                            <i class="fas fa-comments text-pink-600 me-2.5"></i> Event Fan Chat Hub
+                            <i class="fas fa-comments text-pink-600 me-2.5"></i> Community Discussion
+                            <span class="ms-3 px-3 py-0.5 rounded-full text-xs font-extrabold bg-pink-50 text-pink-700 border border-pink-200">
+                                <%= totalCommentsCount || (typeof comments !== 'undefined' && comments ? comments.length : (chatMessages ? chatMessages.length : 0)) %> Comments
+                            </span>
                         </h2>
-                        <p class="text-xs text-slate-500 mt-1">Connect with Malaysian fans attending this show. Closes 24 hours after concert finishes.</p>
+                        <p class="text-xs text-slate-500 mt-1">Ask questions, share concert tips, and connect with fellow Malaysian attendees for this event.</p>
                     </div>
                     <% if (isChatLocked) { %>
-                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200">
-                            <i class="fas fa-lock me-1"></i> Chat Closed
+                        <span class="self-start sm:self-auto px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
+                            <i class="fas fa-lock me-1"></i> Discussion Archived
                         </span>
                     <% } else { %>
-                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block me-1"></span> Live Chat
+                        <span class="self-start sm:self-auto px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block me-1.5"></span> Open Discussion
                         </span>
                     <% } %>
                 </div>
 
-                <!-- Messages Stream Box -->
-                <div id="chat-messages" class="h-80 overflow-y-auto space-y-3 p-4 bg-slate-50 rounded-2xl border border-slate-200 mb-4">
-                    <% if (chatMessages.length === 0) { %>
-                        <div class="text-center py-12 text-slate-400 text-xs font-medium">
-                            No messages yet. Be the first fan to say hi!
-                        </div>
-                    <% } %>
-                    <% chatMessages.forEach(function(msg) { %>
-                        <div class="flex items-start space-x-3 <%= userObj && userObj.id === msg.user_id ? 'flex-row-reverse space-x-reverse' : '' %>">
-                            <div class="w-8 h-8 rounded-full bg-slate-300 overflow-hidden shrink-0">
-                                <% if (msg.profile_image) { %>
-                                    <img src="<%= msg.profile_image %>" alt="" class="w-full h-full object-cover">
+                <!-- Input Box (Posting Area) -->
+                <% if (isChatLocked) { %>
+                    <div class="p-4 rounded-2xl bg-slate-100 text-xs text-slate-500 font-medium flex items-center gap-2">
+                        <i class="fas fa-lock text-slate-400"></i> This discussion is archived (24-hour post-event archive window reached). All past questions and answers remain visible for reference.
+                    </div>
+                <% } else if (userObj) { %>
+                    <form id="main-comment-form" onsubmit="postComment(event, null)" class="bg-slate-50/80 p-4 sm:p-5 rounded-2xl border border-slate-200/80 space-y-3">
+                        <div class="flex items-start gap-3">
+                            <div class="w-9 h-9 rounded-full bg-pink-100 text-pink-700 font-extrabold text-xs flex items-center justify-center shrink-0 border border-pink-200 overflow-hidden">
+                                <% if (userObj.profile_image) { %>
+                                    <img src="<%= userObj.profile_image %>" alt="" class="w-full h-full object-cover">
                                 <% } else { %>
-                                    <div class="w-full h-full bg-pink-500 text-white text-xs font-bold flex items-center justify-center">
-                                        <%= (msg.full_name || 'F').charAt(0).toUpperCase() %>
+                                    <%= (userObj.full_name || userObj.username || 'U').charAt(0).toUpperCase() %>
+                                <% } %>
+                            </div>
+                            <div class="flex-1">
+                                <textarea id="main-comment-input" rows="3" 
+                                          placeholder="Write a comment or question about this event (e.g. transport, venue guidelines, merchandise, fan chants)..." 
+                                          required
+                                          class="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all resize-y"></textarea>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between pt-1">
+                            <span class="text-[11px] text-slate-400 flex items-center gap-1.5">
+                                <i class="fas fa-circle-info text-pink-500"></i> Be respectful and helpful to fellow fans
+                            </span>
+                            <button type="submit" id="main-comment-btn" 
+                                    class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer">
+                                <i class="fas fa-paper-plane text-pink-400"></i> Post Comment
+                            </button>
+                        </div>
+                    </form>
+                <% } else { %>
+                    <div class="p-5 rounded-2xl bg-gradient-to-r from-pink-50/80 via-purple-50/50 to-indigo-50/80 border border-pink-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-3.5">
+                            <div class="w-10 h-10 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center shrink-0 shadow-2xs">
+                                <i class="fas fa-comments text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-900">Join the Community Discussion</h4>
+                                <p class="text-[11px] text-slate-500">Please log in or create an account to post questions and share tips with other attendees.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2.5 shrink-0">
+                            <a href="/login?redirect=/events/<%= event.id %>#discussion" 
+                               class="px-4 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 text-xs font-bold transition-all shadow-2xs">
+                                Log In
+                            </a>
+                            <a href="/register" 
+                               class="px-4 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold transition-all shadow-2xs">
+                                Register
+                            </a>
+                        </div>
+                    </div>
+                <% } %>
+
+                <!-- The Comment Thread (1-Level Nested) -->
+                <% 
+                    const threadList = (typeof comments !== 'undefined' && comments) ? comments : []; 
+                %>
+                <div class="space-y-5 pt-2">
+                    <% if (threadList.length === 0) { %>
+                        <div class="text-center py-12 text-slate-400 text-xs font-medium bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
+                            <i class="fas fa-comment-dots text-3xl mb-2 text-slate-300 block"></i>
+                            No comments or questions yet. Be the first fan to start the discussion!
+                        </div>
+                    <% } else { %>
+                        <% threadList.forEach(function(comment) { %>
+                            <% 
+                                const isCommentAuthor = userObj && userObj.id === comment.user_id;
+                                const isAdmin = userObj && (userObj.role || '').toUpperCase() === 'ADMIN';
+                                const isSubmitter = (event.organizer_id && comment.user_id === event.organizer_id) || Boolean(comment.is_organizer);
+                                const isCommentAdmin = (comment.role || '').toUpperCase() === 'ADMIN';
+                            %>
+                            <div id="comment-<%= comment.id %>" class="bg-slate-50/60 hover:bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200/80 transition-all">
+                                <!-- Main Comment Header -->
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-9 h-9 rounded-full bg-slate-200 text-slate-700 font-extrabold text-xs flex items-center justify-center shrink-0 border border-slate-300/80 overflow-hidden">
+                                            <% if (comment.profile_image) { %>
+                                                <img src="<%= comment.profile_image %>" alt="" class="w-full h-full object-cover">
+                                            <% } else { %>
+                                                <%= (comment.username || comment.full_name || 'F').charAt(0).toUpperCase() %>
+                                            <% } %>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <div class="flex flex-wrap items-center gap-1.5">
+                                                <span class="text-xs font-extrabold text-slate-900 truncate">
+                                                    <%= comment.username || comment.full_name %>
+                                                </span>
+                                                <% if (isSubmitter) { %>
+                                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-pink-100 text-pink-700 border border-pink-200 flex items-center gap-1">
+                                                        <i class="fas fa-star text-[9px] text-pink-500"></i> Event Submitter
+                                                    </span>
+                                                <% } %>
+                                                <% if (isCommentAdmin) { %>
+                                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-purple-100 text-purple-700 border border-purple-200 flex items-center gap-1">
+                                                        <i class="fas fa-shield text-[9px] text-purple-500"></i> Admin
+                                                    </span>
+                                                <% } %>
+                                                <span class="text-slate-400 text-[11px] font-normal">
+                                                    • <%= helpers.timeAgo(comment.created_at) %>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Delete Action for Author or Admin -->
+                                    <% if (isCommentAuthor || isAdmin) { %>
+                                        <button onclick="deleteComment(<%= comment.id %>)" 
+                                                class="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors text-xs cursor-pointer" 
+                                                title="<%= isAdmin && !isCommentAuthor ? 'Moderate / Delete comment as Admin' : 'Delete your comment' %>">
+                                            <i class="fas fa-trash-can"></i>
+                                        </button>
+                                    <% } %>
+                                </div>
+
+                                <!-- Main Comment Body -->
+                                <div class="text-xs text-slate-700 leading-relaxed whitespace-pre-line mt-2.5 ps-12">
+                                    <%= comment.message %>
+                                </div>
+
+                                <!-- Action Controls (Reply Trigger) -->
+                                <% if (!isChatLocked && userObj) { %>
+                                    <div class="mt-2.5 ps-12 flex items-center gap-4">
+                                        <button onclick="toggleReplyBox(<%= comment.id %>)" 
+                                                class="text-[11px] font-bold text-pink-600 hover:text-pink-700 flex items-center gap-1 cursor-pointer transition-colors">
+                                            <i class="fas fa-reply text-[10px]"></i> Reply
+                                        </button>
+                                    </div>
+
+                                    <!-- Inline Reply Box (Hidden by default) -->
+                                    <form id="reply-form-<%= comment.id %>" 
+                                          onsubmit="postComment(event, <%= comment.id %>)" 
+                                          class="hidden mt-3 ps-12 space-y-2">
+                                        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-2xs space-y-2">
+                                            <textarea id="reply-input-<%= comment.id %>" rows="2" 
+                                                      placeholder="Write a reply to <%= comment.username || comment.full_name %>..." 
+                                                      required
+                                                      class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-500 resize-y"></textarea>
+                                            <div class="flex items-center justify-end gap-2">
+                                                <button type="button" onclick="toggleReplyBox(<%= comment.id %>)" 
+                                                        class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 text-xs font-semibold cursor-pointer">
+                                                    Cancel
+                                                </button>
+                                                <button type="submit" 
+                                                        class="px-4 py-1.5 rounded-lg bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold cursor-pointer shadow-2xs">
+                                                    Reply
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                <% } %>
+
+                                <!-- 1-Level Nested Direct Replies -->
+                                <% if (comment.replies && comment.replies.length > 0) { %>
+                                    <div class="mt-3.5 ms-6 sm:ms-12 ps-3 sm:ps-4 border-l-2 border-pink-200 space-y-3">
+                                        <% comment.replies.forEach(function(reply) { %>
+                                            <% 
+                                                const isReplyAuthor = userObj && userObj.id === reply.user_id;
+                                                const isReplySubmitter = (event.organizer_id && reply.user_id === event.organizer_id) || Boolean(reply.is_organizer);
+                                                const isReplyAdmin = (reply.role || '').toUpperCase() === 'ADMIN';
+                                            %>
+                                            <div id="comment-<%= reply.id %>" class="bg-white p-3 sm:p-3.5 rounded-xl border border-slate-200/80 shadow-2xs">
+                                                <div class="flex items-start justify-between gap-2">
+                                                    <div class="flex items-center gap-2.5">
+                                                        <span class="text-pink-400 font-bold text-xs">↳</span>
+                                                        <div class="w-7 h-7 rounded-full bg-slate-200 text-slate-700 font-bold text-[11px] flex items-center justify-center shrink-0 border border-slate-300 overflow-hidden">
+                                                            <% if (reply.profile_image) { %>
+                                                                <img src="<%= reply.profile_image %>" alt="" class="w-full h-full object-cover">
+                                                            <% } else { %>
+                                                                <%= (reply.username || reply.full_name || 'F').charAt(0).toUpperCase() %>
+                                                            <% } %>
+                                                        </div>
+                                                        <div class="flex flex-wrap items-center gap-1.5">
+                                                            <span class="text-xs font-bold text-slate-900">
+                                                                <%= reply.username || reply.full_name %>
+                                                            </span>
+                                                            <% if (isReplySubmitter) { %>
+                                                                <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-pink-100 text-pink-700 border border-pink-200">
+                                                                    Event Submitter
+                                                                </span>
+                                                            <% } %>
+                                                            <% if (isReplyAdmin) { %>
+                                                                <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-purple-100 text-purple-700 border border-purple-200">
+                                                                    Admin
+                                                                </span>
+                                                            <% } %>
+                                                            <span class="text-slate-400 text-[10px]">
+                                                                • <%= helpers.timeAgo(reply.created_at) %>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <% if (isReplyAuthor || isAdmin) { %>
+                                                        <button onclick="deleteComment(<%= reply.id %>)" 
+                                                                class="text-slate-400 hover:text-rose-600 p-1 rounded hover:bg-rose-50 transition-colors text-xs cursor-pointer" 
+                                                                title="Delete reply">
+                                                            <i class="fas fa-trash-can text-[10px]"></i>
+                                                        </button>
+                                                    <% } %>
+                                                </div>
+
+                                                <div class="text-xs text-slate-700 leading-relaxed whitespace-pre-line mt-1.5 ps-6">
+                                                    <%= reply.message %>
+                                                </div>
+                                            </div>
+                                        <% }); %>
                                     </div>
                                 <% } %>
                             </div>
-                            <div class="max-w-xs sm:max-w-md">
-                                <div class="text-[10px] text-slate-400 mb-0.5 <%= userObj && userObj.id === msg.user_id ? 'text-right' : '' %>">
-                                    <span class="font-bold text-slate-700"><%= msg.full_name %></span>
-                                    <% if (msg.is_organizer) { %>
-                                        <span class="px-1.5 py-0.2 rounded text-[9px] bg-emerald-100 text-emerald-800 font-bold">Organizer</span>
-                                    <% } %>
-                                </div>
-                                <div class="p-3 rounded-2xl text-xs <%= userObj && userObj.id === msg.user_id ? 'bg-slate-900 text-white rounded-tr-none' : 'bg-white text-slate-800 border border-slate-200 rounded-tl-none shadow-xs' %>">
-                                    <%= msg.message %>
-                                </div>
-                            </div>
-                        </div>
-                    <% }); %>
+                        <% }); %>
+                    <% } %>
                 </div>
-
-                <!-- Message Input -->
-                <% if (isChatLocked) { %>
-                    <div class="text-center p-3 rounded-xl bg-slate-100 text-xs text-slate-500 font-medium">
-                        <i class="fas fa-lock me-1.5"></i> This event chat is permanently closed (24-hour post-event archive window reached).
-                    </div>
-                <% } else if (userObj) { %>
-                    <form id="chat-form" onsubmit="sendChatMessage(event)" class="flex gap-2">
-                        <input type="text" id="chat-input" placeholder="Type a message to fellow attendees..." 
-                               class="flex-grow bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-300">
-                        <button type="submit" class="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-sm">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </form>
-                <% } else { %>
-                    <div class="text-center p-4 rounded-xl bg-slate-100 text-xs text-slate-600 font-medium">
-                        <a href="/login?redirect=/events/<%= event.id %>" class="font-bold text-pink-600 hover:underline">Log in</a> or 
-                        <a href="/register" class="font-bold text-slate-900 hover:underline">register</a> to participate in the live event chat.
-                    </div>
-                <% } %>
             </div>
         </div>
 
@@ -697,34 +863,86 @@
         }
     }
 
-    async function sendChatMessage(e) {
+    function toggleReplyBox(commentId) {
+        const form = document.getElementById(`reply-form-${commentId}`);
+        if (!form) return;
+        form.classList.toggle('hidden');
+        if (!form.classList.contains('hidden')) {
+            const textarea = document.getElementById(`reply-input-${commentId}`);
+            if (textarea) textarea.focus();
+        }
+    }
+
+    async function postComment(e, parentId = null) {
         e.preventDefault();
-        const input = document.getElementById('chat-input');
-        const msg = input.value.trim();
+        const inputId = parentId ? `reply-input-${parentId}` : 'main-comment-input';
+        const input = document.getElementById(inputId);
+        const msg = input ? input.value.trim() : '';
         if (!msg) return;
+
+        const btn = parentId ? e.target.querySelector('button[type="submit"]') : document.getElementById('main-comment-btn');
+        if (btn) {
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+        }
 
         try {
             const res = await fetch(`/api/chat/<%= event.id %>`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: msg })
+                body: JSON.stringify({ message: msg, parent_id: parentId })
             });
             const data = await res.json();
             if (data.status === 'success') {
                 input.value = '';
-                location.reload();
+                window.location.hash = 'discussion';
+                window.location.reload();
             } else {
-                alert(data.message || 'Error sending message');
+                alert(data.message || 'Error posting comment');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50');
+                }
             }
         } catch (err) {
-            console.error(err);
+            console.error('Comment submission error:', err);
+            alert('Failed to post comment. Please try again.');
+            if (btn) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+            }
         }
     }
 
-    // Scroll chat to bottom
-    const chatBox = document.getElementById('chat-messages');
-    if (chatBox) {
-        chatBox.scrollTop = chatBox.scrollHeight;
+    async function deleteComment(messageId) {
+        if (!confirm('Are you sure you want to delete this comment?')) return;
+
+        try {
+            const res = await fetch(`/api/chat/${messageId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await res.json();
+            if (data.status === 'success') {
+                const el = document.getElementById(`comment-${messageId}`);
+                if (el) {
+                    el.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    el.style.opacity = '0';
+                    el.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        window.location.hash = 'discussion';
+                        window.location.reload();
+                    }, 300);
+                } else {
+                    window.location.reload();
+                }
+            } else {
+                alert(data.message || 'Unable to delete comment.');
+            }
+        } catch (err) {
+            console.error('Delete comment error:', err);
+            alert('Network error while deleting comment.');
+        }
     }
 
     // Toast Helper

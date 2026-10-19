@@ -192,14 +192,39 @@ router.get('/events/:idOrSlug', async (req, res) => {
     }
     const interestCount = 0;
 
-    // Fetch chat messages
-    const chatMessages = await db.query(`
-      SELECT cm.*, u.full_name, u.username, u.profile_image
-      FROM event_chat_messages cm
-      JOIN users u ON cm.user_id = u.id
-      WHERE cm.event_id = ?
-      ORDER BY cm.created_at ASC
-    `, [eventId]);
+    // Fetch discussion comments with user roles and organize 1-level threading
+    let chatMessages = [];
+    let mainComments = [];
+    try {
+      chatMessages = await db.query(`
+        SELECT cm.*, u.full_name, u.username, u.profile_image, COALESCE(u.role, 'FAN') as role
+        FROM event_chat_messages cm
+        JOIN users u ON cm.user_id = u.id
+        WHERE cm.event_id = ?
+        ORDER BY cm.created_at ASC
+      `, [eventId]);
+
+      const replyMap = new Map();
+      for (const msg of chatMessages) {
+        if (msg.parent_id) {
+          if (!replyMap.has(msg.parent_id)) {
+            replyMap.set(msg.parent_id, []);
+          }
+          replyMap.get(msg.parent_id).push(msg);
+        } else {
+          msg.replies = [];
+          mainComments.push(msg);
+        }
+      }
+
+      for (const comment of mainComments) {
+        comment.replies = replyMap.get(comment.id) || [];
+      }
+    } catch (chatErr) {
+      console.error('Error loading comments:', chatErr.message);
+      chatMessages = [];
+      mainComments = [];
+    }
 
     // Check 24-hour post-event lock
     let isChatLocked = false;
@@ -213,9 +238,28 @@ router.get('/events/:idOrSlug', async (req, res) => {
       }
     } catch (e) {}
 
-    // Parse member biodatas from JSON
+    // Member biodata: read the normalised `members` table (FK -> artists.id).
+    // Falls back to the legacy `artists.members` JSON for any database that has
+    // not had the members-table migration applied yet.
     let members = [];
-    if (event.artist_members) {
+    if (event.artist_id) {
+      try {
+        const rows = await db.query(`
+          SELECT stage_name, birth_name, group_name, position, dob, zodiac, height_cm,
+                 blood_type, mbti, nationality, debut_year, photo, is_active
+          FROM members
+          WHERE artist_id = ?
+          ORDER BY sort_order ASC, id ASC
+        `, [event.artist_id]);
+        members = rows.map(helpers.normaliseMemberRow);
+      } catch (e) {
+        // `members` table not present yet - fall through to the JSON column
+        members = [];
+      }
+    }
+
+    // Legacy fallback: persisted JSON array on artists.members
+    if (members.length === 0 && event.artist_members) {
       try {
         members = typeof event.artist_members === 'string' ? JSON.parse(event.artist_members) : event.artist_members;
       } catch (e) {
@@ -245,6 +289,8 @@ router.get('/events/:idOrSlug', async (req, res) => {
       isInterested,
       interestCount,
       chatMessages,
+      comments: mainComments,
+      totalCommentsCount: chatMessages.length,
       isChatLocked,
       helpers,
       currentUser: res.locals.currentUser || null,

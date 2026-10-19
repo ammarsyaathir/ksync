@@ -1,6 +1,6 @@
 -- ============================================================================
 -- K-Sync Malaysia: Hostinger MySQL Production Schema (Chapter 1 Aligned)
--- Total Tables: 10 Essential Tables
+-- Total Tables: 11 Essential Tables
 -- Compatible with Hostinger MySQL 8.0 / MariaDB 10.4+ / phpMyAdmin
 -- ============================================================================
 
@@ -39,7 +39,7 @@ INSERT INTO `users` (`id`, `role`, `full_name`, `username`, `email`, `password_h
 INSERT INTO `users` (`id`, `role`, `full_name`, `username`, `email`, `password_hash`, `bio`, `profile_image`, `status`, `created_at`) VALUES (5, 'FAN', 'Google Test Fan', 'kpopfan_google_test', 'kpopfan_google_test@gmail.com', '$2b$10$XBZtbMFaFExmTqUrbfDF9edXz4JLKa4bsmnojT0vjoVra8lqcgg9i', '', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100', 'ACTIVE', '2026-10-16 14:52:53');
 
 -- --------------------------------------------------------
--- 3. Table structure for `artists` (With Idol Member Biodata JSON)
+-- 3. Table structure for `artists` (`members` LONGTEXT is a legacy JSON mirror of the `members` table)
 -- --------------------------------------------------------
 DROP TABLE IF EXISTS `artists`;
 CREATE TABLE `artists` (
@@ -63,6 +63,81 @@ INSERT INTO `artists` (`id`, `name`, `group_type`, `image_url`, `agency`, `descr
 INSERT INTO `artists` (`id`, `name`, `group_type`, `image_url`, `agency`, `description`, `members`, `created_at`) VALUES (6, 'TOMORROW X TOGETHER (TXT)', 'Boy Group', 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=600&auto=format&fit=crop', 'BIGHIT MUSIC', 'Gen Z icons 5-member boy group.', '[{"stage_name":"Yeonjun","birth_name":"Choi Yeon-jun (최연준)","group":"TOMORROW X TOGETHER (TXT)","position":"Main Rapper, Main Dancer, Vocalist","dob":"September 13, 1999","zodiac":"Virgo","height":"181.5 cm / 5\'11\\"","blood_type":"A","mbti":"ENFP","nationality":"South Korean","years_active":"2019–present","photo":"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop"},{"stage_name":"Soobin","birth_name":"Choi Soo-bin (최수빈)","group":"TOMORROW X TOGETHER (TXT)","position":"Leader, Vocalist, Rapper","dob":"December 5, 2000","zodiac":"Sagittarius","height":"185 cm / 6\'1\\"","blood_type":"A","mbti":"ISFP","nationality":"South Korean","years_active":"2019–present","photo":"https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop"},{"stage_name":"Beomgyu","birth_name":"Choi Beom-gyu (최범규)","group":"TOMORROW X TOGETHER (TXT)","position":"Vocalist, Dancer, Rapper, Center, Visual","dob":"March 13, 2001","zodiac":"Pisces","height":"180 cm / 5\'11\\"","blood_type":"AB","mbti":"INFJ","nationality":"South Korean","years_active":"2019–present","photo":"https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&auto=format&fit=crop"},{"stage_name":"Taehyun","birth_name":"Kang Tae-hyun (강태현)","group":"TOMORROW X TOGETHER (TXT)","position":"Main Vocalist, Dancer","dob":"February 5, 2002","zodiac":"Aquarius","height":"177 cm / 5\'10\\"","blood_type":"A","mbti":"ESTP","nationality":"South Korean","years_active":"2019–present","photo":"https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&auto=format&fit=crop"},{"stage_name":"HueningKai","birth_name":"Kai Kamal Huening (카이 카말 휴닝)","group":"TOMORROW X TOGETHER (TXT)","position":"Main Vocalist, Dancer, Maknae","dob":"August 14, 2002","zodiac":"Leo","height":"183 cm / 6\'0\\"","blood_type":"A","mbti":"ISTP","nationality":"Korean-American","years_active":"2019–present","photo":"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop"}]', '2026-09-21 09:06:15');
 INSERT INTO `artists` (`id`, `name`, `group_type`, `image_url`, `agency`, `description`, `members`, `created_at`) VALUES (7, 'Stray Kids', 'Boy Group', 'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=600&auto=format&fit=crop', 'JYP Entertainment', '8-member self-producing powerhouse.', '[{"stage_name":"Bang Chan","birth_name":"Christopher Bang (방찬)","group":"Stray Kids","position":"Leader, Producer, Vocalist, Dancer, Rapper","dob":"October 3, 1997","zodiac":"Libra","height":"171 cm","blood_type":"O","mbti":"ENFJ","nationality":"Korean-Australian","years_active":"2017–present","photo":"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop"},{"stage_name":"Felix","birth_name":"Felix Lee (이용복)","group":"Stray Kids","position":"Lead Dancer, Lead Rapper, Visual","dob":"September 15, 2000","zodiac":"Virgo","height":"171 cm","blood_type":"AB","mbti":"ESFJ","nationality":"Korean-Australian","years_active":"2017–present","photo":"https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop"}]', '2026-09-21 09:06:15');
 INSERT INTO `artists` (`id`, `name`, `group_type`, `image_url`, `agency`, `description`, `members`, `created_at`) VALUES (8, 'aespa', 'Girl Group', 'https://images.unsplash.com/photo-1511735111819-9a3f7709049c?w=600&auto=format&fit=crop', 'SM Entertainment', 'Futuristic 4-member girl group with avatar concept.', '[{"stage_name":"Karina","birth_name":"Yu Ji-min (유지민)","group":"aespa","position":"Leader, Main Dancer, Lead Rapper, Visual, Face","dob":"April 11, 2000","zodiac":"Aries","height":"167.8 cm","blood_type":"B","mbti":"ENFP","nationality":"South Korean","years_active":"2020–present","photo":"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop"},{"stage_name":"Winter","birth_name":"Kim Min-jeong (김민정)","group":"aespa","position":"Lead Vocalist, Lead Dancer, Visual","dob":"January 1, 2001","zodiac":"Capricorn","height":"164 cm","blood_type":"A","mbti":"ISFJ","nationality":"South Korean","years_active":"2020–present","photo":"https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&auto=format&fit=crop"}]', '2026-09-21 09:06:15');
+
+-- >> GENERATED by perf/gen-schema-members.mjs - do not edit by hand >>
+-- Normalised idol biodata: the 11th table, one row per member of the artists above.
+-- Regenerate with: node perf/gen-schema-members.mjs
+DROP TABLE IF EXISTS `members`;
+CREATE TABLE `members` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `artist_id` INT NOT NULL,
+  `stage_name` VARCHAR(100) NOT NULL,
+  `birth_name` VARCHAR(150) DEFAULT NULL,
+  `group_name` VARCHAR(100) DEFAULT NULL,
+  `position` VARCHAR(200) DEFAULT NULL,
+  `dob` DATE DEFAULT NULL,
+  `zodiac` VARCHAR(20) DEFAULT NULL,
+  `height_cm` DECIMAL(5,1) DEFAULT NULL,
+  `blood_type` VARCHAR(5) DEFAULT NULL,
+  `mbti` VARCHAR(20) DEFAULT NULL,
+  `nationality` VARCHAR(50) DEFAULT NULL,
+  `debut_year` INT DEFAULT NULL,
+  `photo` VARCHAR(255) DEFAULT NULL,
+  `is_active` TINYINT(1) NOT NULL DEFAULT 1,
+  `sort_order` INT NOT NULL DEFAULT 0,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY `uniq_members_artist_stage` (`artist_id`, `stage_name`),
+  KEY `idx_members_artist` (`artist_id`),
+  CONSTRAINT `fk_members_artist` FOREIGN KEY (`artist_id`) REFERENCES `artists` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'S.Coups', 'Choi Seung-cheol (최승철)', 'SEVENTEEN', 'Leader, Hip-Hop Team Leader, Rapper', '1995-08-08', 'Leo', 178, 'AB', 'INFP', 'South Korean', 2015, 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop', 1 FROM `artists` WHERE `name` = 'SEVENTEEN';
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'Jeonghan', 'Yoon Jeong-han (윤정한)', 'SEVENTEEN', 'Lead Vocalist, Visual', '1995-10-04', 'Libra', 178, 'B', 'ISFJ', 'South Korean', 2015, 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&auto=format&fit=crop', 2 FROM `artists` WHERE `name` = 'SEVENTEEN';
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'Hoshi', 'Kwon Soon-young (권순영)', 'SEVENTEEN', 'Performance Team Leader, Main Dancer, Vocalist', '1996-06-15', 'Gemini', 177, 'B', 'INFP', 'South Korean', 2015, 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&auto=format&fit=crop', 3 FROM `artists` WHERE `name` = 'SEVENTEEN';
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'Woozi', 'Lee Ji-hoon (이지훈)', 'SEVENTEEN', 'Vocal Team Leader, Lead Vocalist, Main Producer', '1996-11-22', 'Sagittarius', 164, 'A', 'INFJ', 'South Korean', 2015, 'https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=300&auto=format&fit=crop', 4 FROM `artists` WHERE `name` = 'SEVENTEEN';
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'Mingyu', 'Kim Min-gyu (김민규)', 'SEVENTEEN', 'Lead Rapper, Visual, Face of the Group', '1997-04-06', 'Aries', 187, 'B', 'ENTJ', 'South Korean', 2015, 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop', 5 FROM `artists` WHERE `name` = 'SEVENTEEN';
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'Nayeon', 'Im Na-yeon (임나연)', 'TWICE', 'Lead Vocalist, Lead Dancer, Center', '1995-09-22', 'Virgo', 163, 'A', 'ISTP', 'South Korean', 2015, 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop', 1 FROM `artists` WHERE `name` = 'TWICE';
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'Jihyo', 'Park Ji-hyo (박지효)', 'TWICE', 'Leader, Main Vocalist', '1997-02-01', 'Aquarius', 160, 'O', 'ESFP', 'South Korean', 2015, 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&auto=format&fit=crop', 2 FROM `artists` WHERE `name` = 'TWICE';
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'Sana', 'Minatozaki Sana (湊崎 紗夏)', 'TWICE', 'Sub Vocalist', '1996-12-29', 'Capricorn', 163, 'B', 'ENFP', 'Japanese', 2015, 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&auto=format&fit=crop', 3 FROM `artists` WHERE `name` = 'TWICE';
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'IU', 'Lee Ji-eun (이지은)', 'Soloist', 'Singer-Songwriter, Producer, Actress', '1993-05-16', 'Taurus', 161.8, 'A', 'INFJ', 'South Korean', 2008, 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&auto=format&fit=crop', 1 FROM `artists` WHERE `name` = 'IU (Lee Ji-eun)';
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'Jungwon', 'Yang Jung-won (양정원)', 'ENHYPEN', 'Leader, Lead Vocalist, Lead Dancer', '2004-02-09', 'Aquarius', 175, 'AB', 'ISTJ', 'South Korean', 2020, 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop', 1 FROM `artists` WHERE `name` = 'ENHYPEN';
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'Heeseung', 'Lee Hee-seung (이희승)', 'ENHYPEN', 'Main Vocalist, Lead Dancer, Center', '2001-10-15', 'Libra', 183, 'A', 'INFP', 'South Korean', 2020, 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop', 2 FROM `artists` WHERE `name` = 'ENHYPEN';
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'Ni-ki', 'Nishimura Riki (西村力)', 'ENHYPEN', 'Main Dancer, Sub Vocalist, Maknae', '2005-12-09', 'Sagittarius', 183, 'B', 'ESFP', 'Japanese', 2020, 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop', 3 FROM `artists` WHERE `name` = 'ENHYPEN';
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'An Yujin', 'An Yu-jin (안유진)', 'IVE', 'Leader, Main Vocalist, Lead Dancer', '2003-09-01', 'Virgo', 173, 'A', 'ISTP', 'South Korean', 2018, 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop', 1 FROM `artists` WHERE `name` = 'IVE';
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'Jang Wonyoung', 'Jang Won-young (장원영)', 'IVE', 'Vocalist, Visual, Center', '2004-08-31', 'Virgo', 173, 'O', 'E***', 'South Korean', 2018, 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&auto=format&fit=crop', 2 FROM `artists` WHERE `name` = 'IVE';
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'Yeonjun', 'Choi Yeon-jun (최연준)', 'TOMORROW X TOGETHER (TXT)', 'Main Rapper, Main Dancer, Vocalist', '1999-09-13', 'Virgo', 181.5, 'A', 'ENFP', 'South Korean', 2019, 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop', 1 FROM `artists` WHERE `name` = 'TOMORROW X TOGETHER (TXT)';
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'Soobin', 'Choi Soo-bin (최수빈)', 'TOMORROW X TOGETHER (TXT)', 'Leader, Vocalist, Rapper', '2000-12-05', 'Sagittarius', 185, 'A', 'ISFP', 'South Korean', 2019, 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop', 2 FROM `artists` WHERE `name` = 'TOMORROW X TOGETHER (TXT)';
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'Beomgyu', 'Choi Beom-gyu (최범규)', 'TOMORROW X TOGETHER (TXT)', 'Vocalist, Dancer, Rapper, Center, Visual', '2001-03-13', 'Pisces', 180, 'AB', 'INFJ', 'South Korean', 2019, 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&auto=format&fit=crop', 3 FROM `artists` WHERE `name` = 'TOMORROW X TOGETHER (TXT)';
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'Taehyun', 'Kang Tae-hyun (강태현)', 'TOMORROW X TOGETHER (TXT)', 'Main Vocalist, Dancer', '2002-02-05', 'Aquarius', 177, 'A', 'ESTP', 'South Korean', 2019, 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&auto=format&fit=crop', 4 FROM `artists` WHERE `name` = 'TOMORROW X TOGETHER (TXT)';
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'HueningKai', 'Kai Kamal Huening (카이 카말 휴닝)', 'TOMORROW X TOGETHER (TXT)', 'Main Vocalist, Dancer, Maknae', '2002-08-14', 'Leo', 183, 'A', 'ISTP', 'Korean-American', 2019, 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop', 5 FROM `artists` WHERE `name` = 'TOMORROW X TOGETHER (TXT)';
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'Bang Chan', 'Christopher Bang (방찬)', 'Stray Kids', 'Leader, Producer, Vocalist, Dancer, Rapper', '1997-10-03', 'Libra', 171, 'O', 'ENFJ', 'Korean-Australian', 2017, 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop', 1 FROM `artists` WHERE `name` = 'Stray Kids';
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'Felix', 'Felix Lee (이용복)', 'Stray Kids', 'Lead Dancer, Lead Rapper, Visual', '2000-09-15', 'Virgo', 171, 'AB', 'ESFJ', 'Korean-Australian', 2017, 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop', 2 FROM `artists` WHERE `name` = 'Stray Kids';
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'Karina', 'Yu Ji-min (유지민)', 'aespa', 'Leader, Main Dancer, Lead Rapper, Visual, Face', '2000-04-11', 'Aries', 167.8, 'B', 'ENFP', 'South Korean', 2020, 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop', 1 FROM `artists` WHERE `name` = 'aespa';
+INSERT IGNORE INTO `members` (`artist_id`,`stage_name`,`birth_name`,`group_name`,`position`,`dob`,`zodiac`,`height_cm`,`blood_type`,`mbti`,`nationality`,`debut_year`,`photo`,`sort_order`)
+SELECT `id`, 'Winter', 'Kim Min-jeong (김민정)', 'aespa', 'Lead Vocalist, Lead Dancer, Visual', '2001-01-01', 'Capricorn', 164, 'A', 'ISFJ', 'South Korean', 2020, 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&auto=format&fit=crop', 2 FROM `artists` WHERE `name` = 'aespa';
+-- << END GENERATED <<
 
 -- --------------------------------------------------------
 -- 4. Table structure for `event_categories`
@@ -155,10 +230,12 @@ CREATE TABLE `event_chat_messages` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `event_id` INT NOT NULL,
   `user_id` INT NOT NULL,
+  `parent_id` INT DEFAULT NULL,
   `message` TEXT NOT NULL,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (`event_id`) REFERENCES `events`(`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`parent_id`) REFERENCES `event_chat_messages`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `event_chat_messages` (`id`, `event_id`, `user_id`, `message`, `created_at`) VALUES (6, 1, 3, 'Hello fellow MOAs! Who is going to VIP Soundcheck at Zepp KL?', '2026-10-16 14:41:09');
