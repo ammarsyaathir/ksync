@@ -294,6 +294,43 @@ export async function crossCheckOfficialSource(sourceUrl, eventData) {
 // ============================================================================
 // 6. COMPONENT D: AI-ASSISTED MULTIMODAL POSTER & TEXT ANALYSIS (GEMINI API)
 // ============================================================================
+
+/**
+ * Executes a Gemini API call with automatic multi-model cascading:
+ * Priority 1: User-configured model (e.g. gemini-4-argon)
+ * Priority 2: Google latest fast model (gemini-3-flash-preview)
+ * Priority 3: Gemini flash-lite latest (gemini-flash-lite-latest)
+ */
+async function callGeminiWithCascade(candidateModels, payload, apiKey, timeout = 12000) {
+  let lastError = null;
+  const uniqueModels = Array.from(new Set(candidateModels.filter(Boolean)));
+  for (const model of uniqueModels) {
+    try {
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(timeout)
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const candidateText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (candidateText) {
+          return { data, model, candidateText };
+        }
+      }
+      const errData = await response.json().catch(() => ({}));
+      lastError = new Error(`Model ${model} HTTP ${response.status}: ${errData.error?.message || response.statusText}`);
+      console.warn(`[Gemini Cascade] ${model} unavailable (${response.status}), trying next candidate...`);
+    } catch (err) {
+      lastError = err;
+      console.warn(`[Gemini Cascade] ${model} error (${err.message}), trying next candidate...`);
+    }
+  }
+  throw lastError || new Error('All candidate Gemini models exhausted.');
+}
+
 export async function analyzePosterWithGemini(posterPathOrUrl, eventData) {
   const geminiApiKey = process.env.GEMINI_API_KEY;
 
@@ -303,9 +340,8 @@ export async function analyzePosterWithGemini(posterPathOrUrl, eventData) {
   }
 
   try {
-    // Real Gemini 3.5 Flash Multimodal API Call (Latest Generation)
-    const model = process.env.GEMINI_MODEL_VISION || 'gemini-3.5-flash';
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
+    const configuredModel = process.env.GEMINI_MODEL_VISION || 'gemini-4-argon';
+    const candidateModels = [configuredModel, 'gemini-3-flash-preview', 'gemini-flash-lite-latest'];
 
     const promptText = `
 You are the AI Event Verification Engine for K-Sync Malaysia.
@@ -350,26 +386,15 @@ Extract the following from the poster image and output STRICTLY VALID JSON:
       }
     };
 
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(12000)
-    });
-
-    if (!response.ok) {
-      throw new Error(`Gemini API HTTP Error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const candidateText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    const { candidateText, model: usedModel } = await callGeminiWithCascade(candidateModels, payload, geminiApiKey);
     const aiParsed = JSON.parse(candidateText);
 
     return {
       score: Math.round((aiParsed.confidence_score || 0.8) * 100),
       extractedData: aiParsed,
       discrepancies: aiParsed.discrepancies || [],
-      raw: aiParsed
+      raw: aiParsed,
+      activeModel: usedModel
     };
   } catch (aiErr) {
     console.warn('⚠️ Gemini API fallback invoked:', aiErr.message);
@@ -416,8 +441,8 @@ export async function auditEventWithSemanticAI(eventData, visionExtraction, sour
   }
 
   try {
-    const model = process.env.GEMINI_MODEL_AUDIT || 'gemini-3.5-flash';
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
+    const configuredModel = process.env.GEMINI_MODEL_AUDIT || 'gemini-4-argon';
+    const candidateModels = [configuredModel, 'gemini-3-flash-preview', 'gemini-flash-lite-latest'];
 
     const promptText = `
 You are the Senior AI Security & Semantic Auditor for K-Sync Malaysia.
@@ -459,23 +484,15 @@ Return STRICTLY JSON:
       }
     };
 
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(12000)
-    });
-
-    if (!response.ok) throw new Error(`Gemini Auditor Error: ${response.status}`);
-    const data = await response.json();
-    const candidateText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    const { candidateText, model: usedModel } = await callGeminiWithCascade(candidateModels, payload, geminiApiKey);
     const auditorParsed = JSON.parse(candidateText);
 
     return {
       score: Math.round((auditorParsed.semantic_confidence || 0.85) * 100),
       auditResult: auditorParsed,
       auditIssues: auditorParsed.audit_issues || [],
-      scamRisk: auditorParsed.scam_risk || 'LOW'
+      scamRisk: auditorParsed.scam_risk || 'LOW',
+      activeModel: usedModel
     };
   } catch (err) {
     console.warn('⚠️ Semantic Auditor fallback invoked:', err.message);
