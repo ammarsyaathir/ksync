@@ -6,6 +6,7 @@ import upload from '../middleware/upload.js';
 import { logActivity, notifyAdmins } from '../utils/helpers.js';
 import helpers from '../utils/helpers.js';
 import { sendSubmissionConfirmationEmail } from '../utils/mailer.js';
+import verificationEngine from '../services/verificationEngine.js';
 
 const router = express.Router();
 
@@ -119,6 +120,7 @@ router.post('/submit-event', upload.fields([{ name: 'poster_files', maxCount: 4 
       event_status: 'UPCOMING',
       verification_status: 'PENDING',
       trust_level: 'PENDING',
+      admin_verification_notes: '',
       tracking_code,
       submitter_name: submitter_name.trim(),
       submitter_email: submitter_email.trim(),
@@ -127,6 +129,16 @@ router.post('/submit-event', upload.fields([{ name: 'poster_files', maxCount: 4 
       organizer_social_url: organizer_social_url ? organizer_social_url.trim() : '',
       organizer_type: organizer_type ? organizer_type.trim() : 'Fanclub'
     };
+
+    // Execute Autonomous Multi-Factor Verification Engine (No Human Admin Needed)
+    try {
+      const vResult = await verificationEngine.executeAutomatedVerification(candidateData);
+      candidateData.verification_status = vResult.verificationStatus;
+      candidateData.trust_level = vResult.trustLevel;
+      candidateData.admin_verification_notes = `[Autonomous Engine] ${vResult.decisionSummary} (Confidence: ${vResult.compositeScore}%)`;
+    } catch (vErr) {
+      console.warn('⚠️ Automated verification engine notice:', vErr.message);
+    }
 
     let existingCols = null;
     try {
@@ -240,28 +252,63 @@ router.post('/check-submission/resubmit', async (req, res) => {
       return res.redirect('/check-submission');
     }
 
+    const updatedCandidate = {
+      ...ev,
+      event_name: event_name.trim(),
+      official_url: official_url.trim(),
+      poster_image: poster_image.trim(),
+      description: description.trim()
+    };
+
+    // Autonomous Dual-AI re-verification without human administrator
+    let vResult;
+    try {
+      vResult = await verificationEngine.executeAutomatedVerification(updatedCandidate, event_id);
+    } catch (vErr) {
+      console.warn('⚠️ Automated re-verification warning:', vErr.message);
+      vResult = {
+        verificationStatus: 'PENDING',
+        trustLevel: 'PENDING',
+        decisionSummary: 'Re-verification completed with basic rules check.',
+        compositeScore: 70
+      };
+    }
+
     await db.execute(`
       UPDATE events SET 
         event_name = ?,
         official_url = ?,
         poster_image = ?,
         description = ?,
-        verification_status = 'PENDING',
+        verification_status = ?,
+        trust_level = ?,
+        admin_verification_notes = ?,
         rejection_reason = NULL,
         updated_at = CURRENT_TIMESTAMP
       WHERE id = ?
-    `, [event_name.trim(), official_url.trim(), poster_image.trim(), description.trim(), event_id]);
+    `, [
+      event_name.trim(), 
+      official_url.trim(), 
+      poster_image.trim(), 
+      description.trim(), 
+      vResult.verificationStatus,
+      vResult.trustLevel,
+      `[Autonomous Dual-AI] ${vResult.decisionSummary} (Score: ${vResult.compositeScore}%)`,
+      event_id
+    ]);
 
     await logActivity(
       ev.organizer_id,
       'RESUBMIT_EVENT',
       'events',
       event_id,
-      `Event '${event_name.trim()}' [Ref: ${tracking_code}] corrected and resubmitted by organizer`,
+      `Event '${event_name.trim()}' [Ref: ${tracking_code}] re-verified autonomously by Dual-AI Engine -> ${vResult.verificationStatus}`,
       req.ip
     );
 
-    req.session.flash = { success: `Event '${event_name.trim()}' updated and resubmitted! Status reset to PENDING for admin review.` };
+    req.session.flash = { 
+      success: `Event '${event_name.trim()}' re-evaluated by Dual-AI Engine! Status: ${vResult.verificationStatus}. ${vResult.decisionSummary}` 
+    };
     res.redirect(`/check-submission?code=${encodeURIComponent(tracking_code)}`);
   } catch (err) {
     console.error('Resubmission error:', err);

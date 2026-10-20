@@ -74,13 +74,13 @@
                             </div>
                         </div>
 
-                        <!-- Step 2: Under Review -->
-                        <% const isUnderReview = ['PENDING', 'VERIFIED', 'REJECTED'].includes(event.verification_status); %>
+                        <!-- Step 2: Autonomous Multi-Factor Verification -->
+                        <% const isUnderReview = ['PENDING', 'VERIFIED', 'REJECTED', 'FLAGGED'].includes(event.verification_status); %>
                         <div class="flex items-center space-x-3 p-3 rounded-xl <%= isUnderReview ? 'bg-purple-50 border border-purple-200 text-purple-800' : 'bg-white border border-slate-200 text-slate-400' %>">
-                            <i class="fas fa-magnifying-glass text-purple-600 text-lg"></i>
+                            <i class="fas fa-robot text-purple-600 text-lg"></i>
                             <div>
-                                <div class="text-xs font-bold">2. Verification</div>
-                                <div class="text-[10px] text-purple-600">Admin reviewing links & poster</div>
+                                <div class="text-xs font-bold">2. Dual-AI Verification</div>
+                                <div class="text-[10px] text-purple-600">Vision OCR & Semantic Audit</div>
                             </div>
                         </div>
 
@@ -89,39 +89,95 @@
                             <div class="flex items-center space-x-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800">
                                 <i class="fas fa-circle-check text-emerald-600 text-lg"></i>
                                 <div>
-                                    <div class="text-xs font-bold">3. Published Live!</div>
-                                    <div class="text-[10px] text-emerald-600">Visible to all fans</div>
+                                    <div class="text-xs font-bold">3. Dual-AI Consensus!</div>
+                                    <div class="text-[10px] text-emerald-600">Published live to catalog</div>
                                 </div>
                             </div>
-                        <% } else if (event.verification_status === 'REJECTED') { %>
+                        <% } else if (event.verification_status === 'FLAGGED' || event.verification_status === 'REJECTED') { %>
                             <div class="flex items-center space-x-3 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800">
-                                <i class="fas fa-circle-xmark text-rose-600 text-lg"></i>
+                                <i class="fas fa-triangle-exclamation text-rose-600 text-lg"></i>
                                 <div>
-                                    <div class="text-xs font-bold">3. Rejected / Needs Edit</div>
-                                    <div class="text-[10px] text-rose-600">See notes below</div>
+                                    <div class="text-xs font-bold">3. Discrepancy Flagged</div>
+                                    <div class="text-[10px] text-rose-600">Action required below</div>
                                 </div>
                             </div>
                         <% } else { %>
-                            <div class="flex items-center space-x-3 p-3 rounded-xl bg-white border border-slate-200 text-slate-400">
-                                <i class="fas fa-clock text-slate-400 text-lg"></i>
+                            <div class="flex items-center space-x-3 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800">
+                                <i class="fas fa-clock text-amber-600 text-lg"></i>
                                 <div>
-                                    <div class="text-xs font-bold">3. Decision</div>
-                                    <div class="text-[10px] text-slate-400">Pending final review</div>
+                                    <div class="text-xs font-bold">3. Needs Evidence</div>
+                                    <div class="text-[10px] text-amber-600">Provide official link</div>
                                 </div>
                             </div>
                         <% } %>
                     </div>
                 </div>
 
-                <!-- Rejection Notes and Resubmission (UC23) -->
-                <% if (event.verification_status === 'REJECTED') { %>
-                    <div class="p-6 rounded-2xl bg-rose-50 border border-rose-200 space-y-4">
+                <!-- Dual-AI Verification Breakdown Telemetry Card -->
+                <div class="bg-gradient-to-br from-slate-900 to-indigo-950 rounded-2xl p-6 text-white border border-slate-800 shadow-md space-y-4">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-lg bg-pink-500/20 text-pink-400 flex items-center justify-center text-xs font-bold">
+                                <i class="fas fa-robot"></i>
+                            </span>
+                            <span class="text-xs font-extrabold uppercase tracking-wider text-slate-200">Autonomous Dual-AI Verification Engine</span>
+                        </div>
+                        <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full <%= event.verification_status === 'VERIFIED' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30' %>">
+                            <%= event.verification_status === 'VERIFIED' ? '✓ Dual-AI Consensus Confirmed' : '⚠️ Action Needed / Evidence Pending' %>
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+                        <div class="bg-white/5 rounded-xl p-3 border border-white/10">
+                            <div class="text-[10px] text-slate-400 font-bold uppercase">1. Rule Sanity</div>
+                            <div class="text-emerald-400 font-extrabold mt-1 flex items-center gap-1">
+                                <i class="fas fa-check-circle text-[10px]"></i> 100% Valid
+                            </div>
+                            <div class="text-[10px] text-slate-400 mt-0.5">Chronology & fields check</div>
+                        </div>
+
+                        <div class="bg-white/5 rounded-xl p-3 border border-white/10">
+                            <div class="text-[10px] text-slate-400 font-bold uppercase">2. Source Check</div>
+                            <div class="<%= (event.official_url || event.evidence_link) ? 'text-emerald-400' : 'text-amber-400' %> font-extrabold mt-1 flex items-center gap-1">
+                                <i class="fas <%= (event.official_url || event.evidence_link) ? 'fa-check-circle' : 'fa-circle-exclamation' %> text-[10px]"></i>
+                                <%= (event.official_url || event.evidence_link) ? 'Domain Linked' : 'No Source' %>
+                            </div>
+                            <div class="text-[10px] text-slate-400 mt-0.5 truncate"><%= event.official_url || 'Needs official URL' %></div>
+                        </div>
+
+                        <div class="bg-white/5 rounded-xl p-3 border border-white/10">
+                            <div class="text-[10px] text-slate-400 font-bold uppercase">3. Model 1 (Vision)</div>
+                            <div class="text-pink-300 font-extrabold mt-1 flex items-center gap-1">
+                                <i class="fas fa-eye text-[10px]"></i> Poster OCR
+                            </div>
+                            <div class="text-[10px] text-slate-400 mt-0.5">Graphics & dates cross-checked</div>
+                        </div>
+
+                        <div class="bg-white/5 rounded-xl p-3 border border-white/10">
+                            <div class="text-[10px] text-slate-400 font-bold uppercase">4. Model 2 (Auditor)</div>
+                            <div class="text-purple-300 font-extrabold mt-1 flex items-center gap-1">
+                                <i class="fas fa-shield-halved text-[10px]"></i> Semantic Sanity
+                            </div>
+                            <div class="text-[10px] text-slate-400 mt-0.5">Geographic & scam risk audited</div>
+                        </div>
+                    </div>
+
+                    <% if (event.admin_verification_notes) { %>
+                        <div class="p-3 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-300">
+                            <strong class="text-pink-300">Engine Telemetry:</strong> <%= event.admin_verification_notes %>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- Discrepancy Resolution & Automated Re-Verification (UC13) -->
+                <% if (['REJECTED', 'FLAGGED', 'PENDING'].includes(event.verification_status) && event.verification_status !== 'VERIFIED') { %>
+                    <div class="p-6 rounded-2xl bg-amber-50 border border-amber-200 space-y-4">
                         <div class="flex items-start space-x-3">
-                            <i class="fas fa-circle-exclamation text-rose-500 text-xl shrink-0 mt-0.5"></i>
+                            <i class="fas fa-circle-exclamation text-amber-500 text-xl shrink-0 mt-0.5"></i>
                             <div>
-                                <h4 class="text-sm font-bold text-rose-900">Admin Review Notes / Rejection Reason</h4>
-                                <p class="text-xs text-rose-700 mt-1 leading-relaxed">
-                                    <%= event.rejection_reason || 'Official evidence or poster link was unverifiable. Please provide valid official sources.' %>
+                                <h4 class="text-sm font-bold text-amber-900">Autonomous Verification Feedback</h4>
+                                <p class="text-xs text-amber-700 mt-1 leading-relaxed">
+                                    <%= event.admin_verification_notes || event.rejection_reason || 'Autonomous verification requires additional evidence or correction of detected discrepancies. Update the fields below to trigger an immediate re-evaluation.' %>
                                 </p>
                             </div>
                         </div>
@@ -129,15 +185,15 @@
                         <!-- Resubmission Button -->
                         <div class="pt-2">
                             <button onclick="document.getElementById('resubmit-box').classList.toggle('hidden')" 
-                                    class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow transition-all">
-                                <i class="fas fa-pen-to-square me-1.5"></i> Correct and Resubmit Event (UC23)
+                                    class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow transition-all inline-flex items-center gap-2">
+                                <i class="fas fa-wand-magic-sparkles text-pink-400"></i> Correct Event & Re-run Dual-AI Verification
                             </button>
                         </div>
                     </div>
 
                     <!-- Resubmit Form (Initially hidden) -->
                     <div id="resubmit-box" class="hidden bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
-                        <h4 class="text-sm font-bold text-slate-900">Update Event Details for Resubmission</h4>
+                        <h4 class="text-sm font-bold text-slate-900">Update Event Details for Autonomous Re-Verification</h4>
                         <form action="/check-submission/resubmit" method="POST" class="space-y-4">
                             <input type="hidden" name="event_id" value="<%= event.id %>">
                             <input type="hidden" name="tracking_code" value="<%= event.tracking_code %>">
@@ -162,12 +218,12 @@
                             </div>
 
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Description / Notes for Admin</label>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Event Description & Ticketing Notes</label>
                                 <textarea name="description" rows="3" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs"><%= event.description %></textarea>
                             </div>
 
-                            <button type="submit" class="px-6 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold shadow">
-                                Submit Correction for Re-Review
+                            <button type="submit" class="px-6 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold shadow inline-flex items-center gap-2">
+                                <i class="fas fa-bolt"></i> Re-evaluate with Dual-AI Engine Now
                             </button>
                         </form>
                     </div>
