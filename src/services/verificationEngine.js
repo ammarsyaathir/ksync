@@ -303,8 +303,8 @@ export async function analyzePosterWithGemini(posterPathOrUrl, eventData) {
   }
 
   try {
-    // Real Gemini Flash Multimodal API Call (Gemini 3.8 / Flash Latest)
-    const model = process.env.GEMINI_MODEL_VISION || 'gemini-3.8-flash';
+    // Real Gemini 3.5 Flash Multimodal API Call (Latest Generation)
+    const model = process.env.GEMINI_MODEL_VISION || 'gemini-3.5-flash';
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
 
     const promptText = `
@@ -345,7 +345,8 @@ Extract the following from the poster image and output STRICTLY VALID JSON:
         ]
       }],
       generationConfig: {
-        response_mime_type: "application/json"
+        response_mime_type: "application/json",
+        thinkingConfig: { thinkingBudget: 0 }
       }
     };
 
@@ -353,7 +354,7 @@ Extract the following from the poster image and output STRICTLY VALID JSON:
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(6000)
+      signal: AbortSignal.timeout(12000)
     });
 
     if (!response.ok) {
@@ -415,7 +416,7 @@ export async function auditEventWithSemanticAI(eventData, visionExtraction, sour
   }
 
   try {
-    const model = process.env.GEMINI_MODEL_AUDIT || 'gemini-3.1-pro-preview';
+    const model = process.env.GEMINI_MODEL_AUDIT || 'gemini-3.5-flash';
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
 
     const promptText = `
@@ -452,14 +453,17 @@ Return STRICTLY JSON:
 
     const payload = {
       contents: [{ parts: [{ text: promptText }] }],
-      generationConfig: { response_mime_type: "application/json" }
+      generationConfig: {
+        response_mime_type: "application/json",
+        thinkingConfig: { thinkingBudget: 0 }
+      }
     };
 
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(6000)
+      signal: AbortSignal.timeout(12000)
     });
 
     if (!response.ok) throw new Error(`Gemini Auditor Error: ${response.status}`);
