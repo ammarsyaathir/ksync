@@ -57,13 +57,16 @@
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
                     <button type="button" onclick="fillSampleData('aespa')" id="btnAutofillAespa" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-extrabold text-xs shadow-md shadow-pink-500/20 transition-all flex items-center gap-2 active:scale-95 cursor-pointer">
-                        <i class="fas fa-magic text-yellow-300"></i> ✨ 1-Click Fill: aespa World Tour (Sample)
+                        <i class="fas fa-magic text-yellow-300"></i> ✨ 1-Click: aespa (Concert)
+                    </button>
+                    <button type="button" onclick="fillSampleData('boynextdoor')" class="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-md shadow-blue-500/20 transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                        <i class="fas fa-door-open text-yellow-200"></i> BOYNEXTDOOR (iMe)
                     </button>
                     <button type="button" onclick="fillSampleData('ive')" class="px-3 py-2 rounded-xl bg-white border border-slate-200 hover:border-pink-300 text-slate-700 hover:text-pink-600 font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer">
                         <i class="fas fa-music text-purple-500"></i> IVE Tour
                     </button>
                     <button type="button" onclick="fillSampleData('cupsleeve')" class="px-3 py-2 rounded-xl bg-white border border-slate-200 hover:border-pink-300 text-slate-700 hover:text-pink-600 font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer">
-                        <i class="fas fa-coffee text-amber-500"></i> Cupsleeve Event
+                        <i class="fas fa-coffee text-amber-500"></i> Cupsleeve
                     </button>
                     <button type="button" onclick="clearFormFields()" title="Reset / Clear all fields" class="px-2.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-rose-50 hover:border-rose-200 text-slate-500 hover:text-rose-600 text-xs font-bold transition-all cursor-pointer">
                         <i class="fas fa-rotate-left"></i>
@@ -336,6 +339,23 @@ const SAMPLE_PRESETS = {
         event_rules: '- Strictly no DSLR cameras, telephoto zoom lenses, tablets, or audio/video recording devices.\n- Official aespa Lightsticks (Version 1 & 2) permitted.\n- VIP Soundcheck queuing begins at 1:00 PM; Soundcheck starts at 4:00 PM.\n- Bags larger than A4 paper size are strictly prohibited inside the arena hall.',
         official_url: 'https://www.livenation.my/show/1458892/aespa-live-tour-synk-parallel-line-in-kuala-lumpur',
         poster_url: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop'
+    },
+    boynextdoor: {
+        event_name: "BOYNEXTDOOR TOUR 'KNOCK ON Vol.2' IN KUALA LUMPUR",
+        artist_id: '18', // BOYNEXTDOOR
+        category_id: '1', // Concert
+        description: "KOZ Entertainment and iMe Malaysia are proud to present BOYNEXTDOOR TOUR 'KNOCK ON Vol.2' IN KUALA LUMPUR! Sungho, Riwoo, Jaehyun, Taesan, Leehan, and Woonhak bring their powerhouse vocals, explosive stages, and infectious energy to Unifi Arena Bukit Jalil on 26 December 2026. Don't miss this landmark concert experience packed with fan favorites and custom stages.",
+        event_date: '2026-12-26',
+        start_time: '18:00',
+        end_time: '21:00',
+        venue_name: 'Unifi Arena',
+        city: 'Kuala Lumpur',
+        state: 'Wilayah Persekutuan Kuala Lumpur',
+        address: 'Kompleks Sukan Negara, Bukit Jalil, 57000 Kuala Lumpur',
+        ticket_info: 'VIP Soundcheck: RM 888 (Includes Soundcheck Pass, Official VIP Lanyard & Laminate)\nCAT 1 Standing: RM 688\nCAT 2 Seated: RM 588\nCAT 3 Seated: RM 488\nCAT 4 Seated: RM 288\n*Prices exclude RM 4 processing fee. All standing tickets require queue number allocation.',
+        event_rules: '- Strictly no professional cameras, DSLRs, or telephoto zoom lenses.\n- Official BOYNEXTDOOR Lightsticks permitted.\n- Doors open 2 hours prior to showtime; Soundcheck pass holders queue begins at 2:00 PM.\n- Re-entry is strictly prohibited.',
+        official_url: 'https://ime.co/blog/tour/boynextdoor-tour-knock-on-vol-2-in-kuala-lumpur/',
+        poster_url: 'https://ime.co/wp-content/uploads/2026/07/01_BND_1080x1350.jpg'
     },
     ive: {
         event_name: 'IVE THE 2ND WORLD TOUR <SHOW WHAT I HAVE> IN KUALA LUMPUR',

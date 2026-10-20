@@ -22,6 +22,7 @@ const TRUSTED_SOURCE_DOMAINS = {
     'starline.my',
     'starplanet.com.my',
     'ime.my',
+    'ime.co',
     'weverse.io',
     'smtown.com',
     'jype.com',
