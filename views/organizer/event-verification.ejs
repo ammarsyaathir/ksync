@@ -193,6 +193,204 @@
         </div>
     </div>
 
+    <!-- ========================================================================= -->
+    <!-- WHAT THE VERIFIER COMPARED (Attribute Validation & Detailed Checks Table) -->
+    <!-- ========================================================================= -->
+    <% if (vResult.details && vResult.details.verifierComparison) { 
+        const comp = vResult.details.verifierComparison;
+        const ep = comp.evidencePageMatch;
+    %>
+    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm mb-8 space-y-6">
+        <!-- Section Header -->
+        <div class="border-b border-slate-100 pb-5">
+            <div class="flex items-center gap-2 mb-1.5">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-50 text-indigo-700 uppercase tracking-wider">
+                    Deep Audit Telemetry
+                </span>
+                <span class="text-xs text-slate-400">Attribute Cross-Examination</span>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+                What the verifier compared
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
+                <strong>Score <%= comp.score %>/100</strong> · <span class="<%= comp.failedChecksCount > 0 ? 'text-rose-600 font-bold' : 'text-emerald-600 font-bold' %>"><%= comp.failedChecksCount %> check(s) failed</span>. 
+                <span class="text-slate-500">Hard gates: evidence URL, reachable page, no duplicate, and at least one content match (official page, AI confirmation, or an independent search result). Other failures only reduce the score.</span>
+            </p>
+        </div>
+
+        <!-- 1. Evidence Page Match Box -->
+        <div class="bg-slate-50/70 border border-slate-200 rounded-2xl p-5 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 pb-3">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center text-xs">
+                        <i class="fas fa-file-lines"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs sm:text-sm font-bold text-slate-900">Evidence page match</h4>
+                        <div class="text-[11px] text-slate-500">
+                            Page title: <strong class="text-slate-800"><%= ep.pageTitle || 'None' %></strong> · readable text: <strong class="text-slate-800"><%= ep.readableCharCount %> characters</strong>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <% if (ep.isJsRendered) { %>
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                            <i class="fas fa-triangle-exclamation me-1"></i> Low Readable Text
+                        </span>
+                    <% } else { %>
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            <i class="fas fa-check me-1"></i> Content Verified
+                        </span>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Attribute Match Meters -->
+            <div>
+                <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Attribute Match Rates</div>
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                    <!-- Event Name -->
+                    <div class="p-3 bg-white rounded-xl border border-slate-200 text-center">
+                        <div class="text-[10px] text-slate-400 font-bold uppercase">Event Name</div>
+                        <div class="text-base font-extrabold mt-0.5 <%= ep.eventNamePct >= 50 ? 'text-emerald-600' : (ep.eventNamePct > 0 ? 'text-amber-600' : 'text-rose-600') %>">
+                            <%= ep.eventNamePct %>%
+                        </div>
+                    </div>
+                    <!-- Artist -->
+                    <div class="p-3 bg-white rounded-xl border border-slate-200 text-center">
+                        <div class="text-[10px] text-slate-400 font-bold uppercase">Artist</div>
+                        <div class="text-base font-extrabold mt-0.5 <%= ep.artistPct >= 50 ? 'text-emerald-600' : 'text-rose-600' %>">
+                            <%= ep.artistPct %>%
+                        </div>
+                    </div>
+                    <!-- Venue -->
+                    <div class="p-3 bg-white rounded-xl border border-slate-200 text-center">
+                        <div class="text-[10px] text-slate-400 font-bold uppercase">Venue</div>
+                        <div class="text-base font-extrabold mt-0.5 <%= ep.venuePct >= 50 ? 'text-emerald-600' : 'text-rose-600' %>">
+                            <%= ep.venuePct %>%
+                        </div>
+                    </div>
+                    <!-- City -->
+                    <div class="p-3 bg-white rounded-xl border border-slate-200 text-center">
+                        <div class="text-[10px] text-slate-400 font-bold uppercase">City</div>
+                        <div class="text-base font-extrabold mt-0.5 <%= ep.cityPct >= 50 ? 'text-emerald-600' : 'text-rose-600' %>">
+                            <%= ep.cityPct %>%
+                        </div>
+                    </div>
+                    <!-- Date -->
+                    <div class="p-3 bg-white rounded-xl border border-slate-200 text-center col-span-2 sm:col-span-1">
+                        <div class="text-[10px] text-slate-400 font-bold uppercase">Date Match</div>
+                        <div class="text-[11px] font-bold mt-1.5 truncate <%= ep.hasDateMatch ? 'text-emerald-600' : 'text-rose-600' %>" title="<%= ep.dateMatchText %>">
+                            <%= ep.hasDateMatch ? 'Matched' : 'No match' %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JS Shell Alert Callout (if low text) -->
+            <% if (ep.isJsRendered) { %>
+                <div class="p-3.5 bg-amber-50/80 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-start gap-2.5">
+                    <i class="fas fa-circle-info text-amber-600 text-sm mt-0.5 shrink-0"></i>
+                    <div>
+                        <strong class="font-bold">The page returned very little readable text (<%= ep.readableCharCount %> characters)</strong>
+                        <p class="mt-0.5 text-amber-800 text-[11px] leading-relaxed">
+                            It may be JavaScript-rendered, so the verifier sees only the page shell. Use a server-rendered announcement, a news article, or the organiser's own page.
+                        </p>
+                    </div>
+                </div>
+            <% } %>
+
+            <!-- Expandable Readable Text -->
+            <details class="group text-xs text-slate-600">
+                <summary class="cursor-pointer font-bold text-pink-600 hover:text-pink-700 flex items-center gap-1.5 select-none">
+                    <i class="fas fa-chevron-right text-[10px] transition-transform group-open:rotate-90"></i>
+                    <span>Show the text the verifier could read</span>
+                </summary>
+                <div class="mt-2.5 p-3.5 bg-white rounded-xl border border-slate-200 text-[11px] font-mono text-slate-700 leading-relaxed max-h-40 overflow-y-auto">
+                    <%= ep.readableSnippet || 'No readable text content extracted.' %>
+                </div>
+            </details>
+        </div>
+
+        <!-- 2. AI Votes Panel -->
+        <div class="bg-slate-50/70 border border-slate-200 rounded-2xl p-5 space-y-3">
+            <h4 class="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-2">
+                <i class="fas fa-microchip text-purple-600"></i> AI votes
+            </h4>
+            <div class="space-y-2 text-xs">
+                <% comp.aiVotes.forEach(vote => { 
+                    const isErr = vote.status.includes('error') || vote.status.includes('rejects');
+                    const isPass = vote.status.includes('passes');
+                %>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between p-2.5 rounded-xl bg-white border border-slate-200 gap-1.5">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full <%= isPass ? 'bg-emerald-500' : (isErr ? 'bg-rose-500' : 'bg-slate-400') %>"></span>
+                            <span class="font-mono font-bold text-slate-800 text-xs"><%= vote.modelId %></span>
+                        </div>
+                        <div class="text-[11px] font-medium <%= isPass ? 'text-emerald-700' : (isErr ? 'text-rose-700' : 'text-slate-600') %>">
+                            — <%= vote.status %>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+
+        <!-- 3. All Checks Detailed Checklist Table -->
+        <div class="space-y-3">
+            <div class="flex items-center justify-between">
+                <h4 class="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fas fa-clipboard-check text-emerald-600"></i> Show all checks
+                </h4>
+                <span class="text-[11px] text-slate-500">14 Automated Criteria Evaluated</span>
+            </div>
+
+            <div class="overflow-x-auto border border-slate-200 rounded-2xl">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-50 text-slate-600 font-extrabold uppercase text-[10px] tracking-wider border-b border-slate-200">
+                        <tr>
+                            <th class="py-3 px-4">Check</th>
+                            <th class="py-3 px-4 w-28">Result</th>
+                            <th class="py-3 px-4 w-20 text-right">Points</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white font-medium">
+                        <% comp.checks.forEach(chk => { 
+                            let badgeBg = 'bg-slate-100 text-slate-700 border-slate-200';
+                            if (chk.status === 'Passed') badgeBg = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                            if (chk.status === 'Failed') badgeBg = 'bg-rose-50 text-rose-700 border-rose-200';
+                            if (chk.status === 'Skipped') badgeBg = 'bg-amber-50 text-amber-700 border-amber-200';
+                        %>
+                            <tr class="hover:bg-slate-50/60 transition-colors">
+                                <td class="py-3 px-4">
+                                    <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                                        <%= chk.name %>
+                                        <% if (chk.isHardGate) { %>
+                                            <span class="px-1.5 py-0.2 rounded text-[9px] font-extrabold bg-purple-50 text-purple-700 border border-purple-200 uppercase">
+                                                Hard Gate
+                                            </span>
+                                        <% } %>
+                                    </div>
+                                    <div class="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
+                                        <%= chk.details %>
+                                    </div>
+                                </td>
+                                <td class="py-3 px-4">
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold border <%= badgeBg %> inline-block">
+                                        <%= chk.status %>
+                                    </span>
+                                </td>
+                                <td class="py-3 px-4 text-right font-mono font-bold <%= chk.points > 0 ? 'text-slate-900' : 'text-slate-400' %>">
+                                    <%= chk.points %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <% } %>
+
     <!-- Discrepancy Breakdown & Actionable Guidance (If Any) -->
     <% if (vResult.details.discrepancies.length > 0) { %>
         <div class="bg-rose-50 border border-rose-200 rounded-3xl p-6 mb-8 space-y-3">

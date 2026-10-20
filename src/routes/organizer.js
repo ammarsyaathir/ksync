@@ -508,6 +508,11 @@ router.get('/events/:id/verification', async (req, res) => {
       return res.redirect('/organizer/dashboard');
     }
 
+    // Pass organizer account standing for Check 12
+    event.is_verified_organizer = req.user.is_verified_organizer;
+    event.organizer_name = req.user.organization_name || req.user.full_name;
+    event.organizer_social_url = req.user.social_url;
+
     // Run live verification telemetry
     const vResult = await verificationEngine.executeAutomatedVerification(event, eventId);
 
