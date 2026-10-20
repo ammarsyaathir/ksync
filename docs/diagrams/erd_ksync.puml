@@ -1,0 +1,238 @@
+@startuml erd_ksync
+' ============================================================================
+' K-Sync Malaysia - Entity Relationship Diagram
+' Source of truth: live database (database/ksync.db) as used by the Node app.
+' Notation: Crow's Foot (Information Engineering).  * = NOT NULL (mandatory)
+' ============================================================================
+!pragma layout smetana
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam linetype ortho
+skinparam nodesep 60
+skinparam ranksep 80
+skinparam entity {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+  HeaderBackgroundColor #EDE7F6
+  FontSize 12
+}
+skinparam note {
+  BackgroundColor #FFFDE7
+  BorderColor #E65100
+}
+
+title K-Sync Malaysia : Database Entity Relationship Diagram\n(Hostinger MySQL / SQLite - Chapter 3 Data Model)
+
+' ----------------------------- MASTER / LOOKUP -----------------------------
+entity "roles" as roles {
+  * id : INT <<PK>>
+  --
+  * name : VARCHAR(20) <<UK>>
+  created_at : DATETIME
+}
+
+entity "event_categories" as event_categories {
+  * id : INT <<PK>>
+  --
+  * name : VARCHAR(100) <<UK>>
+  * slug : VARCHAR(100) <<UK>>
+  badge_color : VARCHAR(30)
+  description : TEXT
+  created_at : DATETIME
+}
+
+entity "artists" as artists {
+  * id : INT <<PK>>
+  --
+  * name : VARCHAR(100)
+  group_type : VARCHAR(50)
+  agency : VARCHAR(100)
+  image_url : VARCHAR(255)
+  description : TEXT
+  members : JSON
+  created_at : DATETIME
+}
+
+entity "venues" as venues {
+  * id : INT <<PK>>
+  --
+  name : VARCHAR(150)
+  address : TEXT
+  city : VARCHAR(100)
+  state : VARCHAR(100)
+  capacity : INT
+  transit_info : TEXT
+  map_link : VARCHAR(255)
+  created_at : DATETIME
+}
+
+' --------------------------------- USERS -----------------------------------
+entity "users" as users {
+  * id : INT <<PK>>
+  --
+  * role_id : INT <<FK>>  ' legacy -> roles.id
+  * role : VARCHAR(20)    ' ACTIVE field used by app
+  * full_name : VARCHAR(100)
+  * username : VARCHAR(50) <<UK>>
+  * email : VARCHAR(100) <<UK>>
+  * password_hash : VARCHAR(255)
+  bio : TEXT
+  profile_image : VARCHAR(255)
+  organization_name : VARCHAR(150)
+  organization_type : VARCHAR(50)
+  social_handle : VARCHAR(50)
+  social_url : VARCHAR(255)
+  verification_proof : VARCHAR(255)
+  is_verified_organizer : TINYINT
+  verification_notes : TEXT
+  location : VARCHAR(100)
+  buddy_preference : VARCHAR(100)
+  status : VARCHAR(20)
+  created_at : DATETIME
+  updated_at : DATETIME
+}
+
+' --------------------------------- EVENTS ----------------------------------
+entity "events" as events {
+  * id : INT <<PK>>
+  --
+  * organizer_id : INT <<FK>>
+  artist_id : INT <<FK>>
+  * category_id : INT <<FK>>
+  venue_id : INT <<FK>>
+  * event_name : VARCHAR(200)
+  slug : VARCHAR(200) <<UK>>
+  description : TEXT
+  * event_date : DATE
+  * start_time : TIME
+  end_time : TIME
+  venue_name : VARCHAR(150)
+  address : TEXT
+  city : VARCHAR(100)
+  state : VARCHAR(100)
+  ticket_info : TEXT
+  event_rules : TEXT
+  official_url : VARCHAR(255)
+  official_ticket_url : VARCHAR(255)
+  official_source_url : VARCHAR(255)
+  agency_announcement_url : VARCHAR(255)
+  fan_chant_url : VARCHAR(255)
+  poster_image : VARCHAR(255)
+  multiple_posters : TEXT
+  gallery_images : TEXT
+  tour_name : VARCHAR(150)
+  promoter_name : VARCHAR(150)
+  country : VARCHAR(100)
+  promotional_requests : TEXT
+  event_status : VARCHAR(30)
+  verification_status : VARCHAR(30)
+  trust_level : VARCHAR(30)
+  rejection_reason : TEXT
+  admin_verification_notes : TEXT
+  tracking_code : VARCHAR(50) <<UK>>
+  submitter_name : VARCHAR(150)
+  submitter_email : VARCHAR(150)
+  submitter_social : VARCHAR(100)
+  evidence_link : VARCHAR(255)
+  organizer_name : VARCHAR(150)
+  organizer_social_url : VARCHAR(255)
+  organizer_type : VARCHAR(50)
+  created_at : DATETIME
+  updated_at : DATETIME
+}
+
+' ------------------------------ TRANSACTIONS -------------------------------
+entity "saved_events" as saved_events {
+  * id : INT <<PK>>
+  --
+  * user_id : INT <<FK>>
+  * event_id : INT <<FK>>
+  saved_at : DATETIME
+  <<UNIQUE (user_id, event_id)>>
+}
+
+entity "event_chat_messages" as event_chat_messages {
+  * id : INT <<PK>>
+  --
+  * event_id : INT <<FK>>
+  * user_id : INT <<FK>>
+  * message : TEXT
+  is_organizer : TINYINT
+  created_at : DATETIME
+}
+
+entity "reports" as reports {
+  * id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  event_id : INT <<FK>>
+  report_type : VARCHAR(50)
+  * reason : VARCHAR(255)
+  details : TEXT
+  evidence_url : VARCHAR(255)
+  status : VARCHAR(30)
+  admin_action : VARCHAR(50)
+  admin_notes : TEXT
+  resolved_by : INT <<FK>>
+  resolved_at : DATETIME
+  created_at : DATETIME
+}
+
+entity "activity_logs" as activity_logs {
+  * id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  * action : VARCHAR(50)
+  entity_type : VARCHAR(50)
+  entity_id : INT
+  description : TEXT
+  ip_address : VARCHAR(50)
+  created_at : DATETIME
+}
+
+entity "notifications" as notifications {
+  * id : INT <<PK>>
+  --
+  * user_id : INT <<FK>>
+  * event_id : INT <<FK>>
+  update_id : INT <<FK>>
+  message : TEXT
+  is_read : TINYINT
+  created_at : DATETIME
+}
+
+' ------------------------------ RELATIONSHIPS ------------------------------
+roles ||--o{ users : "assigns (legacy)"
+users ||--o{ events : "organizes"
+artists ||--o{ events : "features"
+event_categories ||--o{ events : "classifies"
+venues ||--o{ events : "hosts"
+users ||--o{ saved_events : "saves"
+events ||--o{ saved_events : "saved by"
+users ||--o{ event_chat_messages : "posts"
+events ||--o{ event_chat_messages : "has"
+users ||--o{ reports : "files"
+events ||--o{ reports : "reported on"
+users ||--o{ activity_logs : "triggers"
+users ||--o{ notifications : "receives"
+events ||--o{ notifications : "about"
+
+note bottom of saved_events
+  Associative entity: resolves the
+  MANY-TO-MANY relationship between
+  users and events (bookmark).
+end note
+
+note bottom of notifications
+  WARNING: update_id references a
+  NON-EXISTENT "event_updates" table
+  (dangling FK). Notifications inserts
+  can fail with foreign_keys = ON.
+end note
+
+note bottom of users
+  Dual role model: role_id (FK -> roles)
+  AND role (TEXT). The app uses "role";
+  role_id is legacy but is NOT NULL.
+end note
+@enduml

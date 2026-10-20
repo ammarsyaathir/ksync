@@ -304,7 +304,7 @@
             </div>
             <div class="meta-row">
                 <span class="meta-label">Scope Alignment</span>
-                <span class="meta-val">FYP Chapter 1: Introduction (10 Tables)</span>
+                <span class="meta-val">FYP Chapter 1: Introduction (11 Tables)</span>
             </div>
             <div class="meta-row">
                 <span class="meta-label">Production Database</span>
@@ -346,14 +346,14 @@
     </p>
 
     <div class="alert-box">
-        <strong>Design Optimization:</strong> The schema was intentionally streamlined from 23 tables down to <strong>10 purposeful tables</strong>. 
+        <strong>Design Optimization:</strong> The schema was intentionally streamlined from 23 tables down to <strong>11 purposeful tables</strong>. 
         Unnecessary overhead (such as separate venue lookup tables, GPS check-ins, and 1-on-1 private messaging) was eliminated, focusing 100% of system resources on centralized discovery, community discussion, and administrator verification.
     </div>
 
     <h3 style="font-size: 11pt; font-weight: 800; color: #0f172a; margin-top: 16px; margin-bottom: 8px;">Key Structural Architectural Decisions:</h3>
     <ul style="font-size: 10pt; color: #334155; padding-left: 20px; margin-top: 0;">
         <li><strong>Embedded Venue Attributes in Events:</strong> Rather than maintaining a detached <code>venues</code> lookup table that requires complex relational joins, venue attributes (<code>venue_name</code>, <code>address</code>, <code>city</code>, <code>state</code>) are natively embedded into the <code>events</code> record. This enables seamless support for both mega arenas (Axiata Arena, Zepp KL) and custom fan cupsleeve cafes.</li>
-        <li><strong>Single-Table Idol Member Biodata:</strong> Group and soloist member biodata (stage name, birth name, positions, birthday, zodiac, height, blood type, and MBTI) is stored in the <code>artists.members</code> column formatted as structured JSON. This satisfies user requirements without introducing a redundant <code>artist_members</code> child table.</li>
+        <li><strong>Normalised Idol Member Biodata:</strong> Each group or soloist member is an addressable row in the <code>members</code> table (stage name, birth name, position, date of birth, zodiac, height, blood type, MBTI, nationality, debut year, portrait), linked to their group by <code>members.artist_id &rarr; artists.id</code>. One member belongs to exactly one artist, so individual members can be searched, edited, sorted and given their own profile page. The older <code>artists.members</code> JSON column is retained only as a backward-compatible mirror.</li>
         <li><strong>Dual Engine Compatibility:</strong> The data dictionary supports both <strong>Hostinger Cloud MySQL 8.0</strong> in production (via <code>mysql2/promise</code>) and <strong>SQLite 3</strong> in local development, ensuring zero deployment friction.</li>
     </ul>
 
@@ -363,7 +363,7 @@
         <span class="section-badge">Section 2.0</span>
     </div>
 
-    <p>The diagram below illustrates all 10 entities, their primary/foreign key attributes, and relational multiplicities.</p>
+    <p>The diagram below illustrates all 11 entities, their primary/foreign key attributes, and relational multiplicities.</p>
 
     <div class="erd-container">
         <div class="mermaid">
@@ -371,6 +371,7 @@ erDiagram
     ROLES ||--o{ USERS : "1:N (has)"
     EVENT_CATEGORIES ||--o{ EVENTS : "1:N (classifies)"
     ARTISTS ||--o{ EVENTS : "1:N (features)"
+    ARTISTS ||--o{ MEMBERS : "1:N (roster)"
     USERS ||--o{ EVENTS : "1:N (organizes)"
     
     USERS ||--o{ SAVED_EVENTS : "1:N (bookmarks)"
@@ -417,7 +418,26 @@ erDiagram
         varchar image_url
         varchar agency
         text description
-        longtext members
+        longtext members "legacy JSON mirror"
+        datetime created_at
+    }
+
+    MEMBERS {
+        int id PK
+        int artist_id FK
+        varchar stage_name UK
+        varchar birth_name
+        varchar group_name
+        varchar position
+        date dob
+        varchar zodiac
+        decimal height_cm
+        varchar blood_type
+        varchar mbti
+        varchar nationality
+        int debut_year
+        varchar photo
+        int sort_order
         datetime created_at
     }
 
@@ -628,13 +648,22 @@ erDiagram
                 <td>One user receives zero or many in-app alerts and soundcheck updates.</td>
                 <td><code>CASCADE</code></td>
             </tr>
+            <tr>
+                <td>12</td>
+                <td><strong>artists</strong></td>
+                <td><strong>members</strong></td>
+                <td><code>members.artist_id</code></td>
+                <td><strong>1 : N</strong></td>
+                <td>One artist has zero or many members on its roster. A member belongs to exactly 1 artist.</td>
+                <td><code>CASCADE</code></td>
+            </tr>
         </tbody>
     </table>
 
     <!-- SECTION 4: DATA DICTIONARY -->
     <div class="page-break"></div>
     <div class="section-header">
-        <h2>4. Complete Data Dictionary (10 Tables)</h2>
+        <h2>4. Complete Data Dictionary (11 Tables)</h2>
         <span class="section-badge">Section 4.0</span>
     </div>
 
@@ -904,7 +933,7 @@ erDiagram
                 <td>YES</td>
                 <td>-</td>
                 <td>NULL</td>
-                <td><strong>JSON array holding individual idol biodatas</strong> (Stage name, birth name, positions, DOB, zodiac, height, blood, MBTI).</td>
+                <td><strong>Legacy mirror only.</strong> A JSON array of the same biodata now normalised in the <code>members</code> table, kept so older databases keep rendering until the migration is applied. The <code>members</code> table is the source of truth (see 4.11).</td>
             </tr>
             <tr>
                 <td class="col-name">created_at</td>
@@ -1570,15 +1599,196 @@ erDiagram
         </tbody>
     </table>
 
-    <!-- SECTION 5: JSON SCHEMA FOR MEMBERS -->
+    <!-- 4. members -->
+    <div class="table-title">
+        <span>4.11 Table: <code>members</code></span>
+        <span style="font-size: 9pt; font-weight: 600; color: #64748b;">Normalised Idol Biodata</span>
+    </div>
+    <div class="table-desc">One row per idol group member or soloist, linked to their artist by <code>artist_id</code>.</div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 20%;">Column Name</th>
+                <th style="width: 15%;">Data Type</th>
+                <th style="width: 10%;">Null</th>
+                <th style="width: 10%;">Key</th>
+                <th style="width: 15%;">Default</th>
+                <th style="width: 30%;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-name">id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-pk">PK</span></td>
+                <td>AUTO_INCREMENT</td>
+                <td>Unique member identifier.</td>
+            </tr>
+            <tr>
+                <td class="col-name">artist_id</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-fk">FK</span></td>
+                <td>NULL</td>
+                <td>References <code>artists(id)</code>. The group or solo act this member belongs to. ON DELETE CASCADE.</td>
+            </tr>
+            <tr>
+                <td class="col-name">stage_name</td>
+                <td><span class="type-badge">VARCHAR(100)</span></td>
+                <td>NO</td>
+                <td><span class="key-badge key-uk">UK</span></td>
+                <td>NULL</td>
+                <td>Public stage name (e.g. <code>Yeonjun</code>). Unique per artist (<code>UNIQUE(artist_id, stage_name)</code>).</td>
+            </tr>
+            <tr>
+                <td class="col-name">birth_name</td>
+                <td><span class="type-badge">VARCHAR(150)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Legal Korean/English birth name, Korean script included where known.</td>
+            </tr>
+            <tr>
+                <td class="col-name">group_name</td>
+                <td><span class="type-badge">VARCHAR(100)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Display label for the member's group/affiliation. Kept for soloists, whose origin group differs from the artist row name (e.g. <code>DAY6</code> vs artist <code>Young K (DAY6)</code>).</td>
+            </tr>
+            <tr>
+                <td class="col-name">position</td>
+                <td><span class="type-badge">VARCHAR(200)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Group role: Leader, Main Vocalist, Rapper, Dancer, Maknae.</td>
+            </tr>
+            <tr>
+                <td class="col-name">dob</td>
+                <td><span class="type-badge">DATE</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Date of birth, stored ISO (<code>1999-09-13</code>) and formatted for display in the view layer.</td>
+            </tr>
+            <tr>
+                <td class="col-name">zodiac</td>
+                <td><span class="type-badge">VARCHAR(20)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Western astrological zodiac sign.</td>
+            </tr>
+            <tr>
+                <td class="col-name">height_cm</td>
+                <td><span class="type-badge">DECIMAL(5,1)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Height in centimetres (numeric, so members can be sorted/filtered).</td>
+            </tr>
+            <tr>
+                <td class="col-name">blood_type</td>
+                <td><span class="type-badge">VARCHAR(5)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Blood type: A, B, AB, O.</td>
+            </tr>
+            <tr>
+                <td class="col-name">mbti</td>
+                <td><span class="type-badge">VARCHAR(20)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>MBTI 4-letter personality type (e.g. <code>ENFP</code>).</td>
+            </tr>
+            <tr>
+                <td class="col-name">nationality</td>
+                <td><span class="type-badge">VARCHAR(50)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Citizenship/country of origin.</td>
+            </tr>
+            <tr>
+                <td class="col-name">debut_year</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Year the member debuted. The view renders this as <code>&quot;2015&ndash;present&quot;</code>.</td>
+            </tr>
+            <tr>
+                <td class="col-name">photo</td>
+                <td><span class="type-badge">VARCHAR(255)</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>NULL</td>
+                <td>Direct URL to the member's profile portrait.</td>
+            </tr>
+            <tr>
+                <td class="col-name">is_active</td>
+                <td><span class="type-badge">TINYINT(1)</span></td>
+                <td>NO</td>
+                <td>-</td>
+                <td>1</td>
+                <td>1 while the member is still on the roster; 0 if they have left (the label becomes a bare debut year).</td>
+            </tr>
+            <tr>
+                <td class="col-name">sort_order</td>
+                <td><span class="type-badge">INT</span></td>
+                <td>NO</td>
+                <td>-</td>
+                <td>0</td>
+                <td>Display order of the member within their group.</td>
+            </tr>
+            <tr>
+                <td class="col-name">created_at</td>
+                <td><span class="type-badge">DATETIME</span></td>
+                <td>YES</td>
+                <td>-</td>
+                <td>CURRENT_TIMESTAMP</td>
+                <td>Timestamp when the member row was created.</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="table-desc" style="margin-top: 8px;">
+        <strong>Indexes:</strong> <code>UNIQUE (artist_id, stage_name)</code>, <code>KEY idx_members_artist (artist_id)</code>,
+        <code>CONSTRAINT fk_members_artist FOREIGN KEY (artist_id) REFERENCES artists(id) ON DELETE CASCADE ON UPDATE CASCADE</code>.
+        Unknown biodata is stored as <code>NULL</code> rather than invented.
+    </div>
+
+    <!-- SECTION 5: IDOL MEMBER BIODATA -->
     <div class="page-break"></div>
     <div class="section-header">
-        <h2>5. JSON Column Specification: <code>artists.members</code></h2>
+        <h2>5. Idol Member Biodata: <code>members</code> table</h2>
         <span class="section-badge">Section 5.0</span>
     </div>
 
     <p>
-        To prevent schema bloat and preserve a lean 10-table architecture, idol group members are stored directly in the <code>artists</code> table inside the <code>members</code> column as a structured JSON array.
+        Idol biodata lives in the normalised <code>members</code> table (11 tables total), so a member is a first-class record that can be
+        queried, sorted, edited individually and given its own page. It is populated from each artist's biodata and linked with
+        <code>members.artist_id &rarr; artists.id</code>:
+    </p>
+
+    <pre>SELECT m.stage_name, m.position, m.dob, m.height_cm, m.mbti
+FROM members m
+JOIN artists a ON a.id = m.artist_id
+WHERE a.name = 'TOMORROW X TOGETHER (TXT)'
+ORDER BY m.sort_order;</pre>
+
+    <p>
+        The legacy <code>artists.members</code> JSON column is kept as a mirror so that a database which has not yet had the
+        <code>members</code>-table migration applied still renders. The application reads the table first and only falls back to the
+        JSON when the table is absent or empty.
+    </p>
+
+    <h3 style="font-size: 11pt; font-weight: 800; color: #0f172a; margin-top: 20px; margin-bottom: 8px;">Legacy Mirror Format: <code>artists.members</code> JSON</h3>
+    <p style="font-size: 10pt; color: #334155;">
+        Retained for backward compatibility. New work should read from the <code>members</code> table above.
     </p>
 
     <h3 style="font-size: 11pt; font-weight: 800; color: #0f172a; margin-top: 16px; margin-bottom: 8px;">JSON Schema Definition:</h3>

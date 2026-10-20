@@ -303,8 +303,9 @@ export async function analyzePosterWithGemini(posterPathOrUrl, eventData) {
   }
 
   try {
-    // Real Gemini 1.5 Flash Multimodal API Call
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
+    // Real Gemini Flash Multimodal API Call (Gemini 3.8 / Flash Latest)
+    const model = process.env.GEMINI_MODEL_VISION || 'gemini-3.8-flash';
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
 
     const promptText = `
 You are the AI Event Verification Engine for K-Sync Malaysia.
@@ -351,7 +352,8 @@ Extract the following from the poster image and output STRICTLY VALID JSON:
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(6000)
     });
 
     if (!response.ok) {
@@ -413,7 +415,8 @@ export async function auditEventWithSemanticAI(eventData, visionExtraction, sour
   }
 
   try {
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${geminiApiKey}`;
+    const model = process.env.GEMINI_MODEL_AUDIT || 'gemini-3.1-pro-preview';
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
 
     const promptText = `
 You are the Senior AI Security & Semantic Auditor for K-Sync Malaysia.
@@ -455,7 +458,8 @@ Return STRICTLY JSON:
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(6000)
     });
 
     if (!response.ok) throw new Error(`Gemini Auditor Error: ${response.status}`);
