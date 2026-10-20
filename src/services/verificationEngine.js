@@ -628,12 +628,19 @@ export async function executeAutomatedVerification(eventData, currentEventId = n
     (dualAIConsensus.ensembleScore * wAI)
   );
 
+  const duplicateIssues = duplicateResult.collisions.map(c => 
+    `Duplicate Collision: ${c.reason || 'Shares exact date, venue, or official announcement URL with an existing listing.'}`
+  );
+  if (duplicateResult.isDuplicate && duplicateIssues.length === 0) {
+    duplicateIssues.push('Flagged as duplicate of an existing event.');
+  }
+
   // Collect all discrepancies across Rule, Dual-AI, and Duplicate checks
   const allDiscrepancies = [
     ...ruleResult.issues,
+    ...duplicateIssues,
     ...aiVisionResult.discrepancies,
-    ...aiSemanticResult.auditIssues,
-    ...(duplicateResult.isDuplicate ? [`Flagged as possible duplicate of existing event`] : [])
+    ...aiSemanticResult.auditIssues
   ];
 
   // 6. Decision Matrix & Status Resolution
@@ -644,7 +651,10 @@ export async function executeAutomatedVerification(eventData, currentEventId = n
   if (duplicateResult.isDuplicate) {
     verificationStatus = 'FLAGGED';
     trustLevel = 'FLAGGED';
-    decisionSummary = 'Flagged for potential duplicate collision with existing verified event.';
+    const topCollision = duplicateResult.collisions[0];
+    decisionSummary = topCollision 
+      ? `Flagged: Potential duplicate of Event #${topCollision.eventId} (${topCollision.eventName}).`
+      : 'Flagged for potential duplicate collision with existing verified event.';
   } else if (allDiscrepancies.length > 0 && (aiVisionResult.discrepancies.length > 0 || aiSemanticResult.scamRisk === 'HIGH')) {
     verificationStatus = 'FLAGGED';
     trustLevel = 'FLAGGED';
