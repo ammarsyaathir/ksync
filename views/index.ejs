@@ -249,22 +249,38 @@
     </div>
 </div>
 
-<!-- Public Event Submission Call-to-Action -->
+<!-- Organizer & Fanclub Event Publishing Call-to-Action -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-    <div class="bg-white rounded-3xl p-8 sm:p-12 relative overflow-hidden border border-slate-200 shadow-lg">
+    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 rounded-3xl p-8 sm:p-12 relative overflow-hidden border border-slate-700 shadow-xl text-white">
+        <div class="absolute -right-10 -bottom-10 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div class="relative z-10 max-w-2xl">
-            <span class="inline-block px-3.5 py-1 rounded-full text-xs font-bold bg-pink-100 text-pink-700 mb-4 border border-pink-200 shadow-sm">Open Public Submissions</span>
-            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-4">Organizing or know of a K-Pop Event in Malaysia?</h2>
-            <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-6 font-medium">
-                Submit any concert, fan meeting, cupsleeve gathering, birthday pop-up, or random play dance to K-Sync Malaysia. <strong>No registration required!</strong> Receive a tracking code immediately and get verified by our admin team.
+            <span class="inline-block px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 mb-4 border border-emerald-500/30 shadow-sm">
+                <i class="fas fa-shield-halved me-1 text-emerald-400"></i> Autonomous Dual-AI Verification
+            </span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4">Are you a Concert Organizer or Fanclub Leader?</h2>
+            <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-6 font-medium">
+                Publish and manage your K-Pop events directly on K-Sync Malaysia. Our automated Dual-AI consensus engine validates poster OCR details, official domain authenticity, and venue schedules in real time — putting complete event CRUD in your hands.
             </p>
             <div class="flex flex-wrap gap-3">
-                <a href="/submit-event" class="px-8 py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-md transition-all cursor-pointer">
-                    <i class="fas fa-paper-plane me-2"></i> Submit Event Now
-                </a>
-                <a href="/check-submission" class="px-8 py-3.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-sm border border-slate-200 shadow-sm transition-all cursor-pointer">
-                    <i class="fas fa-barcode me-2"></i> Track Submission Status
-                </a>
+                <% if (typeof currentUser !== 'undefined' && currentUser && (currentUser.role === 'ORGANIZER' || currentUser.role_name === 'ORGANIZER')) { %>
+                    <a href="/organizer/dashboard" class="px-8 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm shadow-md transition-all cursor-pointer flex items-center space-x-2">
+                        <i class="fas fa-gauge"></i>
+                        <span>Go to Organizer Dashboard</span>
+                    </a>
+                    <a href="/organizer/events/new" class="px-8 py-3.5 rounded-2xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-sm shadow-sm transition-all cursor-pointer flex items-center space-x-2">
+                        <i class="fas fa-plus text-pink-500"></i>
+                        <span>Create New Event</span>
+                    </a>
+                <% } else { %>
+                    <a href="/register" class="px-8 py-3.5 rounded-2xl bg-pink-500 hover:bg-pink-600 text-white font-bold text-sm shadow-md transition-all cursor-pointer flex items-center space-x-2">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Join as Organizer / Fanclub</span>
+                    </a>
+                    <a href="/login?redirect=%2Forganizer%2Fdashboard" class="px-8 py-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm border border-slate-600 shadow-sm transition-all cursor-pointer flex items-center space-x-2">
+                        <i class="fas fa-arrow-right-to-bracket text-emerald-400"></i>
+                        <span>Organizer Sign In</span>
+                    </a>
+                <% } %>
             </div>
         </div>
     </div>

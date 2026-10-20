@@ -10,21 +10,16 @@ import verificationEngine from '../services/verificationEngine.js';
 
 const router = express.Router();
 
-// GET /submit-event - Public Open Submission Form
-router.get('/submit-event', async (req, res) => {
-  try {
-    const artists = await db.query("SELECT * FROM artists ORDER BY name ASC");
-    const categories = await db.query("SELECT * FROM event_categories ORDER BY name ASC");
-
-    res.render('submit-event', {
-      artists,
-      categories,
-      venues: []
-    });
-  } catch (err) {
-    console.error('Error rendering submit-event form:', err);
-    res.status(500).send('Error loading submission form');
+// GET /submit-event - Redirect to Organizer Portal Event Creator
+router.get('/submit-event', (req, res) => {
+  const role = (req.user && (req.user.role || req.user.role_name) || '').toUpperCase();
+  if (['ORGANIZER', 'ADMIN'].includes(role)) {
+    return res.redirect('/organizer/events/new');
   }
+  req.session.flash = { 
+    info: 'Event publishing is exclusively available to registered Organizers & Fanclubs. Please sign in or register to publish events.' 
+  };
+  return res.redirect('/login?redirect=%2Forganizer%2Fevents%2Fnew');
 });
 
 // POST /submit-event - Process Model 2 Submission (Supports 1 to 4 Posters / Seating Plans)

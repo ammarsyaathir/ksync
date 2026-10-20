@@ -1,0 +1,219 @@
+<%- include('../partials/header', { title: 'Dual-AI Verification Telemetry | ' + event.event_name }) %>
+
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <!-- Top Breadcrumb -->
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <a href="/organizer/dashboard" class="inline-flex items-center text-xs font-bold text-slate-500 hover:text-pink-600 mb-2 transition-colors">
+                <i class="fas fa-arrow-left me-1.5"></i> Back to Organizer Dashboard
+            </a>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                Dual-AI Verification Telemetry
+            </h1>
+            <p class="text-xs text-slate-500 mt-0.5">
+                Detailed audit trail and multi-model consensus report for <strong class="text-slate-800"><%= event.event_name %></strong>.
+            </p>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <a href="/organizer/events/<%= event.id %>/edit" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5">
+                <i class="fas fa-pen-to-square"></i> Edit Listing
+            </a>
+            <form action="/organizer/events/<%= event.id %>/reverify" method="POST">
+                <button type="submit" class="px-5 py-2 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white text-xs font-extrabold shadow transition-all flex items-center gap-1.5 cursor-pointer">
+                    <i class="fas fa-rotate"></i> Re-run Dual-AI Evaluation
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Overall Outcome Header Card -->
+    <div class="bg-gradient-to-br from-slate-900 via-indigo-950 to-purple-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl mb-8">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div class="space-y-2 max-w-xl">
+                <div class="flex items-center gap-2">
+                    <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-pink-500/20 text-pink-300 border border-pink-500/30 uppercase tracking-wider">
+                        Autonomous Multi-Model Consensus
+                    </span>
+                    <%- helpers.getVerificationBadge(event.verification_status) %>
+                </div>
+                <h2 class="text-xl sm:text-2xl font-black">
+                    <%= vResult.decisionSummary %>
+                </h2>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                    Evaluated by K-Sync's autonomous verification pipeline comprising deterministic field rules, promoter domain whitelisting, Gemini 1.5 Flash Vision OCR, and Gemini 1.5 Pro Semantic Auditing.
+                </p>
+            </div>
+
+            <!-- Score Circular Meter -->
+            <div class="flex flex-col items-center justify-center p-5 rounded-2xl bg-white/5 border border-white/10 shrink-0 text-center min-w-[140px]">
+                <div class="text-4xl font-black <%= vResult.compositeScore >= 80 ? 'text-emerald-400' : (vResult.compositeScore >= 50 ? 'text-amber-400' : 'text-rose-400') %>">
+                    <%= vResult.compositeScore %>%
+                </div>
+                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">Composite Score</div>
+                <div class="text-[10px] text-pink-300 font-semibold mt-0.5"><%= vResult.details.dualAIConsensus.consensusState %></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4 Evaluation Pillars Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <!-- Pillar 1: Rule-Based Sanity -->
+        <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm">
+                        <i class="fas fa-list-check"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-900">1. Deterministic Rule Sanity</h4>
+                        <span class="text-[10px] text-slate-400">Field completeness & date chronology</span>
+                    </div>
+                </div>
+                <span class="text-xs font-black text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">
+                    <%= vResult.details.ruleCheck.score %>%
+                </span>
+            </div>
+
+            <div class="text-xs space-y-2 text-slate-600">
+                <div class="flex items-center justify-between">
+                    <span>Mandatory Fields Populated:</span>
+                    <strong class="text-slate-900 font-bold">Yes</strong>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span>Event Date Valid & Future:</span>
+                    <strong class="text-slate-900 font-bold"><%= event.event_date %></strong>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span>Duplicate Event Collision:</span>
+                    <strong class="<%= vResult.details.duplicateCheck.isDuplicate ? 'text-rose-600' : 'text-emerald-600' %> font-bold">
+                        <%= vResult.details.duplicateCheck.isDuplicate ? 'Collision Detected' : 'None Detected' %>
+                    </strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pillar 2: Official Source Domain Whitelist -->
+        <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center font-bold text-sm">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-900">2. External Source Whitelist</h4>
+                        <span class="text-[10px] text-slate-400">Promoter & ticketing verification</span>
+                    </div>
+                </div>
+                <span class="text-xs font-black text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">
+                    <%= vResult.details.sourceCheck.score %>%
+                </span>
+            </div>
+
+            <div class="text-xs space-y-2 text-slate-600">
+                <div class="flex items-center justify-between">
+                    <span>Domain Authority Tier:</span>
+                    <strong class="text-slate-900 font-bold">Tier <%= vResult.details.sourceCheck.domainTier %></strong>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span>Crawler Accessibility:</span>
+                    <strong class="text-slate-900 font-bold"><%= vResult.details.sourceCheck.accessible ? 'Accessible' : 'Protected / Neutral' %></strong>
+                </div>
+                <div class="truncate text-[11px] text-slate-500 pt-1 border-t border-slate-100">
+                    <span class="font-bold text-slate-700">Link:</span> <%= event.official_url || 'None provided' %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pillar 3: AI Model 1 (Vision OCR) -->
+        <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-900">3. AI Model 1: Multimodal Vision</h4>
+                        <span class="text-[10px] text-slate-400">Poster graphics & OCR extraction</span>
+                    </div>
+                </div>
+                <span class="text-xs font-black text-pink-600 bg-pink-50 px-2.5 py-0.5 rounded-full">
+                    <%= vResult.details.dualAIConsensus.model1_vision.score %>%
+                </span>
+            </div>
+
+            <div class="text-xs space-y-2 text-slate-600">
+                <div class="flex items-center justify-between">
+                    <span>Visual Date Match:</span>
+                    <strong class="text-slate-900 font-bold"><%= vResult.details.dualAIConsensus.model1_vision.extracted.date_match ? 'Matched' : 'Mismatch' %></strong>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span>Venue Name Match:</span>
+                    <strong class="text-slate-900 font-bold"><%= vResult.details.dualAIConsensus.model1_vision.extracted.venue_match ? 'Matched' : 'Unconfirmed' %></strong>
+                </div>
+                <div class="text-[11px] text-slate-500 pt-1 border-t border-slate-100">
+                    <span class="font-bold text-slate-700">Extracted Title:</span> <%= vResult.details.dualAIConsensus.model1_vision.extracted.extracted_title || event.event_name %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pillar 4: AI Model 2 (Semantic Fact-Checker) -->
+        <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-900">4. AI Model 2: Semantic Auditor</h4>
+                        <span class="text-[10px] text-slate-400">Geographic & scam risk anomaly check</span>
+                    </div>
+                </div>
+                <span class="text-xs font-black text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-full">
+                    <%= vResult.details.dualAIConsensus.model2_semantic.score %>%
+                </span>
+            </div>
+
+            <div class="text-xs space-y-2 text-slate-600">
+                <div class="flex items-center justify-between">
+                    <span>Geographic Sanity:</span>
+                    <strong class="text-emerald-600 font-bold">Confirmed (<%= event.city %>)</strong>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span>Phishing / Scalper Risk:</span>
+                    <strong class="font-bold <%= vResult.details.dualAIConsensus.model2_semantic.scamRisk === 'LOW' ? 'text-emerald-600' : 'text-rose-600' %>">
+                        <%= vResult.details.dualAIConsensus.model2_semantic.scamRisk %>
+                    </strong>
+                </div>
+                <div class="flex items-center justify-between pt-1 border-t border-slate-100">
+                    <span>Cross-Model Agreement:</span>
+                    <strong class="text-purple-600 font-bold"><%= vResult.details.dualAIConsensus.isConsensusReached ? 'Consensus Achieved' : 'Diverged' %></strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Discrepancy Breakdown & Actionable Guidance (If Any) -->
+    <% if (vResult.details.discrepancies.length > 0) { %>
+        <div class="bg-rose-50 border border-rose-200 rounded-3xl p-6 mb-8 space-y-3">
+            <h4 class="text-sm font-bold text-rose-900 flex items-center gap-2">
+                <i class="fas fa-triangle-exclamation text-rose-500"></i> Discrepancies Detected by Engine
+            </h4>
+            <p class="text-xs text-rose-700">
+                The engine detected the following issues which prevent automated verification. Please edit your listing to resolve them:
+            </p>
+            <ul class="list-disc list-inside text-xs text-rose-800 space-y-1 font-semibold">
+                <% vResult.details.discrepancies.forEach(d => { %>
+                    <li><%= d %></li>
+                <% }); %>
+            </ul>
+            <div class="pt-2">
+                <a href="/organizer/events/<%= event.id %>/edit" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow transition-all">
+                    <i class="fas fa-pen-to-square"></i> Edit Listing to Fix Issues
+                </a>
+            </div>
+        </div>
+    <% } %>
+</div>
+
+<%- include('../partials/footer') %>

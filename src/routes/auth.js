@@ -137,8 +137,11 @@ router.post('/login', async (req, res) => {
     await logActivity(user.id, 'LOGIN', 'users', user.id, `User @${user.username} logged in successfully`, req.ip);
 
     req.session.flash = { success: `Welcome back, ${user.full_name}!` };
-    const isAdmin = ((user.role || '').toUpperCase() === 'ADMIN') || user.role_id === 1;
-    const targetUrl = redirect && redirect.startsWith('/') ? redirect : (isAdmin ? '/admin' : '/');
+    const roleUpper = (user.role || '').toUpperCase();
+    const isAdmin = roleUpper === 'ADMIN' || user.role_id === 1;
+    const isOrganizer = roleUpper === 'ORGANIZER' || user.role_id === 2;
+    const defaultUrl = isOrganizer ? '/organizer/dashboard' : (isAdmin ? '/admin' : '/');
+    const targetUrl = redirect && redirect.startsWith('/') ? redirect : defaultUrl;
     req.session.save((saveErr) => {
       if (saveErr) console.error('Session save error:', saveErr);
       res.redirect(targetUrl);
