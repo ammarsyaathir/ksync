@@ -29,12 +29,20 @@
 
             <!-- Desktop Navigation Links -->
             <div class="hidden md:flex items-center space-x-1">
-                <a href="/" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer <%= path === '/' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' %>">
+                <a href="/" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer <%= path === '/' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' %>">
                     <span>Home</span>
                 </a>
-                <a href="/events" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1.5 cursor-pointer <%= path === '/events' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' %>">
+                <a href="/events" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1.5 cursor-pointer <%= path === '/events' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' %>">
                     <i class="fas fa-compass text-xs"></i>
-                    <span>Discover Events</span>
+                    <span>Events</span>
+                </a>
+                <a href="/events/radar" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1.5 cursor-pointer <%= path === '/events/radar' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' %>">
+                    <i class="fas fa-radar text-xs text-pink-500"></i>
+                    <span>Event Radar</span>
+                </a>
+                <a href="/artists" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1.5 cursor-pointer <%= path.startsWith('/artists') ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' %>">
+                    <i class="fas fa-users text-xs text-purple-500"></i>
+                    <span>Artists</span>
                 </a>
                 <% if (userRole === 'organizer') { %>
                     <a href="/organizer/dashboard" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-colors flex items-center space-x-1.5 cursor-pointer <%= path.startsWith('/organizer') ? 'bg-emerald-700 text-white shadow-sm' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200' %>">
@@ -92,6 +100,10 @@
                                 <div class="text-xs text-slate-400">Signed in as</div>
                                 <div class="text-sm font-bold text-slate-800 truncate">@<%= user.username %></div>
                             </div>
+                            <a href="/dashboard" class="flex items-center px-4 py-2 text-sm text-pink-600 font-bold hover:bg-pink-50">
+                                <i class="fas fa-gauge-high w-5 text-pink-500"></i>
+                                <span>My K-Sync Dashboard</span>
+                            </a>
                             <a href="/profile" class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
                                 <i class="fas fa-user-circle w-5 text-slate-400"></i>
                                 <span>My Profile</span>
@@ -146,6 +158,12 @@
     <div id="mobile-menu" class="hidden md:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 space-y-2">
         <a href="/" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-100">Home</a>
         <a href="/events" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-100">Discover Events</a>
+        <a href="/events/radar" class="block px-3 py-2 rounded-lg text-base font-medium text-pink-600 hover:bg-pink-50">
+            <i class="fas fa-radar me-2 text-pink-500"></i> Event Radar
+        </a>
+        <a href="/artists" class="block px-3 py-2 rounded-lg text-base font-medium text-purple-600 hover:bg-purple-50">
+            <i class="fas fa-users me-2 text-purple-500"></i> Artists Directory
+        </a>
         <% if (userRole === 'organizer') { %>
             <a href="/organizer/dashboard" class="block px-3 py-2 rounded-lg text-base font-bold text-emerald-800 bg-emerald-50">
                 <i class="fas fa-gauge me-2 text-emerald-600"></i> Organizer Dashboard
@@ -168,6 +186,9 @@
                         <div class="text-xs text-slate-500">@<%= user.username %></div>
                     </div>
                 </div>
+                <a href="/dashboard" class="block px-3 py-2 rounded-lg text-sm font-bold text-pink-600 bg-pink-50">
+                    <i class="fas fa-gauge-high me-2 text-pink-500"></i> My K-Sync Dashboard
+                </a>
                 <a href="/profile" class="block px-3 py-2 rounded-lg text-sm text-slate-700 hover:bg-slate-100">My Profile</a>
                 <a href="/saved-events" class="block px-3 py-2 rounded-lg text-sm text-slate-700 hover:bg-slate-100">Saved Events</a>
                 <a href="/logout" class="block px-3 py-2 rounded-lg text-sm text-rose-600 hover:bg-rose-50">Log Out</a>

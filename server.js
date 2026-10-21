@@ -20,6 +20,7 @@ import notificationRoutes from './src/routes/notifications.js';
 import adminRoutes from './src/routes/admin.js';
 import apiRoutes from './src/routes/api.js';
 import organizerRoutes from './src/routes/organizer.js';
+import artistRoutes from './src/routes/artists.js';
 
 dotenv.config();
 
@@ -92,6 +93,7 @@ app.use('/', savedRoutes);
 app.use('/', notificationRoutes);
 app.use('/', adminRoutes);
 app.use('/organizer', organizerRoutes);
+app.use('/artists', artistRoutes);
 app.use('/api', apiRoutes);
 
 // 404 Error Handler

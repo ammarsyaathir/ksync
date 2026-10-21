@@ -1,0 +1,412 @@
+<%- include('partials/header', { title: 'My K-Sync Dashboard | K-Sync Malaysia' }) %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <!-- Fan Profile Hero Banner -->
+    <div class="bg-gradient-to-r from-slate-950 via-slate-900 to-purple-950 rounded-3xl p-6 sm:p-8 text-white border border-slate-800 shadow-xl mb-8 relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-pink-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute right-40 -top-10 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="flex items-center space-x-4">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-pink-500 to-purple-600 text-white font-black text-2xl flex items-center justify-center shadow-lg border-2 border-white/20 shrink-0">
+                    <%= user && user.full_name ? user.full_name.charAt(0).toUpperCase() : 'F' %>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-pink-500 text-white uppercase tracking-wider">
+                            <%= user && user.role ? user.role : 'K-Pop Fan' %>
+                        </span>
+                        <span class="text-xs text-slate-400">@<%= user.username %></span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                        Welcome back, <%= user && user.full_name ? user.full_name.split(' ')[0] : 'Fan' %>!
+                    </h1>
+                    <p class="text-xs text-slate-300 mt-1 font-medium">
+                        Your personalized K-Sync Malaysian concert command center, tour countdowns, and community recommendations.
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2.5 shrink-0">
+                <a href="/profile" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/15 transition-all flex items-center gap-1.5">
+                    <i class="fas fa-gear text-slate-300"></i>
+                    <span>Profile & Alerts</span>
+                </a>
+                <a href="/events" class="px-4 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold shadow-lg shadow-pink-600/30 transition-all flex items-center gap-1.5">
+                    <i class="fas fa-plus"></i>
+                    <span>Discover More Shows</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats Bar -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center text-xl shrink-0">
+                <i class="fas fa-bookmark"></i>
+            </div>
+            <div>
+                <div class="text-2xl font-black text-slate-900"><%= saved_events.length %></div>
+                <div class="text-xs font-semibold text-slate-500">Saved Wishlist</div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl shrink-0">
+                <i class="fas fa-calendar-star"></i>
+            </div>
+            <div>
+                <div class="text-2xl font-black text-slate-900"><%= upcomingSaved.length %></div>
+                <div class="text-xs font-semibold text-slate-500">Upcoming Shows</div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl shrink-0">
+                <i class="fas fa-thumbs-up"></i>
+            </div>
+            <div>
+                <div class="text-2xl font-black text-slate-900"><%= recommended_events.length %></div>
+                <div class="text-xs font-semibold text-slate-500">Recommendations</div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shrink-0">
+                <i class="fas fa-bell"></i>
+            </div>
+            <div>
+                <div class="text-2xl font-black text-slate-900"><%= unreadCount %></div>
+                <div class="text-xs font-semibold text-slate-500">Unread Alerts</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Live Countdown Widget (Next Upcoming Show) -->
+    <% if (nextEvent) { %>
+        <% const nextSlug = helpers.slugify(nextEvent.event_name) || nextEvent.id; %>
+        <div class="bg-slate-900 rounded-3xl p-6 sm:p-8 text-white border border-slate-800 shadow-xl mb-10 relative overflow-hidden">
+            <div class="absolute inset-0 z-0 opacity-20">
+                <img src="<%= nextEvent.poster_image %>" alt="" class="w-full h-full object-cover blur-sm">
+                <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-900/60"></div>
+            </div>
+
+            <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+                <div class="space-y-3 max-w-2xl">
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 rounded-full text-[10px] font-black bg-pink-500 text-white uppercase tracking-wider flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+                            Next Live Concert On Your Schedule
+                        </span>
+                        <span class="text-xs font-bold text-purple-300">
+                            <%= nextEvent.category_name %>
+                        </span>
+                    </div>
+
+                    <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
+                        <%= nextEvent.event_name %>
+                    </h2>
+
+                    <div class="flex flex-wrap items-center gap-4 text-xs text-slate-300 font-medium">
+                        <span class="flex items-center gap-1.5 text-pink-300 font-bold">
+                            <i class="fas fa-calendar-day"></i>
+                            <%= helpers.formatDate(nextEvent.event_date) %>
+                        </span>
+                        <% if (nextEvent.start_time) { %>
+                            <span class="flex items-center gap-1.5">
+                                <i class="fas fa-clock text-purple-400"></i>
+                                <%= helpers.formatTime(nextEvent.start_time) %>
+                            </span>
+                        <% } %>
+                        <span class="flex items-center gap-1.5">
+                            <i class="fas fa-location-dot text-rose-400"></i>
+                            <%= nextEvent.venue_name || nextEvent.venue_display %>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Live Countdown Digital Clock -->
+                <div class="bg-black/50 backdrop-blur-md rounded-2xl p-5 border border-white/10 shrink-0 text-center">
+                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Live Countdown to Showtime</div>
+                    <div class="grid grid-cols-4 gap-2 text-center" id="heroCountdownTimer"
+                         data-target-date="<%= nextEvent.event_date instanceof Date ? nextEvent.event_date.toISOString().split('T')[0] : nextEvent.event_date %>"
+                         data-target-time="<%= nextEvent.start_time || '18:00:00' %>">
+                        <div class="bg-white/10 rounded-xl px-3 py-2 border border-white/10">
+                            <div class="text-2xl sm:text-3xl font-black text-pink-400" id="cd-days">00</div>
+                            <div class="text-[9px] font-bold text-slate-400 uppercase">Days</div>
+                        </div>
+                        <div class="bg-white/10 rounded-xl px-3 py-2 border border-white/10">
+                            <div class="text-2xl sm:text-3xl font-black text-white" id="cd-hours">00</div>
+                            <div class="text-[9px] font-bold text-slate-400 uppercase">Hours</div>
+                        </div>
+                        <div class="bg-white/10 rounded-xl px-3 py-2 border border-white/10">
+                            <div class="text-2xl sm:text-3xl font-black text-white" id="cd-minutes">00</div>
+                            <div class="text-[9px] font-bold text-slate-400 uppercase">Mins</div>
+                        </div>
+                        <div class="bg-white/10 rounded-xl px-3 py-2 border border-white/10">
+                            <div class="text-2xl sm:text-3xl font-black text-yellow-300" id="cd-seconds">00</div>
+                            <div class="text-[9px] font-bold text-slate-400 uppercase">Secs</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex items-center justify-center gap-2">
+                        <a href="/events/<%= nextEvent.id %>-<%= nextSlug %>" class="px-4 py-2 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold transition-all flex items-center gap-1.5">
+                            <span>Open Details</span>
+                            <i class="fas fa-arrow-right text-[10px]"></i>
+                        </a>
+                        <% if (nextEvent.ticket_url) { %>
+                            <a href="<%= nextEvent.ticket_url %>" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/15" title="Official Ticketing">
+                                <i class="fas fa-ticket text-xs"></i>
+                            </a>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% } %>
+
+    <!-- Main Content Tabs / Sections -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+        <!-- Left 2 Cols: Saved Events & Tour Calendar -->
+        <div class="lg:col-span-2 space-y-6">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center text-sm">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-900">My Saved Events & Calendar</h2>
+                </div>
+                <span class="text-xs font-bold text-slate-500"><%= saved_events.length %> Total Bookmarked</span>
+            </div>
+
+            <% if (saved_events.length === 0) { %>
+                <div class="bg-white rounded-3xl p-10 text-center border border-slate-200 shadow-sm">
+                    <div class="w-14 h-14 rounded-full bg-pink-50 text-pink-500 flex items-center justify-center mx-auto mb-3 text-xl">
+                        <i class="far fa-heart"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-800 mb-1">Your Wishlist is Empty</h3>
+                    <p class="text-xs text-slate-500 max-w-sm mx-auto mb-4">Click the bookmark icon on any concert or fan meeting to track countdowns and schedule shifts here.</p>
+                    <a href="/events" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm inline-block">
+                        Explore Verified Events
+                    </a>
+                </div>
+            <% } else { %>
+                <div class="space-y-4">
+                    <% saved_events.forEach(function(event) { %>
+                        <% const calcStatus = helpers.getCalculatedEventStatus(event); %>
+                        <% const eventSlug = helpers.slugify(event.event_name) || event.id; %>
+                        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div class="flex items-center space-x-4 min-w-0">
+                                <img src="<%= event.poster_image %>" alt="" class="w-16 h-20 rounded-xl object-cover shrink-0 shadow-xs"
+                                     onerror="this.src='https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300'">
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-1.5 mb-1">
+                                        <span class="text-xs font-bold text-purple-600"><%= event.artist_name || 'K-Pop' %></span>
+                                        <span class="text-slate-300">•</span>
+                                        <%- helpers.getStatusBadge(calcStatus) %>
+                                    </div>
+                                    <h3 class="text-sm font-bold text-slate-900 truncate">
+                                        <a href="/events/<%= event.id %>-<%= eventSlug %>" class="hover:text-pink-600 transition-colors">
+                                            <%= event.event_name %>
+                                        </a>
+                                    </h3>
+                                    <div class="text-xs text-slate-500 mt-1 flex flex-wrap items-center gap-3">
+                                        <span><i class="fas fa-calendar-day text-pink-500 me-1"></i> <%= helpers.formatDate(event.event_date) %></span>
+                                        <span><i class="fas fa-location-dot text-rose-500 me-1"></i> <%= event.venue_name || event.venue_display %></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center space-x-2 shrink-0 self-end sm:self-center">
+                                <a href="/events/<%= event.id %>-<%= eventSlug %>" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all">
+                                    View
+                                </a>
+                                <% if (event.ticket_url) { %>
+                                    <a href="<%= event.ticket_url %>" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-xl bg-pink-50 hover:bg-pink-100 text-pink-700 font-bold text-xs border border-pink-200" title="Official Tickets">
+                                        <i class="fas fa-ticket"></i>
+                                    </a>
+                                <% } %>
+                                <button onclick="removeSavedDashboard(<%= event.id %>, this)" title="Remove from Wishlist" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-500 font-bold text-xs transition-colors cursor-pointer">
+                                    <i class="fas fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } %>
+
+            <!-- Crowdsourced Reliability Recommendations List (UC018) -->
+            <div class="pt-6">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-sm">
+                            <i class="fas fa-thumbs-up"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-slate-900">My Community Upvotes (UC018)</h2>
+                    </div>
+                    <span class="text-xs font-bold text-slate-500"><%= recommended_events.length %> Recommended</span>
+                </div>
+
+                <% if (recommended_events.length === 0) { %>
+                    <div class="bg-white rounded-2xl p-6 text-center border border-slate-200 text-xs text-slate-500">
+                        You haven't recommended any events yet. Help the Malaysian K-Pop community by clicking "Recommend" on legitimate concerts you verify!
+                    </div>
+                <% } else { %>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <% recommended_events.forEach(function(rec) { %>
+                            <% const recSlug = helpers.slugify(rec.event_name) || rec.id; %>
+                            <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex items-center justify-between gap-3">
+                                <div class="min-w-0">
+                                    <div class="text-[11px] font-bold text-amber-600 flex items-center gap-1">
+                                        <i class="fas fa-thumbs-up text-xs"></i>
+                                        <span>Recommended by You</span>
+                                    </div>
+                                    <a href="/events/<%= rec.id %>-<%= recSlug %>" class="text-xs font-bold text-slate-900 hover:text-pink-600 truncate block mt-0.5">
+                                        <%= rec.event_name %>
+                                    </a>
+                                    <div class="text-[10px] text-slate-400 mt-1">
+                                        <%= rec.total_recommendations %> Community Upvote<%= rec.total_recommendations !== 1 ? 's' : '' %>
+                                    </div>
+                                </div>
+                                <a href="/events/<%= rec.id %>-<%= recSlug %>" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs shrink-0">
+                                    View
+                                </a>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Right Col: In-App Notifications Tray & Quick Shortcuts -->
+        <div class="space-y-6">
+            <!-- Notifications Tray (UC024) -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fas fa-bell text-pink-600"></i>
+                        <span>Recent Alerts (UC024)</span>
+                    </h3>
+                    <a href="/notifications" class="text-xs font-bold text-pink-600 hover:text-pink-700">View All</a>
+                </div>
+
+                <% if (recent_notifications.length === 0) { %>
+                    <div class="text-center py-6 text-xs text-slate-400">
+                        No new notifications right now.
+                    </div>
+                <% } else { %>
+                    <div class="space-y-3">
+                        <% recent_notifications.forEach(function(notif) { %>
+                            <div class="p-3 rounded-2xl <%= notif.is_read ? 'bg-slate-50 text-slate-600' : 'bg-pink-50/50 text-slate-900 border border-pink-100' %> text-xs space-y-1">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-slate-900"><%= notif.title || 'Schedule Alert' %></span>
+                                    <span class="text-[10px] text-slate-400"><%= helpers.timeAgo(notif.created_at) %></span>
+                                </div>
+                                <p class="text-[11px] text-slate-600 leading-relaxed"><%= notif.message %></p>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } %>
+            </div>
+
+            <!-- Quick Navigation Shortcuts -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3">
+                <h3 class="text-sm font-bold text-slate-900 mb-2">Discovery Shortcuts</h3>
+
+                <a href="/events/radar" class="p-3 rounded-2xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100 hover:border-purple-300 transition-all flex items-center justify-between group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center text-xs">
+                            <i class="fas fa-radar"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-slate-900 group-hover:text-purple-600 transition-colors">Event Radar (UC005)</div>
+                            <div class="text-[10px] text-slate-500">Bukit Jalil, Zepp KL & weekend hubs</div>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-xs text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                </a>
+
+                <a href="/artists" class="p-3 rounded-2xl bg-slate-50 border border-slate-200 hover:border-slate-300 transition-all flex items-center justify-between group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center text-xs">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-slate-900 group-hover:text-pink-600 transition-colors">Artists Directory (UC012)</div>
+                            <div class="text-[10px] text-slate-500">Profiles, member biodata & histories</div>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-xs text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                </a>
+
+                <a href="/profile" class="p-3 rounded-2xl bg-slate-50 border border-slate-200 hover:border-slate-300 transition-all flex items-center justify-between group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center text-xs">
+                            <i class="fas fa-sliders"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-slate-900 group-hover:text-pink-600 transition-colors">Notification Settings (UC025)</div>
+                            <div class="text-[10px] text-slate-500">Configure ticket & reply alerts</div>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-xs text-slate-400 group-hover:translate-x-0.5 transition-transform"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Live Hero Countdown Timer Script
+    const timerElem = document.getElementById('heroCountdownTimer');
+    if (timerElem) {
+        const targetDate = timerElem.getAttribute('data-target-date');
+        const targetTime = timerElem.getAttribute('data-target-time') || '18:00:00';
+        const targetTimestamp = new Date(`${targetDate}T${targetTime}`).getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetTimestamp - now;
+
+            if (distance < 0) {
+                document.getElementById('cd-days').textContent = '00';
+                document.getElementById('cd-hours').textContent = '00';
+                document.getElementById('cd-minutes').textContent = '00';
+                document.getElementById('cd-seconds').textContent = '00';
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('cd-days').textContent = String(days).padStart(2, '0');
+            document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('cd-minutes').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('cd-seconds').textContent = String(seconds).padStart(2, '0');
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    }
+
+    async function removeSavedDashboard(eventId, btn) {
+        if (!confirm('Remove this event from your saved wishlist?')) return;
+        try {
+            const res = await fetch(`/api/events/${eventId}/save`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await res.json();
+            if (data.status === 'success') {
+                location.reload();
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+</script>
+
+<%- include('partials/footer') %>

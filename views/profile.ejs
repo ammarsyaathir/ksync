@@ -187,6 +187,53 @@
                     </button>
                 </form>
             </div>
+
+            <!-- UC025: Notification & Alert Preferences -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
+                <h3 class="text-base font-bold text-slate-900 mb-2 flex items-center">
+                    <i class="fas fa-bell text-pink-600 me-2"></i> Notification & Alert Preferences
+                </h3>
+                <p class="text-xs text-slate-500 mb-5">Configure how K-Sync Malaysia notifies you about ticket dates, schedule shifts, and community discussions.</p>
+                
+                <form action="/profile/notifications" method="POST" class="space-y-4">
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between gap-4">
+                        <div>
+                            <div class="text-xs font-bold text-slate-800">Event Updates & Schedule Shifts</div>
+                            <div class="text-[11px] text-slate-500 mt-0.5">Receive immediate notifications if a saved concert or fan meeting date, venue, or status changes.</div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                            <input type="checkbox" name="notify_event_updates" value="1" <%= (currentUser.notify_event_updates !== 0) ? 'checked' : '' %> class="sr-only peer">
+                            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-pink-600"></div>
+                        </label>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between gap-4">
+                        <div>
+                            <div class="text-xs font-bold text-slate-800">Ticketing & Concert Countdown Reminders</div>
+                            <div class="text-[11px] text-slate-500 mt-0.5">Automated 7-day, 1-day, and 2-hour countdown reminders before showtime.</div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                            <input type="checkbox" name="notify_countdown_reminders" value="1" <%= (currentUser.notify_countdown_reminders !== 0) ? 'checked' : '' %> class="sr-only peer">
+                            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-pink-600"></div>
+                        </label>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between gap-4">
+                        <div>
+                            <div class="text-xs font-bold text-slate-800">Discussion Thread Replies</div>
+                            <div class="text-[11px] text-slate-500 mt-0.5">Notify you when another fan or organizer replies to your logistical questions.</div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                            <input type="checkbox" name="notify_discussion_replies" value="1" <%= (currentUser.notify_discussion_replies !== 0) ? 'checked' : '' %> class="sr-only peer">
+                            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-pink-600"></div>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold shadow-md shadow-pink-500/20 cursor-pointer">
+                        Save Notification Preferences
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </div>

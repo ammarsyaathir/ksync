@@ -14,9 +14,14 @@
             </h1>
             <p class="text-slate-600 text-sm mt-1 font-medium">Search, filter, and track verified concerts, fan meetings, and cupsleeve gatherings in Malaysia.</p>
         </div>
-        <span class="px-4 py-2 rounded-2xl text-xs font-bold bg-slate-900 text-white shadow-sm flex items-center shrink-0 self-start md:self-auto">
-            <i class="fas fa-calendar-check me-2 text-pink-400"></i> <%= events.length %> Verified Event(s)
-        </span>
+        <div class="flex items-center gap-2 shrink-0 self-start md:self-auto">
+            <a href="/events/radar" class="px-4 py-2 rounded-2xl text-xs font-bold bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-sm flex items-center transition-all">
+                <i class="fas fa-radar me-1.5 text-yellow-300 animate-pulse"></i> Event Radar
+            </a>
+            <span class="px-4 py-2 rounded-2xl text-xs font-bold bg-slate-900 text-white shadow-sm flex items-center">
+                <i class="fas fa-calendar-check me-2 text-pink-400"></i> <%= events.length %> Verified Event(s)
+            </span>
+        </div>
     </div>
 
     <!-- Quick Artist Filters -->

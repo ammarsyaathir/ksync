@@ -652,4 +652,31 @@ router.post('/profile/change-password', requireAuth, async (req, res) => {
   }
 });
 
+// POST /profile/notifications - UC025: Manage Notification Settings
+router.post('/profile/notifications', requireAuth, async (req, res) => {
+  const userId = req.session.userId;
+  const notifyEventUpdates = req.body.notify_event_updates === '1' ? 1 : 0;
+  const notifyCountdownReminders = req.body.notify_countdown_reminders === '1' ? 1 : 0;
+  const notifyDiscussionReplies = req.body.notify_discussion_replies === '1' ? 1 : 0;
+
+  try {
+    await db.execute(
+      `UPDATE users SET 
+        notify_event_updates = ?, 
+        notify_countdown_reminders = ?, 
+        notify_discussion_replies = ?, 
+        updated_at = CURRENT_TIMESTAMP 
+      WHERE id = ?`,
+      [notifyEventUpdates, notifyCountdownReminders, notifyDiscussionReplies, userId]
+    );
+
+    req.session.flash = { success: 'Notification & Alert preferences updated successfully!' };
+    res.redirect('/profile');
+  } catch (err) {
+    console.error('Notification settings update error:', err);
+    req.session.flash = { error: 'Failed to update notification preferences.' };
+    res.redirect('/profile');
+  }
+});
+
 export default router;

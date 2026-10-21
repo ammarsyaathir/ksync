@@ -1,0 +1,85 @@
+==== ALL 'Question' OCCURRENCES ====
+
+--- p33 ---
+Table 1.1: Questionnaire findings on platforms used to discover K-pop event information (Question 6, n = 50, multiple answers allowed)
+
+--- p57 ---
+Question 22 shows where the respondents currently discuss events: Telegram groups (18 respondents, 36%), X replies or group chats (12, 24%), WhatsApp groups (8, 16%) and Facebook groups or online forums (6, 12%), while 6 respondents (12%) rarely participate in group discussions. As summarized in Figure 1.3, these responses illustrate how event-related conversations are spread across several separate spaces rather than being attached to the event listing. Question 25 then asked respondents to rate the usefulness of a centralized K-pop community space where fans could discuss events, ask questions and share information without switching between platforms; 27 respondents (54%) rated it 4 or 5 out of 5, with a mean rating of 3.52, as shown in Figure 1.4. Question 26 asked which community features respondents would most like to use. The options selected most often were event information sharing (34 respondents, 68%) and shared-interest group discussions (32, 64%), followed by a general K-pop forum (30, 60%); event discussion forums were selected by 28 respondents (56%) and questions and answers by 25 (50%).
+
+--- p58 ---
+The responses to Questions 22, 25 and 26 support the inclusion of a community function in K-Sync Malaysia. The respondents spread their event discussions across four or more different spaces, and just over half rated a centralized community space as useful. Based on the spaces identified in Question 22 and the features listed in Question 26, this project scopes the community function to an event-based discussion area attached to each published event listing, where fans can also share event updates and announcements. The general K-pop forum, shared-interest group discussions and a formal question-and-answer function were also listed in Question 26, but they are outside the scope of this project version and are recorded as possible future extensions.
+
+--- p98 ---
+This solution responds directly to the ways event discussions are currently spread across separate spaces, as reported in Question 22: Telegram groups, X replies or group chats, WhatsApp groups and Facebook groups or online forums. Keeping the discussion with the event listing means that a fan who opens an event page can read the related conversation in the same place, rather than searching several chat groups. The community function will serve as an additional organized space rather than a replacement for every external platform. It is intended to reduce unnecessary switching between groups, support information sharing and make event-related conversations easier for fans to follow. Because the discussion is stored against a specific event, it also gives the administrator a defined scope within which to moderate reported content.
+
+
+==== RUN COUNTS for patch targets ====
+p10: runs=1 rPr=2 text='Social media platforms play an important role in how K-pop f'
+p14: runs=1 rPr=2 text='A further concern is how fans determine whether an event ann'
+p26: runs=1 rPr=2 text='K-pop event information in Malaysia is published through dif'
+p28: runs=1 rPr=2 text='Research concerning Malaysian K-pop fans shows that social m'
+p33: runs=1 rPr=2 text='Table 1.1: Questionnaire findings on platforms used to disco'
+p53: runs=1 rPr=2 text='K-pop fans use group chats and online communities to discuss'
+p55: runs=1 rPr=2 text='Research on K-pop fan communities recognizes that social med'
+p57: runs=1 rPr=2 text='Question 22 shows where the respondents currently discuss ev'
+p58: runs=1 rPr=2 text='The responses to Questions 22, 25 and 26 support the inclusi'
+p59: runs=1 rPr=2 text='A centralized community function could help organize convers'
+p78: runs=1 rPr=2 text='Geels et al. (2024) examined how source identity and credent'
+p82: runs=1 rPr=2 text='Without a defined workflow, event submissions may be reviewe'
+p96: runs=1 rPr=2 text='The second proposed solution is to provide event-based commu'
+p102: runs=1 rPr=2 text='The third proposed solution is to develop a standardized eve'
+p104: runs=1 rPr=2 text='This solution addresses the need for a consistent and transp'
+
+
+==== IMAGE REGIONS ====
+p46 draw=0 | 'Friends or word of mouth'
+p47 draw=0 | '34%'
+p48 draw=0 | ''
+p49 draw=1 | ''
+p50 draw=1 | ''
+p51 draw=0 | 'Disorganized Community Discussions and Difficulty Retrieving Event-Related Information'
+p52 draw=0 | ''
+
+p69 draw=0 | 'Event discussion forums, where a specific event is discussed in one organized space, were '
+p70 draw=0 | "Keep each event's discussion in its own area so earlier messages can be re-read."
+p71 draw=0 | ''
+p72 draw=1 | ''
+p73 draw=1 | ''
+p74 draw=0 | 'Need for a Consistent and Transparent Event Verification Process'
+p75 draw=0 | ''
+
+p80 draw=0 | 'In the current cross-platform process described in this study, fans may need to check even'
+p81 draw=0 | ''
+p82 draw=0 | 'Without a defined workflow, event submissions may be reviewed inconsistently, rejected org'
+p83 draw=1 | ''
+p84 draw=1 | ''
+p85 draw=0 | 'Proposed Solutions'
+p86 draw=0 | ''
+
+
+==== REFERENCES paragraphs ====
+p195 | 'To address these problems, three corresponding solutions were proposed: a centralized and verified e'
+p196 | ''
+p197 | 'REFERENCES'
+p198 | 'Arnold, M., Goldschmitt, M., & Rigotti, T. (2023). Dealing with information overload: A comprehensiv'
+p199 | 'Bucher, T. (2017). The algorithmic imaginary: Exploring the ordinary affects of Facebook algorithms.'
+p200 | 'Castillo, C., Mendoza, M., & Poblete, B. (2011). Information credibility on Twitter. In Proceedings '
+p201 | 'Eppler, M. J., & Mengis, J. (2004). The concept of information overload: A review of literature from'
+p202 | 'Fletcher, R., & Nielsen, R. K. (2017). Are news audiences increasingly fragmented? A cross-national '
+p203 | 'Geels, J., Graßl, P., Schraffenberger, H., Tanis, M., & Kleemans, M. (2024). Virtual lab coats: The '
+p204 | 'Gillespie, T. (2018). Custodians of the Internet: Platforms, content moderation, and the hidden deci'
+p205 | 'Hwang, E. H., Singh, P. V., & Argote, L. (2015). Knowledge sharing in online communities: Learning t'
+p206 | 'Majerczak, P., & Strzelecki, A. (2022). Trust, media credibility, social ties, and the intention to '
+p207 | 'Roslan, M. A. A., Azmi Murad, M. A., & Nasharuddin, N. A. (2026). The impact of voluntarily engageme'
+p208 | 'Roslan, M. A. A., Nasharuddin, N. A., & Azmi Murad, M. A. (2024). Navigating the digital realm: The '
+p209 | 'Roslan, M. A. A., Nasharuddin, N. A., & Azmi Murad, M. A. (2025). User experience matters: A qualita'
+p210 | 'Schaffner, B., Bhagoji, A. N., Cheng, S., Mei, J., Shen, J. L., Wang, G., Chetty, M., Feamster, N., '
+p211 | 'Suzor, N. P., Myers West, S., Quodling, A., & York, J. (2019). What do we mean when we talk about tr'
+p212 | 'Wasko, M. M., & Faraj, S. (2005). Why should I share? Examining social capital and knowledge contrib'
+p213 | 'Zubiaga, A., Aker, A., Bontcheva, K., Liakata, M., & Procter, R. (2018). Detection and resolution of'
+
+==== ref pPr sample (p199) ====
+<w:p w14:paraId="59364492" w14:textId="77777777" w:rsidR="001C27E6" w:rsidRPr="00D041E5" w:rsidRDefault="00000000"><w:pPr><w:spacing w:after="160" w:line="276" w:lineRule="auto"/><w:ind w:left="504" w:hanging="504"/><w:rPr><w:rFonts w:asciiTheme="majorBidi" w:hAnsiTheme="majorBidi" w:cstheme="majorBidi"/><w:color w:val="000000" w:themeColor="text1"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:asciiTheme="majorBidi" w:hAnsiTheme="majorBidi" w:cstheme="majorBidi"/><w:color w:val="000000" w:themeColor="text1"/></w:rPr><w:t xml:space="preserve">Bucher, T. (2017). The algorithmic imaginary: Exploring the ordinary affects of Facebook algorithms. </w:t></w:r><w:r><w:rPr><w:rFonts w:asciiTheme="majorBidi" w:hAnsiTheme="majorBidi" w:cstheme="majorBidi"/><w:i/><w:color w:val="000000" w:themeColor="text1"/></w:rPr><w:t xml:space="preserve">Information, Communication &amp; Society, 20</w:t></w:r><w:r><w
+
+==== image paragraph sample (p49) ====
+<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="200" w:after="80"/></w:pPr><w:r><w:drawing><wp:inline xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" distT="0" distB="0" distL="0" distR="0"><wp:extent cx="5852160" cy="2401404"/><wp:effectExtent l="0" t="0" r="0" b="0"/><wp:docPr id="106" name="Figure 1 1 platforms checked" descr="Figure 1 1 platforms checked"/><wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/></wp:cNvGraphicFramePr><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/pi

@@ -127,6 +127,109 @@ router.get('/events', async (req, res) => {
   }
 });
 
+// GET /radar redirect to /events/radar
+router.get('/radar', (req, res) => res.redirect('/events/radar'));
+
+// GET /events/radar - Clustered Nearby & Same-Weekend Event Radar (UC005)
+router.get('/events/radar', async (req, res) => {
+  const selectedArea = req.query.area ? req.query.area.trim() : '';
+  const selectedWeekend = req.query.weekend ? req.query.weekend.trim() : '';
+
+  try {
+    const events = await db.query(`
+      SELECT e.*, a.name as artist_name, a.image_url as artist_image,
+             c.name as category_name, c.badge_color, e.venue_name as venue_display,
+             u.organization_name, u.organization_type, u.is_verified_organizer
+      FROM events e
+      LEFT JOIN artists a ON e.artist_id = a.id
+      LEFT JOIN event_categories c ON e.category_id = c.id
+      LEFT JOIN users u ON e.organizer_id = u.id
+      WHERE e.verification_status = 'VERIFIED'
+      ORDER BY e.event_date ASC, e.start_time ASC
+    `);
+
+    // Fetch distinct cluster areas
+    const areaRows = await db.query(`
+      SELECT DISTINCT cluster_area 
+      FROM events 
+      WHERE verification_status = 'VERIFIED' AND cluster_area IS NOT NULL AND cluster_area != ''
+      ORDER BY cluster_area ASC
+    `);
+    const allAreas = areaRows.map(r => r.cluster_area);
+
+    // Grouping by Cluster Area
+    const areaClusters = {};
+    for (const area of allAreas) {
+      areaClusters[area] = events.filter(e => e.cluster_area === area);
+    }
+    // Also include an unclustered or others if any
+    const otherEvents = events.filter(e => !e.cluster_area || !allAreas.includes(e.cluster_area));
+    if (otherEvents.length > 0) {
+      areaClusters['Other Venues'] = otherEvents;
+      if (!allAreas.includes('Other Venues')) allAreas.push('Other Venues');
+    }
+
+    // Helper to calculate weekend key & label for each event
+    const weekendClusters = new Map();
+
+    for (const ev of events) {
+      const rawDateStr = ev.event_date instanceof Date ? ev.event_date.toISOString().split('T')[0] : String(ev.event_date || '');
+      if (!rawDateStr) continue;
+
+      const d = new Date(rawDateStr + 'T12:00:00');
+      const day = d.getDay(); // 0 = Sun, 1 = Mon ... 5 = Fri, 6 = Sat
+
+      // Calculate the Friday of this week/weekend
+      const diffToFriday = (day === 0) ? -2 : (5 - day);
+      const friday = new Date(d);
+      friday.setDate(d.getDate() + diffToFriday);
+
+      const sunday = new Date(friday);
+      sunday.setDate(friday.getDate() + 2);
+
+      const fridayStr = friday.toISOString().split('T')[0];
+      const friDayNum = friday.getDate();
+      const sunDayNum = sunday.getDate();
+      const monthYear = sunday.toLocaleDateString('en-MY', { month: 'short', year: 'numeric' });
+      const weekendLabel = `Weekend of ${friDayNum}–${sunDayNum} ${monthYear}`;
+
+      if (!weekendClusters.has(fridayStr)) {
+        weekendClusters.set(fridayStr, {
+          key: fridayStr,
+          label: weekendLabel,
+          events: []
+        });
+      }
+      weekendClusters.get(fridayStr).events.push(ev);
+    }
+
+    // Convert map to sorted array of weekend clusters
+    const sortedWeekendClusters = Array.from(weekendClusters.values())
+      .sort((a, b) => a.key.localeCompare(b.key));
+
+    // User saved events for quick bookmark checking
+    let savedEventIds = [];
+    if (req.session && req.session.userId) {
+      const saved = await db.query("SELECT event_id FROM saved_events WHERE user_id = ?", [req.session.userId]);
+      savedEventIds = saved.map(s => s.event_id);
+    }
+
+    res.render('event-radar', {
+      events,
+      allAreas,
+      areaClusters,
+      weekendClusters: sortedWeekendClusters,
+      selectedArea,
+      selectedWeekend,
+      activePath: '/events/radar',
+      helpers
+    });
+  } catch (err) {
+    console.error('Event Radar error:', err);
+    res.status(500).send('Error loading Event Radar');
+  }
+});
+
 // GET /events/:idOrSlug - Event Details by ID or Name Slug
 router.get('/events/:idOrSlug', async (req, res) => {
   const param = (req.params.idOrSlug || '').trim();
@@ -189,8 +292,12 @@ router.get('/events/:idOrSlug', async (req, res) => {
       const saved = await db.getOne("SELECT id FROM saved_events WHERE user_id = ? AND event_id = ?", [req.session.userId, eventId]);
       isSavedEvent = !!saved;
 
+      const rec = await db.getOne("SELECT id FROM event_recommendations WHERE user_id = ? AND event_id = ?", [req.session.userId, eventId]);
+      isInterested = !!rec;
     }
-    const interestCount = 0;
+
+    const recCountRow = await db.getOne("SELECT COUNT(*) as cnt FROM event_recommendations WHERE event_id = ?", [eventId]);
+    const interestCount = recCountRow ? recCountRow.cnt : 0;
 
     // Fetch discussion comments with user roles and organize 1-level threading
     let chatMessages = [];

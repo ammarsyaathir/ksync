@@ -1,0 +1,1836 @@
+{
+ "paragraphs": [
+  {
+   "i": 0,
+   "start": 2630,
+   "end": 3198,
+   "style": "",
+   "tableIndex": null,
+   "text": "CHAPTER 1"
+  },
+  {
+   "i": 1,
+   "start": 3198,
+   "end": 3543,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 2,
+   "start": 3543,
+   "end": 4114,
+   "style": "",
+   "tableIndex": null,
+   "text": "INTRODUCTION"
+  },
+  {
+   "i": 3,
+   "start": 4114,
+   "end": 4462,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 4,
+   "start": 4462,
+   "end": 4807,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 5,
+   "start": 4807,
+   "end": 5938,
+   "style": "",
+   "tableIndex": null,
+   "text": "This chapter introduces K-Sync Malaysia, a web-based platform proposed to centralize K-pop event information and provide an organized space for fan community discussions. It explains the background of the study, current business process, problem statements, proposed solutions, project aim, objectives, scope, significance and organization of the thesis. The chapter focuses on three needs identified through literature review and preliminary data collection: making K-pop events easier to discover, organizing event-related discussions, and improving the transparency of event verification and information management."
+  },
+  {
+   "i": 6,
+   "start": 5938,
+   "end": 6646,
+   "style": "Heading1",
+   "tableIndex": null,
+   "text": "Background of Study"
+  },
+  {
+   "i": 7,
+   "start": 6646,
+   "end": 6825,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 8,
+   "start": 6825,
+   "end": 7991,
+   "style": "",
+   "tableIndex": null,
+   "text": "Korean popular music, commonly known as K-pop, has developed into an international entertainment culture that involves music, performances, online communities and fan activities. Fans do not only listen to songs; they also follow artist updates, attend concerts and fan meetings, participate in cupsleeve events, support fan projects and communicate with other fans. These activities depend on the exchange of information before, during and after an event. For this reason, access to event announcements and opportunities to discuss event-related matters are important parts of the fan experience."
+  },
+  {
+   "i": 9,
+   "start": 7991,
+   "end": 8328,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 10,
+   "start": 8328,
+   "end": 9802,
+   "style": "",
+   "tableIndex": null,
+   "text": "Social media platforms play an important role in how K-pop fans discover events and interact with other fans. X, Instagram, TikTok, Telegram and organizer websites are among the channels used to share posters, schedules, venue information and announcements. Research on cross-platform media use shows that audiences increasingly encounter information through several services rather than one, so the same item is not necessarily seen by the same people on each platform (Fletcher & Nielsen, 2017). Research on Malaysian K-pop fandom has found that social media supports fan engagement and community participation (Roslan et al., 2024; Roslan et al., 2025). Recent work also describes how fans voluntarily create, seek and share fandom-related information through social platforms (Roslan et al., 2026). These studies provide a basis for understanding why online spaces are important for event discovery and fan communication."
+  },
+  {
+   "i": 11,
+   "start": 9802,
+   "end": 10139,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 12,
+   "start": 10139,
+   "end": 11342,
+   "style": "",
+   "tableIndex": null,
+   "text": "However, event information may be distributed across different accounts, posts and online communities rather than presented in one consistent listing. An organizer may publish the main announcement on one platform and post additional details or corrections elsewhere. Fans therefore may need to search several sources to find the date, time, venue, requirements and latest updates. If they need further clarification, they may also ask questions in group chats or search earlier conversations. Important messages can become difficult to retrieve when many unrelated messages appear, and questions may be repeated when previous answers cannot easily be found."
+  },
+  {
+   "i": 13,
+   "start": 11342,
+   "end": 11679,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 14,
+   "start": 11679,
+   "end": 13189,
+   "style": "",
+   "tableIndex": null,
+   "text": "A further concern is how fans determine whether an event announcement is reliable and up to date. A post may be shared by an unofficial account or reposted without the original source, while earlier details may remain visible after an update. Research by Geels et al. (2024) shows that source-related signals on social media do not automatically guarantee that readers will make accurate judgments about the credibility of a message. Studies of credibility in social media similarly find that reliability is inferred from several cues at once and that unverified claims can circulate widely before they are corrected (Castillo et al., 2011; Zubiaga et al., 2018). This supports the need to consider the evidence behind an event announcement rather than treating an online post or visible badge alone as conclusive proof. In a centralized event platform, a defined review process can help make the basis for publishing information more consistent and understandable."
+  },
+  {
+   "i": 15,
+   "start": 13189,
+   "end": 13526,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 16,
+   "start": 13526,
+   "end": 14639,
+   "style": "",
+   "tableIndex": null,
+   "text": "The current business process generally requires organizers or fan communities to publish event announcements through their existing channels. Fans then discover the announcements, compare information across sources and use community chats to ask questions or share information. When a detail is missing, unclear or difficult to retrieve, the fan may need to search again or ask the same question in another group. The following flowchart summarizes this process and highlights the points where event discovery, discussion and information checking can become difficult."
+  },
+  {
+   "i": 17,
+   "start": 14639,
+   "end": 16173,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 18,
+   "start": 16173,
+   "end": 17052,
+   "style": "",
+   "tableIndex": null,
+   "text": "Figure 1.1: Current business process for discovering and discussing K-pop events"
+  },
+  {
+   "i": 19,
+   "start": 17052,
+   "end": 18076,
+   "style": "",
+   "tableIndex": null,
+   "text": "As illustrated in Figure 1.1, the current process depends on fans searching across separate platforms and revisiting community conversations to locate event details. The process does not necessarily mean that every event announcement is inaccurate or that all discussions are difficult to follow. Instead, it shows the practical challenges that may occur when information is spread across multiple channels and is not organized around a single event listing and discussion space."
+  },
+  {
+   "i": 20,
+   "start": 18076,
+   "end": 19326,
+   "style": "",
+   "tableIndex": null,
+   "text": "To address these issues, K-Sync Malaysia is proposed as a centralized web-based platform for K-pop event information and event-based fan community discussions in Malaysia. Fans will be able to browse and search approved event listings and take part in the discussion attached to each event. Event details can be submitted through a public form without creating an account, or through a registered organizer account that the administrator can mark as verified once reviewed. A system administrator will review submitted information before approved listings are published, and standardized review criteria and records of decisions will help improve transparency in the platform’s event verification process."
+  },
+  {
+   "i": 21,
+   "start": 19326,
+   "end": 20371,
+   "style": "",
+   "tableIndex": null,
+   "text": "Key terms. In this project, an event listing refers to a structured page containing information about a K-pop event. Event-based fan discussion refers to user-generated posts and replies attached to a particular published event, rather than to a general discussion board. Event verification refers to the administrator’s review of submitted event details and supporting sources against the platform’s criteria; it does not guarantee event quality or safety."
+  },
+  {
+   "i": 22,
+   "start": 20371,
+   "end": 21162,
+   "style": "Heading1",
+   "tableIndex": null,
+   "text": "Problem Statements"
+  },
+  {
+   "i": 23,
+   "start": 21162,
+   "end": 21341,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 24,
+   "start": 21341,
+   "end": 22959,
+   "style": "",
+   "tableIndex": null,
+   "text": "The problems addressed by this project were identified from the current event-information process, a questionnaire completed by 50 respondents, and interviews with representatives from Malaysian K-pop fan communities. The questionnaire examined how respondents discover K-pop events, the platforms and group chats they use, and the difficulties they experience in retrieving event-related information. Interviews with the MKF Malaysia Instagram administrator and with Ms Syazwani from Cupsleeve Malaysia provided additional context about how event information is published, shared and updated, and how fans respond when announcements change. Three problems are discussed below: event information that is fragmented across platforms, event-related discussions that are difficult to organize and retrieve, and the absence of a consistent and transparent process for confirming that an event listing and its ticket channel are official. The questionnaire sample is limited and is used as evidence about the respondents who participated, not as a national estimate of all K-pop fans in Malaysia."
+  },
+  {
+   "i": 25,
+   "start": 22959,
+   "end": 23636,
+   "style": "Heading2",
+   "tableIndex": null,
+   "text": "Difficulty Discovering K-pop Event Information Across Multiple Platforms"
+  },
+  {
+   "i": 26,
+   "start": 23636,
+   "end": 25455,
+   "style": "",
+   "tableIndex": null,
+   "text": "K-pop event information in Malaysia is published through different online platforms, including X, TikTok, Instagram, Telegram and official organizer websites. Each platform may contain different event announcements, and the information may not be presented in a consistent format. Research on cross-platform media use shows that audiences increasingly encounter information through several services rather than a single source, so the same item is not necessarily seen by the same people on each platform (Fletcher & Nielsen, 2017). Fans who want to discover concerts, fan meetings, festivals, cupsleeve events, exhibitions or pop-up events may therefore have to follow multiple accounts and compare separate posts to locate event details. The same event may also be described differently across sources when a date, venue or ticket detail is changed after the first announcement, and older posts may remain visible after the update. Because social media feeds are ordered by algorithms rather than chronologically, an announcement may also appear late or not at all for some followers (Bucher, 2017). This can make event discovery less convenient, especially when fans are interested in several artists or events occurring within a similar period."
+  },
+  {
+   "i": 27,
+   "start": 25455,
+   "end": 25814,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 28,
+   "start": 25814,
+   "end": 27338,
+   "style": "",
+   "tableIndex": null,
+   "text": "Research concerning Malaysian K-pop fans shows that social media is used for fan activities, connection and information sharing. Roslan et al. (2024) discussed how facilitating conditions influence social media use among K-pop fans, while Roslan et al. (2025) examined user experience and effort expectancy in fan-related social media use. These studies support the importance of social media in fandom but do not, by themselves, measure how difficult Malaysian fans find event discovery or how they cope when announcements are spread across several platforms. Research on information overload explains that when the volume of incoming messages exceeds what a person can process, relevant items become harder to identify and important details can be overlooked (Eppler & Mengis, 2004; Arnold et al., 2023). The questionnaire for this project therefore provides local evidence about the platforms used by its respondents and the difficulties they report."
+  },
+  {
+   "i": 29,
+   "start": 27338,
+   "end": 27697,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 30,
+   "start": 27697,
+   "end": 29506,
+   "style": "",
+   "tableIndex": null,
+   "text": "Among the 50 questionnaire respondents, 42 (84%) reported using X (formerly Twitter) to find K-pop event information, while 31 (62%) used Instagram and 31 (62%) used TikTok. Official event organizer websites were reported by 29 respondents (58%) and Telegram channels by 24 (48%), while 17 respondents (34%) received information through friends or word of mouth. These responses show that participants rely on several different channels to discover event information. In total, 42 respondents (84%) reported checking two or more platforms, including 30 (60%) who checked three or more and 16 (32%) who checked four or more. A total of 38 respondents (76%) reported that they sometimes, often or very often missed an event because the social media algorithm showed the post too late, and 20 of them (40%) reported this happening often or very often. During an interview on 26 April 2026, the MKF Malaysia Instagram administrator explained that the timing and distribution of social media posts can affect when followers see updates (MKF Malaysia Instagram administrator, personal communication, April 26, 2026). This interview provides context for the survey findings, although it does not establish that every fan experiences delayed updates."
+  },
+  {
+   "i": 31,
+   "start": 29506,
+   "end": 29865,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 32,
+   "start": 29865,
+   "end": 31227,
+   "style": "",
+   "tableIndex": null,
+   "text": "The findings indicate that fans in this sample rely on multiple sources to discover K-pop events. Because most respondents checked more than one platform, and three in five checked three or more, locating a single event can require several separate searches. This makes it harder to obtain a consolidated view of upcoming events, as summarized in Figure 1.1. Three in four respondents had also missed an event because a post appeared too late in a social media feed, as shown in Figure 1.2. A centralized directory that presents approved events in one comparable structure, with keyword search and filters for artist, event category and location, is therefore proposed to help fans discover relevant events and to let them check a single source that has already been reviewed before publication."
+  },
+  {
+   "i": 33,
+   "start": 31227,
+   "end": 31907,
+   "style": "",
+   "tableIndex": null,
+   "text": "Table 1.1: Questionnaire findings on platforms used to discover K-pop event information (Question 6, n = 50, multiple answers allowed)"
+  },
+  {
+   "i": 34,
+   "start": 32808,
+   "end": 33408,
+   "style": "",
+   "tableIndex": 0,
+   "text": "Information source or experience"
+  },
+  {
+   "i": 35,
+   "start": 33826,
+   "end": 34405,
+   "style": "",
+   "tableIndex": 0,
+   "text": "Respondents"
+  },
+  {
+   "i": 36,
+   "start": 34940,
+   "end": 35501,
+   "style": "",
+   "tableIndex": 0,
+   "text": "X (formerly Twitter)"
+  },
+  {
+   "i": 37,
+   "start": 35866,
+   "end": 36410,
+   "style": "",
+   "tableIndex": 0,
+   "text": "84%"
+  },
+  {
+   "i": 38,
+   "start": 36945,
+   "end": 37495,
+   "style": "",
+   "tableIndex": 0,
+   "text": "Instagram"
+  },
+  {
+   "i": 39,
+   "start": 37860,
+   "end": 38404,
+   "style": "",
+   "tableIndex": 0,
+   "text": "62%"
+  },
+  {
+   "i": 40,
+   "start": 38939,
+   "end": 39486,
+   "style": "",
+   "tableIndex": 0,
+   "text": "TikTok"
+  },
+  {
+   "i": 41,
+   "start": 39851,
+   "end": 40395,
+   "style": "",
+   "tableIndex": 0,
+   "text": "62%"
+  },
+  {
+   "i": 42,
+   "start": 40930,
+   "end": 41504,
+   "style": "",
+   "tableIndex": 0,
+   "text": "Official event organizer websites"
+  },
+  {
+   "i": 43,
+   "start": 41869,
+   "end": 42413,
+   "style": "",
+   "tableIndex": 0,
+   "text": "58%"
+  },
+  {
+   "i": 44,
+   "start": 42948,
+   "end": 43506,
+   "style": "",
+   "tableIndex": 0,
+   "text": "Telegram channels"
+  },
+  {
+   "i": 45,
+   "start": 43871,
+   "end": 44415,
+   "style": "",
+   "tableIndex": 0,
+   "text": "48%"
+  },
+  {
+   "i": 46,
+   "start": 44950,
+   "end": 45515,
+   "style": "",
+   "tableIndex": 0,
+   "text": "Friends or word of mouth"
+  },
+  {
+   "i": 47,
+   "start": 45880,
+   "end": 46424,
+   "style": "",
+   "tableIndex": 0,
+   "text": "34%"
+  },
+  {
+   "i": 48,
+   "start": 46446,
+   "end": 46751,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 49,
+   "start": 46751,
+   "end": 48016,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 50,
+   "start": 48016,
+   "end": 49269,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 51,
+   "start": 49269,
+   "end": 49960,
+   "style": "Heading2",
+   "tableIndex": null,
+   "text": "Disorganized Community Discussions and Difficulty Retrieving Event-Related Information"
+  },
+  {
+   "i": 52,
+   "start": 49960,
+   "end": 50139,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 53,
+   "start": 50139,
+   "end": 51706,
+   "style": "",
+   "tableIndex": null,
+   "text": "K-pop fans use group chats and online communities to discuss events, ask questions, share updates and communicate with other fans. However, when conversations take place across several groups or platforms, useful information may become difficult to retrieve. Research on information overload shows that when messages accumulate faster than a person can process them, earlier items become hard to locate and important details can be missed (Eppler & Mengis, 2004). In group chats, important messages can be buried under newer messages, repeated questions may appear when earlier answers cannot be found, and event information may be scattered across different group conversations. In addition, a discussion is usually not attached to the event listing itself, so a fan must move between the event announcement and several chat groups to find an answer or confirm a detail. As a result, fans may need to scroll through long chat histories or switch between platforms to locate a previous answer or an event update."
+  },
+  {
+   "i": 54,
+   "start": 51706,
+   "end": 52049,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 55,
+   "start": 52049,
+   "end": 53492,
+   "style": "",
+   "tableIndex": null,
+   "text": "Research on K-pop fan communities recognizes that social media supports interaction, participation and the sharing of fandom-related information. Roslan et al. (2026) describe how fans actively seek, organize and share information through online fan spaces. Studies of online communities more generally show that members are more willing to contribute when the environment supports reciprocity and a shared practice (Wasko & Faraj, 2005), and that the value of such communities depends on how information is organized and made retrievable as participation grows (Hwang et al., 2015). These findings demonstrate the role of community information sharing, but they do not establish that every K-pop group chat is disorganized. The problem in this project is supported more directly by the questionnaire items that collect respondents' experiences of retrieving event-related information across different spaces."
+  },
+  {
+   "i": 56,
+   "start": 53492,
+   "end": 53856,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 57,
+   "start": 53856,
+   "end": 55502,
+   "style": "",
+   "tableIndex": null,
+   "text": "Question 22 shows where the respondents currently discuss events: Telegram groups (18 respondents, 36%), X replies or group chats (12, 24%), WhatsApp groups (8, 16%) and Facebook groups or online forums (6, 12%), while 6 respondents (12%) rarely participate in group discussions. As summarized in Figure 1.3, these responses illustrate how event-related conversations are spread across several separate spaces rather than being attached to the event listing. Question 25 then asked respondents to rate the usefulness of a centralized K-pop community space where fans could discuss events, ask questions and share information without switching between platforms; 27 respondents (54%) rated it 4 or 5 out of 5, with a mean rating of 3.52, as shown in Figure 1.4. Question 26 asked which community features respondents would most like to use. The options selected most often were event information sharing (34 respondents, 68%) and shared-interest group discussions (32, 64%), followed by a general K-pop forum (30, 60%); event discussion forums were selected by 28 respondents (56%) and questions and answers by 25 (50%)."
+  },
+  {
+   "i": 58,
+   "start": 55502,
+   "end": 56787,
+   "style": "",
+   "tableIndex": null,
+   "text": "The responses to Questions 22, 25 and 26 support the inclusion of a community function in K-Sync Malaysia. The respondents spread their event discussions across four or more different spaces, and just over half rated a centralized community space as useful. Based on the spaces identified in Question 22 and the features listed in Question 26, this project scopes the community function to an event-based discussion area attached to each published event listing, where fans can also share event updates and announcements. The general K-pop forum, shared-interest group discussions and a formal question-and-answer function were also listed in Question 26, but they are outside the scope of this project version and are recorded as possible future extensions."
+  },
+  {
+   "i": 59,
+   "start": 56787,
+   "end": 58108,
+   "style": "",
+   "tableIndex": null,
+   "text": "A centralized community function could help organize conversations according to the event they relate to, making it easier for fans to return to earlier discussions and share useful information in a relevant place. Wasko and Faraj (2005) found that people contribute knowledge to online networks when a shared practice and expectations of reciprocity are present, and Hwang et al. (2015) showed that the usefulness of such communities depends on how information is organized as participation grows. This feature would not eliminate all repeated questions or replace every external group chat. Instead, it would provide an additional organized space in which event-related conversations are kept with the event listing, reducing the need to switch between several platforms for every discussion."
+  },
+  {
+   "i": 60,
+   "start": 58108,
+   "end": 58756,
+   "style": "",
+   "tableIndex": null,
+   "text": "Table 1.2: Questionnaire evidence on event discussions and its implications for K-Sync Malaysia"
+  },
+  {
+   "i": 61,
+   "start": 59635,
+   "end": 60243,
+   "style": "",
+   "tableIndex": 1,
+   "text": "Evidence from the questionnaire (n = 50)"
+  },
+  {
+   "i": 62,
+   "start": 60661,
+   "end": 61264,
+   "style": "",
+   "tableIndex": 1,
+   "text": "Implication for the proposed system"
+  },
+  {
+   "i": 63,
+   "start": 61779,
+   "end": 62462,
+   "style": "",
+   "tableIndex": 1,
+   "text": "Event discussions are spread across separate spaces: Telegram groups (36%), X (24%), WhatsApp (16%) and Facebook groups or online forums (12%)"
+  },
+  {
+   "i": 64,
+   "start": 62827,
+   "end": 63445,
+   "style": "",
+   "tableIndex": 1,
+   "text": "Attach the discussion to the event listing so related messages stay together."
+  },
+  {
+   "i": 65,
+   "start": 63960,
+   "end": 64630,
+   "style": "",
+   "tableIndex": 1,
+   "text": "A centralized community space for discussing events without switching platforms was rated 4 or 5 out of 5 by 27 respondents (54%)"
+  },
+  {
+   "i": 66,
+   "start": 64995,
+   "end": 65612,
+   "style": "",
+   "tableIndex": 1,
+   "text": "Provide one organized space so fans do not have to switch between platforms."
+  },
+  {
+   "i": 67,
+   "start": 66127,
+   "end": 66746,
+   "style": "",
+   "tableIndex": 1,
+   "text": "Event information sharing with other fans was selected by 34 respondents (68%)"
+  },
+  {
+   "i": 68,
+   "start": 67111,
+   "end": 67738,
+   "style": "",
+   "tableIndex": 1,
+   "text": "Let fans post event updates and announcements in the discussion attached to the event."
+  },
+  {
+   "i": 69,
+   "start": 68253,
+   "end": 68916,
+   "style": "",
+   "tableIndex": 1,
+   "text": "Event discussion forums, where a specific event is discussed in one organized space, were selected by 28 respondents (56%)"
+  },
+  {
+   "i": 70,
+   "start": 69281,
+   "end": 69902,
+   "style": "",
+   "tableIndex": 1,
+   "text": "Keep each event's discussion in its own area so earlier messages can be re-read."
+  },
+  {
+   "i": 71,
+   "start": 69924,
+   "end": 70229,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 72,
+   "start": 70229,
+   "end": 71497,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 73,
+   "start": 71497,
+   "end": 72771,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 74,
+   "start": 72771,
+   "end": 73456,
+   "style": "Heading2",
+   "tableIndex": null,
+   "text": "Need for a Consistent and Transparent Event Verification Process"
+  },
+  {
+   "i": 75,
+   "start": 73456,
+   "end": 73799,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 76,
+   "start": 73799,
+   "end": 75209,
+   "style": "",
+   "tableIndex": null,
+   "text": "Finding an event announcement and discussing it with other fans do not automatically establish that the information is official or current. Posts may be shared by accounts other than the original organizer, and reposted information may not include a direct link to the original announcement. Event details may also be changed after the first post is published, and ticket links circulated by unofficial accounts may lead to resale or fraudulent listings rather than an authorised ticketing channel. When fans obtain information from several sources, they may need to decide which source to trust or return to the organizer’s page to confirm the latest details. This creates a need for the proposed centralized platform to explain how event listings are checked before they are presented as verified, and to make the official source and ticket channel visible next to each listing."
+  },
+  {
+   "i": 77,
+   "start": 75209,
+   "end": 75573,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 78,
+   "start": 75573,
+   "end": 77392,
+   "style": "",
+   "tableIndex": null,
+   "text": "Geels et al. (2024) examined how source identity and credential information affect perceived social media credibility. Their experiments found that visible source signals do not always lead users to accurate credibility judgments, and that source authenticity can be confused with the credibility of a particular message. Work on information credibility in social media reaches a similar conclusion: the reliability of a post is usually inferred from several signals together, such as the account, the wording and the pattern of sharing, rather than from a single badge (Castillo et al., 2011), and unverified claims can spread widely before they are resolved (Zubiaga et al., 2018). In related work, Majerczak and Strzelecki (2022) found that trust in online sources and awareness of misinformation shape whether users verify information before passing it on. Therefore, a verification label alone should not be treated as proof that every detail of an event is correct. A platform should consider the underlying event evidence and clearly communicate the scope of its verification process. Research on online content moderation also identifies consistency and clarity of decision criteria as important challenges for platforms that review user-generated content (Schaffner et al., 2024)."
+  },
+  {
+   "i": 79,
+   "start": 77392,
+   "end": 77756,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 80,
+   "start": 77756,
+   "end": 79320,
+   "style": "",
+   "tableIndex": null,
+   "text": "In the current cross-platform process described in this study, fans may need to check event details through the original organizer or other sources themselves. The survey shows that 31 of the 50 respondents (62%) had encountered conflicting or outdated information about a K-pop event, as presented in Figure 1.5, and that knowing whether event information is current and comes from a reliable source was rated 4 or 5 out of 5 by 30 respondents (60%), with a mean rating of 3.72, as presented in Figure 1.6. The survey demonstrates that respondents use multiple platforms to locate event information, but it does not directly prove that fake events are common or that existing administrators are biased. Similarly, the interviews provide context about event information sharing but do not establish deliberate misconduct. The problem addressed here is the need for K-Sync Malaysia to have its own defined process for reviewing public event submissions, applying criteria consistently and recording the basis for publication decisions."
+  },
+  {
+   "i": 81,
+   "start": 79320,
+   "end": 79684,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 82,
+   "start": 79684,
+   "end": 81507,
+   "style": "",
+   "tableIndex": null,
+   "text": "Without a defined workflow, event submissions may be reviewed inconsistently, rejected organizers may not understand why their submissions were not published, and fans may have no way of checking whether a listing is still under review or has been approved. A documented decision process can improve accountability by recording whether an event was approved or rejected and the reason for that decision. Suzor et al. (2019) argue that meaningful transparency in content moderation involves giving affected users clear information about decisions and the rules applied, and Gillespie (2018) shows that platforms routinely make consequential judgments about user-generated content that are often invisible to the people affected by them. For K-Sync Malaysia, this supports the inclusion of standardized verification criteria, recorded rejection reasons, a reference number that allows a submitter to follow the status of a submission, an indicator that distinguishes verified organizer accounts, and a mechanism for fans to report incorrect or outdated listings. These features are intended to reduce avoidable inconsistency and improve traceability; they cannot guarantee that all decisions will be free from bias or that every event will remain accurate after publication."
+  },
+  {
+   "i": 83,
+   "start": 81507,
+   "end": 82790,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 84,
+   "start": 82790,
+   "end": 84082,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 85,
+   "start": 84082,
+   "end": 84792,
+   "style": "Heading1",
+   "tableIndex": null,
+   "text": "Proposed Solutions"
+  },
+  {
+   "i": 86,
+   "start": 84792,
+   "end": 85025,
+   "style": "ListParagraph",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 87,
+   "start": 85025,
+   "end": 86077,
+   "style": "",
+   "tableIndex": null,
+   "text": "To address the problems identified in Section 1.2, this project proposes K-Sync Malaysia: A Centralized Platform for K-Pop Event Information and Fan Community Discussions. The system will provide three main solutions: a centralized and verified event directory, event-based community discussion, and a standardized event submission and verification process. Each solution is mapped to one problem so that the scope of development remains aligned with the evidence gathered during requirement analysis."
+  },
+  {
+   "i": 88,
+   "start": 86077,
+   "end": 86789,
+   "style": "Heading2",
+   "tableIndex": null,
+   "text": "Centralized K-pop Event Information Platform"
+  },
+  {
+   "i": 89,
+   "start": 86789,
+   "end": 87001,
+   "style": "ListParagraph",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 90,
+   "start": 87001,
+   "end": 88535,
+   "style": "",
+   "tableIndex": null,
+   "text": "The first proposed solution is to develop a centralized event information platform where fans can discover K-pop events in Malaysia through organized listings. The system will provide event pages for activities such as concerts, fan meetings, festivals, cupsleeve events, exhibitions and pop-up events. Fans will be able to browse event listings and search or filter them according to available criteria, such as event name, artist or group, event category and location. Each event page will present the available details in a consistent structure, including the event date, time, venue, description, gallery images, the organizing party, links to the relevant source announcement and, where available, the official ticket channel. Only listings that have been approved through the verification process will be published to the public directory, so the directory presents information that has been reviewed rather than every post that has been collected."
+  },
+  {
+   "i": 91,
+   "start": 88535,
+   "end": 88928,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 92,
+   "start": 88928,
+   "end": 90208,
+   "style": "",
+   "tableIndex": null,
+   "text": "This solution directly addresses the difficulty of discovering event information across different platforms. By organizing approved event details in one place, K-Sync Malaysia will give fans a central point from which to explore upcoming activities and revisit the information they need. The system will not replace organizers' original announcements or control how external platforms distribute posts, and it will not sell tickets or process payments. Instead, it will provide a structured directory with search and filtering functions, together with a link to the official source or ticket channel, thereby reducing the effort needed to discover events and compare their publicly available details."
+  },
+  {
+   "i": 93,
+   "start": 90208,
+   "end": 90622,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 94,
+   "start": 90622,
+   "end": 91223,
+   "style": "Heading2",
+   "tableIndex": null,
+   "text": "Event-Based Community Discussion and Information Sharing"
+  },
+  {
+   "i": 95,
+   "start": 91223,
+   "end": 91435,
+   "style": "ListParagraph",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 96,
+   "start": 91435,
+   "end": 93139,
+   "style": "",
+   "tableIndex": null,
+   "text": "The second proposed solution is to provide event-based community discussion within K-Sync Malaysia. Each published event page will include a discussion area where registered fans can post messages, reply to other fans and share useful information related to that event, so that the conversation is kept with the event listing instead of being scattered across separate group chats. Community participation will require a fan account, and each message is stored with a reference to the related event. Research on online communities indicates that participation depends on how information is organized and how easy it is to find earlier contributions (Wasko & Faraj, 2005; Hwang et al., 2015), and anchoring each conversation to a specific event is intended to serve that purpose. The system administrator will be responsible for reviewing reported content and enforcing the platform's discussion rules. A general K-pop forum, shared-interest group discussions and a formal question-and-answer function were considered during requirement gathering, but they are outside the scope of this project version and are recorded as possible future extensions."
+  },
+  {
+   "i": 97,
+   "start": 93139,
+   "end": 93482,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 98,
+   "start": 93482,
+   "end": 94853,
+   "style": "",
+   "tableIndex": null,
+   "text": "This solution responds directly to the ways event discussions are currently spread across separate spaces, as reported in Question 22: Telegram groups, X replies or group chats, WhatsApp groups and Facebook groups or online forums. Keeping the discussion with the event listing means that a fan who opens an event page can read the related conversation in the same place, rather than searching several chat groups. The community function will serve as an additional organized space rather than a replacement for every external platform. It is intended to reduce unnecessary switching between groups, support information sharing and make event-related conversations easier for fans to follow. Because the discussion is stored against a specific event, it also gives the administrator a defined scope within which to moderate reported content."
+  },
+  {
+   "i": 99,
+   "start": 94853,
+   "end": 95217,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 100,
+   "start": 95217,
+   "end": 95808,
+   "style": "Heading2",
+   "tableIndex": null,
+   "text": "Standardized Event Submission and Verification"
+  },
+  {
+   "i": 101,
+   "start": 95808,
+   "end": 96020,
+   "style": "ListParagraph",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 102,
+   "start": 96020,
+   "end": 97881,
+   "style": "",
+   "tableIndex": null,
+   "text": "The third proposed solution is to develop a standardized event submission and verification workflow. Event information can be submitted in two ways: an organizer may use a public submission form without creating a platform account, or a registered organizer account may be used, which can be marked as a verified organizer after review. The submission form will collect the event name, date, time, location, description, event category, organizing party, contact details and supporting evidence, such as an official announcement URL, a social media account or a poster image. This evidence is requested because the credibility of a social media post cannot be judged from its appearance alone, and unofficial reposts can omit or alter the original details (Castillo et al., 2011; Zubiaga et al., 2018). Submitted events will be marked as pending until the system administrator reviews the details and checks the available evidence against the platform's verification criteria. Each submission is issued a reference number so that the submitter can follow its status and correct the details while it is still pending. The administrator will then approve the submission for publication or reject it with a recorded reason. Only approved submissions will appear as verified listings in the public event directory."
+  },
+  {
+   "i": 103,
+   "start": 97881,
+   "end": 98224,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 104,
+   "start": 98224,
+   "end": 99796,
+   "style": "",
+   "tableIndex": null,
+   "text": "This solution addresses the need for a consistent and transparent way to manage submitted event information. A standard checklist will help the administrator review submissions against the same basic requirements, including the identity of the organizing party, the supporting source and the official ticket channel, while recorded decisions and rejection reasons will make the process easier to trace. Because the outcome of a review and the reasons for it are shown to the submitter, the process is more transparent than an unexplained approval or rejection (Gillespie, 2018; Suzor et al., 2019). Fans will be able to report listings that appear incorrect or outdated. These measures aim to improve the reliability and accountability of the platform's information management process. The verification status will mean that a submission has been reviewed against K-Sync Malaysia's criteria; it will not guarantee event safety, quality or the organizer's future conduct, and it does not replace the fan's own judgment when purchasing tickets."
+  },
+  {
+   "i": 105,
+   "start": 99796,
+   "end": 100139,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 106,
+   "start": 100139,
+   "end": 100482,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 107,
+   "start": 100482,
+   "end": 100851,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 108,
+   "start": 100851,
+   "end": 101725,
+   "style": "",
+   "tableIndex": null,
+   "text": "Table 1.3: Alignment between problem statements and proposed solutions"
+  },
+  {
+   "i": 109,
+   "start": 102649,
+   "end": 103234,
+   "style": "",
+   "tableIndex": 2,
+   "text": "Problem statement"
+  },
+  {
+   "i": 110,
+   "start": 103652,
+   "end": 104237,
+   "style": "",
+   "tableIndex": 2,
+   "text": "Proposed solution"
+  },
+  {
+   "i": 111,
+   "start": 104655,
+   "end": 105237,
+   "style": "",
+   "tableIndex": 2,
+   "text": "Main functions"
+  },
+  {
+   "i": 112,
+   "start": 105772,
+   "end": 106365,
+   "style": "",
+   "tableIndex": 2,
+   "text": "1.2.1 Difficulty discovering events across platforms"
+  },
+  {
+   "i": 113,
+   "start": 106730,
+   "end": 107315,
+   "style": "",
+   "tableIndex": 2,
+   "text": "1.3.1 Centralized event information platform"
+  },
+  {
+   "i": 114,
+   "start": 107680,
+   "end": 108367,
+   "style": "",
+   "tableIndex": 2,
+   "text": "Browse approved listings; search by keyword; filter by artist, category and location; view event details, source link and official ticket channel."
+  },
+  {
+   "i": 115,
+   "start": 108902,
+   "end": 109483,
+   "style": "",
+   "tableIndex": 2,
+   "text": "1.2.2 Disorganized community discussions"
+  },
+  {
+   "i": 116,
+   "start": 109848,
+   "end": 110451,
+   "style": "",
+   "tableIndex": 2,
+   "text": "1.3.2 Event-based community discussion and information sharing"
+  },
+  {
+   "i": 117,
+   "start": 110816,
+   "end": 111449,
+   "style": "",
+   "tableIndex": 2,
+   "text": "Event-based discussion attached to each listing; post and reply to messages; report content."
+  },
+  {
+   "i": 118,
+   "start": 111984,
+   "end": 112579,
+   "style": "",
+   "tableIndex": 2,
+   "text": "1.2.3 Need for consistent and transparent verification"
+  },
+  {
+   "i": 119,
+   "start": 112944,
+   "end": 113537,
+   "style": "",
+   "tableIndex": 2,
+   "text": "1.3.3 Standardized event submission and verification"
+  },
+  {
+   "i": 120,
+   "start": 113902,
+   "end": 114606,
+   "style": "",
+   "tableIndex": 2,
+   "text": "Public form or registered organizer account; submission reference number; evidence review; approve or reject with reasons; verified-organizer indicator; reporting."
+  },
+  {
+   "i": 121,
+   "start": 114628,
+   "end": 114933,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 122,
+   "start": 114933,
+   "end": 115612,
+   "style": "Heading1",
+   "tableIndex": null,
+   "text": "Project Aim"
+  },
+  {
+   "i": 123,
+   "start": 115612,
+   "end": 115821,
+   "style": "ListParagraph",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 124,
+   "start": 115821,
+   "end": 116720,
+   "style": "",
+   "tableIndex": null,
+   "text": "The aim of this project is to develop K-Sync Malaysia: A Centralized Platform for K-Pop Event Information and Fan Community Discussions, a web-based platform that helps Malaysian K-pop fans discover event information in one place, take part in event-based community discussions and access event listings that have undergone a structured administrator verification process."
+  },
+  {
+   "i": 125,
+   "start": 116720,
+   "end": 117398,
+   "style": "Heading1",
+   "tableIndex": null,
+   "text": "Objectives"
+  },
+  {
+   "i": 126,
+   "start": 117398,
+   "end": 117607,
+   "style": "ListParagraph",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 127,
+   "start": 117607,
+   "end": 118198,
+   "style": "",
+   "tableIndex": null,
+   "text": "The objectives of this project are:"
+  },
+  {
+   "i": 128,
+   "start": 118198,
+   "end": 119005,
+   "style": "ListNumber",
+   "tableIndex": null,
+   "text": "To gather and analyse the system requirements for K-Sync Malaysia based on the needs of Malaysian K-pop fans for event discovery and event-based discussion, and on the event submission and verification process."
+  },
+  {
+   "i": 129,
+   "start": 119005,
+   "end": 119798,
+   "style": "ListNumber",
+   "tableIndex": null,
+   "text": "To design K-Sync Malaysia by preparing the system architecture, database design, user interface and use case workflows for event discovery, event-based community discussion and event verification."
+  },
+  {
+   "i": 130,
+   "start": 119798,
+   "end": 120655,
+   "style": "ListNumber",
+   "tableIndex": null,
+   "text": "To develop a web-based K-Sync Malaysia system that provides centralized event listings, event-based community discussion and administrator-controlled event submission and verification, including status tracking for submitters and a reporting function for fans."
+  },
+  {
+   "i": 131,
+   "start": 120655,
+   "end": 121336,
+   "style": "Heading1",
+   "tableIndex": null,
+   "text": "Project Scope"
+  },
+  {
+   "i": 132,
+   "start": 121336,
+   "end": 121545,
+   "style": "ListParagraph",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 133,
+   "start": 121545,
+   "end": 122436,
+   "style": "",
+   "tableIndex": null,
+   "text": "The project scope defines the functions, users, geographical coverage, study participants, technologies and time period covered by the development of K-Sync Malaysia. The system is limited to event information, event-based fan discussion and event verification. It does not provide ticket booking, online payments, merchandise purchasing or real-time merchandise stock tracking."
+  },
+  {
+   "i": 134,
+   "start": 122436,
+   "end": 122985,
+   "style": "Heading2",
+   "tableIndex": null,
+   "text": "1.6.1 Functional Scope"
+  },
+  {
+   "i": 135,
+   "start": 122985,
+   "end": 123869,
+   "style": "",
+   "tableIndex": null,
+   "text": "The system supports three types of user interaction: fans with registered accounts, event organizers and the system administrator. Event organizers may submit information through a public form without creating an account, or may register an organizer account which the administrator can mark as a verified organizer after review. The main system functions are as follows:"
+  },
+  {
+   "i": 136,
+   "start": 123869,
+   "end": 124694,
+   "style": "ListBullet",
+   "tableIndex": null,
+   "text": "Fan account functions: register with email verification, log in (including Google sign-in), log out, manage profile information, change the account password, save events for later reference and manage notifications."
+  },
+  {
+   "i": 137,
+   "start": 124694,
+   "end": 125561,
+   "style": "ListBullet",
+   "tableIndex": null,
+   "text": "Event discovery: browse approved events, search by keyword, filter by artist, event category and location, view event details and gallery images, identify the organizing party, open the source or official ticket link and add an event to a personal calendar."
+  },
+  {
+   "i": 138,
+   "start": 125561,
+   "end": 126344,
+   "style": "ListBullet",
+   "tableIndex": null,
+   "text": "Fan community: participate in the discussion attached to a published event, post messages and replies, share event information and report inappropriate or incorrect content."
+  },
+  {
+   "i": 139,
+   "start": 126344,
+   "end": 127220,
+   "style": "ListBullet",
+   "tableIndex": null,
+   "text": "Event submission: allow an organizer to enter event details and provide supporting evidence, either through a public form without registering an account or through a registered organizer account, and to follow the status of the submission using its reference number."
+  },
+  {
+   "i": 140,
+   "start": 127220,
+   "end": 128115,
+   "style": "ListBullet",
+   "tableIndex": null,
+   "text": "Administrator functions: review pending submissions, check supporting information, approve or reject submissions, record rejection reasons, manage published event information, manage event categories, artists and member profiles, mark organizer accounts as verified and review reports."
+  },
+  {
+   "i": 141,
+   "start": 128115,
+   "end": 129220,
+   "style": "",
+   "tableIndex": null,
+   "text": "The system will not include a separate organizer dashboard or organizer-side analytics, ticket sales, event reservations, payment integration, fan support merchandise ordering, live stock tracking or a general discussion forum that is not tied to an event. These exclusions keep the system focused on event discovery, information sharing and verification. Organizer accounts exist only to submit event information and carry a verification indicator; community moderation will be handled by the system administrator rather than by a separate fanclub administrator role in this project version."
+  },
+  {
+   "i": 142,
+   "start": 129220,
+   "end": 129767,
+   "style": "Heading2",
+   "tableIndex": null,
+   "text": "1.6.2 Temporal Scope"
+  },
+  {
+   "i": 143,
+   "start": 129767,
+   "end": 130894,
+   "style": "",
+   "tableIndex": null,
+   "text": "The project covers two academic semesters. Semester 5, from March 2026 to August 2026, focuses on proposal preparation, requirement gathering, literature review and system design. Early development is planned during the semester break from August 2026 to October 2026. Semester 6, from October 2026 to February 2027, focuses on completing the system implementation and preparing the final project deliverables. Long-term maintenance after the academic project period is outside the main scope. Any functional checks or evaluation activities will be limited to those required by the project plan and available time."
+  },
+  {
+   "i": 144,
+   "start": 130894,
+   "end": 131471,
+   "style": "Heading2",
+   "tableIndex": null,
+   "text": "1.6.3 Geographical Scope"
+  },
+  {
+   "i": 145,
+   "start": 131471,
+   "end": 132430,
+   "style": "",
+   "tableIndex": null,
+   "text": "K-Sync Malaysia is intended for K-pop events held in Malaysia. Event categories may include concerts, fan meetings, festivals, cupsleeve events, exhibitions, pop-up events and other relevant fan activities. The platform will present event information with identifiable locations in Malaysia. It is not intended to operate as a worldwide event directory, and the project will not provide location-based ticket purchasing or real-time GPS tracking."
+  },
+  {
+   "i": 146,
+   "start": 132430,
+   "end": 132901,
+   "style": "Heading2",
+   "tableIndex": null,
+   "text": "1.6.4 Sampling Scope"
+  },
+  {
+   "i": 147,
+   "start": 132901,
+   "end": 134206,
+   "style": "",
+   "tableIndex": null,
+   "text": "The requirement-gathering activities include a questionnaire involving 50 K-pop fans and interviews with representatives of Malaysian K-pop fan communities. Most respondents were aged between 18 and 24 (30 respondents, 60%), and 22 respondents (44%) described themselves as fans of multiple groups. The questionnaire collects information about event discovery, the platforms and group chats used for discussion, the perceived usefulness of a centralized community space and preferred community features. Interviews with the MKF Malaysia Instagram administrator and Ms Syazwani from Cupsleeve Malaysia provide contextual information about event announcements, updates and information sharing. The sample size is limited, and the results should not be generalized to all K-pop fans in Malaysia."
+  },
+  {
+   "i": 148,
+   "start": 134206,
+   "end": 134682,
+   "style": "Heading2",
+   "tableIndex": null,
+   "text": "1.6.5 Technological Scope"
+  },
+  {
+   "i": 149,
+   "start": 134682,
+   "end": 136021,
+   "style": "",
+   "tableIndex": null,
+   "text": "K-Sync Malaysia will be implemented as a responsive web-based application that can be accessed through desktop and mobile web browsers. The interface is built with HTML, CSS, JavaScript and server-side EJS templates, and Node.js with the Express framework handles the server-side routes and application logic. Relational data such as accounts, artists and member profiles, event listings, submissions, discussion messages and reports is stored in a relational database, using a local SQLite database for development and Hostinger MySQL for the deployed environment through the same data access layer. Google sign-in is verified through the Firebase Admin SDK, and email verification and notification messages are delivered through an SMTP mail service. The project does not include separate native Android or iOS applications."
+  },
+  {
+   "i": 150,
+   "start": 136021,
+   "end": 136489,
+   "style": "Heading2",
+   "tableIndex": null,
+   "text": "1.6.6 Limitations"
+  },
+  {
+   "i": 151,
+   "start": 136489,
+   "end": 137869,
+   "style": "",
+   "tableIndex": null,
+   "text": "The project has several limitations. First, the questionnaire includes only 50 respondents, so the findings may not represent all Malaysian K-pop fans. Second, the system depends on organizers submitting accurate event details and sufficient supporting evidence; administrator review cannot guarantee that every event will remain accurate after publication. Third, event updates may be published externally after a K-Sync listing has been approved, so the platform requires the information to be updated when new details are reported or identified. Fourth, a single system administrator may still make mistakes or exercise bias despite standard criteria and recorded decision reasons. Finally, the development period limits the number of advanced functions and the duration of evaluation. These limitations should be considered when interpreting the project outcomes."
+  },
+  {
+   "i": 152,
+   "start": 137869,
+   "end": 138344,
+   "style": "Heading1",
+   "tableIndex": null,
+   "text": "1.7 Project Significance"
+  },
+  {
+   "i": 153,
+   "start": 138344,
+   "end": 139054,
+   "style": "",
+   "tableIndex": null,
+   "text": "K-Sync Malaysia is expected to benefit K-pop fans, event organizers and system administrators by bringing event discovery, event-based community discussion and event verification into one platform."
+  },
+  {
+   "i": 154,
+   "start": 139054,
+   "end": 139521,
+   "style": "Heading2",
+   "tableIndex": null,
+   "text": "1.7.1 K-pop Fans"
+  },
+  {
+   "i": 155,
+   "start": 139521,
+   "end": 140254,
+   "style": "ListBullet",
+   "tableIndex": null,
+   "text": "Fans can discover K-pop event information in one centralized location rather than searching multiple accounts individually."
+  },
+  {
+   "i": 156,
+   "start": 140254,
+   "end": 140971,
+   "style": "ListBullet",
+   "tableIndex": null,
+   "text": "Search and filtering functions can help fans locate events by keyword, artist, location and event category."
+  },
+  {
+   "i": 157,
+   "start": 140971,
+   "end": 141723,
+   "style": "ListBullet",
+   "tableIndex": null,
+   "text": "Event-based discussions keep conversations with the event listing, so useful information is easier to find and repeated questions are reduced."
+  },
+  {
+   "i": 158,
+   "start": 141723,
+   "end": 142470,
+   "style": "ListBullet",
+   "tableIndex": null,
+   "text": "Source links and verification status can help fans understand whether an event listing has been reviewed against the platform’s criteria."
+  },
+  {
+   "i": 159,
+   "start": 142470,
+   "end": 143201,
+   "style": "ListBullet",
+   "tableIndex": null,
+   "text": "Reporting functions can provide a way to flag event listings or community content that may be incorrect or inappropriate."
+  },
+  {
+   "i": 160,
+   "start": 143201,
+   "end": 143674,
+   "style": "Heading2",
+   "tableIndex": null,
+   "text": "1.7.2 Event Organizers"
+  },
+  {
+   "i": 161,
+   "start": 143674,
+   "end": 144461,
+   "style": "ListBullet",
+   "tableIndex": null,
+   "text": "Organizers can submit event information through a public form without creating a platform account, or register an organizer account that can be marked as verified once reviewed."
+  },
+  {
+   "i": 162,
+   "start": 144461,
+   "end": 145181,
+   "style": "ListBullet",
+   "tableIndex": null,
+   "text": "A structured form can prompt organizers to provide the event details and supporting sources needed for review."
+  },
+  {
+   "i": 163,
+   "start": 145181,
+   "end": 145982,
+   "style": "ListBullet",
+   "tableIndex": null,
+   "text": "Approval or rejection reasons, together with a reference number for each submission, can help organizers understand the outcome of a submission and identify information that needs correction."
+  },
+  {
+   "i": 164,
+   "start": 145982,
+   "end": 146699,
+   "style": "ListBullet",
+   "tableIndex": null,
+   "text": "Approved event listings provide another location through which fans can discover publicly announced events."
+  },
+  {
+   "i": 165,
+   "start": 146699,
+   "end": 147177,
+   "style": "Heading2",
+   "tableIndex": null,
+   "text": "1.7.3 System Administrators"
+  },
+  {
+   "i": 166,
+   "start": 147177,
+   "end": 147883,
+   "style": "ListBullet",
+   "tableIndex": null,
+   "text": "Administrators can review submissions and manage event listings through a centralized dashboard."
+  },
+  {
+   "i": 167,
+   "start": 147883,
+   "end": 148586,
+   "style": "ListBullet",
+   "tableIndex": null,
+   "text": "Standard verification criteria can support a more consistent assessment of event submissions."
+  },
+  {
+   "i": 168,
+   "start": 148586,
+   "end": 149411,
+   "style": "ListBullet",
+   "tableIndex": null,
+   "text": "Standard verification criteria and recorded decision reasons can improve the traceability of approvals and rejections, so that submitters understand the outcome of a submission and the basis on which it was decided."
+  },
+  {
+   "i": 169,
+   "start": 149411,
+   "end": 150152,
+   "style": "ListBullet",
+   "tableIndex": null,
+   "text": "Reported event information and community content can be reviewed through an organized moderation process."
+  },
+  {
+   "i": 170,
+   "start": 150152,
+   "end": 150629,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 171,
+   "start": 150629,
+   "end": 151131,
+   "style": "Heading1",
+   "tableIndex": null,
+   "text": "1.8 Outline of the Thesis"
+  },
+  {
+   "i": 172,
+   "start": 151131,
+   "end": 151799,
+   "style": "",
+   "tableIndex": null,
+   "text": "This thesis consists of five chapters. Each chapter describes a different part of the study and development of K-Sync Malaysia, as summarized in Table 1.4."
+  },
+  {
+   "i": 173,
+   "start": 151799,
+   "end": 152647,
+   "style": "",
+   "tableIndex": null,
+   "text": "Table 1.4: Outline of the thesis"
+  },
+  {
+   "i": 174,
+   "start": 153571,
+   "end": 154146,
+   "style": "",
+   "tableIndex": 3,
+   "text": "Chapter"
+  },
+  {
+   "i": 175,
+   "start": 154564,
+   "end": 155137,
+   "style": "",
+   "tableIndex": 3,
+   "text": "Title"
+  },
+  {
+   "i": 176,
+   "start": 155555,
+   "end": 156134,
+   "style": "",
+   "tableIndex": 3,
+   "text": "Description"
+  },
+  {
+   "i": 177,
+   "start": 156669,
+   "end": 157219,
+   "style": "",
+   "tableIndex": 3,
+   "text": "Chapter 1"
+  },
+  {
+   "i": 178,
+   "start": 157584,
+   "end": 158137,
+   "style": "",
+   "tableIndex": 3,
+   "text": "Introduction"
+  },
+  {
+   "i": 179,
+   "start": 158502,
+   "end": 159195,
+   "style": "",
+   "tableIndex": 3,
+   "text": "Presents the background, current business process, problem statements, proposed solutions, aim, objectives, scope, significance and thesis organization."
+  },
+  {
+   "i": 180,
+   "start": 159730,
+   "end": 160280,
+   "style": "",
+   "tableIndex": 3,
+   "text": "Chapter 2"
+  },
+  {
+   "i": 181,
+   "start": 160645,
+   "end": 161203,
+   "style": "",
+   "tableIndex": 3,
+   "text": "Literature Review"
+  },
+  {
+   "i": 182,
+   "start": 161568,
+   "end": 162278,
+   "style": "",
+   "tableIndex": 3,
+   "text": "Reviews literature on K-pop fan communities, social media information seeking, online discussions, event information credibility, content moderation and related systems."
+  },
+  {
+   "i": 183,
+   "start": 162813,
+   "end": 163363,
+   "style": "",
+   "tableIndex": 3,
+   "text": "Chapter 3"
+  },
+  {
+   "i": 184,
+   "start": 163728,
+   "end": 164280,
+   "style": "",
+   "tableIndex": 3,
+   "text": "Methodology"
+  },
+  {
+   "i": 185,
+   "start": 164645,
+   "end": 165330,
+   "style": "",
+   "tableIndex": 3,
+   "text": "Explains the development methodology, requirement-gathering activities, analysis and design methods, tools, technologies and development phases."
+  },
+  {
+   "i": 186,
+   "start": 165865,
+   "end": 166415,
+   "style": "",
+   "tableIndex": 3,
+   "text": "Chapter 4"
+  },
+  {
+   "i": 187,
+   "start": 166780,
+   "end": 167341,
+   "style": "",
+   "tableIndex": 3,
+   "text": "Findings and Results"
+  },
+  {
+   "i": 188,
+   "start": 167706,
+   "end": 168405,
+   "style": "",
+   "tableIndex": 3,
+   "text": "Presents the developed system, its key interfaces and functions, and findings from the project activities and evaluation carried out within the project scope."
+  },
+  {
+   "i": 189,
+   "start": 168940,
+   "end": 169490,
+   "style": "",
+   "tableIndex": 3,
+   "text": "Chapter 5"
+  },
+  {
+   "i": 190,
+   "start": 169855,
+   "end": 170406,
+   "style": "",
+   "tableIndex": 3,
+   "text": "Conclusion"
+  },
+  {
+   "i": 191,
+   "start": 170771,
+   "end": 171435,
+   "style": "",
+   "tableIndex": 3,
+   "text": "Summarizes the project, discusses achievement of the objectives, identifies limitations and recommends future improvements."
+  },
+  {
+   "i": 192,
+   "start": 171457,
+   "end": 171762,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 193,
+   "start": 171762,
+   "end": 172232,
+   "style": "Heading1",
+   "tableIndex": null,
+   "text": "1.9 Chapter Summary"
+  },
+  {
+   "i": 194,
+   "start": 172232,
+   "end": 173821,
+   "style": "",
+   "tableIndex": null,
+   "text": "This chapter introduced K-Sync Malaysia as a proposed centralized platform for K-pop event information and event-based fan community discussions. The background and current business process explained how event announcements and conversations are currently spread across separate social media platforms and community spaces. Three main problems were identified: event information that is fragmented across platforms, event-related discussions that are difficult to organize and retrieve, and the need for a consistent and transparent process for verifying event listings and identifying official sources. The discussion was supported by relevant research, questionnaire findings from 50 respondents and interviews with representatives of Malaysian K-pop fan communities. The questionnaire results highlighted the platforms fans rely on, the frequency of missed event updates, the separate spaces in which fans currently discuss events, the perceived usefulness of a centralized community space, and the importance placed on information being current and from a reliable source."
+  },
+  {
+   "i": 195,
+   "start": 173821,
+   "end": 174786,
+   "style": "",
+   "tableIndex": null,
+   "text": "To address these problems, three corresponding solutions were proposed: a centralized and verified event directory, event-based community discussion and a standardized event submission and verification workflow. The chapter also established the project aim, objectives, scope, limitations and expected benefits. The next chapter reviews related literature and existing systems to provide a foundation for the requirements and design of K-Sync Malaysia."
+  },
+  {
+   "i": 196,
+   "start": 174786,
+   "end": 175263,
+   "style": "",
+   "tableIndex": null,
+   "text": ""
+  },
+  {
+   "i": 197,
+   "start": 175263,
+   "end": 175750,
+   "style": "Heading1",
+   "tableIndex": null,
+   "text": "REFERENCES"
+  },
+  {
+   "i": 198,
+   "start": 175750,
+   "end": 176885,
+   "style": "",
+   "tableIndex": null,
+   "text": "Arnold, M., Goldschmitt, M., & Rigotti, T. (2023). Dealing with information overload: A comprehensive review. Frontiers in Psychology, 14, 1122200. https://doi.org/10.3389/fpsyg.2023.1122200"
+  },
+  {
+   "i": 199,
+   "start": 176885,
+   "end": 178028,
+   "style": "",
+   "tableIndex": null,
+   "text": "Bucher, T. (2017). The algorithmic imaginary: Exploring the ordinary affects of Facebook algorithms. Information, Communication & Society, 20(1), 30–44. https://doi.org/10.1080/1369118X.2016.1154086"
+  },
+  {
+   "i": 200,
+   "start": 178028,
+   "end": 179219,
+   "style": "",
+   "tableIndex": null,
+   "text": "Castillo, C., Mendoza, M., & Poblete, B. (2011). Information credibility on Twitter. In Proceedings of the 20th International Conference on World Wide Web (pp. 675–684). Association for Computing Machinery. https://doi.org/10.1145/1963405.1963500"
+  },
+  {
+   "i": 201,
+   "start": 179219,
+   "end": 180422,
+   "style": "",
+   "tableIndex": null,
+   "text": "Eppler, M. J., & Mengis, J. (2004). The concept of information overload: A review of literature from organization science, accounting, marketing, MIS, and related disciplines. The Information Society, 20(5), 325–344. https://doi.org/10.1080/01972240490507974"
+  },
+  {
+   "i": 202,
+   "start": 180422,
+   "end": 181627,
+   "style": "",
+   "tableIndex": null,
+   "text": "Fletcher, R., & Nielsen, R. K. (2017). Are news audiences increasingly fragmented? A cross-national comparative analysis of cross-platform news audience fragmentation and duplication. Journal of Communication, 67(4), 476–498. https://doi.org/10.1111/jcom.12315"
+  },
+  {
+   "i": 203,
+   "start": 181627,
+   "end": 182816,
+   "style": "",
+   "tableIndex": null,
+   "text": "Geels, J., Graßl, P., Schraffenberger, H., Tanis, M., & Kleemans, M. (2024). Virtual lab coats: The effects of verified source information on social media post credibility. PLOS ONE, 19(5), e0302323. https://doi.org/10.1371/journal.pone.0302323"
+  },
+  {
+   "i": 204,
+   "start": 182816,
+   "end": 183910,
+   "style": "",
+   "tableIndex": null,
+   "text": "Gillespie, T. (2018). Custodians of the Internet: Platforms, content moderation, and the hidden decisions that shape social media. Yale University Press."
+  },
+  {
+   "i": 205,
+   "start": 183910,
+   "end": 185081,
+   "style": "",
+   "tableIndex": null,
+   "text": "Hwang, E. H., Singh, P. V., & Argote, L. (2015). Knowledge sharing in online communities: Learning to cross geographic and hierarchical boundaries. Organization Science, 26(6), 1593–1611. https://doi.org/10.1287/orsc.2015.1009"
+  },
+  {
+   "i": 206,
+   "start": 185081,
+   "end": 186255,
+   "style": "",
+   "tableIndex": null,
+   "text": "Majerczak, P., & Strzelecki, A. (2022). Trust, media credibility, social ties, and the intention to share towards information verification in an age of fake news. Behavioral Sciences, 12(2), 51. https://doi.org/10.3390/bs12020051"
+  },
+  {
+   "i": 207,
+   "start": 186255,
+   "end": 187464,
+   "style": "",
+   "tableIndex": null,
+   "text": "Roslan, M. A. A., Azmi Murad, M. A., & Nasharuddin, N. A. (2026). The impact of voluntarily engagement on social media usage intentions among (Korean Pop) K-pop fans. Journal of Information and Knowledge Management, 16(1), 92–104. https://doi.org/10.24191/ra564j86"
+  },
+  {
+   "i": 208,
+   "start": 187464,
+   "end": 188691,
+   "style": "",
+   "tableIndex": null,
+   "text": "Roslan, M. A. A., Nasharuddin, N. A., & Azmi Murad, M. A. (2024). Navigating the digital realm: The role of facilitating conditions in social media use among Korean Pop (K-pop) fans. Open International Journal of Informatics, 12(2), 13–23. https://doi.org/10.11113/oiji2024.12n2.305"
+  },
+  {
+   "i": 209,
+   "start": 188691,
+   "end": 189986,
+   "style": "",
+   "tableIndex": null,
+   "text": "Roslan, M. A. A., Nasharuddin, N. A., & Azmi Murad, M. A. (2025). User experience matters: A qualitative exploration of effort expectancy and behavioural intention in social media use among Korean Pop (K-pop) fans. Applied Information Technology and Computer Science, 6(1), 2407–2415. https://periodical.uthm.edu.my/index.php/aitcs/article/view/17986"
+  },
+  {
+   "i": 210,
+   "start": 189986,
+   "end": 191375,
+   "style": "",
+   "tableIndex": null,
+   "text": "Schaffner, B., Bhagoji, A. N., Cheng, S., Mei, J., Shen, J. L., Wang, G., Chetty, M., Feamster, N., Lakier, G., & Tan, C. (2024). “Community guidelines make this the best party on the internet”: An in-depth study of online platforms’ content moderation policies. In Proceedings of the 2024 CHI Conference on Human Factors in Computing Systems (Article 486, pp. 1–16). Association for Computing Machinery. https://doi.org/10.1145/3613904.3642333"
+  },
+  {
+   "i": 211,
+   "start": 191375,
+   "end": 192601,
+   "style": "",
+   "tableIndex": null,
+   "text": "Suzor, N. P., Myers West, S., Quodling, A., & York, J. (2019). What do we mean when we talk about transparency? Toward meaningful transparency in commercial content moderation. International Journal of Communication, 13, 1526–1543. https://ijoc.org/index.php/ijoc/article/view/9736"
+  },
+  {
+   "i": 212,
+   "start": 192601,
+   "end": 193749,
+   "style": "",
+   "tableIndex": null,
+   "text": "Wasko, M. M., & Faraj, S. (2005). Why should I share? Examining social capital and knowledge contribution in electronic networks of practice. MIS Quarterly, 29(1), 35–58. https://doi.org/10.2307/25148667"
+  },
+  {
+   "i": 213,
+   "start": 193749,
+   "end": 194909,
+   "style": "",
+   "tableIndex": null,
+   "text": "Zubiaga, A., Aker, A., Bontcheva, K., Liakata, M., & Procter, R. (2018). Detection and resolution of rumours in social media: A survey. ACM Computing Surveys, 51(2), Article 32, 1–36. https://doi.org/10.1145/3161603"
+  }
+ ],
+ "tables": [
+  {
+   "ti": 0,
+   "rows": [
+    [
+     "Information source or experience",
+     "Respondents"
+    ],
+    [
+     "X (formerly Twitter)",
+     "84%"
+    ],
+    [
+     "Instagram",
+     "62%"
+    ],
+    [
+     "TikTok",
+     "62%"
+    ],
+    [
+     "Official event organizer websites",
+     "58%"
+    ],
+    [
+     "Telegram channels",
+     "48%"
+    ],
+    [
+     "Friends or word of mouth",
+     "34%"
+    ]
+   ]
+  },
+  {
+   "ti": 1,
+   "rows": [
+    [
+     "Evidence from the questionnaire (n = 50)",
+     "Implication for the proposed system"
+    ],
+    [
+     "Event discussions are spread across separate spaces: Telegram groups (36%), X (24%), WhatsApp (16%) and Facebook groups or online forums (12%)",
+     "Attach the discussion to the event listing so related messages stay together."
+    ],
+    [
+     "A centralized community space for discussing events without switching platforms was rated 4 or 5 out of 5 by 27 respondents (54%)",
+     "Provide one organized space so fans do not have to switch between platforms."
+    ],
+    [
+     "Event information sharing with other fans was selected by 34 respondents (68%)",
+     "Let fans post event updates and announcements in the discussion attached to the event."
+    ],
+    [
+     "Event discussion forums, where a specific event is discussed in one organized space, were selected by 28 respondents (56%)",
+     "Keep each event's discussion in its own area so earlier messages can be re-read."
+    ]
+   ]
+  },
+  {
+   "ti": 2,
+   "rows": [
+    [
+     "Problem statement",
+     "Proposed solution",
+     "Main functions"
+    ],
+    [
+     "1.2.1 Difficulty discovering events across platforms",
+     "1.3.1 Centralized event information platform",
+     "Browse approved listings; search by keyword; filter by artist, category and location; view event details, source link and official ticket channel."
+    ],
+    [
+     "1.2.2 Disorganized community discussions",
+     "1.3.2 Event-based community discussion and information sharing",
+     "Event-based discussion attached to each listing; post and reply to messages; report content."
+    ],
+    [
+     "1.2.3 Need for consistent and transparent verification",
+     "1.3.3 Standardized event submission and verification",
+     "Public form or registered organizer account; submission reference number; evidence review; approve or reject with reasons; verified-organizer indicator; reporting."
+    ]
+   ]
+  },
+  {
+   "ti": 3,
+   "rows": [
+    [
+     "Chapter",
+     "Title",
+     "Description"
+    ],
+    [
+     "Chapter 1",
+     "Introduction",
+     "Presents the background, current business process, problem statements, proposed solutions, aim, objectives, scope, significance and thesis organization."
+    ],
+    [
+     "Chapter 2",
+     "Literature Review",
+     "Reviews literature on K-pop fan communities, social media information seeking, online discussions, event information credibility, content moderation and related systems."
+    ],
+    [
+     "Chapter 3",
+     "Methodology",
+     "Explains the development methodology, requirement-gathering activities, analysis and design methods, tools, technologies and development phases."
+    ],
+    [
+     "Chapter 4",
+     "Findings and Results",
+     "Presents the developed system, its key interfaces and functions, and findings from the project activities and evaluation carried out within the project scope."
+    ],
+    [
+     "Chapter 5",
+     "Conclusion",
+     "Summarizes the project, discusses achievement of the objectives, identifies limitations and recommends future improvements."
+    ]
+   ]
+  }
+ ]
+}

@@ -29,6 +29,46 @@ router.post('/events/:id/save', async (req, res) => {
   }
 });
 
+// POST /api/events/:id/recommend - UC018: Crowdsourced Reliability Voting & Recommendation
+router.post('/events/:id/recommend', async (req, res) => {
+  if (!req.session || !req.session.userId) {
+    return res.status(401).json({ status: 'unauthorized', message: 'Please log in to recommend this event.' });
+  }
+
+  const userId = req.session.userId;
+  const eventId = Number(req.params.id);
+
+  try {
+    const existing = await db.getOne(
+      "SELECT id FROM event_recommendations WHERE user_id = ? AND event_id = ?",
+      [userId, eventId]
+    );
+
+    let recommended = false;
+    if (existing) {
+      await db.execute("DELETE FROM event_recommendations WHERE id = ?", [existing.id]);
+      recommended = false;
+    } else {
+      await db.execute(
+        "INSERT INTO event_recommendations (user_id, event_id, vote_type) VALUES (?, ?, 'UP')",
+        [userId, eventId]
+      );
+      recommended = true;
+    }
+
+    const countRow = await db.getOne(
+      "SELECT COUNT(*) as cnt FROM event_recommendations WHERE event_id = ?",
+      [eventId]
+    );
+    const count = countRow ? countRow.cnt : 0;
+
+    return res.json({ status: 'success', recommended, count });
+  } catch (err) {
+    console.error('API recommend event error:', err);
+    return res.status(500).json({ status: 'error', message: err.message });
+  }
+});
+
 // POST /api/events/:id/interest - Toggle RSVP / "I'm Going!"
 router.post('/events/:id/interest', async (req, res) => {
   if (!req.session || !req.session.userId) {
@@ -38,7 +78,35 @@ router.post('/events/:id/interest', async (req, res) => {
   const userId = req.session.userId;
   const eventId = Number(req.params.id);
 
-  return res.json({ status: 'success', interested: true });
+  try {
+    const existing = await db.getOne(
+      "SELECT id FROM event_recommendations WHERE user_id = ? AND event_id = ?",
+      [userId, eventId]
+    );
+
+    let interested = false;
+    if (existing) {
+      await db.execute("DELETE FROM event_recommendations WHERE id = ?", [existing.id]);
+      interested = false;
+    } else {
+      await db.execute(
+        "INSERT INTO event_recommendations (user_id, event_id, vote_type) VALUES (?, ?, 'UP')",
+        [userId, eventId]
+      );
+      interested = true;
+    }
+
+    const countRow = await db.getOne(
+      "SELECT COUNT(*) as cnt FROM event_recommendations WHERE event_id = ?",
+      [eventId]
+    );
+    const count = countRow ? countRow.cnt : 0;
+
+    return res.json({ status: 'success', interested, count });
+  } catch (err) {
+    console.error('API interest error:', err);
+    return res.status(500).json({ status: 'error', message: err.message });
+  }
 });
 
 // POST /api/events/:id/report - Multi-Layer Verified Report (Chapter 1 Solution 1.3.3 & Scope 1.6.1)

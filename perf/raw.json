@@ -1,0 +1,1451 @@
+[
+  {
+    "path": "/",
+    "url": "http://localhost:8000/",
+    "vitals": {
+      "lcp": 4552,
+      "lcpEl": "H1.text-4xl",
+      "lcpSize": 102370,
+      "cls": 0.019281175388129772,
+      "shifts": [
+        {
+          "value": 0.019281175388129772,
+          "time": 5224.0999999940395,
+          "sources": [
+            "",
+            "",
+            ""
+          ]
+        }
+      ],
+      "longtasks": [
+        {
+          "start": 2099.800000011921,
+          "dur": 436
+        },
+        {
+          "start": 2544.199999988079,
+          "dur": 658
+        },
+        {
+          "start": 3229.0999999940395,
+          "dur": 446
+        },
+        {
+          "start": 3839,
+          "dur": 97
+        },
+        {
+          "start": 4541.800000011921,
+          "dur": 184
+        }
+      ],
+      "fcp": 3848,
+      "tbt": 1571
+    },
+    "nav": {
+      "ttfb": 14.5,
+      "domInteractive": 4944.800000011921,
+      "domContentLoaded": 4945.0999999940395,
+      "load": 5530.300000011921,
+      "transferSize": 45281,
+      "encodedBodySize": 44981,
+      "decodedBodySize": 44981,
+      "nextHop": "http/1.1"
+    },
+    "paints": [
+      {
+        "name": "first-paint",
+        "t": 3244
+      },
+      {
+        "name": "first-contentful-paint",
+        "t": 3848
+      }
+    ],
+    "resources": [
+      {
+        "name": "https://cdn.tailwindcss.com/",
+        "initiator": "script",
+        "transferSize": 0,
+        "encoded": 0,
+        "decoded": 0,
+        "duration": 1899.5999999940395,
+        "start": 193.09999999403954,
+        "blocking": "blocking",
+        "proto": ""
+      },
+      {
+        "name": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap",
+        "initiator": "link",
+        "transferSize": 1206,
+        "encoded": 906,
+        "decoded": 17341,
+        "duration": 178.59999999403954,
+        "start": 196.59999999403954,
+        "blocking": "blocking",
+        "proto": "h3"
+      },
+      {
+        "name": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css",
+        "initiator": "link",
+        "transferSize": 19052,
+        "encoded": 18752,
+        "decoded": 102025,
+        "duration": 445.09999999403954,
+        "start": 197.30000001192093,
+        "blocking": "blocking",
+        "proto": "h3"
+      },
+      {
+        "name": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&auto=format&fit=crop",
+        "initiator": "img",
+        "transferSize": 53426,
+        "encoded": 53126,
+        "decoded": 53126,
+        "duration": 938.5,
+        "start": 251.69999998807907,
+        "blocking": "non-blocking",
+        "proto": "h3"
+      },
+      {
+        "name": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop",
+        "initiator": "img",
+        "transferSize": 108808,
+        "encoded": 108508,
+        "decoded": 108508,
+        "duration": 1657.7000000178814,
+        "start": 329.19999998807907,
+        "blocking": "non-blocking",
+        "proto": "h3"
+      },
+      {
+        "name": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=600&auto=format&fit=crop",
+        "initiator": "img",
+        "transferSize": 42424,
+        "encoded": 42124,
+        "decoded": 42124,
+        "duration": 1636.9000000059605,
+        "start": 330.19999998807907,
+        "blocking": "non-blocking",
+        "proto": "h3"
+      },
+      {
+        "name": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600",
+        "initiator": "img",
+        "transferSize": 109325,
+        "encoded": 109025,
+        "decoded": 109025,
+        "duration": 2465,
+        "start": 331.19999998807907,
+        "blocking": "non-blocking",
+        "proto": "h3"
+      },
+      {
+        "name": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&auto=format&fit=crop",
+        "initiator": "img",
+        "transferSize": 18405,
+        "encoded": 18105,
+        "decoded": 18105,
+        "duration": 2111.699999988079,
+        "start": 342,
+        "blocking": "non-blocking",
+        "proto": "h3"
+      },
+      {
+        "name": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&auto=format&fit=crop",
+        "initiator": "img",
+        "transferSize": 26971,
+        "encoded": 26671,
+        "decoded": 26671,
+        "duration": 2640.0999999940395,
+        "start": 342.90000000596046,
+        "blocking": "non-blocking",
+        "proto": "h3"
+      },
+      {
+        "name": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&auto=format&fit=crop",
+        "initiator": "img",
+        "transferSize": 22200,
+        "encoded": 21900,
+        "decoded": 21900,
+        "duration": 2639.5,
+        "start": 343.40000000596046,
+        "blocking": "non-blocking",
+        "proto": "h3"
+      }
+    ],
+    "network": [
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap",
+        "status": 200,
+        "mime": "text/css",
+        "type": "Stylesheet",
+        "protocol": "h3",
+        "encoding": "gzip",
+        "cache": "private, max-age=86400, stale-while-revalidate=604800",
+        "fromCache": false,
+        "bytes": 935,
+        "reqType": "Stylesheet"
+      },
+      {
+        "url": "http://localhost:8000/",
+        "status": 200,
+        "mime": "text/html",
+        "type": "Document",
+        "protocol": "http/1.1",
+        "encoding": "",
+        "cache": "",
+        "fromCache": false,
+        "bytes": 45368,
+        "reqType": "Document"
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css",
+        "status": 200,
+        "mime": "text/css",
+        "type": "Stylesheet",
+        "protocol": "h3",
+        "encoding": "br",
+        "cache": "no-transform, public, s-maxage=30672000, max-age=30672000, immutable",
+        "fromCache": false,
+        "bytes": 19384,
+        "reqType": "Stylesheet"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&auto=format&fit=crop",
+        "status": 200,
+        "mime": "image/avif",
+        "type": "Image",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 53450,
+        "reqType": "Image"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=600&auto=format&fit=crop",
+        "status": 200,
+        "mime": "image/avif",
+        "type": "Image",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 42448,
+        "reqType": "Image"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop",
+        "status": 200,
+        "mime": "image/avif",
+        "type": "Image",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 108833,
+        "reqType": "Image"
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/3.4.17",
+        "status": 200,
+        "mime": "text/javascript",
+        "type": "Script",
+        "protocol": "h2",
+        "encoding": "br",
+        "cache": "max-age=31536000",
+        "fromCache": false,
+        "bytes": 126775,
+        "reqType": "Script"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&auto=format&fit=crop",
+        "status": 200,
+        "mime": "image/avif",
+        "type": "Image",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 18428,
+        "reqType": "Image"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600",
+        "status": 200,
+        "mime": "image/jpeg",
+        "type": "Image",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 109324,
+        "reqType": "Image"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&auto=format&fit=crop",
+        "status": 200,
+        "mime": "image/avif",
+        "type": "Image",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 26996,
+        "reqType": "Image"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&auto=format&fit=crop",
+        "status": 200,
+        "mime": "image/avif",
+        "type": "Image",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 22224,
+        "reqType": "Image"
+      },
+      {
+        "url": "https://fonts.gstatic.com/s/outfit/v15/QGYvz_MVcBeNP4NJtEtq.woff2",
+        "status": 200,
+        "mime": "font/woff2",
+        "type": "Font",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 32321,
+        "reqType": "Font"
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-regular-400.woff2",
+        "status": 200,
+        "mime": "application/octet-stream",
+        "type": "Font",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "no-transform, public, s-maxage=30672000, max-age=30672000, immutable",
+        "fromCache": false,
+        "bytes": 25599,
+        "reqType": "Font"
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2",
+        "status": 200,
+        "mime": "application/octet-stream",
+        "type": "Font",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "no-transform, public, s-maxage=30672000, max-age=30672000, immutable",
+        "fromCache": false,
+        "bytes": 150789,
+        "reqType": "Font"
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-brands-400.woff2",
+        "status": 200,
+        "mime": "application/octet-stream",
+        "type": "Font",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "no-transform, public, s-maxage=30672000, max-age=30672000, immutable",
+        "fromCache": false,
+        "bytes": 108682,
+        "reqType": "Font"
+      }
+    ],
+    "metrics": {
+      "Timestamp": 267966.588603,
+      "AudioHandlers": 0,
+      "AudioWorkletProcessors": 0,
+      "Documents": 4,
+      "Frames": 4,
+      "JSEventListeners": 11,
+      "LayoutObjects": 496,
+      "MediaKeySessions": 0,
+      "MediaKeys": 0,
+      "Nodes": 1025,
+      "Resources": 27,
+      "ContextLifecycleStateObservers": 16,
+      "V8PerContextDatas": 2,
+      "WorkerGlobalScopes": 0,
+      "UACSSResources": 0,
+      "RTCPeerConnections": 0,
+      "ResourceFetchers": 4,
+      "AdSubframes": 0,
+      "DetachedScriptStates": 1,
+      "ArrayBufferContents": 0,
+      "LayoutCount": 6,
+      "RecalcStyleCount": 6,
+      "LayoutDuration": 0.997841,
+      "RecalcStyleDuration": 0.218291,
+      "DevToolsCommandDuration": 0.035184,
+      "ScriptDuration": 0.501122,
+      "V8CompileDuration": 0.001297,
+      "TaskDuration": 3.389403,
+      "TaskOtherDuration": 1.635668,
+      "ThreadTime": 0.805311,
+      "ProcessTime": 9.91186,
+      "JSHeapUsedSize": 11471564,
+      "JSHeapTotalSize": 27787264,
+      "FirstMeaningfulPaint": 267961.908603,
+      "DomContentLoaded": 267962.30491,
+      "NavigationStart": 267957.36
+    }
+  },
+  {
+    "path": "/events",
+    "url": "http://localhost:8000/events",
+    "vitals": {
+      "lcp": 4084,
+      "lcpEl": "H1.text-3xl",
+      "lcpSize": 10395,
+      "cls": 0.001620566264627978,
+      "shifts": [
+        {
+          "value": 0.001620566264627978,
+          "time": 4597.9000000059605,
+          "sources": [
+            "DIV",
+            "A.px-3.5",
+            "DIV",
+            "A.px-3.5",
+            "A.px-3.5"
+          ]
+        }
+      ],
+      "longtasks": [
+        {
+          "start": 2014.0999999940395,
+          "dur": 515
+        },
+        {
+          "start": 2545.2999999821186,
+          "dur": 718
+        },
+        {
+          "start": 3294.199999988079,
+          "dur": 251
+        },
+        {
+          "start": 3685.0999999940395,
+          "dur": 201
+        },
+        {
+          "start": 4052.9000000059605,
+          "dur": 87
+        },
+        {
+          "start": 4302.5,
+          "dur": 117
+        },
+        {
+          "start": 5355.0999999940395,
+          "dur": 64
+        }
+      ],
+      "fcp": 3688,
+      "tbt": 1603
+    },
+    "nav": {
+      "ttfb": 20.19999998807907,
+      "domInteractive": 4607.5999999940395,
+      "domContentLoaded": 4607.699999988079,
+      "load": 5366.699999988079,
+      "transferSize": 32910,
+      "encodedBodySize": 32610,
+      "decodedBodySize": 32610,
+      "nextHop": "http/1.1"
+    },
+    "paints": [
+      {
+        "name": "first-paint",
+        "t": 3300
+      },
+      {
+        "name": "first-contentful-paint",
+        "t": 3688
+      }
+    ],
+    "resources": [
+      {
+        "name": "https://cdn.tailwindcss.com/",
+        "initiator": "script",
+        "transferSize": 0,
+        "encoded": 0,
+        "decoded": 0,
+        "duration": 1796.5,
+        "start": 206.69999998807907,
+        "blocking": "blocking",
+        "proto": ""
+      },
+      {
+        "name": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap",
+        "initiator": "link",
+        "transferSize": 1206,
+        "encoded": 906,
+        "decoded": 17341,
+        "duration": 176.59999999403954,
+        "start": 209.5,
+        "blocking": "blocking",
+        "proto": "h3"
+      },
+      {
+        "name": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css",
+        "initiator": "link",
+        "transferSize": 19052,
+        "encoded": 18752,
+        "decoded": 102025,
+        "duration": 472.09999999403954,
+        "start": 210.19999998807907,
+        "blocking": "blocking",
+        "proto": "h3"
+      },
+      {
+        "name": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600",
+        "initiator": "img",
+        "transferSize": 109325,
+        "encoded": 109025,
+        "decoded": 109025,
+        "duration": 1576.199999988079,
+        "start": 232,
+        "blocking": "non-blocking",
+        "proto": "h3"
+      },
+      {
+        "name": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&auto=format&fit=crop",
+        "initiator": "img",
+        "transferSize": 18405,
+        "encoded": 18105,
+        "decoded": 18105,
+        "duration": 480.5,
+        "start": 232.69999998807907,
+        "blocking": "non-blocking",
+        "proto": "h3"
+      },
+      {
+        "name": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&auto=format&fit=crop",
+        "initiator": "img",
+        "transferSize": 26971,
+        "encoded": 26671,
+        "decoded": 26671,
+        "duration": 1020.1000000238419,
+        "start": 233.2999999821186,
+        "blocking": "non-blocking",
+        "proto": "h3"
+      },
+      {
+        "name": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&auto=format&fit=crop",
+        "initiator": "img",
+        "transferSize": 22200,
+        "encoded": 21900,
+        "decoded": 21900,
+        "duration": 1489.4000000059605,
+        "start": 235.7999999821186,
+        "blocking": "non-blocking",
+        "proto": "h3"
+      },
+      {
+        "name": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop",
+        "initiator": "img",
+        "transferSize": 108808,
+        "encoded": 108508,
+        "decoded": 108508,
+        "duration": 2303.399999976158,
+        "start": 236.40000000596046,
+        "blocking": "non-blocking",
+        "proto": "h3"
+      },
+      {
+        "name": "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=600&auto=format&fit=crop",
+        "initiator": "img",
+        "transferSize": 11993,
+        "encoded": 11693,
+        "decoded": 11693,
+        "duration": 2053.5999999940395,
+        "start": 236.69999998807907,
+        "blocking": "non-blocking",
+        "proto": "h3"
+      },
+      {
+        "name": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=600&auto=format&fit=crop",
+        "initiator": "img",
+        "transferSize": 42424,
+        "encoded": 42124,
+        "decoded": 42124,
+        "duration": 3128.199999988079,
+        "start": 238,
+        "blocking": "non-blocking",
+        "proto": "h3"
+      },
+      {
+        "name": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&auto=format&fit=crop",
+        "initiator": "img",
+        "transferSize": 25387,
+        "encoded": 25087,
+        "decoded": 25087,
+        "duration": 2894.300000011921,
+        "start": 238.2999999821186,
+        "blocking": "non-blocking",
+        "proto": "h3"
+      },
+      {
+        "name": "https://images.unsplash.com/photo-1511735111819-9a3f7709049c?w=600&auto=format&fit=crop",
+        "initiator": "img",
+        "transferSize": 101476,
+        "encoded": 101176,
+        "decoded": 101176,
+        "duration": 3663.699999988079,
+        "start": 238.40000000596046,
+        "blocking": "non-blocking",
+        "proto": "h3"
+      },
+      {
+        "name": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&auto=format&fit=crop",
+        "initiator": "img",
+        "transferSize": 53426,
+        "encoded": 53126,
+        "decoded": 53126,
+        "duration": 3277.9000000059605,
+        "start": 261,
+        "blocking": "non-blocking",
+        "proto": "h3"
+      }
+    ],
+    "network": [
+      {
+        "url": "http://localhost:8000/events",
+        "status": 200,
+        "mime": "text/html",
+        "type": "Document",
+        "protocol": "http/1.1",
+        "encoding": "",
+        "cache": "",
+        "fromCache": false,
+        "bytes": 32997,
+        "reqType": "Document"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap",
+        "status": 200,
+        "mime": "text/css",
+        "type": "Stylesheet",
+        "protocol": "h3",
+        "encoding": "gzip",
+        "cache": "private, max-age=86400, stale-while-revalidate=604800",
+        "fromCache": false,
+        "bytes": 935,
+        "reqType": "Stylesheet"
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css",
+        "status": 200,
+        "mime": "text/css",
+        "type": "Stylesheet",
+        "protocol": "h3",
+        "encoding": "br",
+        "cache": "no-transform, public, s-maxage=30672000, max-age=30672000, immutable",
+        "fromCache": false,
+        "bytes": 19392,
+        "reqType": "Stylesheet"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&auto=format&fit=crop",
+        "status": 200,
+        "mime": "image/avif",
+        "type": "Image",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 18428,
+        "reqType": "Image"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&auto=format&fit=crop",
+        "status": 200,
+        "mime": "image/avif",
+        "type": "Image",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 26996,
+        "reqType": "Image"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&auto=format&fit=crop",
+        "status": 200,
+        "mime": "image/avif",
+        "type": "Image",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 22224,
+        "reqType": "Image"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600",
+        "status": 200,
+        "mime": "image/jpeg",
+        "type": "Image",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 109324,
+        "reqType": "Image"
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/3.4.17",
+        "status": 200,
+        "mime": "text/javascript",
+        "type": "Script",
+        "protocol": "h2",
+        "encoding": "br",
+        "cache": "max-age=31536000",
+        "fromCache": false,
+        "bytes": 126874,
+        "reqType": "Script"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=600&auto=format&fit=crop",
+        "status": 200,
+        "mime": "image/avif",
+        "type": "Image",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 12017,
+        "reqType": "Image"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop",
+        "status": 200,
+        "mime": "image/avif",
+        "type": "Image",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 108833,
+        "reqType": "Image"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&auto=format&fit=crop",
+        "status": 200,
+        "mime": "image/avif",
+        "type": "Image",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 25412,
+        "reqType": "Image"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=600&auto=format&fit=crop",
+        "status": 200,
+        "mime": "image/avif",
+        "type": "Image",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 42448,
+        "reqType": "Image"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&auto=format&fit=crop",
+        "status": 200,
+        "mime": "image/avif",
+        "type": "Image",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 53451,
+        "reqType": "Image"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1511735111819-9a3f7709049c?w=600&auto=format&fit=crop",
+        "status": 200,
+        "mime": "image/avif",
+        "type": "Image",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 101503,
+        "reqType": "Image"
+      },
+      {
+        "url": "https://fonts.gstatic.com/s/outfit/v15/QGYvz_MVcBeNP4NJtEtq.woff2",
+        "status": 200,
+        "mime": "font/woff2",
+        "type": "Font",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 32321,
+        "reqType": "Font"
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-regular-400.woff2",
+        "status": 200,
+        "mime": "application/octet-stream",
+        "type": "Font",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "no-transform, public, s-maxage=30672000, max-age=30672000, immutable",
+        "fromCache": false,
+        "bytes": 25593,
+        "reqType": "Font"
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2",
+        "status": 200,
+        "mime": "application/octet-stream",
+        "type": "Font",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "no-transform, public, s-maxage=30672000, max-age=30672000, immutable",
+        "fromCache": false,
+        "bytes": 150785,
+        "reqType": "Font"
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-brands-400.woff2",
+        "status": 200,
+        "mime": "application/octet-stream",
+        "type": "Font",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "no-transform, public, s-maxage=30672000, max-age=30672000, immutable",
+        "fromCache": false,
+        "bytes": 108677,
+        "reqType": "Font"
+      }
+    ],
+    "metrics": {
+      "Timestamp": 267975.909921,
+      "AudioHandlers": 0,
+      "AudioWorkletProcessors": 0,
+      "Documents": 4,
+      "Frames": 4,
+      "JSEventListeners": 5,
+      "LayoutObjects": 320,
+      "MediaKeySessions": 0,
+      "MediaKeys": 0,
+      "Nodes": 822,
+      "Resources": 30,
+      "ContextLifecycleStateObservers": 16,
+      "V8PerContextDatas": 2,
+      "WorkerGlobalScopes": 0,
+      "UACSSResources": 0,
+      "RTCPeerConnections": 0,
+      "ResourceFetchers": 4,
+      "AdSubframes": 0,
+      "DetachedScriptStates": 1,
+      "ArrayBufferContents": 0,
+      "LayoutCount": 8,
+      "RecalcStyleCount": 8,
+      "LayoutDuration": 0.592571,
+      "RecalcStyleDuration": 0.092701,
+      "DevToolsCommandDuration": 0.014962,
+      "ScriptDuration": 0.595599,
+      "V8CompileDuration": 0.002232,
+      "TaskDuration": 2.955467,
+      "TaskOtherDuration": 1.657402,
+      "ThreadTime": 0.676775,
+      "ProcessTime": 10.209872,
+      "JSHeapUsedSize": 14509248,
+      "JSHeapTotalSize": 26738688,
+      "FirstMeaningfulPaint": 267970.782499,
+      "DomContentLoaded": 267971.309537,
+      "NavigationStart": 267966.701918
+    }
+  },
+  {
+    "path": "/submit-event",
+    "url": "http://localhost:8000/submit-event",
+    "vitals": {
+      "lcp": 5012,
+      "lcpEl": "P.text-xs",
+      "lcpSize": 32312,
+      "cls": 0.0004377200532008669,
+      "shifts": [
+        {
+          "value": 0.0004377200532008669,
+          "time": 6786.5,
+          "sources": [
+            "",
+            "SPAN.text-[11px]"
+          ]
+        }
+      ],
+      "longtasks": [
+        {
+          "start": 1189.9000000059605,
+          "dur": 1192
+        },
+        {
+          "start": 2384.5,
+          "dur": 1125
+        },
+        {
+          "start": 3525.199999988079,
+          "dur": 269
+        },
+        {
+          "start": 3945.300000011921,
+          "dur": 187
+        },
+        {
+          "start": 5005.4000000059605,
+          "dur": 321
+        },
+        {
+          "start": 5686.300000011921,
+          "dur": 451
+        },
+        {
+          "start": 6802.199999988079,
+          "dur": 83
+        },
+        {
+          "start": 6888.199999988079,
+          "dur": 128
+        },
+        {
+          "start": 7645.4000000059605,
+          "dur": 148
+        }
+      ],
+      "fcp": 3952,
+      "tbt": 3454
+    },
+    "nav": {
+      "ttfb": 15.300000011920929,
+      "domInteractive": 6888.199999988079,
+      "domContentLoaded": 6888.4000000059605,
+      "load": 7657.5999999940395,
+      "transferSize": 38104,
+      "encodedBodySize": 37804,
+      "decodedBodySize": 37804,
+      "nextHop": "http/1.1"
+    },
+    "paints": [
+      {
+        "name": "first-paint",
+        "t": 3544
+      },
+      {
+        "name": "first-contentful-paint",
+        "t": 3952
+      }
+    ],
+    "resources": [
+      {
+        "name": "https://cdn.tailwindcss.com/",
+        "initiator": "script",
+        "transferSize": 0,
+        "encoded": 0,
+        "decoded": 0,
+        "duration": 969.2999999821186,
+        "start": 206.80000001192093,
+        "blocking": "blocking",
+        "proto": ""
+      },
+      {
+        "name": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap",
+        "initiator": "link",
+        "transferSize": 1206,
+        "encoded": 906,
+        "decoded": 17341,
+        "duration": 168.30000001192093,
+        "start": 209.59999999403954,
+        "blocking": "blocking",
+        "proto": "h3"
+      },
+      {
+        "name": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css",
+        "initiator": "link",
+        "transferSize": 19052,
+        "encoded": 18752,
+        "decoded": 102025,
+        "duration": 261.19999998807907,
+        "start": 210.40000000596046,
+        "blocking": "blocking",
+        "proto": "h3"
+      }
+    ],
+    "network": [
+      {
+        "url": "http://localhost:8000/submit-event",
+        "status": 200,
+        "mime": "text/html",
+        "type": "Document",
+        "protocol": "http/1.1",
+        "encoding": "",
+        "cache": "",
+        "fromCache": false,
+        "bytes": 38191,
+        "reqType": "Document"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap",
+        "status": 200,
+        "mime": "text/css",
+        "type": "Stylesheet",
+        "protocol": "h3",
+        "encoding": "gzip",
+        "cache": "private, max-age=86400, stale-while-revalidate=604800",
+        "fromCache": false,
+        "bytes": 935,
+        "reqType": "Stylesheet"
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css",
+        "status": 200,
+        "mime": "text/css",
+        "type": "Stylesheet",
+        "protocol": "h3",
+        "encoding": "br",
+        "cache": "no-transform, public, s-maxage=30672000, max-age=30672000, immutable",
+        "fromCache": false,
+        "bytes": 19390,
+        "reqType": "Stylesheet"
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/3.4.17",
+        "status": 200,
+        "mime": "text/javascript",
+        "type": "Script",
+        "protocol": "h2",
+        "encoding": "br",
+        "cache": "max-age=31536000",
+        "fromCache": false,
+        "bytes": 126787,
+        "reqType": "Script"
+      },
+      {
+        "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNSIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSJXaW5kb3dUZXh0IiBkPSJNMjAgM2gtMVYxaC0ydjJIN1YxSDV2Mkg0Yy0xLjEgMC0yIC45LTIgMnYxNmMwIDEuMS45IDIgMiAyaDE2YzEuMSAwIDItLjkgMi0yVjVjMC0xLjEtLjktMi0yLTJ6bTAgMThINFY4aDE2djEzeiIvPjxwYXRoIGZpbGw9Im5vbmUiIGQ9Ik0wIDBoMjR2MjRIMHoiLz48L3N2Zz4=",
+        "status": 200,
+        "mime": "image/svg+xml",
+        "type": "Image",
+        "protocol": "data",
+        "encoding": "",
+        "cache": "",
+        "fromCache": false,
+        "bytes": 0,
+        "reqType": "Image"
+      },
+      {
+        "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSJXaW5kb3dUZXh0IiBkPSJNMTEuOTkgMkM2LjQ3IDIgMiA2LjQ4IDIgMTJzNC40NyAxMCA5Ljk5IDEwQzE3LjUyIDIyIDIyIDE3LjUyIDIyIDEyUzE3LjUyIDIgMTEuOTkgMnpNMTIgMjBjLTQuNDIgMC04LTMuNTgtOC04czMuNTgtOCA4LTggOCAzLjU4IDggOC0zLjU4IDgtOCA4eiIvPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz48cGF0aCBmaWxsPSJXaW5kb3dUZXh0IiBkPSJNMTIuNSA3SDExdjZsNS4yNSAzLjE1Ljc1LTEuMjMtNC41LTIuNjd6Ii8+PC9zdmc+",
+        "status": 200,
+        "mime": "image/svg+xml",
+        "type": "Image",
+        "protocol": "data",
+        "encoding": "",
+        "cache": "",
+        "fromCache": false,
+        "bytes": 0,
+        "reqType": "Image"
+      },
+      {
+        "url": "https://fonts.gstatic.com/s/outfit/v15/QGYvz_MVcBeNP4NJtEtq.woff2",
+        "status": 200,
+        "mime": "font/woff2",
+        "type": "Font",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 32321,
+        "reqType": "Font"
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2",
+        "status": 200,
+        "mime": "application/octet-stream",
+        "type": "Font",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "no-transform, public, s-maxage=30672000, max-age=30672000, immutable",
+        "fromCache": false,
+        "bytes": 150784,
+        "reqType": "Font"
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-brands-400.woff2",
+        "status": 200,
+        "mime": "application/octet-stream",
+        "type": "Font",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "no-transform, public, s-maxage=30672000, max-age=30672000, immutable",
+        "fromCache": false,
+        "bytes": 108677,
+        "reqType": "Font"
+      }
+    ],
+    "metrics": {
+      "Timestamp": 267985.22257,
+      "AudioHandlers": 0,
+      "AudioWorkletProcessors": 0,
+      "Documents": 8,
+      "Frames": 6,
+      "JSEventListeners": 2,
+      "LayoutObjects": 533,
+      "MediaKeySessions": 0,
+      "MediaKeys": 0,
+      "Nodes": 1171,
+      "Resources": 22,
+      "ContextLifecycleStateObservers": 20,
+      "V8PerContextDatas": 2,
+      "WorkerGlobalScopes": 0,
+      "UACSSResources": 2,
+      "RTCPeerConnections": 0,
+      "ResourceFetchers": 8,
+      "AdSubframes": 0,
+      "DetachedScriptStates": 1,
+      "ArrayBufferContents": 0,
+      "LayoutCount": 7,
+      "RecalcStyleCount": 7,
+      "LayoutDuration": 1.62552,
+      "RecalcStyleDuration": 0.508958,
+      "DevToolsCommandDuration": 0.01584,
+      "ScriptDuration": 1.346685,
+      "V8CompileDuration": 0.002072,
+      "TaskDuration": 6.296265,
+      "TaskOtherDuration": 2.79719,
+      "ThreadTime": 0.794352,
+      "ProcessTime": 10.287336,
+      "JSHeapUsedSize": 13672268,
+      "JSHeapTotalSize": 27525120,
+      "FirstMeaningfulPaint": 267981.018351,
+      "DomContentLoaded": 267982.896924,
+      "NavigationStart": 267976.008523
+    }
+  },
+  {
+    "path": "/login",
+    "url": "http://localhost:8000/login",
+    "vitals": {
+      "lcp": 4372,
+      "lcpEl": "H1.text-2xl",
+      "lcpSize": 6501,
+      "cls": 0.04653296633931857,
+      "shifts": [
+        {
+          "value": 0.045723365891354145,
+          "time": 5321.9000000059605,
+          "sources": [
+            "DIV.max-w-md"
+          ]
+        },
+        {
+          "value": 0.0008096004479644259,
+          "time": 5573.4000000059605,
+          "sources": [
+            "",
+            "A.text-[11px]",
+            "SPAN.text-[10px]",
+            "BUTTON.absolute"
+          ]
+        }
+      ],
+      "longtasks": [
+        {
+          "start": 1388.4000000059605,
+          "dur": 831
+        },
+        {
+          "start": 2222,
+          "dur": 687
+        },
+        {
+          "start": 2940.300000011921,
+          "dur": 385
+        },
+        {
+          "start": 3739.0999999940395,
+          "dur": 419
+        },
+        {
+          "start": 4362.699999988079,
+          "dur": 463
+        },
+        {
+          "start": 5369.199999988079,
+          "dur": 107
+        },
+        {
+          "start": 5602.4000000059605,
+          "dur": 224
+        },
+        {
+          "start": 6574.199999988079,
+          "dur": 74
+        }
+      ],
+      "fcp": 3744,
+      "tbt": 2790
+    },
+    "nav": {
+      "ttfb": 14.300000011920929,
+      "domInteractive": 5930.9000000059605,
+      "domContentLoaded": 5931.5,
+      "load": 6586.0999999940395,
+      "transferSize": 24764,
+      "encodedBodySize": 24464,
+      "decodedBodySize": 24464,
+      "nextHop": "http/1.1"
+    },
+    "paints": [
+      {
+        "name": "first-paint",
+        "t": 2948
+      },
+      {
+        "name": "first-contentful-paint",
+        "t": 3744
+      }
+    ],
+    "resources": [
+      {
+        "name": "https://cdn.tailwindcss.com/",
+        "initiator": "script",
+        "transferSize": 0,
+        "encoded": 0,
+        "decoded": 0,
+        "duration": 1169.3999999761581,
+        "start": 209.30000001192093,
+        "blocking": "blocking",
+        "proto": ""
+      },
+      {
+        "name": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap",
+        "initiator": "link",
+        "transferSize": 1206,
+        "encoded": 906,
+        "decoded": 17341,
+        "duration": 173.09999999403954,
+        "start": 212.30000001192093,
+        "blocking": "blocking",
+        "proto": "h3"
+      },
+      {
+        "name": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css",
+        "initiator": "link",
+        "transferSize": 19052,
+        "encoded": 18752,
+        "decoded": 102025,
+        "duration": 326,
+        "start": 213.19999998807907,
+        "blocking": "blocking",
+        "proto": "h3"
+      },
+      {
+        "name": "https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg",
+        "initiator": "img",
+        "transferSize": 0,
+        "encoded": 0,
+        "decoded": 0,
+        "duration": 166.2000000178814,
+        "start": 234.69999998807907,
+        "blocking": "non-blocking",
+        "proto": ""
+      },
+      {
+        "name": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js",
+        "initiator": "script",
+        "transferSize": 0,
+        "encoded": 0,
+        "decoded": 0,
+        "duration": 246.89999997615814,
+        "start": 262.30000001192093,
+        "blocking": "non-blocking",
+        "proto": ""
+      },
+      {
+        "name": "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js",
+        "initiator": "script",
+        "transferSize": 0,
+        "encoded": 0,
+        "decoded": 0,
+        "duration": 699.9000000059605,
+        "start": 262.90000000596046,
+        "blocking": "non-blocking",
+        "proto": ""
+      }
+    ],
+    "network": [
+      {
+        "url": "http://localhost:8000/login",
+        "status": 200,
+        "mime": "text/html",
+        "type": "Document",
+        "protocol": "http/1.1",
+        "encoding": "",
+        "cache": "",
+        "fromCache": false,
+        "bytes": 24851,
+        "reqType": "Document"
+      },
+      {
+        "url": "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap",
+        "status": 200,
+        "mime": "text/css",
+        "type": "Stylesheet",
+        "protocol": "h3",
+        "encoding": "gzip",
+        "cache": "private, max-age=86400, stale-while-revalidate=604800",
+        "fromCache": false,
+        "bytes": 935,
+        "reqType": "Stylesheet"
+      },
+      {
+        "url": "https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg",
+        "status": 200,
+        "mime": "image/svg+xml",
+        "type": "Image",
+        "protocol": "h3",
+        "encoding": "gzip",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 958,
+        "reqType": "Image"
+      },
+      {
+        "url": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js",
+        "status": 200,
+        "mime": "text/javascript",
+        "type": "Script",
+        "protocol": "h3",
+        "encoding": "gzip",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 9396,
+        "reqType": "Script"
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css",
+        "status": 200,
+        "mime": "text/css",
+        "type": "Stylesheet",
+        "protocol": "h3",
+        "encoding": "br",
+        "cache": "no-transform, public, s-maxage=30672000, max-age=30672000, immutable",
+        "fromCache": false,
+        "bytes": 19385,
+        "reqType": "Stylesheet"
+      },
+      {
+        "url": "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js",
+        "status": 200,
+        "mime": "text/javascript",
+        "type": "Script",
+        "protocol": "h3",
+        "encoding": "gzip",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 39241,
+        "reqType": "Script"
+      },
+      {
+        "url": "https://cdn.tailwindcss.com/3.4.17",
+        "status": 200,
+        "mime": "text/javascript",
+        "type": "Script",
+        "protocol": "h2",
+        "encoding": "br",
+        "cache": "max-age=31536000",
+        "fromCache": false,
+        "bytes": 126774,
+        "reqType": "Script"
+      },
+      {
+        "url": "https://fonts.gstatic.com/s/outfit/v15/QGYvz_MVcBeNP4NJtEtq.woff2",
+        "status": 200,
+        "mime": "font/woff2",
+        "type": "Font",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "public, max-age=31536000",
+        "fromCache": false,
+        "bytes": 32321,
+        "reqType": "Font"
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2",
+        "status": 200,
+        "mime": "application/octet-stream",
+        "type": "Font",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "no-transform, public, s-maxage=30672000, max-age=30672000, immutable",
+        "fromCache": false,
+        "bytes": 150793,
+        "reqType": "Font"
+      },
+      {
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-brands-400.woff2",
+        "status": 200,
+        "mime": "application/octet-stream",
+        "type": "Font",
+        "protocol": "h3",
+        "encoding": "",
+        "cache": "no-transform, public, s-maxage=30672000, max-age=30672000, immutable",
+        "fromCache": false,
+        "bytes": 108669,
+        "reqType": "Font"
+      }
+    ],
+    "metrics": {
+      "Timestamp": 267994.530258,
+      "AudioHandlers": 0,
+      "AudioWorkletProcessors": 0,
+      "Documents": 6,
+      "Frames": 5,
+      "JSEventListeners": 7,
+      "LayoutObjects": 237,
+      "MediaKeySessions": 0,
+      "MediaKeys": 0,
+      "Nodes": 578,
+      "Resources": 23,
+      "ContextLifecycleStateObservers": 18,
+      "V8PerContextDatas": 2,
+      "WorkerGlobalScopes": 0,
+      "UACSSResources": 0,
+      "RTCPeerConnections": 0,
+      "ResourceFetchers": 6,
+      "AdSubframes": 0,
+      "DetachedScriptStates": 1,
+      "ArrayBufferContents": 0,
+      "LayoutCount": 7,
+      "RecalcStyleCount": 8,
+      "LayoutDuration": 1.130184,
+      "RecalcStyleDuration": 0.211671,
+      "DevToolsCommandDuration": 0.017615,
+      "ScriptDuration": 1.073906,
+      "V8CompileDuration": 0.006074,
+      "TaskDuration": 4.856995,
+      "TaskOtherDuration": 2.417545,
+      "ThreadTime": 0.65999,
+      "ProcessTime": 10.108513,
+      "JSHeapUsedSize": 14379924,
+      "JSHeapTotalSize": 28573696,
+      "FirstMeaningfulPaint": 267990.651796,
+      "DomContentLoaded": 267991.249829,
+      "NavigationStart": 267985.318518
+    }
+  }
+]

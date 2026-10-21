@@ -1,0 +1,15 @@
+import Database from 'better-sqlite3';
+const db = new Database('database/ksync.db', { readonly: true });
+const one = (p) => db.prepare(p).get();
+console.log('journal_mode      :', one('PRAGMA journal_mode').journal_mode);
+console.log('page_size         :', one('PRAGMA page_size').page_size);
+console.log('page_count        :', one('PRAGMA page_count').page_count);
+console.log('freelist_count    :', one('PRAGMA freelist_count').freelist_count);
+console.log('auto_vacuum       :', one('PRAGMA auto_vacuum').auto_vacuum);
+console.log('synchronous       :', one('PRAGMA synchronous').synchronous);
+console.log('foreign_keys      :', one('PRAGMA foreign_keys').foreign_keys);
+console.log('cache_size        :', one('PRAGMA cache_size').cache_size);
+console.log('mmap_size         :', one('PRAGMA mmap_size').mmap_size);
+const dbBytes = one('PRAGMA page_count').page_count * one('PRAGMA page_size').page_size;
+console.log('db logical bytes  :', dbBytes);
+console.log('freelist bytes    :', one('PRAGMA freelist_count').freelist_count * one('PRAGMA page_size').page_size);

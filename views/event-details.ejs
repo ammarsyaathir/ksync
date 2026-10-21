@@ -119,6 +119,16 @@
                         <i class="<%= isSaved ? 'fas' : 'far' %> fa-heart me-1.5 text-rose-500"></i>
                         <span><%= isSaved ? 'Saved' : 'Save Event' %></span>
                     </button>
+
+                    <!-- UC018: Crowdsourced Reliability Recommendation / Upvote -->
+                    <button onclick="toggleRecommendEvent(<%= event.id %>, this)" 
+                            id="btnRecommendEvent"
+                            class="px-4 py-2.5 rounded-xl border <%= (typeof isInterested !== 'undefined' && isInterested) ? 'bg-amber-50 text-amber-700 border-amber-300 font-extrabold' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' %> font-bold text-xs flex items-center shadow-xs transition-all cursor-pointer"
+                            title="Crowdsourced Reliability: Recommend this legitimate event">
+                        <i class="<%= (typeof isInterested !== 'undefined' && isInterested) ? 'fas' : 'far' %> fa-thumbs-up me-1.5 <%= (typeof isInterested !== 'undefined' && isInterested) ? 'text-amber-500' : 'text-slate-400' %>"></i>
+                        <span>Recommend</span>
+                        <span id="recommendCountBadge" class="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] <%= (typeof isInterested !== 'undefined' && isInterested) ? 'bg-amber-200 text-amber-900' : 'bg-slate-100 text-slate-600' %> font-extrabold"><%= (typeof interestCount !== 'undefined') ? interestCount : 0 %></span>
+                    </button>
                     
                     <% const eventSlug = helpers.slugify(event.event_name) || event.id; %>
                     <button onclick="openShareModal('<%= event.event_name.replace(/'/g, "\\'") %>', '<%= eventSlug %>')" 
@@ -796,9 +806,9 @@
         }
     }
 
-    async function toggleInterest(eventId, btn) {
+    async function toggleRecommendEvent(eventId, btn) {
         try {
-            const res = await fetch(`/api/events/${eventId}/interest`, {
+            const res = await fetch(`/api/events/${eventId}/recommend`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
@@ -808,11 +818,26 @@
                 return;
             }
             if (data.status === 'success') {
-                location.reload();
+                const badge = document.getElementById('recommendCountBadge');
+                const icon = btn.querySelector('i');
+                if (badge) badge.textContent = data.count;
+                if (data.recommended) {
+                    btn.className = "px-4 py-2.5 rounded-xl border bg-amber-50 text-amber-700 border-amber-300 font-extrabold text-xs flex items-center shadow-xs transition-all cursor-pointer";
+                    if (icon) icon.className = "fas fa-thumbs-up me-1.5 text-amber-500";
+                    if (badge) badge.className = "ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] bg-amber-200 text-amber-900 font-extrabold";
+                } else {
+                    btn.className = "px-4 py-2.5 rounded-xl border bg-white text-slate-700 border-slate-200 hover:bg-slate-50 font-bold text-xs flex items-center shadow-xs transition-all cursor-pointer";
+                    if (icon) icon.className = "far fa-thumbs-up me-1.5 text-slate-400";
+                    if (badge) badge.className = "ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] bg-slate-100 text-slate-600 font-extrabold";
+                }
             }
         } catch (e) {
             console.error(e);
         }
+    }
+
+    async function toggleInterest(eventId, btn) {
+        return toggleRecommendEvent(eventId, btn);
     }
 
     function openReportModal() {

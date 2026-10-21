@@ -1,0 +1,1070 @@
+{
+ "n": 50,
+ "source": "C:/Users/ammar/AppData/Local/Temp/opencode/survey.xlsx",
+ "single": {
+  "3": {
+   "header": "1. What is your primary age group?",
+   "answered": 50,
+   "items": [
+    {
+     "label": "18-20",
+     "n": 16,
+     "pct": 32
+    },
+    {
+     "label": "21-24",
+     "n": 14,
+     "pct": 28
+    },
+    {
+     "label": "25-29",
+     "n": 8,
+     "pct": 16
+    },
+    {
+     "label": "Below 18",
+     "n": 6,
+     "pct": 12
+    },
+    {
+     "label": "30 and above",
+     "n": 6,
+     "pct": 12
+    }
+   ]
+  },
+  "4": {
+   "header": "2. How would you describe yourself as a K-Pop fan?",
+   "answered": 50,
+   "items": [
+    {
+     "label": "Fan of multiple groups",
+     "n": 22,
+     "pct": 44
+    },
+    {
+     "label": "Dedicated fan of one group",
+     "n": 9,
+     "pct": 18
+    },
+    {
+     "label": "Casual listener",
+     "n": 8,
+     "pct": 16
+    },
+    {
+     "label": "New K-Pop fan",
+     "n": 6,
+     "pct": 12
+    },
+    {
+     "label": "Interested in K-Pop events but not a regular fan",
+     "n": 5,
+     "pct": 10
+    }
+   ]
+  },
+  "5": {
+   "header": "3. Which K-Pop fandom(s) do you currently identify with? (Please select all that apply, or type 'None' if you are a casual fan)",
+   "answered": 50,
+   "items": [
+    {
+     "label": "MOA (TXT)",
+     "n": 6,
+     "pct": 12
+    },
+    {
+     "label": "ARMY (BTS), NCTZEN (NCT)",
+     "n": 3,
+     "pct": 6
+    },
+    {
+     "label": "MOA (TXT), NCTZEN (NCT)",
+     "n": 2,
+     "pct": 4
+    },
+    {
+     "label": "ARMY (BTS), MOA (TXT)",
+     "n": 2,
+     "pct": 4
+    },
+    {
+     "label": "ARMY (BTS), CARAT (SEVENTEEN), STAY (Stray Kids), MOA (TXT), NCTZEN (NCT)",
+     "n": 2,
+     "pct": 4
+    },
+    {
+     "label": "ARMY (BTS), BLINK (BLACKPINK), STAY (Stray Kids), NCTZEN (NCT)",
+     "n": 2,
+     "pct": 4
+    },
+    {
+     "label": "ARMY (BTS), BLINK (BLACKPINK)",
+     "n": 2,
+     "pct": 4
+    },
+    {
+     "label": "ARMY (BTS), BLINK (BLACKPINK), CARAT (SEVENTEEN), STAY (Stray Kids), MOA (TXT), NCTZEN (NCT)",
+     "n": 2,
+     "pct": 4
+    },
+    {
+     "label": "MOA (TXT), Onedoor (boynextdoor)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "MOA (TXT), EXO-L (EXO)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "CARAT (SEVENTEEN), MOA (TXT), NCTZEN (NCT)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "ARMY (BTS), STAY (Stray Kids), MOA (TXT), ATINY (ATEEZ)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "STAY (Stray Kids), MOA (TXT), NCTZEN (NCT), TWICE, ZB1, BABAYMONSTER",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "BLINK (BLACKPINK), NCTZEN (NCT), TEUME (TREASURE), WANNABLE (WANNAONE)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "CARAT (SEVENTEEN), PLLI (PLAVE), MyDay (DAY6)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "CARAT (SEVENTEEN), coer",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "BLINK (BLACKPINK), MEOVV, NMIXX, AESPA, ENHYPEN, CORTIS",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "NCTZEN (NCT), Lngshot and cortis",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "PLAVE (PLLI), THE BOYZ (THE B)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "BLINK (BLACKPINK), New Jeans, Aespa",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "BLINK (BLACKPINK)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "CARAT (SEVENTEEN), NCTZEN (NCT), TEUME (TREASURE)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "MOA (TXT), COER (CORTIS)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "MOA (TXT), ATINY (ATEEZ)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "ARMY (BTS), CARAT (SEVENTEEN)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "BLINK (BLACKPINK), CARAT (SEVENTEEN), MOA (TXT), NCTZEN (NCT)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "BLINK (BLACKPINK), CARAT (SEVENTEEN), STAY (Stray Kids), MOA (TXT), NCTZEN (NCT)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "ARMY (BTS), CARAT (SEVENTEEN), MOA (TXT), NCTZEN (NCT)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "CARAT (SEVENTEEN)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "ARMY (BTS), BLINK (BLACKPINK), NCTZEN (NCT)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "CARAT (SEVENTEEN), STAY (Stray Kids), MOA (TXT)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "ARMY (BTS), CARAT (SEVENTEEN), STAY (Stray Kids), NCTZEN (NCT)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "ARMY (BTS), BLINK (BLACKPINK), CARAT (SEVENTEEN), MOA (TXT)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "BLINK (BLACKPINK), STAY (Stray Kids)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "ARMY (BTS), CARAT (SEVENTEEN), STAY (Stray Kids)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "CARAT (SEVENTEEN), NCTZEN (NCT)",
+     "n": 1,
+     "pct": 2
+    },
+    {
+     "label": "COER (CORTIS)",
+     "n": 1,
+     "pct": 2
+    }
+   ]
+  },
+  "7": {
+   "header": "5. How often do you attend K-Pop related events in Malaysia? (Concerts, Cupsleeves, Random Dance Play, etc.)",
+   "answered": 50,
+   "items": [
+    {
+     "label": "Rarely / Never",
+     "n": 23,
+     "pct": 46
+    },
+    {
+     "label": "Once every few months",
+     "n": 13,
+     "pct": 26
+    },
+    {
+     "label": "Twice a year",
+     "n": 11,
+     "pct": 22
+    },
+    {
+     "label": "Monthly",
+     "n": 3,
+     "pct": 6
+    }
+   ]
+  },
+  "9": {
+   "header": "7. How many different platforms do you usually check to find K-Pop event information?",
+   "answered": 50,
+   "items": [
+    {
+     "label": "Four or more platforms",
+     "n": 16,
+     "pct": 32
+    },
+    {
+     "label": "Three platforms",
+     "n": 14,
+     "pct": 28
+    },
+    {
+     "label": "Two platforms",
+     "n": 12,
+     "pct": 24
+    },
+    {
+     "label": "I rarely search for event information",
+     "n": 4,
+     "pct": 8
+    },
+    {
+     "label": "One platform",
+     "n": 4,
+     "pct": 8
+    }
+   ]
+  },
+  "10": {
+   "header": "8. How often do you feel you missed out on an event because the social media algorithm showed you the post too late?",
+   "answered": 50,
+   "items": [
+    {
+     "label": "Sometimes",
+     "n": 18,
+     "pct": 36
+    },
+    {
+     "label": "Often",
+     "n": 12,
+     "pct": 24
+    },
+    {
+     "label": "Rarely",
+     "n": 9,
+     "pct": 18
+    },
+    {
+     "label": "Very Often",
+     "n": 8,
+     "pct": 16
+    },
+    {
+     "label": "Never",
+     "n": 3,
+     "pct": 6
+    }
+   ]
+  },
+  "13": {
+   "header": "11. Have you ever found conflicting or outdated information about a K-Pop event?",
+   "answered": 50,
+   "items": [
+    {
+     "label": "Yes",
+     "n": 31,
+     "pct": 62
+    },
+    {
+     "label": "No",
+     "n": 19,
+     "pct": 38
+    }
+   ]
+  },
+  "14": {
+   "header": "12. What is your biggest difficulty when searching for K-Pop events?",
+   "answered": 50,
+   "items": [
+    {
+     "label": "I miss announcements because I see them too late",
+     "n": 21,
+     "pct": 42
+    },
+    {
+     "label": "Important event details are incomplete",
+     "n": 11,
+     "pct": 22
+    },
+    {
+     "label": "I have difficulty finding events that match my interests",
+     "n": 8,
+     "pct": 16
+    },
+    {
+     "label": "Information is scattered across different platforms",
+     "n": 7,
+     "pct": 14
+    },
+    {
+     "label": "Information is outdated or inconsistent",
+     "n": 3,
+     "pct": 6
+    }
+   ]
+  },
+  "15": {
+   "header": "13. How do you currently keep track of upcoming events?",
+   "answered": 50,
+   "items": [
+    {
+     "label": "Remember the dates myself",
+     "n": 13,
+     "pct": 26
+    },
+    {
+     "label": "Save social media posts",
+     "n": 12,
+     "pct": 24
+    },
+    {
+     "label": "Take screenshots or write notes",
+     "n": 12,
+     "pct": 24
+    },
+    {
+     "label": "Use my phone calendar",
+     "n": 9,
+     "pct": 18
+    },
+    {
+     "label": "I do not keep track of events",
+     "n": 4,
+     "pct": 8
+    }
+   ]
+  },
+  "16": {
+   "header": "14. How often do you forget the date or details of an event you are interested in?",
+   "answered": 50,
+   "items": [
+    {
+     "label": "Sometimes",
+     "n": 19,
+     "pct": 38
+    },
+    {
+     "label": "Rarely",
+     "n": 12,
+     "pct": 24
+    },
+    {
+     "label": "Often",
+     "n": 9,
+     "pct": 18
+    },
+    {
+     "label": "Never",
+     "n": 6,
+     "pct": 12
+    },
+    {
+     "label": "Very often",
+     "n": 4,
+     "pct": 8
+    }
+   ]
+  },
+  "20": {
+   "header": "18. Which feature would help you keep track of events?",
+   "answered": 50,
+   "items": [
+    {
+     "label": "Receive reminders before an event",
+     "n": 19,
+     "pct": 38
+    },
+    {
+     "label": "Save events for later (wishlist)",
+     "n": 10,
+     "pct": 20
+    },
+    {
+     "label": "Share event information with friends",
+     "n": 9,
+     "pct": 18
+    },
+    {
+     "label": "Use a combination of these features",
+     "n": 8,
+     "pct": 16
+    },
+    {
+     "label": "View a countdown to upcoming events",
+     "n": 4,
+     "pct": 8
+    }
+   ]
+  },
+  "22": {
+   "header": "20. How would you prefer to receive important event updates, such as venue changes or cancellations?",
+   "answered": 50,
+   "items": [
+    {
+     "label": "Reminders or alerts for saved events",
+     "n": 15,
+     "pct": 30
+    },
+    {
+     "label": "Email notifications",
+     "n": 12,
+     "pct": 24
+    },
+    {
+     "label": "Updates displayed on the event page",
+     "n": 10,
+     "pct": 20
+    },
+    {
+     "label": "Notifications on the website",
+     "n": 8,
+     "pct": 16
+    },
+    {
+     "label": "I do not need event update notifications",
+     "n": 5,
+     "pct": 10
+    }
+   ]
+  },
+  "23": {
+   "header": "21. Would you register for an account to use personalized features such as saved events, reminders, and community discussions?",
+   "answered": 50,
+   "items": [
+    {
+     "label": "Yes",
+     "n": 19,
+     "pct": 38
+    },
+    {
+     "label": "No",
+     "n": 16,
+     "pct": 32
+    },
+    {
+     "label": "Maybe",
+     "n": 15,
+     "pct": 30
+    }
+   ]
+  },
+  "24": {
+   "header": "22. Where do you usually discuss K-Pop events or communicate with other fans?",
+   "answered": 50,
+   "items": [
+    {
+     "label": "Telegram groups",
+     "n": 18,
+     "pct": 36
+    },
+    {
+     "label": "X (Twitter) replies or group chats",
+     "n": 12,
+     "pct": 24
+    },
+    {
+     "label": "WhatsApp groups",
+     "n": 8,
+     "pct": 16
+    },
+    {
+     "label": "I rarely participate in group discussions",
+     "n": 6,
+     "pct": 12
+    },
+    {
+     "label": "Facebook groups or online forums",
+     "n": 6,
+     "pct": 12
+    }
+   ]
+  },
+  "25": {
+   "header": "23. How often do you need to switch between different platforms or group chats to find K-Pop event information or join discussions?",
+   "answered": 50,
+   "items": [
+    {
+     "label": "Sometimes",
+     "n": 24,
+     "pct": 48
+    },
+    {
+     "label": "Rarely",
+     "n": 14,
+     "pct": 28
+    },
+    {
+     "label": "Often",
+     "n": 6,
+     "pct": 12
+    },
+    {
+     "label": "Never",
+     "n": 4,
+     "pct": 8
+    },
+    {
+     "label": "Very often",
+     "n": 2,
+     "pct": 4
+    }
+   ]
+  },
+  "29": {
+   "header": "27. Which additional feature would you most like to see in K-Sync Malaysia?",
+   "answered": 50,
+   "items": [
+    {
+     "label": "K-Pop Event Radar: Discover multiple K-Pop events happening around the same date or area, including concerts, cupsleeves, pop-ups, and fan gatherings on one interactive map.",
+     "n": 17,
+     "pct": 34
+    },
+    {
+     "label": "K-Pop Buddy: Discover other fans interested in the same event, with optional matching by favourite groups, preferred activities, or city.",
+     "n": 13,
+     "pct": 26
+    },
+    {
+     "label": "Event Change Tracker: View an event's update history, including what changed, when it changed, and the source of the latest information.",
+     "n": 12,
+     "pct": 24
+    },
+    {
+     "label": "K-Pop Event Day Planner: Build a personal itinerary from several events, with times, locations, saved events, and links to navigation.",
+     "n": 8,
+     "pct": 16
+    }
+   ]
+  },
+  "30": {
+   "header": "28. Which additional feature would most improve your overall experience?",
+   "answered": 50,
+   "items": [
+    {
+     "label": "A personalized dashboard for saved and upcoming events",
+     "n": 15,
+     "pct": 30
+    },
+    {
+     "label": "The ability to share event details easily",
+     "n": 12,
+     "pct": 24
+    },
+    {
+     "label": "A mobile-friendly interface",
+     "n": 12,
+     "pct": 24
+    },
+    {
+     "label": "A clear indication of recently updated event information",
+     "n": 7,
+     "pct": 14
+    },
+    {
+     "label": "A centralized community forum for discussions and information sharing",
+     "n": 4,
+     "pct": 8
+    }
+   ]
+  }
+ },
+ "multi": {
+  "6": {
+   "header": "4. What types of K-Pop events have you attended in Malaysia?",
+   "items": [
+    {
+     "label": "None of the above",
+     "n": 28,
+     "pct": 56
+    },
+    {
+     "label": "Official Concerts / Fan Meetings",
+     "n": 25,
+     "pct": 50
+    },
+    {
+     "label": "Cupsleeve Events (Cafe events)",
+     "n": 25,
+     "pct": 50
+    },
+    {
+     "label": "Birthday Ads / Exhibitions",
+     "n": 20,
+     "pct": 40
+    },
+    {
+     "label": "Random Dance Play (RDP)",
+     "n": 16,
+     "pct": 32
+    },
+    {
+     "label": "Fan Streaming Parties / Viewing Parties",
+     "n": 15,
+     "pct": 30
+    }
+   ]
+  },
+  "8": {
+   "header": "6. Where do you currently find information about K-Pop events? (Select all that apply)",
+   "items": [
+    {
+     "label": "X (Twitter)",
+     "n": 42,
+     "pct": 84
+    },
+    {
+     "label": "Instagram",
+     "n": 31,
+     "pct": 62
+    },
+    {
+     "label": "TikTok",
+     "n": 31,
+     "pct": 62
+    },
+    {
+     "label": "Official Event Organizer Websites",
+     "n": 29,
+     "pct": 58
+    },
+    {
+     "label": "Telegram Channels",
+     "n": 24,
+     "pct": 48
+    },
+    {
+     "label": "Word of mouth / Friends",
+     "n": 17,
+     "pct": 34
+    }
+   ]
+  },
+  "12": {
+   "header": "10. Which event information is most difficult for you to find?",
+   "items": [
+    {
+     "label": "Registration or ticket information",
+     "n": 34,
+     "pct": 68
+    },
+    {
+     "label": "Event changes, cancellation, or updated announcements",
+     "n": 31,
+     "pct": 62
+    },
+    {
+     "label": "Event date and time",
+     "n": 26,
+     "pct": 52
+    },
+    {
+     "label": "Venue and location",
+     "n": 21,
+     "pct": 42
+    },
+    {
+     "label": "Organizer and participating artist",
+     "n": 19,
+     "pct": 38
+    }
+   ]
+  },
+  "19": {
+   "header": "17. Which event discovery features would be most useful to you?",
+   "items": [
+    {
+     "label": "Search by artist, group, or event name",
+     "n": 43,
+     "pct": 86
+    },
+    {
+     "label": "View the original announcement source and latest update date",
+     "n": 28,
+     "pct": 56
+    },
+    {
+     "label": "Browse upcoming and recently added events",
+     "n": 9,
+     "pct": 18
+    },
+    {
+     "label": "Filter by date, location, or event category",
+     "n": 9,
+     "pct": 18
+    },
+    {
+     "label": "View complete event information on one page",
+     "n": 6,
+     "pct": 12
+    }
+   ]
+  },
+  "26": {
+   "header": "24. What difficulties do you experience when discussing K-Pop events across different group chats or platforms?",
+   "items": [
+    {
+     "label": "The same questions are repeatedly asked in different groups",
+     "n": 27,
+     "pct": 54
+    },
+    {
+     "label": "Important messages get buried among other messages",
+     "n": 26,
+     "pct": 52
+    },
+    {
+     "label": "Event information is scattered across different groups",
+     "n": 24,
+     "pct": 48
+    },
+    {
+     "label": "I do not experience these difficulties",
+     "n": 20,
+     "pct": 40
+    },
+    {
+     "label": "It is difficult to find previous discussions or shared information",
+     "n": 18,
+     "pct": 36
+    }
+   ]
+  },
+  "28": {
+   "header": "26. Which community features would you most like to use on K-Sync Malaysia?",
+   "items": [
+    {
+     "label": "Event information sharing: Share useful event updates and announcements with other fans",
+     "n": 34,
+     "pct": 68
+    },
+    {
+     "label": "Group discussions: Join a shared discussion with fans who have similar interests",
+     "n": 32,
+     "pct": 64
+    },
+    {
+     "label": "General K-Pop forum: Chat about groups, artists, and K-Pop topics",
+     "n": 30,
+     "pct": 60
+    },
+    {
+     "label": "Event discussion forums: Discuss a specific event in one organized space",
+     "n": 28,
+     "pct": 56
+    },
+    {
+     "label": "Questions and answers: Ask questions and find previous answers",
+     "n": 25,
+     "pct": 50
+    }
+   ]
+  }
+ },
+ "rating": {
+  "11": {
+   "header": "9. Rate the difficulty of finding all event details (date, time, location, organizer) in ONE place:",
+   "answered": 50,
+   "mean": 2.92,
+   "top2": 13,
+   "top2Pct": 26,
+   "bottom2": 16,
+   "bottom2Pct": 32,
+   "counts": [
+    {
+     "label": "1",
+     "n": 6
+    },
+    {
+     "label": "2",
+     "n": 10
+    },
+    {
+     "label": "3",
+     "n": 21
+    },
+    {
+     "label": "4",
+     "n": 8
+    },
+    {
+     "label": "5",
+     "n": 5
+    }
+   ]
+  },
+  "17": {
+   "header": "15. How useful would one website containing event information from different organizers be to you?",
+   "answered": 50,
+   "mean": 3.7,
+   "top2": 30,
+   "top2Pct": 60,
+   "bottom2": 8,
+   "bottom2Pct": 16,
+   "counts": [
+    {
+     "label": "1",
+     "n": 1
+    },
+    {
+     "label": "2",
+     "n": 7
+    },
+    {
+     "label": "3",
+     "n": 12
+    },
+    {
+     "label": "4",
+     "n": 16
+    },
+    {
+     "label": "5",
+     "n": 14
+    }
+   ]
+  },
+  "18": {
+   "header": "16. How important is it to know whether event information is current and comes from a reliable source?",
+   "answered": 50,
+   "mean": 3.72,
+   "top2": 30,
+   "top2Pct": 60,
+   "bottom2": 10,
+   "bottom2Pct": 20,
+   "counts": [
+    {
+     "label": "1",
+     "n": 1
+    },
+    {
+     "label": "2",
+     "n": 9
+    },
+    {
+     "label": "3",
+     "n": 10
+    },
+    {
+     "label": "4",
+     "n": 13
+    },
+    {
+     "label": "5",
+     "n": 17
+    }
+   ]
+  },
+  "21": {
+   "header": "19. How useful would it be to open an event venue directly in Google Maps?",
+   "answered": 50,
+   "mean": 2.52,
+   "top2": 0,
+   "top2Pct": 0,
+   "bottom2": 20,
+   "bottom2Pct": 40,
+   "counts": [
+    {
+     "label": "1",
+     "n": 4
+    },
+    {
+     "label": "2",
+     "n": 16
+    },
+    {
+     "label": "3",
+     "n": 30
+    },
+    {
+     "label": "4",
+     "n": 0
+    },
+    {
+     "label": "5",
+     "n": 0
+    }
+   ]
+  },
+  "27": {
+   "header": "25. How useful would a centralized K-Pop community space be where fans can discuss events, ask questions, and share information without switching between multiple platforms?",
+   "answered": 50,
+   "mean": 3.52,
+   "top2": 27,
+   "top2Pct": 54,
+   "bottom2": 12,
+   "bottom2Pct": 24,
+   "counts": [
+    {
+     "label": "1",
+     "n": 3
+    },
+    {
+     "label": "2",
+     "n": 9
+    },
+    {
+     "label": "3",
+     "n": 11
+    },
+    {
+     "label": "4",
+     "n": 13
+    },
+    {
+     "label": "5",
+     "n": 14
+    }
+   ]
+  },
+  "31": {
+   "header": "29. How likely are you to use K-Sync Malaysia to discover events and participate in its community features?",
+   "answered": 50,
+   "mean": 3.58,
+   "top2": 28,
+   "top2Pct": 56,
+   "bottom2": 8,
+   "bottom2Pct": 16,
+   "counts": [
+    {
+     "label": "1",
+     "n": 0
+    },
+    {
+     "label": "2",
+     "n": 8
+    },
+    {
+     "label": "3",
+     "n": 14
+    },
+    {
+     "label": "4",
+     "n": 19
+    },
+    {
+     "label": "5",
+     "n": 9
+    }
+   ]
+  },
+  "32": {
+   "header": "30. Overall, how effective do you think K-Sync Malaysia would be in helping you find K-Pop event information more easily?",
+   "answered": 50,
+   "mean": 3.82,
+   "top2": 32,
+   "top2Pct": 64,
+   "bottom2": 8,
+   "bottom2Pct": 16,
+   "counts": [
+    {
+     "label": "1",
+     "n": 3
+    },
+    {
+     "label": "2",
+     "n": 5
+    },
+    {
+     "label": "3",
+     "n": 10
+    },
+    {
+     "label": "4",
+     "n": 12
+    },
+    {
+     "label": "5",
+     "n": 20
+    }
+   ]
+  }
+ },
+ "unmatched": []
+}

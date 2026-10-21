@@ -45,8 +45,8 @@ router.get('/notifications', requireAuth, async (req, res) => {
   }
 });
 
-// POST /notifications/mark-all-read - Mark all as read
-router.post('/notifications/mark-all-read', requireAuth, async (req, res) => {
+// POST /notifications/mark-all-read & /notifications/read-all - Mark all as read
+const handleMarkAllRead = async (req, res) => {
   const userId = req.session.userId;
   try {
     await db.execute("UPDATE notifications SET is_read = 1 WHERE user_id = ?", [userId]);
@@ -56,7 +56,10 @@ router.post('/notifications/mark-all-read', requireAuth, async (req, res) => {
     console.error('Error marking notifications read:', err);
     res.redirect('/notifications');
   }
-});
+};
+
+router.post('/notifications/mark-all-read', requireAuth, handleMarkAllRead);
+router.post('/notifications/read-all', requireAuth, handleMarkAllRead);
 
 // POST /notifications/:id/read - Mark single notification as read
 router.post('/notifications/:id/read', requireAuth, async (req, res) => {

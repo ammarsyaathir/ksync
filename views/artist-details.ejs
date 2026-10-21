@@ -1,0 +1,306 @@
+<%- include('partials/header', { title: artist.name + ' Profile & Malaysia Tour Schedule | K-Sync Malaysia' }) %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <div class="flex items-center space-x-2 text-xs font-semibold text-slate-500 mb-6">
+        <a href="/" class="hover:text-slate-900 transition-colors">Home</a>
+        <i class="fas fa-chevron-right text-[10px] text-slate-300"></i>
+        <a href="/artists" class="hover:text-slate-900 transition-colors">Artists</a>
+        <i class="fas fa-chevron-right text-[10px] text-slate-300"></i>
+        <span class="text-purple-600 font-bold"><%= artist.name %></span>
+    </div>
+
+    <!-- Artist Hero Banner -->
+    <div class="relative bg-slate-950 rounded-3xl overflow-hidden border border-slate-800 shadow-xl mb-10">
+        <!-- Background Image with Ambient Gradient -->
+        <div class="absolute inset-0 z-0">
+            <img src="<%= artist.image_url || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1600&auto=format&fit=crop' %>" 
+                 alt="<%= artist.name %>" 
+                 class="w-full h-full object-cover opacity-25 blur-xs scale-105"
+                 onerror="this.src='https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1600&auto=format&fit=crop'">
+            <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/85 to-slate-950/50"></div>
+        </div>
+
+        <div class="relative z-10 p-6 sm:p-10 flex flex-col md:flex-row items-center md:items-start gap-8">
+            <!-- Artist Portrait Avatar -->
+            <div class="w-40 h-40 sm:w-48 sm:h-48 rounded-2xl overflow-hidden border-2 border-white/20 shadow-2xl shrink-0 bg-slate-800">
+                <img src="<%= artist.image_url || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop' %>" 
+                     alt="<%= artist.name %>" 
+                     class="w-full h-full object-cover"
+                     onerror="this.src='https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop'">
+            </div>
+
+            <!-- Artist Meta -->
+            <div class="flex-grow text-center md:text-left space-y-3">
+                <div class="flex flex-wrap items-center justify-center md:justify-start gap-2">
+                    <span class="px-3 py-1 rounded-full text-xs font-black bg-pink-500 text-white shadow-sm">
+                        <%= artist.group_type || 'K-Pop Artist' %>
+                    </span>
+                    <% if (artist.agency) { %>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-slate-200 border border-white/15 backdrop-blur-sm">
+                            <i class="fas fa-building me-1 text-purple-400"></i> <%= artist.agency %>
+                        </span>
+                    <% } %>
+                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-slate-200 border border-white/15 backdrop-blur-sm">
+                        <i class="fas fa-users me-1 text-pink-400"></i> <%= members.length > 0 ? members.length + ' Members' : 'Solo Artist' %>
+                    </span>
+                    <% if (upcoming_events.length > 0) { %>
+                        <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            <%= upcoming_events.length %> Active Malaysian Tour Date<%= upcoming_events.length > 1 ? 's' : '' %>
+                        </span>
+                    <% } %>
+                </div>
+
+                <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight">
+                    <%= artist.name %>
+                </h1>
+
+                <% if (artist.description) { %>
+                    <p class="text-sm text-slate-300 max-w-3xl leading-relaxed font-normal">
+                        <%= artist.description %>
+                    </p>
+                <% } %>
+
+                <div class="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-3">
+                    <% if (upcoming_events.length > 0) { %>
+                        <a href="#tour-schedule" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold text-xs shadow-lg shadow-pink-500/25 transition-all flex items-center gap-2">
+                            <i class="fas fa-ticket"></i>
+                            <span>View Malaysia Tour Dates (<%= upcoming_events.length %>)</span>
+                        </a>
+                    <% } %>
+                    <button onclick="navigator.clipboard.writeText(window.location.href); alert('Artist profile link copied to clipboard!');" 
+                            class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/15 transition-all flex items-center gap-1.5 cursor-pointer">
+                        <i class="fas fa-share-nodes"></i>
+                        <span>Share Profile</span>
+                    </button>
+                    <a href="/events?artist=<%= artist.id %>" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/15 transition-all flex items-center gap-1.5">
+                        <i class="fas fa-compass"></i>
+                        <span>Filter All Events</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 1: Upcoming Malaysia Tour Dates (Concerts, Fan Meetings, Cafe Gatherings) -->
+    <div id="tour-schedule" class="mb-14">
+        <div class="flex items-center justify-between mb-6 pb-3 border-b border-slate-200">
+            <div>
+                <span class="text-xs font-bold text-pink-600 uppercase tracking-wider">Malaysian Live Schedule</span>
+                <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fas fa-calendar-check text-pink-500"></i> Upcoming Events & Concerts
+                </h2>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-pink-100 text-pink-700">
+                <%= upcoming_events.length %> Show<%= upcoming_events.length !== 1 ? 's' : '' %>
+            </span>
+        </div>
+
+        <% if (upcoming_events.length === 0) { %>
+            <div class="bg-white rounded-3xl p-8 text-center border border-slate-200 shadow-sm">
+                <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3 text-lg">
+                    <i class="far fa-calendar-xmark"></i>
+                </div>
+                <h3 class="text-base font-bold text-slate-800 mb-1">No Upcoming Malaysian Dates Announced Yet</h3>
+                <p class="text-xs text-slate-500 max-w-md mx-auto mb-4">Stay tuned! When official tour dates or local fan cupsleeve gatherings are scheduled, they will appear here automatically.</p>
+                <a href="/events" class="px-5 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-all inline-block">
+                    Explore Other K-Pop Events
+                </a>
+            </div>
+        <% } else { %>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <% upcoming_events.forEach(function(event) { %>
+                    <% const calcStatus = helpers.getCalculatedEventStatus(event); %>
+                    <% const eventSlug = helpers.slugify(event.event_name) || event.id; %>
+                    <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden flex flex-col shadow-sm hover:shadow-md transition-all group">
+                        <div class="relative h-48 overflow-hidden bg-slate-900">
+                            <img src="<%= event.poster_image %>" alt="<%= event.event_name %>" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                 onerror="this.src='https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
+                            
+                            <div class="absolute top-3 left-3 z-10">
+                                <%- helpers.getStatusBadge(calcStatus) %>
+                            </div>
+
+                            <div class="absolute bottom-3 left-4 right-4 z-10 flex items-center justify-between text-white text-xs font-bold">
+                                <span><i class="fas fa-calendar-day me-1 text-pink-400"></i> <%= helpers.formatDate(event.event_date) %></span>
+                                <% if (event.start_time) { %>
+                                    <span><i class="fas fa-clock me-1 text-purple-400"></i> <%= helpers.formatTime(event.start_time) %></span>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <div class="p-5 flex-grow flex flex-col justify-between space-y-4">
+                            <div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                                        <%= event.category_name || 'Concert' %>
+                                    </span>
+                                    <% if (event.cluster_area) { %>
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-600">
+                                            <%= event.cluster_area %>
+                                        </span>
+                                    <% } %>
+                                </div>
+                                
+                                <h3 class="text-base font-bold text-slate-900 group-hover:text-pink-600 transition-colors line-clamp-2">
+                                    <a href="/events/<%= event.id %>-<%= eventSlug %>">
+                                        <%= event.event_name %>
+                                    </a>
+                                </h3>
+
+                                <div class="mt-3 text-xs text-slate-500 space-y-1">
+                                    <div class="flex items-center gap-1.5">
+                                        <i class="fas fa-location-dot text-rose-500 w-4"></i>
+                                        <span class="truncate"><%= event.venue_name || event.venue_display %></span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 text-slate-400">
+                                        <i class="fas fa-city w-4"></i>
+                                        <span><%= event.city %>, <%= event.state %></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pt-3 border-t border-slate-100 flex items-center gap-2">
+                                <a href="/events/<%= event.id %>-<%= eventSlug %>" 
+                                   class="flex-1 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs text-center transition-all">
+                                    Event Details
+                                </a>
+                                <% if (event.ticket_url) { %>
+                                    <a href="<%= event.ticket_url %>" target="_blank" rel="noopener noreferrer" 
+                                       class="px-3 py-2 rounded-xl bg-pink-50 hover:bg-pink-100 text-pink-700 font-bold text-xs border border-pink-200 transition-all" title="Open Official Ticketing Link">
+                                        <i class="fas fa-ticket text-xs"></i>
+                                    </a>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Section 2: Group Members & Profiles (Normalised Biodata) -->
+    <div class="mb-14">
+        <div class="flex items-center justify-between mb-6 pb-3 border-b border-slate-200">
+            <div>
+                <span class="text-xs font-bold text-purple-600 uppercase tracking-wider">Member Lineup & Biodata</span>
+                <h2 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fas fa-id-card text-purple-500"></i> Members Profile
+                </h2>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700">
+                <%= members.length %> Member<%= members.length !== 1 ? 's' : '' %>
+            </span>
+        </div>
+
+        <% if (members.length === 0) { %>
+            <div class="bg-white rounded-3xl p-8 text-center border border-slate-200 shadow-sm">
+                <p class="text-xs text-slate-500 font-medium">Individual member biodata for this artist is currently being updated in our database.</p>
+            </div>
+        <% } else { %>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <% members.forEach(function(member) { %>
+                    <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md hover:border-purple-300 transition-all flex flex-col">
+                        <!-- Member Photo -->
+                        <div class="relative h-56 bg-slate-100 overflow-hidden">
+                            <img src="<%= member.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop' %>" 
+                                 alt="<%= member.stage_name %>" 
+                                 class="w-full h-full object-cover"
+                                 onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+                            
+                            <div class="absolute bottom-3 left-4 right-4">
+                                <h3 class="text-lg font-black text-white"><%= member.stage_name %></h3>
+                                <% if (member.birth_name) { %>
+                                    <p class="text-[11px] font-medium text-slate-300 truncate"><%= member.birth_name %></p>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <!-- Biodata List -->
+                        <div class="p-5 flex-grow flex flex-col justify-between space-y-3">
+                            <div class="space-y-2">
+                                <% if (member.position) { %>
+                                    <div class="pb-2 border-b border-slate-100">
+                                        <div class="text-[10px] font-bold text-purple-600 uppercase">Position</div>
+                                        <div class="text-xs font-semibold text-slate-800"><%= member.position %></div>
+                                    </div>
+                                <% } %>
+
+                                <div class="grid grid-cols-2 gap-2 text-xs">
+                                    <% if (member.dob) { %>
+                                        <div>
+                                            <span class="text-[10px] text-slate-400 block">Birthday</span>
+                                            <span class="font-semibold text-slate-700 text-[11px]"><%= member.dob %></span>
+                                        </div>
+                                    <% } %>
+                                    <% if (member.zodiac) { %>
+                                        <div>
+                                            <span class="text-[10px] text-slate-400 block">Zodiac</span>
+                                            <span class="font-semibold text-slate-700 text-[11px]"><%= member.zodiac %></span>
+                                        </div>
+                                    <% } %>
+                                    <% if (member.nationality) { %>
+                                        <div>
+                                            <span class="text-[10px] text-slate-400 block">Nationality</span>
+                                            <span class="font-semibold text-slate-700 text-[11px]"><%= member.nationality %></span>
+                                        </div>
+                                    <% } %>
+                                    <% if (member.mbti) { %>
+                                        <div>
+                                            <span class="text-[10px] text-slate-400 block">MBTI</span>
+                                            <span class="font-bold text-pink-600 text-[11px]"><%= member.mbti %></span>
+                                        </div>
+                                    <% } %>
+                                    <% if (member.height) { %>
+                                        <div>
+                                            <span class="text-[10px] text-slate-400 block">Height</span>
+                                            <span class="font-semibold text-slate-700 text-[11px]"><%= member.height %></span>
+                                        </div>
+                                    <% } %>
+                                    <% if (member.blood_type) { %>
+                                        <div>
+                                            <span class="text-[10px] text-slate-400 block">Blood Type</span>
+                                            <span class="font-semibold text-slate-700 text-[11px]"><%= member.blood_type %></span>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Section 3: Past Malaysian Tour Archive -->
+    <% if (past_events.length > 0) { %>
+        <div class="mb-10">
+            <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-200">
+                <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2">
+                    <i class="fas fa-clock-rotate-left text-slate-400"></i> Past Malaysian Tour Archive
+                </h3>
+                <span class="text-xs text-slate-400 font-medium"><%= past_events.length %> Past Concert(s)</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <% past_events.forEach(function(event) { %>
+                    <% const eventSlug = helpers.slugify(event.event_name) || event.id; %>
+                    <div class="bg-white rounded-2xl p-4 border border-slate-200 flex items-center space-x-3 opacity-80 hover:opacity-100 transition-opacity">
+                        <img src="<%= event.poster_image %>" alt="" class="w-14 h-14 rounded-xl object-cover shrink-0">
+                        <div class="min-w-0 flex-1">
+                            <a href="/events/<%= event.id %>-<%= eventSlug %>" class="text-xs font-bold text-slate-900 hover:text-pink-600 truncate block">
+                                <%= event.event_name %>
+                            </a>
+                            <div class="text-[11px] text-slate-500"><%= helpers.formatDate(event.event_date) %> · <%= event.venue_name %></div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+    <% } %>
+</div>
+
+<%- include('partials/footer') %>
