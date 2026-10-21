@@ -68,8 +68,34 @@
                     <button type="button" onclick="fillSampleData('cupsleeve')" class="px-3 py-2 rounded-xl bg-white border border-slate-200 hover:border-pink-300 text-slate-700 hover:text-pink-600 font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer">
                         <i class="fas fa-coffee text-amber-500"></i> Cupsleeve
                     </button>
+                    <button type="button" onclick="toggleAiExtractor()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-md shadow-violet-500/20 transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                        <i class="fas fa-brain text-yellow-300"></i> ✨ AI Scan (Gemini 4 Argon)
+                    </button>
                     <button type="button" onclick="clearFormFields()" title="Reset / Clear all fields" class="px-2.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-rose-50 hover:border-rose-200 text-slate-500 hover:text-rose-600 text-xs font-bold transition-all cursor-pointer">
                         <i class="fas fa-rotate-left"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 🤖 Gemini 4 Argon Multimodal Data Extractor Drawer -->
+            <div id="aiExtractorBox" class="mt-4 hidden p-4 rounded-2xl bg-gradient-to-r from-violet-50 to-indigo-50 border border-violet-200 shadow-sm transition-all">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="text-xs font-bold text-violet-900 flex items-center gap-2">
+                        <i class="fas fa-robot text-violet-600"></i> Gemini 4 Argon Multimodal Data Extractor
+                    </div>
+                    <button type="button" onclick="toggleAiExtractor()" class="text-violet-400 hover:text-violet-700 text-sm font-bold cursor-pointer">&times;</button>
+                </div>
+                <p class="text-[11px] text-violet-700 mb-3 leading-relaxed">
+                    Paste an official concert poster image URL or announcement link. <strong>Gemini 4 Argon</strong> will read the poster typography, match the venue, parse ticket tiers, and populate the form automatically.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="url" id="aiPosterInput" value="https://ime.co/wp-content/uploads/2026/07/01_BND_1080x1350.jpg" placeholder="Poster image URL"
+                           class="flex-1 bg-white border border-violet-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-400">
+                    <input type="url" id="aiCaptionInput" value="https://ime.co/blog/tour/boynextdoor-tour-knock-on-vol-2-in-kuala-lumpur/" placeholder="Announcement link"
+                           class="flex-1 bg-white border border-violet-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-400">
+                    <button type="button" id="btnRunAiExtract" onclick="runAiExtract()" class="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-extrabold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0">
+                        <span id="aiBtnSpinner" class="hidden"><i class="fas fa-spinner fa-spin"></i></span>
+                        <span id="aiBtnText"><i class="fas fa-bolt"></i> Extract with Argon</span>
                     </button>
                 </div>
             </div>
@@ -485,6 +511,83 @@ if (posterFileInput) {
             reader.readAsDataURL(file);
         }
     });
+}
+// AI Extractor UI Controls
+function toggleAiExtractor() {
+    const box = document.getElementById('aiExtractorBox');
+    if (box) box.classList.toggle('hidden');
+}
+
+async function runAiExtract() {
+    const posterUrl = document.getElementById('aiPosterInput')?.value.trim() || '';
+    const captionText = document.getElementById('aiCaptionInput')?.value.trim() || '';
+
+    if (!posterUrl && !captionText) {
+        alert('Please enter a poster image URL or announcement link.');
+        return;
+    }
+
+    const btn = document.getElementById('btnRunAiExtract');
+    const spinner = document.getElementById('aiBtnSpinner');
+    const btnText = document.getElementById('aiBtnText');
+
+    if (btn) btn.disabled = true;
+    if (spinner) spinner.classList.remove('hidden');
+    if (btnText) btnText.textContent = 'Extracting via Argon 4...';
+
+    try {
+        const response = await fetch('/api/ai/extract-poster', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ poster_url: posterUrl, caption_text: captionText })
+        });
+        const json = await response.json();
+
+        if (json.status === 'success' && json.data) {
+            const data = json.data;
+            const form = document.querySelector('form');
+            if (form) {
+                for (const [key, value] of Object.entries(data)) {
+                    const el = form.querySelector(`[name="${key}"]`);
+                    if (el && value !== undefined && value !== null) {
+                        el.value = value;
+                        el.classList.add('ring-2', 'ring-violet-400', 'bg-violet-50/40');
+                        setTimeout(() => el.classList.remove('ring-2', 'ring-violet-400', 'bg-violet-50/40'), 1500);
+                    }
+                }
+            }
+
+            // Update poster preview
+            const previewContainer = document.getElementById('posterPreviewContainer');
+            const previewImg = document.getElementById('posterPreviewImg');
+            const previewUrlText = document.getElementById('posterPreviewUrlText');
+            const finalPoster = data.poster_url || posterUrl;
+            if (previewContainer && previewImg && finalPoster) {
+                previewImg.src = finalPoster;
+                if (previewUrlText) previewUrlText.textContent = `Analyzed via ${json.model_used || 'Gemini 4 Argon'}`;
+                previewContainer.classList.remove('hidden');
+            }
+
+            // Show Confirmation Toast
+            const toast = document.getElementById('autofillToast');
+            const toastTitle = document.getElementById('toastTitle');
+            if (toast) {
+                if (toastTitle) toastTitle.textContent = `✨ Extracted via Gemini 4 Argon: "${data.event_name}"`;
+                toast.classList.remove('hidden');
+            }
+
+            toggleAiExtractor();
+            if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+            alert(json.message || 'AI extraction failed. Please check inputs.');
+        }
+    } catch (err) {
+        alert('Error calling AI extractor: ' + err.message);
+    } finally {
+        if (btn) btn.disabled = false;
+        if (spinner) spinner.classList.add('hidden');
+        if (btnText) btnText.innerHTML = '<i class="fas fa-bolt"></i> Extract with Argon';
+    }
 }
 </script>
 
