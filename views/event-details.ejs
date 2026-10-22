@@ -758,9 +758,12 @@
                                 <i class="fas fa-arrow-up-right-from-square text-[9px]"></i>
                             </a>
                         </div>
-                        <div class="rounded-2xl overflow-hidden border border-slate-200/90 shadow-xs h-56 bg-slate-950 relative">
-                            <!-- Interactive Map Canvas (Powered by Google Maps JS API with Leaflet Fallback) -->
-                            <div id="venue-google-map" class="w-full h-full"></div>
+                        <div class="rounded-2xl overflow-hidden border border-slate-200 shadow-xs h-56 bg-slate-100 relative">
+                            <!-- Native Embedded Google Maps Embed (Zero-Billing Reliable Engine) -->
+                            <iframe class="w-full h-full border-0" loading="lazy" allowfullscreen 
+                                    referrerpolicy="no-referrer-when-downgrade"
+                                    src="https://maps.google.com/maps?q=<%= mapQuery %>&t=&z=15&ie=UTF8&iwloc=&output=embed">
+                            </iframe>
                         </div>
                     </div>
                 </div>
@@ -1551,124 +1554,6 @@
             closeReportModal();
         }
     });
-
-    // Venue GPS Coordinates
-    const venueLat = <%= venueCoords[0] %>;
-    const venueLng = <%= venueCoords[1] %>;
-    const venueName = "<%= event.venue_name.replace(/"/g, '\\"') %>";
-
-    function renderCartoVenueMap() {
-        const mapContainer = document.getElementById('venue-google-map');
-        if (!mapContainer) return;
-
-        // Wipe any error elements or Google broken boxes
-        mapContainer.innerHTML = '';
-        if (mapContainer._leaflet_id) {
-            delete mapContainer._leaflet_id;
-        }
-
-        try {
-            const lMap = L.map(mapContainer, {
-                center: [venueLat, venueLng],
-                zoom: 15,
-                attributionControl: false
-            });
-            const cartoKey = "<%= typeof cartoApiKey !== 'undefined' ? cartoApiKey : 'cb1_4rvy_1_933f092a5de2104f28a689ca' %>";
-            L.tileLayer(`https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${cartoKey}`, {
-                maxZoom: 19,
-                subdomains: 'abcd',
-                attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
-            }).addTo(lMap);
-            L.marker([venueLat, venueLng]).addTo(lMap)
-                .bindPopup(`<strong>${venueName}</strong><br><a href="https://maps.google.com/?q=<%= mapQuery %>" target="_blank" style="color: #ec4899; font-weight: bold;">Open in Google Maps ↗</a>`)
-                .openPopup();
-        } catch (e) {
-            console.error('CARTO Leaflet fallback error:', e);
-        }
-    }
-
-    // Official Google Maps Auth Failure Hook: Called by Google SDK if Billing or Key restriction fails
-    window.gm_authFailure = function() {
-        console.warn('Google Maps authentication failure (BillingNotEnabled or RefererNotAllowed). Auto-switching to CARTO Basemaps.');
-        renderCartoVenueMap();
-    };
-
-    function initVenueMap() {
-        const mapContainer = document.getElementById('venue-google-map');
-        if (!mapContainer) return;
-
-        // Watch for Google's internal error box ("Oops! Something went wrong") and replace immediately
-        const observer = new MutationObserver(() => {
-            if (mapContainer.innerText.includes('Oops! Something went wrong') || mapContainer.querySelector('gmp-internal-request-error-text')) {
-                observer.disconnect();
-                renderCartoVenueMap();
-            }
-        });
-        observer.observe(mapContainer, { childList: true, subtree: true, characterData: true });
-
-        // 1. Primary Engine: Google Maps JavaScript API (Powered by API Key)
-        if (typeof google !== 'undefined' && google.maps && google.maps.Map) {
-            try {
-                const venueLocation = { lat: venueLat, lng: venueLng };
-                const gMap = new google.maps.Map(mapContainer, {
-                    center: venueLocation,
-                    zoom: 15,
-                    mapTypeControl: false,
-                    streetViewControl: false,
-                    fullscreenControl: true,
-                    zoomControl: true,
-                    styles: [
-                        { elementType: "geometry", stylers: [{ color: "#1d2c4d" }] },
-                        { elementType: "labels.text.fill", stylers: [{ color: "#8ec3b9" }] },
-                        { elementType: "labels.text.stroke", stylers: [{ color: "#1a3646" }] },
-                        { featureType: "administrative.country", elementType: "geometry.stroke", stylers: [{ color: "#4b6878" }] },
-                        { featureType: "road", elementType: "geometry", stylers: [{ color: "#304a7d" }] },
-                        { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#253b65" }] },
-                        { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#98a5be" }] },
-                        { featureType: "transit", elementType: "geometry", stylers: [{ color: "#2f3948" }] },
-                        { featureType: "transit.station", elementType: "labels.text.fill", stylers: [{ color: "#d59563" }] },
-                        { featureType: "water", elementType: "geometry", stylers: [{ color: "#17263c" }] }
-                    ]
-                });
-
-                const marker = new google.maps.Marker({
-                    position: venueLocation,
-                    map: gMap,
-                    title: venueName,
-                    animation: google.maps.Animation.DROP
-                });
-
-                const infoWindow = new google.maps.InfoWindow({
-                    content: `<div style="padding: 6px; font-family: sans-serif; color: #090d16;">
-                        <strong style="font-size: 13px;">${venueName}</strong>
-                        <p style="font-size: 11px; margin: 4px 0; color: #475569;"><%= (event.address ? event.address + ', ' : '') + event.city %></p>
-                        <a href="https://maps.google.com/?q=<%= mapQuery %>" target="_blank" rel="noopener noreferrer" style="font-size: 11px; font-weight: bold; color: #db2777; text-decoration: none;">Get Driving / Transit Directions ↗</a>
-                    </div>`
-                });
-
-                marker.addListener("click", () => {
-                    infoWindow.open(gMap, marker);
-                });
-                return;
-            } catch (err) {
-                console.warn('Google Maps initialization failed, switching to CARTO Basemaps:', err);
-                renderCartoVenueMap();
-            }
-        } else {
-            renderCartoVenueMap();
-        }
-    }
-
-    // Trigger initialization on DOM ready and window load
-    document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(initVenueMap, 200);
-    });
-    window.addEventListener('load', () => {
-        setTimeout(initVenueMap, 500);
-    });
 </script>
-
-<!-- Official Google Maps JavaScript API with Key -->
-<script src="https://maps.googleapis.com/maps/api/js?key=<%= typeof googleMapsApiKey !== 'undefined' ? googleMapsApiKey : 'AIzaSyAI6j0xuTti4MvqbpHWhSb1O4TFiEYrjFc' %>&callback=initVenueMap" async defer onerror="renderCartoVenueMap()"></script>
 
 <%- include('partials/footer') %>
