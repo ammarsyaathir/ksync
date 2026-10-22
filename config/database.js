@@ -76,6 +76,22 @@ if (isUsingMySQL) {
           `);
           console.log("✅ Auto-seeded venues table in MySQL.");
         }
+
+        // 3. Ensure user_passport_stamps table exists in MySQL
+        await mysqlPool.query(`
+          CREATE TABLE IF NOT EXISTS \`user_passport_stamps\` (
+            \`id\` INT AUTO_INCREMENT PRIMARY KEY,
+            \`user_id\` INT NOT NULL,
+            \`event_id\` INT NOT NULL,
+            \`seat_section\` VARCHAR(100) DEFAULT 'General Seated / Standing',
+            \`attendance_status\` VARCHAR(20) DEFAULT 'ATTENDED',
+            \`fan_review\` TEXT NULL,
+            \`stamped_at\` DATETIME DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE KEY \`user_event_stamp\` (\`user_id\`, \`event_id\`),
+            FOREIGN KEY (\`user_id\`) REFERENCES \`users\`(\`id\`) ON DELETE CASCADE,
+            FOREIGN KEY (\`event_id\`) REFERENCES \`events\`(\`id\`) ON DELETE CASCADE
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+        `);
       } catch (migErr) {
         console.warn("MySQL auto-migration check note:", migErr.message);
       }

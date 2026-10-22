@@ -2,6 +2,7 @@
 import express from 'express';
 import db from '../../config/database.js';
 import helpers from '../utils/helpers.js';
+import { getUsersFlairs } from '../utils/badges.js';
 
 const router = express.Router();
 
@@ -508,6 +509,15 @@ router.get('/events/:idOrSlug', async (req, res) => {
       posters = [event.poster_image];
     }
 
+    // Fetch fan badge flairs for comment authors
+    const commenterUserIds = chatMessages.map(m => m.user_id);
+    let userFlairs = {};
+    try {
+      userFlairs = await getUsersFlairs(commenterUserIds);
+    } catch (e) {
+      userFlairs = {};
+    }
+
     res.render('event-details', {
       event,
       members,
@@ -520,6 +530,7 @@ router.get('/events/:idOrSlug', async (req, res) => {
       totalCommentsCount: chatMessages.length,
       isChatLocked,
       helpers,
+      userFlairs,
       currentUser: res.locals.currentUser || null,
       activePath: '/events'
     });

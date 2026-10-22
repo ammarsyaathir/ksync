@@ -1,0 +1,450 @@
+<%- include('partials/header', { title: title || 'Digital K-Pop Concert Passport | K-Sync Malaysia' }) %>
+
+<div class="min-h-screen bg-slate-950 py-10 px-4 sm:px-6 lg:px-8 text-slate-100 font-sans selection:bg-pink-500 selection:text-white">
+    <div class="max-w-5xl mx-auto space-y-8">
+
+        <!-- Top Header & Action Controls -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <div class="flex items-center gap-2 text-xs font-mono font-bold text-pink-400 uppercase tracking-widest">
+                    <span class="w-2 h-2 rounded-full bg-pink-500 animate-ping"></span>
+                    <span>OFFICIAL FANDOM IDENTITY DOCUMENT</span>
+                </div>
+                <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tight mt-1 flex items-center gap-3">
+                    <i class="fas fa-passport text-amber-400"></i>
+                    <span>Digital Concert Passport</span>
+                </h1>
+                <p class="text-xs text-slate-400 mt-1">Verified attendance stamps, unlockable stadium badges, and fandom loyalty credentials.</p>
+            </div>
+
+            <!-- Share & Owner Action Bar -->
+            <div class="flex items-center gap-2.5 flex-wrap">
+                <% if (isOwner) { %>
+                    <button onclick="openStampModal()" class="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-black text-xs shadow-lg shadow-pink-500/25 flex items-center gap-2 press-tactile transition-all cursor-pointer">
+                        <i class="fas fa-stamp text-amber-300"></i>
+                        <span>+ Stamp a Concert</span>
+                    </button>
+                <% } %>
+                <button onclick="copyPassportLink()" class="px-4 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-slate-200 text-xs font-bold flex items-center gap-2 press-tactile transition-all cursor-pointer" title="Copy shareable passport link">
+                    <i class="fas fa-link text-cyan-400"></i>
+                    <span id="copy-btn-text">Share Passport</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- The Physical Passport Spread Container -->
+        <div class="relative bg-slate-900/90 rounded-3xl p-2 sm:p-5 border-2 border-amber-500/30 shadow-2xl backdrop-blur-xl">
+            <!-- Subtle Gold Hologram Header Stripe -->
+            <div class="flex items-center justify-between px-4 py-2 mb-3 bg-gradient-to-r from-amber-950/60 via-slate-900 to-amber-950/60 rounded-2xl border border-amber-500/20 text-xs">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-star text-amber-400 text-xs"></i>
+                    <span class="font-mono font-bold text-amber-300 uppercase tracking-widest text-[11px]">K-SYNC MALAYSIA FANDOM PASSPORT</span>
+                </div>
+                <div class="font-mono text-slate-400 text-[10px] hidden sm:block">DOC NO: KS-MYS-<%= String(user.id).padStart(4, '0') %>-2026</div>
+            </div>
+
+            <!-- 2-Page Passport Spread Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+                <!-- ================================================================= -->
+                <!-- PAGE 1: FANDOM BIOMETRICS & BADGES (Col 5)                        -->
+                <!-- ================================================================= -->
+                <div class="lg:col-span-5 bg-gradient-to-b from-slate-950 to-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-800 relative overflow-hidden flex flex-col justify-between space-y-6">
+                    <!-- Subtle Security Guilloche Watermark Effect -->
+                    <div class="absolute -right-12 -top-12 w-48 h-48 bg-pink-500/5 rounded-full blur-2xl pointer-events-none"></div>
+
+                    <div class="space-y-5">
+                        <!-- Passport Header Seal -->
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-sm">
+                                    <i class="fas fa-certificate"></i>
+                                </div>
+                                <div>
+                                    <div class="text-[9px] font-mono text-slate-400 uppercase tracking-wider">PASPORT KONSERT</div>
+                                    <div class="text-xs font-black text-white">K-SYNC MALAYSIA</div>
+                                </div>
+                            </div>
+                            <span class="px-2 py-0.5 rounded text-[9px] font-mono font-black bg-pink-950/60 text-pink-400 border border-pink-500/30 uppercase">
+                                P &lt; MYS
+                            </span>
+                        </div>
+
+                        <!-- Fan Identity Bio Card -->
+                        <div class="flex items-start gap-4">
+                            <!-- Photo with Holographic Border -->
+                            <div class="relative w-20 h-24 sm:w-24 sm:h-28 rounded-2xl overflow-hidden border-2 border-amber-500/40 shadow-lg bg-slate-950 shrink-0">
+                                <% if (user.profile_image) { %>
+                                    <img src="<%= user.profile_image %>" alt="<%= user.full_name %>" class="w-full h-full object-cover">
+                                <% } else { %>
+                                    <div class="w-full h-full flex items-center justify-center bg-gradient-to-tr from-pink-600 to-purple-600 text-white text-2xl font-black">
+                                        <%= (user.full_name || 'F').charAt(0).toUpperCase() %>
+                                    </div>
+                                <% } %>
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"></div>
+                                <div class="absolute bottom-1 right-1 text-[8px] font-mono text-amber-300 font-bold">VERIFIED</div>
+                            </div>
+
+                            <!-- Details Column -->
+                            <div class="space-y-1.5 min-w-0 flex-grow">
+                                <div>
+                                    <div class="text-[9px] font-mono text-slate-400 uppercase">HOLDER NAME</div>
+                                    <div class="text-sm font-black text-white truncate"><%= user.full_name %></div>
+                                    <div class="text-[11px] text-pink-400 font-mono">@<%= user.username %></div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 pt-1 text-[10px]">
+                                    <div>
+                                        <div class="text-slate-500 font-mono text-[9px] uppercase">NATIONALITY</div>
+                                        <div class="font-bold text-slate-200">🇲🇾 MALAYSIAN</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-slate-500 font-mono text-[9px] uppercase">LOCATION</div>
+                                        <div class="font-bold text-slate-200 truncate"><%= user.location || 'Kuala Lumpur' %></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fandom Rank & Level Progress -->
+                        <div class="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+                            <div class="flex items-center justify-between text-xs">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-5 h-5 rounded-full bg-amber-400/20 text-amber-300 text-[10px] font-black flex items-center justify-center border border-amber-400/30">
+                                        <%= passport.level %>
+                                    </span>
+                                    <span class="font-black text-white"><%= passport.title %></span>
+                                </div>
+                                <span class="text-[10px] font-mono text-amber-400 font-bold">
+                                    <%= passport.totalStamps %> / <%= passport.nextLevelThreshold %> STAMPS
+                                </span>
+                            </div>
+                            <div class="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                                <div class="h-full bg-gradient-to-r from-pink-500 to-amber-400 transition-all duration-500 rounded-full" style="width: <%= passport.progressPct %>%;"></div>
+                            </div>
+                            <div class="text-[10px] text-slate-400 flex items-center justify-between">
+                                <span>Level <%= passport.level %> Fandom Tier</span>
+                                <span><%= 100 - passport.progressPct %>% to next milestone</span>
+                            </div>
+                        </div>
+
+                        <!-- Unlocked Fandom Badges Grid -->
+                        <div class="space-y-2.5">
+                            <div class="flex items-center justify-between text-[11px] font-mono font-bold text-slate-400 uppercase">
+                                <span><i class="fas fa-medal text-amber-400 me-1"></i> Fandom Badges (<%= passport.unlockedBadges.length %>/<%= passport.unlockedBadges.length + passport.lockedBadges.length %>)</span>
+                                <span class="text-pink-400 text-[10px]">Auto-Evaluated</span>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <!-- Unlocked Badges -->
+                                <% passport.unlockedBadges.forEach(badge => { %>
+                                    <div class="p-2.5 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 border border-pink-500/40 flex items-center gap-2 shadow-xs group" title="<%= badge.description %>">
+                                        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr <%= badge.gradient %> text-white flex items-center justify-center shrink-0 shadow-sm text-xs">
+                                            <i class="fas <%= badge.icon %>"></i>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <div class="text-[11px] font-black text-white truncate"><%= badge.title %></div>
+                                            <div class="text-[9px] text-emerald-400 font-mono font-bold flex items-center gap-0.5">
+                                                <i class="fas fa-check text-[8px]"></i> Unlocked
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }); %>
+
+                                <!-- Locked Badges (Ghosted) -->
+                                <% passport.lockedBadges.forEach(badge => { %>
+                                    <div class="p-2.5 rounded-2xl bg-slate-950/60 border border-slate-800/80 flex items-center gap-2 opacity-50 hover:opacity-80 transition-opacity" title="<%= badge.description %>">
+                                        <div class="w-8 h-8 rounded-xl bg-slate-800 text-slate-500 flex items-center justify-center shrink-0 text-xs">
+                                            <i class="fas <%= badge.icon %>"></i>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <div class="text-[11px] font-bold text-slate-400 truncate"><%= badge.title %></div>
+                                            <div class="text-[9px] text-slate-500 font-mono">
+                                                <i class="fas fa-lock text-[8px]"></i> Locked
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }); %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Machine Readable Passport Zone (MRZ) -->
+                    <div class="p-2.5 rounded-xl bg-black/60 border border-slate-800/80 font-mono text-[9px] tracking-widest text-slate-400 leading-tight select-all">
+                        <div>P&lt;MYS<%= (user.username || 'FAN').toUpperCase().padEnd(10, '&lt;') %>&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</div>
+                        <div>KS2026MYS<%= String(user.id).padStart(4, '0') %>8M3112260&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;0<%= passport.totalStamps %></div>
+                    </div>
+                </div>
+
+                <!-- ================================================================= -->
+                <!-- PAGE 2: CONCERT ATTENDANCE VISA STAMPS (Col 7)                    -->
+                <!-- ================================================================= -->
+                <div class="lg:col-span-7 bg-[#0d1527] rounded-3xl p-5 sm:p-7 border border-slate-800 relative flex flex-col justify-between space-y-6">
+                    <div class="space-y-4">
+                        <!-- Page 2 Header -->
+                        <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                            <div>
+                                <span class="text-[10px] font-mono text-pink-400 uppercase tracking-widest">VISA & ENTRY RECORDS</span>
+                                <h2 class="text-base font-black text-white flex items-center gap-2">
+                                    <i class="fas fa-stamp text-amber-400"></i>
+                                    <span>Concert Attendance Stamps</span>
+                                    <span class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono">
+                                        <%= passport.totalStamps %> Total
+                                    </span>
+                                </h2>
+                            </div>
+                            <% if (isOwner) { %>
+                                <button onclick="openStampModal()" class="px-3 py-1.5 rounded-xl bg-pink-600/30 hover:bg-pink-600/50 border border-pink-500/40 text-pink-300 text-xs font-bold flex items-center gap-1.5 press-tactile transition-all cursor-pointer">
+                                    <i class="fas fa-plus text-[10px]"></i>
+                                    <span>Add Stamp</span>
+                                </button>
+                            <% } %>
+                        </div>
+
+                        <!-- Stamps Display Grid -->
+                        <% if (passport.stamps.length === 0) { %>
+                            <div class="p-10 text-center rounded-2xl bg-slate-950/40 border border-dashed border-slate-800 space-y-3">
+                                <div class="w-16 h-16 rounded-full bg-slate-900 border border-slate-800 text-slate-500 flex items-center justify-center mx-auto text-2xl">
+                                    <i class="fas fa-passport"></i>
+                                </div>
+                                <h3 class="text-sm font-bold text-slate-300">No Concert Stamps Yet</h3>
+                                <p class="text-xs text-slate-500 max-w-sm mx-auto">
+                                    Your concert passport is waiting for its first stamp! Add any past or upcoming K-Pop concerts you attended in Malaysia.
+                                </p>
+                                <% if (isOwner) { %>
+                                    <button onclick="openStampModal()" class="mt-2 px-4 py-2 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-black press-tactile cursor-pointer">
+                                        Stamp Your First Concert
+                                    </button>
+                                <% } %>
+                            </div>
+                        <% } else { %>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <% 
+                                    const stampStyles = [
+                                        { border: 'border-pink-500/80', text: 'text-pink-400', bg: 'bg-pink-950/20', rot: '-rotate-2' },
+                                        { border: 'border-cyan-500/80', text: 'text-cyan-400', bg: 'bg-cyan-950/20', rot: 'rotate-1' },
+                                        { border: 'border-purple-500/80', text: 'text-purple-400', bg: 'bg-purple-950/20', rot: '-rotate-1' },
+                                        { border: 'border-amber-500/80', text: 'text-amber-400', bg: 'bg-amber-950/20', rot: 'rotate-2' }
+                                    ];
+                                %>
+                                <% passport.stamps.forEach((stamp, idx) => { %>
+                                    <% const style = stampStyles[idx % stampStyles.length]; %>
+                                    <div class="relative p-4 rounded-3xl border-2 <%= style.border %> <%= style.bg %> <%= style.rot %> shadow-md hover:rotate-0 transition-transform duration-300 space-y-2 group">
+                                        <!-- Official Circular Seal Layout -->
+                                        <div class="flex items-start justify-between gap-2">
+                                            <div class="text-[9px] font-mono uppercase font-black tracking-wider <%= style.text %>">
+                                                ★ K-SYNC MALAYSIA ENTRY ★
+                                            </div>
+                                            <% if (isOwner) { %>
+                                                <button onclick="deleteStamp(<%= stamp.id %>)" class="text-slate-500 hover:text-rose-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity" title="Remove stamp">
+                                                    <i class="fas fa-trash-can"></i>
+                                                </button>
+                                            <% } %>
+                                        </div>
+
+                                        <div>
+                                            <div class="text-xs font-black text-white tracking-tight line-clamp-1"><%= stamp.event_name %></div>
+                                            <div class="text-[11px] font-bold <%= style.text %>"><%= stamp.artist_name || 'K-Pop Artist' %></div>
+                                        </div>
+
+                                        <div class="p-2 rounded-xl bg-black/40 border border-white/10 text-[10px] space-y-0.5">
+                                            <div class="flex justify-between text-slate-300">
+                                                <span class="text-slate-500 font-mono">VENUE</span>
+                                                <span class="font-bold truncate max-w-[130px]"><%= stamp.venue_name %></span>
+                                            </div>
+                                            <div class="flex justify-between text-slate-300">
+                                                <span class="text-slate-500 font-mono">DATE</span>
+                                                <span class="font-mono font-bold"><%= helpers.formatDate(stamp.event_date) %></span>
+                                            </div>
+                                            <div class="flex justify-between text-slate-300">
+                                                <span class="text-slate-500 font-mono">SECTION</span>
+                                                <span class="font-bold text-amber-300 truncate max-w-[130px]"><%= stamp.seat_section %></span>
+                                            </div>
+                                        </div>
+
+                                        <% if (stamp.fan_review) { %>
+                                            <p class="text-[10px] text-slate-300 italic line-clamp-2 pt-0.5">
+                                                "<%= stamp.fan_review %>"
+                                            </p>
+                                        <% } %>
+
+                                        <div class="pt-1 flex items-center justify-between text-[9px] font-mono text-slate-500 border-t border-white/10">
+                                            <span class="text-emerald-400 font-bold">✓ VERIFIED ATTENDANCE</span>
+                                            <span><%= helpers.timeAgo(stamp.stamped_at) %></span>
+                                        </div>
+                                    </div>
+                                <% }); %>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <!-- Level Perk Footer -->
+                    <div class="p-3 rounded-2xl bg-slate-950/60 border border-slate-800 text-xs flex items-center justify-between text-slate-400">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-award text-amber-400"></i>
+                            <span class="text-[11px]">Level <%= passport.level %> Perk: Verified Gold Discussion Flair unlocked</span>
+                        </div>
+                        <a href="/events" class="text-[11px] font-bold text-pink-400 hover:text-pink-300 flex items-center gap-1">
+                            <span>Browse Shows</span>
+                            <i class="fas fa-arrow-right text-[9px]"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- STAMP CLAIM MODAL (For Owner)                                             -->
+<!-- ========================================================================= -->
+<% if (isOwner) { %>
+<div id="stamp-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700/80 rounded-3xl max-w-lg w-full p-6 space-y-5 text-white shadow-2xl relative">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center text-sm border border-pink-500/30">
+                    <i class="fas fa-stamp"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-black">Claim Concert Passport Stamp</h3>
+                    <p class="text-xs text-slate-400">Record your attendance to earn fandom badges & level up.</p>
+                </div>
+            </div>
+            <button onclick="closeStampModal()" class="text-slate-400 hover:text-white p-1">
+                <i class="fas fa-times text-lg"></i>
+            </button>
+        </div>
+
+        <form onsubmit="submitStampForm(event)" class="space-y-4 text-xs">
+            <!-- Event Picker -->
+            <div class="space-y-1">
+                <label class="font-bold text-slate-300 font-mono uppercase text-[10px]">Select K-Pop Concert</label>
+                <select id="stamp-event-id" required class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-pink-500">
+                    <option value="">-- Choose from Verified Concerts --</option>
+                    <% availableEvents.forEach(ev => { %>
+                        <option value="<%= ev.id %>">
+                            <%= ev.artist_name || '' %> - <%= ev.event_name %> (<%= helpers.formatDate(ev.event_date) %> · <%= ev.venue_name %>)
+                        </option>
+                    <% }); %>
+                </select>
+            </div>
+
+            <!-- Seat Section -->
+            <div class="space-y-1">
+                <label class="font-bold text-slate-300 font-mono uppercase text-[10px]">Seat Tier / Section</label>
+                <input type="text" id="stamp-seat" placeholder="e.g. VIP Rock Zone (Barricade), CAT 1 Sec 108, CAT 2" 
+                       class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-pink-500">
+                <p class="text-[10px] text-slate-500">Entering VIP or Standing unlocks the "Barricade VIP" badge.</p>
+            </div>
+
+            <!-- Attendance Status -->
+            <div class="space-y-1">
+                <label class="font-bold text-slate-300 font-mono uppercase text-[10px]">Attendance Status</label>
+                <select id="stamp-status" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-pink-500">
+                    <option value="ATTENDED" selected>Attended (Live Verified)</option>
+                    <option value="UPCOMING">Upcoming Confirmed (Have Tickets)</option>
+                </select>
+            </div>
+
+            <!-- Personal Review / Memory -->
+            <div class="space-y-1">
+                <label class="font-bold text-slate-300 font-mono uppercase text-[10px]">Concert Memory or Note (Optional)</label>
+                <textarea id="stamp-review" rows="2" placeholder="e.g. Sung every fanchant at Axiata! Loved the encore stage and member interactions." 
+                          class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-pink-500"></textarea>
+            </div>
+
+            <div class="pt-2 flex items-center justify-end gap-2.5">
+                <button type="button" onclick="closeStampModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold">
+                    Cancel
+                </button>
+                <button type="submit" id="submit-stamp-btn" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 text-white font-black text-xs shadow-md shadow-pink-500/20 press-tactile">
+                    Stamp My Passport
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<% } %>
+
+<script>
+    function openStampModal() {
+        const modal = document.getElementById('stamp-modal');
+        if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeStampModal() {
+        const modal = document.getElementById('stamp-modal');
+        if (modal) modal.classList.add('hidden');
+    }
+
+    async function submitStampForm(e) {
+        e.preventDefault();
+        const eventId = document.getElementById('stamp-event-id').value;
+        const seat = document.getElementById('stamp-seat').value;
+        const status = document.getElementById('stamp-status').value;
+        const review = document.getElementById('stamp-review').value;
+        const btn = document.getElementById('submit-stamp-btn');
+
+        if (!eventId) return;
+
+        btn.disabled = true;
+        btn.textContent = 'Stamping...';
+
+        try {
+            const res = await fetch('/api/passport/stamp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    event_id: eventId,
+                    seat_section: seat,
+                    attendance_status: status,
+                    fan_review: review
+                })
+            });
+            const data = await res.json();
+            if (data.status === 'success') {
+                window.location.reload();
+            } else {
+                alert(data.message || 'Failed to stamp passport');
+                btn.disabled = false;
+                btn.textContent = 'Stamp My Passport';
+            }
+        } catch (err) {
+            console.error('Stamp error:', err);
+            alert('Failed to stamp passport');
+            btn.disabled = false;
+            btn.textContent = 'Stamp My Passport';
+        }
+    }
+
+    async function deleteStamp(stampId) {
+        if (!confirm('Are you sure you want to remove this concert stamp from your passport?')) return;
+        try {
+            const res = await fetch(`/api/passport/stamp/${stampId}`, { method: 'DELETE' });
+            const data = await res.json();
+            if (data.status === 'success') {
+                window.location.reload();
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function copyPassportLink() {
+        const url = window.location.origin + '/passport/<%= user.username %>';
+        navigator.clipboard.writeText(url).then(() => {
+            const text = document.getElementById('copy-btn-text');
+            if (text) {
+                const original = text.textContent;
+                text.textContent = 'Link Copied!';
+                setTimeout(() => text.textContent = original, 2000);
+            }
+        }).catch(() => {
+            alert('Passport link: ' + url);
+        });
+    }
+</script>
+
+<%- include('partials/footer') %>

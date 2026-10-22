@@ -57,6 +57,10 @@
                     <i class="fas fa-users text-xs text-purple-500"></i>
                     <span>Artists</span>
                 </a>
+                <a href="/passport" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer <%= path.startsWith('/passport') ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100/80' %>" title="Digital K-Pop Concert Passport & Fandom Badges">
+                    <i class="fas fa-passport text-xs text-amber-500"></i>
+                    <span>Passport</span>
+                </a>
 
                 <% if (userRole === 'organizer') { %>
                     <a href="/organizer/dashboard" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer <%= path.startsWith('/organizer') ? 'bg-emerald-700 text-white shadow-xs' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200' %>">
@@ -122,6 +126,10 @@
                             <a href="/dashboard" class="flex items-center px-4 py-2 text-xs font-bold text-pink-600 hover:bg-pink-50">
                                 <i class="fas fa-gauge-high w-5 text-pink-500"></i>
                                 <span>My K-Sync Dashboard</span>
+                            </a>
+                            <a href="/passport" class="flex items-center px-4 py-2 text-xs font-bold text-amber-600 hover:bg-amber-50">
+                                <i class="fas fa-passport w-5 text-amber-500"></i>
+                                <span>Concert Passport & Badges</span>
                             </a>
                             <a href="/profile" class="flex items-center px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50">
                                 <i class="fas fa-user-circle w-5 text-slate-400"></i>
