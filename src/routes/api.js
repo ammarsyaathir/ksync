@@ -420,4 +420,122 @@ Context / Caption: "${caption_text || ''}"
   }
 });
 
+// ============================================================================
+// 10. GET /api/music/preview - Official K-Pop Tour Anthem Audio Preview (iTunes Engine)
+// ============================================================================
+const anthemCache = new Map();
+
+const VERIFIED_KPOP_ANTHEMS = {
+  'seventeen': {
+    trackName: 'MAESTRO',
+    artistName: 'SEVENTEEN',
+    collectionName: '17 IS RIGHT HERE',
+    previewUrl: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/97/6b/93/976b9343-c4b8-b5e0-83da-ee6ff942bf68/mzaf_2445087179169396572.plus.aac.p.m4a',
+    artworkUrl: 'https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/f0/69/16/f0691679-835f-8b9b-5baa-292b7e49423f/196922894992_Cover.jpg/100x100bb.jpg',
+    trackViewUrl: 'https://music.apple.com/us/album/maestro/1741446411?i=1741446418'
+  },
+  'babymonster': {
+    trackName: 'SHEESH',
+    artistName: 'BABYMONSTER',
+    collectionName: 'BABYMONS7ER - EP',
+    previewUrl: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/e8/0e/20/e80e2080-c1e6-f616-bec0-82fbd530da09/mzaf_402899695312688427.plus.aac.p.m4a',
+    artworkUrl: 'https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/fb/68/85/fb68856f-4965-5d30-78ea-fe6bb261f4ff/3000px.jpg/100x100bb.jpg',
+    trackViewUrl: 'https://music.apple.com/us/album/sheesh/1737962888?i=1737962890'
+  },
+  'wave to earth': {
+    trackName: 'seasons',
+    artistName: 'wave to earth',
+    collectionName: 'summer flows 0.02 - EP',
+    previewUrl: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/db/d8/e3/dbd8e34a-eb7e-97c2-10d0-307364e9e775/mzaf_6657613653172078198.plus.aac.p.m4a',
+    artworkUrl: 'https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/fa/c5/61/fac561dc-8db4-b2e9-d3db-6e246da72bfa/5054197890017.jpg/100x100bb.jpg',
+    trackViewUrl: 'https://music.apple.com/us/album/seasons/1781856626?i=1781856632'
+  },
+  'bts': {
+    trackName: 'Butter',
+    artistName: 'BTS',
+    collectionName: 'Butter (Holiday Remix) - Single',
+    previewUrl: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/2e/c2/5f/2ec25fbd-d231-caf4-4633-45cdeed142fb/mzaf_1776780835704082646.plus.aac.p.m4a',
+    artworkUrl: 'https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/2d/04/35/2d0435be-c356-0e6c-5e02-bdbb6e2b08a8/192641894909_Cover.jpg/100x100bb.jpg',
+    trackViewUrl: 'https://music.apple.com/us/album/butter-holiday-remix/1597804686?i=1597804691'
+  },
+  'twice': {
+    trackName: 'ONE SPARK',
+    artistName: 'TWICE',
+    collectionName: 'With YOU-th - EP',
+    previewUrl: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/a9/a0/50/a9a05036-f5de-f9d9-c48e-0ce3ec601474/mzaf_9312888476283040924.plus.aac.p.m4a',
+    artworkUrl: 'https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/20/f5/ad/20f5ad4c-4ff6-6aa2-a68d-1deb790d8fd3/8809928951805_Cover.jpg/100x100bb.jpg',
+    trackViewUrl: 'https://music.apple.com/us/album/one-spark/1726087580?i=1726087590'
+  },
+  'stray kids': {
+    trackName: 'Chk Chk Boom',
+    artistName: 'Stray Kids',
+    collectionName: 'ATE',
+    previewUrl: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/36/77/87/367787a9-a2f2-0684-6611-5a78d855782d/mzaf_1227971913921381507.plus.aac.p.m4a',
+    artworkUrl: 'https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/24/c1/47/24c147fc-cf70-0a4e-3e21-bd9a42617572/8809928952123_Cover.jpg/100x100bb.jpg',
+    trackViewUrl: 'https://music.apple.com/us/album/chk-chk-boom/1752739357?i=1752739619'
+  },
+  'young k': {
+    trackName: 'waited',
+    artistName: 'Young K',
+    collectionName: 'Letters with notes',
+    previewUrl: 'https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/d4/a1/7d/d4a17dcf-b087-7fff-f237-8b02db61791e/mzaf_11642534098757331874.plus.aac.p.m4a',
+    artworkUrl: 'https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/41/e8/ac/41e8acbe-06d7-ed2e-3463-d3c8d1144d11/8809928950679_Cover.jpg/100x100bb.jpg',
+    trackViewUrl: 'https://music.apple.com/us/album/waited/1702225001?i=1702225003'
+  }
+};
+
+router.get('/music/preview', async (req, res) => {
+  const artist = (req.query.artist || '').trim();
+  const title = (req.query.title || '').trim();
+  if (!artist && !title) {
+    return res.status(400).json({ status: 'error', message: 'Artist or track title required' });
+  }
+
+  const cacheKey = `${artist.toLowerCase()}_${title.toLowerCase()}`;
+  if (anthemCache.has(cacheKey)) {
+    return res.json({ status: 'success', data: anthemCache.get(cacheKey) });
+  }
+
+  // Check verified dictionary first
+  const artistLower = artist.toLowerCase();
+  for (const [k, anthem] of Object.entries(VERIFIED_KPOP_ANTHEMS)) {
+    if (artistLower.includes(k) || (title && title.toLowerCase().includes(k))) {
+      anthemCache.set(cacheKey, anthem);
+      return res.json({ status: 'success', data: anthem });
+    }
+  }
+
+  // Live query to iTunes API
+  try {
+    const searchTerm = encodeURIComponent(`${artist} ${title}`.trim());
+    const itunesRes = await fetch(`https://itunes.apple.com/search?term=${searchTerm}&entity=song&limit=1`, {
+      headers: { 'Accept': 'application/json' },
+      signal: AbortSignal.timeout(3500)
+    });
+
+    if (itunesRes.ok) {
+      const itunesData = await itunesRes.json();
+      if (itunesData.results && itunesData.results.length > 0) {
+        const trk = itunesData.results[0];
+        const result = {
+          trackName: trk.trackName,
+          artistName: trk.artistName,
+          collectionName: trk.collectionName,
+          previewUrl: trk.previewUrl,
+          artworkUrl: trk.artworkUrl100,
+          trackViewUrl: trk.trackViewUrl
+        };
+        anthemCache.set(cacheKey, result);
+        return res.json({ status: 'success', data: result });
+      }
+    }
+  } catch (err) {
+    console.warn('[iTunes Music API Fallback]:', err.message);
+  }
+
+  // Default fallback
+  const fallback = VERIFIED_KPOP_ANTHEMS['seventeen'];
+  return res.json({ status: 'success', data: fallback });
+});
+
 export default router;

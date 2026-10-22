@@ -242,6 +242,66 @@
                 <% } %>
             </div>
 
+            <!-- Official Tour Anthem & Audio Preview Player -->
+            <div id="event-anthem-container" class="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 rounded-3xl p-6 border border-pink-500/30 shadow-xl text-white relative overflow-hidden">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <!-- Vinyl Album Cover with Spinning Animation -->
+                        <div class="relative w-14 h-14 rounded-full overflow-hidden shrink-0 border-2 border-slate-700 shadow-md bg-slate-950">
+                            <img id="details-song-art" src="<%= event.poster_image || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300' %>" alt="Album Art" class="w-full h-full object-cover" style="animation-duration: 5s;">
+                            <div class="absolute inset-0 m-auto w-3.5 h-3.5 rounded-full bg-slate-950 border border-white/50"></div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-pink-500 text-white font-mono flex items-center gap-1 shadow-xs">
+                                    <i class="fas fa-compact-disc text-white"></i>
+                                    <span>Official Tour Anthem</span>
+                                </span>
+                                <!-- Live Sound Waves -->
+                                <div id="details-audio-bars" class="flex items-end gap-1 h-3.5 opacity-40">
+                                    <span class="w-1 bg-pink-400 rounded-full h-1.5 transition-all"></span>
+                                    <span class="w-1 bg-pink-500 rounded-full h-3 transition-all"></span>
+                                    <span class="w-1 bg-pink-400 rounded-full h-2 transition-all"></span>
+                                    <span class="w-1 bg-pink-300 rounded-full h-3.5 transition-all"></span>
+                                </div>
+                            </div>
+                            <h3 id="details-song-title" class="text-base sm:text-lg font-black text-white tracking-tight">Scanning Tour Anthem...</h3>
+                            <p id="details-song-album" class="text-xs text-slate-400 font-medium">Apple Music 30s Official Preview</p>
+                        </div>
+                    </div>
+
+                    <!-- Audio Controls & Links -->
+                    <div class="flex items-center gap-3 shrink-0">
+                        <button type="button" id="details-play-btn" onclick="toggleDetailsSongPlayback()"
+                                class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-black text-xs shadow-lg shadow-pink-500/25 flex items-center gap-2 press-tactile transition-all cursor-pointer">
+                            <i class="fas fa-play text-xs" id="details-play-icon"></i>
+                            <span id="details-play-text">Play Tour Preview</span>
+                        </button>
+                        <a id="details-stream-link" href="https://music.apple.com" target="_blank" rel="noopener noreferrer" 
+                           class="px-4 py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs border border-slate-700 press-tactile transition-all flex items-center gap-1.5"
+                           title="Listen on Apple Music">
+                            <i class="fab fa-apple text-pink-400"></i>
+                            <span class="hidden sm:inline">Stream Full</span>
+                            <i class="fas fa-arrow-up-right-from-square text-[9px]"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Live Progress Scrubber -->
+                <div class="mt-4 pt-3 border-t border-slate-800/80 space-y-1">
+                    <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                        <div id="details-song-progress" class="h-full bg-gradient-to-r from-pink-500 to-rose-400 w-0 transition-all duration-100"></div>
+                    </div>
+                    <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+                        <span id="details-song-current-time">0:00</span>
+                        <span>0:30 Official Audio Preview</span>
+                    </div>
+                </div>
+
+                <audio id="details-audio-player" preload="none"></audio>
+            </div>
+
             <!-- Event Overview & Official Description Dossier -->
             <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -1600,6 +1660,89 @@
             closeReportModal();
         }
     });
+
+    // -------------------------------------------------------------------------
+    // Official Tour Anthem Audio Preview Engine for Event Details
+    // -------------------------------------------------------------------------
+    let isDetailsAnthemPlaying = false;
+    document.addEventListener('DOMContentLoaded', async () => {
+        const artistName = "<%= event.artist_name || '' %>";
+        const eventTitle = "<%= event.event_name.replace(/"/g, '\\"') %>";
+        if (!artistName) return;
+
+        const titleEl = document.getElementById('details-song-title');
+        const albumEl = document.getElementById('details-song-album');
+        const artEl = document.getElementById('details-song-art');
+        const audio = document.getElementById('details-audio-player');
+        const progressEl = document.getElementById('details-song-progress');
+        const timeEl = document.getElementById('details-song-current-time');
+        const streamLink = document.getElementById('details-stream-link');
+
+        try {
+            const res = await fetch(`/api/music/preview?artist=${encodeURIComponent(artistName)}&title=${encodeURIComponent(eventTitle)}`);
+            const json = await res.json();
+            if (json.status === 'success' && json.data) {
+                const anthem = json.data;
+                if (titleEl) titleEl.textContent = anthem.trackName;
+                if (albumEl) albumEl.textContent = `${anthem.artistName} · ${anthem.collectionName || 'Official Tour Hit'}`;
+                if (artEl && anthem.artworkUrl) artEl.src = anthem.artworkUrl;
+                if (audio) audio.src = anthem.previewUrl;
+                if (streamLink && anthem.trackViewUrl) streamLink.href = anthem.trackViewUrl;
+
+                if (audio) {
+                    audio.ontimeupdate = () => {
+                        if (audio.duration) {
+                            const pct = (audio.currentTime / audio.duration) * 100;
+                            if (progressEl) progressEl.style.width = `${pct}%`;
+                            const mins = Math.floor(audio.currentTime / 60);
+                            const secs = Math.floor(audio.currentTime % 60);
+                            if (timeEl) timeEl.textContent = `${mins}:${String(secs).padStart(2, '0')}`;
+                        }
+                    };
+                    audio.onended = () => {
+                        isDetailsAnthemPlaying = false;
+                        const icon = document.getElementById('details-play-icon');
+                        const text = document.getElementById('details-play-text');
+                        const bars = document.getElementById('details-audio-bars');
+                        if (icon) icon.className = 'fas fa-play text-xs';
+                        if (text) text.textContent = 'Play Tour Preview';
+                        if (artEl) artEl.classList.remove('animate-spin');
+                        if (bars) bars.classList.add('opacity-40');
+                        if (progressEl) progressEl.style.width = '0%';
+                        if (timeEl) timeEl.textContent = '0:00';
+                    };
+                }
+            }
+        } catch (e) {
+            console.warn('Could not load tour anthem:', e);
+        }
+    });
+
+    function toggleDetailsSongPlayback() {
+        const audio = document.getElementById('details-audio-player');
+        const icon = document.getElementById('details-play-icon');
+        const text = document.getElementById('details-play-text');
+        const artEl = document.getElementById('details-song-art');
+        const bars = document.getElementById('details-audio-bars');
+        if (!audio || !audio.src) return;
+
+        if (isDetailsAnthemPlaying) {
+            audio.pause();
+            isDetailsAnthemPlaying = false;
+            if (icon) icon.className = 'fas fa-play text-xs';
+            if (text) text.textContent = 'Play Tour Preview';
+            if (artEl) artEl.classList.remove('animate-spin');
+            if (bars) bars.classList.add('opacity-40');
+        } else {
+            audio.play().then(() => {
+                isDetailsAnthemPlaying = true;
+                if (icon) icon.className = 'fas fa-pause text-xs';
+                if (text) text.textContent = 'Pause Preview';
+                if (artEl) artEl.classList.add('animate-spin');
+                if (bars) bars.classList.remove('opacity-40');
+            }).catch(e => console.warn('Details audio play error:', e));
+        }
+    }
 </script>
 
 <%- include('partials/footer') %>
