@@ -1557,9 +1557,54 @@
     const venueLng = <%= venueCoords[1] %>;
     const venueName = "<%= event.venue_name.replace(/"/g, '\\"') %>";
 
+    function renderCartoVenueMap() {
+        const mapContainer = document.getElementById('venue-google-map');
+        if (!mapContainer) return;
+
+        // Wipe any error elements or Google broken boxes
+        mapContainer.innerHTML = '';
+        if (mapContainer._leaflet_id) {
+            delete mapContainer._leaflet_id;
+        }
+
+        try {
+            const lMap = L.map(mapContainer, {
+                center: [venueLat, venueLng],
+                zoom: 15,
+                attributionControl: false
+            });
+            const cartoKey = "<%= typeof cartoApiKey !== 'undefined' ? cartoApiKey : 'cb1_4rvy_1_933f092a5de2104f28a689ca' %>";
+            L.tileLayer(`https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${cartoKey}`, {
+                maxZoom: 19,
+                subdomains: 'abcd',
+                attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+            }).addTo(lMap);
+            L.marker([venueLat, venueLng]).addTo(lMap)
+                .bindPopup(`<strong>${venueName}</strong><br><a href="https://maps.google.com/?q=<%= mapQuery %>" target="_blank" style="color: #ec4899; font-weight: bold;">Open in Google Maps ↗</a>`)
+                .openPopup();
+        } catch (e) {
+            console.error('CARTO Leaflet fallback error:', e);
+        }
+    }
+
+    // Official Google Maps Auth Failure Hook: Called by Google SDK if Billing or Key restriction fails
+    window.gm_authFailure = function() {
+        console.warn('Google Maps authentication failure (BillingNotEnabled or RefererNotAllowed). Auto-switching to CARTO Basemaps.');
+        renderCartoVenueMap();
+    };
+
     function initVenueMap() {
         const mapContainer = document.getElementById('venue-google-map');
         if (!mapContainer) return;
+
+        // Watch for Google's internal error box ("Oops! Something went wrong") and replace immediately
+        const observer = new MutationObserver(() => {
+            if (mapContainer.innerText.includes('Oops! Something went wrong') || mapContainer.querySelector('gmp-internal-request-error-text')) {
+                observer.disconnect();
+                renderCartoVenueMap();
+            }
+        });
+        observer.observe(mapContainer, { childList: true, subtree: true, characterData: true });
 
         // 1. Primary Engine: Google Maps JavaScript API (Powered by API Key)
         if (typeof google !== 'undefined' && google.maps && google.maps.Map) {
@@ -1606,44 +1651,24 @@
                 });
                 return;
             } catch (err) {
-                console.warn('Google Maps error, trying Leaflet fallback:', err);
+                console.warn('Google Maps initialization failed, switching to CARTO Basemaps:', err);
+                renderCartoVenueMap();
             }
-        }
-
-        // 2. Resilient Fallback Engine: Leaflet Map
-        if (typeof L !== 'undefined') {
-            try {
-                if (mapContainer._leaflet_id) return;
-                const lMap = L.map(mapContainer, {
-                    center: [venueLat, venueLng],
-                    zoom: 15,
-                    attributionControl: false
-                });
-                const cartoKey = "<%= typeof cartoApiKey !== 'undefined' ? cartoApiKey : 'cb1_4rvy_1_933f092a5de2104f28a689ca' %>";
-                L.tileLayer(`https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${cartoKey}`, {
-                    maxZoom: 19,
-                    subdomains: 'abcd',
-                    attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
-                }).addTo(lMap);
-                L.marker([venueLat, venueLng]).addTo(lMap)
-                    .bindPopup(`<strong>${venueName}</strong><br><a href="https://maps.google.com/?q=<%= mapQuery %>" target="_blank" style="color: #ec4899; font-weight: bold;">Open in Google Maps ↗</a>`)
-                    .openPopup();
-            } catch (e) {
-                console.error('Leaflet fallback error:', e);
-            }
+        } else {
+            renderCartoVenueMap();
         }
     }
 
     // Trigger initialization on DOM ready and window load
     document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(initVenueMap, 300);
+        setTimeout(initVenueMap, 200);
     });
     window.addEventListener('load', () => {
-        setTimeout(initVenueMap, 600);
+        setTimeout(initVenueMap, 500);
     });
 </script>
 
 <!-- Official Google Maps JavaScript API with Key -->
-<script src="https://maps.googleapis.com/maps/api/js?key=<%= typeof googleMapsApiKey !== 'undefined' ? googleMapsApiKey : 'AIzaSyAI6j0xuTti4MvqbpHWhSb1O4TFiEYrjFc' %>&callback=initVenueMap" async defer onerror="initVenueMap()"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=<%= typeof googleMapsApiKey !== 'undefined' ? googleMapsApiKey : 'AIzaSyAI6j0xuTti4MvqbpHWhSb1O4TFiEYrjFc' %>&callback=initVenueMap" async defer onerror="renderCartoVenueMap()"></script>
 
 <%- include('partials/footer') %>

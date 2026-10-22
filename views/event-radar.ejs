@@ -616,10 +616,25 @@
         }
     }
 
+    window.gm_authFailure = function() {
+        console.warn('Google Maps authentication failure (BillingNotEnabled or RefererNotAllowed). Auto-switching to CARTO Dark.');
+        switchMapEngine('radar');
+    };
+
     function initGoogleRadarMap() {
         const mapContainer = document.getElementById('radar-google-map');
         if (!mapContainer || gRadarMap) return;
         if (typeof google === 'undefined' || !google.maps || !google.maps.Map) return;
+
+        // Watch for Google's internal error box and switch back to CARTO immediately
+        const observer = new MutationObserver(() => {
+            if (mapContainer.innerText.includes('Oops! Something went wrong') || mapContainer.querySelector('gmp-internal-request-error-text')) {
+                observer.disconnect();
+                console.warn('Google Maps key unbilled or restricted. Defaulting to CARTO.');
+                switchMapEngine('radar');
+            }
+        });
+        observer.observe(mapContainer, { childList: true, subtree: true, characterData: true });
 
         try {
             gRadarMap = new google.maps.Map(mapContainer, {
