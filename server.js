@@ -108,6 +108,14 @@ app.use((req, res) => {
   res.status(404).render('partials/header', { title: '404 - Page Not Found | K-Sync Malaysia' });
 });
 
+// Error resilience: prevent async rejections from terminating the process
+process.on('unhandledRejection', (reason, promise) => {
+  console.warn('⚠️ [Process] Unhandled Rejection:', reason);
+});
+process.on('uncaughtException', (err) => {
+  console.error('💥 [Process] Uncaught Exception:', err);
+});
+
 // Start Server
 app.listen(PORT, () => {
   console.log(`\n===========================================================`);
