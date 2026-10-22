@@ -1,291 +1,282 @@
-<%- include('partials/header', { title: 'K-Sync Malaysia | Centralized K-Pop Event Information & Discovery' }) %>
+<%- include('partials/header', { title: 'K-Sync Malaysia | 4D K-Pop Event Intelligence & Community' }) %>
 
-<!-- Hero Section -->
-<div class="relative overflow-hidden pt-12 pb-20 lg:pt-16 lg:pb-24 border-b border-slate-200 bg-gradient-to-b from-pink-50 via-purple-50/50 to-slate-50">
+<!-- Electric Stage Hero Section (Impeccable: Bold display voice, no eyebrows/kickers) -->
+<section class="relative overflow-hidden pt-12 pb-16 sm:pt-16 sm:pb-24 border-b border-slate-200/80 bg-gradient-to-b from-slate-100/70 via-pink-50/20 to-slate-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-        <div class="inline-flex items-center space-x-2 mb-6">
-            <span class="px-3.5 py-1 rounded-full text-xs font-bold bg-pink-100 text-pink-700 border border-pink-200">
-                <i class="fas fa-compass me-1 text-pink-500"></i> Verified K-Pop Event Discovery Platform
-            </span>
-            <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-white">Malaysia</span>
-        </div>
+        <!-- Live Showtime Ticker Bar (Next Upcoming Headline Concert) -->
+        <% if (upcoming_events && upcoming_events.length > 0) { %>
+            <% const headliner = upcoming_events[0]; %>
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-900 border border-slate-200/90 shadow-xs mb-8 press-tactile">
+                <span class="w-2 h-2 rounded-full bg-pink-500 animate-ping"></span>
+                <span class="text-pink-600 font-black uppercase tracking-wider">NEXT SHOWTIME:</span>
+                <a href="<%= helpers.getEventUrl(headliner) %>" class="hover:text-pink-600 font-semibold truncate max-w-xs sm:max-w-md">
+                    <%= headliner.artist_name || 'K-Pop' %> — <%= headliner.event_name %> (<%= helpers.formatDate(headliner.event_date) %>)
+                </a>
+                <i class="fas fa-chevron-right text-[10px] text-slate-400"></i>
+            </div>
+        <% } %>
 
-        <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 mb-6 leading-tight">
-            Discover K-Pop Events <br class="hidden sm:inline">
-            <span class="text-slate-800">In Malaysia</span>
+        <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black tracking-[-0.035em] text-slate-900 mb-6 leading-[1.08] font-sans">
+            Malaysia’s Live <br class="hidden sm:inline">
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-purple-900 to-pink-600">K-Pop Stage</span>
         </h1>
         <p class="max-w-2xl mx-auto text-base sm:text-lg text-slate-600 mb-10 leading-relaxed font-medium">
-            Centralized discovery for concerts, fan meetings, cupsleeve gatherings, birthday pop-ups, and exhibitions across Malaysia.
+            Centralized tour dates, verified ticketing provider links, autonomous multimodal verification, and 4D fan transit radar across Malaysia.
         </p>
 
-        <!-- Quick Event Search Bar -->
+        <!-- Floating Intelligent Search Command -->
         <form action="/events" method="GET" class="max-w-3xl mx-auto">
-            <div class="bg-white p-3 rounded-3xl flex flex-col sm:flex-row items-center gap-2.5 shadow-xl border border-slate-200">
+            <div class="bg-white p-2.5 sm:p-3 rounded-3xl flex flex-col sm:flex-row items-center gap-2.5 shadow-xl border border-slate-200/90">
                 <div class="relative w-full flex-grow">
-                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                    <input type="text" name="search" placeholder="Search by artist, event name, venue or city..." 
-                           class="w-full bg-slate-50 text-slate-900 placeholder-slate-400 pl-11 pr-4 py-3.5 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400 text-sm font-medium">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <input type="text" name="search" placeholder="Search by artist, tour, venue (Axiata, Zepp), or city..." 
+                           class="w-full bg-slate-50 text-slate-900 placeholder-slate-400 pl-11 pr-4 py-3.5 rounded-2xl border border-slate-200/80 focus:outline-none focus:ring-2 focus:ring-pink-500 text-base sm:text-sm font-medium">
                 </div>
-                <button type="submit" class="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-md transition-all flex items-center justify-center cursor-pointer">
+                <button type="submit" class="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-md transition-all press-tactile flex items-center justify-center cursor-pointer shrink-0">
                     <span>Search Events</span>
-                    <i class="fas fa-arrow-right ms-2 text-xs"></i>
+                    <i class="fas fa-arrow-right ms-2 text-xs text-pink-400"></i>
                 </button>
             </div>
         </form>
 
-        <!-- Quick Tag Badges -->
-        <div class="mt-6 flex flex-wrap justify-center gap-2 text-xs text-slate-600 font-medium">
-            <span class="text-slate-500 font-bold me-1">Popular Right Now:</span>
-            <a href="/events?search=SEVENTEEN" class="px-3.5 py-1 rounded-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 shadow-sm transition-all cursor-pointer">#SEVENTEEN</a>
-            <a href="/events?search=TWICE" class="px-3.5 py-1 rounded-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 shadow-sm transition-all cursor-pointer">#TWICE</a>
-            <a href="/events?search=IU" class="px-3.5 py-1 rounded-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 shadow-sm transition-all cursor-pointer">#IU</a>
-            <a href="/events?category=cup-sleeve" class="px-3.5 py-1 rounded-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 shadow-sm transition-all cursor-pointer">#CupsleeveKL</a>
-            <a href="/events?search=Axiata" class="px-3.5 py-1 rounded-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 shadow-sm transition-all cursor-pointer">#AxiataArena</a>
+        <!-- Quick Filter Tags -->
+        <div class="mt-6 flex flex-wrap justify-center items-center gap-2 text-xs text-slate-600 font-medium">
+            <span class="text-slate-400 font-bold me-1 text-[11px] uppercase tracking-wider">Trending:</span>
+            <a href="/events?search=BOYNEXTDOOR" class="px-3 py-1 rounded-full bg-white border border-slate-200 hover:border-slate-300 text-slate-700 shadow-xs press-tactile cursor-pointer">#BOYNEXTDOOR</a>
+            <a href="/events?search=TXT" class="px-3 py-1 rounded-full bg-white border border-slate-200 hover:border-slate-300 text-slate-700 shadow-xs press-tactile cursor-pointer">#TOMORROW_X_TOGETHER</a>
+            <a href="/events?search=Axiata" class="px-3 py-1 rounded-full bg-white border border-slate-200 hover:border-slate-300 text-slate-700 shadow-xs press-tactile cursor-pointer">#AxiataArena</a>
+            <a href="/events?search=Zepp" class="px-3 py-1 rounded-full bg-white border border-slate-200 hover:border-slate-300 text-slate-700 shadow-xs press-tactile cursor-pointer">#ZeppKL</a>
+            <a href="/events/radar" class="px-3 py-1 rounded-full bg-pink-50 border border-pink-200 text-pink-700 font-bold shadow-xs press-tactile cursor-pointer">
+                <i class="fas fa-radar me-1"></i> 4D Event Radar
+            </a>
         </div>
     </div>
-</div>
+</section>
 
-<!-- Community Feature Highlights Counter Bar -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-20">
-    <div class="bg-white rounded-3xl p-6 shadow-xl border border-slate-200">
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="p-4 rounded-2xl bg-pink-50/80 border border-pink-200 flex items-center space-x-3.5">
-                <div class="w-11 h-11 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center text-lg shrink-0 font-bold shadow-sm">
-                    <i class="fas fa-calendar-check"></i>
-                </div>
-                <div>
-                    <h4 class="text-lg font-extrabold text-pink-950">100% Free</h4>
-                    <p class="text-[11px] font-medium text-pink-800">Discovery Hub</p>
-                </div>
+<!-- 4D Geospatial Radar Spotlight Banner -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 sm:-mt-8 relative z-20">
+    <div class="bg-slate-950 text-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-800 flex flex-col lg:flex-row items-center justify-between gap-6">
+        <div class="space-y-2 max-w-2xl">
+            <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded text-[10px] font-black bg-cyan-400 text-slate-950 uppercase tracking-widest">
+                    NEW FEATURE
+                </span>
+                <span class="text-xs text-slate-400 font-mono">4D TEMPORAL TRANSIT MATRIX</span>
             </div>
+            <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2.5">
+                <i class="fas fa-earth-asia text-pink-400"></i>
+                <span>Explore the 4D Geospatial Event Radar</span>
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-medium">
+                Plot Malaysian concert venues on an interactive 4D scope. Scrub time chronologically across the 2026/2027 season, detect inter-fandom transit clashes on the Sri Petaling LRT line, and coordinate trips effortlessly.
+            </p>
+        </div>
 
-            <div class="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200 flex items-center space-x-3.5">
-                <div class="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg shrink-0 font-bold shadow-sm">
-                    <i class="fas fa-circle-check"></i>
-                </div>
-                <div>
-                    <h4 class="text-lg font-extrabold text-emerald-950">Verified</h4>
-                    <p class="text-[11px] font-medium text-emerald-800">Organizers & Events</p>
-                </div>
-            </div>
-
-            <div class="p-4 rounded-2xl bg-indigo-50/80 border border-indigo-200 flex items-center space-x-3.5">
-                <div class="w-11 h-11 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-lg shrink-0 font-bold shadow-sm">
-                    <i class="fas fa-map-location-dot"></i>
-                </div>
-                <div>
-                    <h4 class="text-lg font-extrabold text-indigo-950">Venues & Transit</h4>
-                    <p class="text-[11px] font-medium text-indigo-800">LRT/MRT Directions</p>
-                </div>
-            </div>
-
-            <div class="p-4 rounded-2xl bg-purple-50/80 border border-purple-200 flex items-center space-x-3.5">
-                <div class="w-11 h-11 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-lg shrink-0 font-bold shadow-sm">
-                    <i class="fas fa-barcode"></i>
-                </div>
-                <div>
-                    <h4 class="text-lg font-extrabold text-purple-950">Track Submissions</h4>
-                    <p class="text-[11px] font-medium text-purple-800">Open Public Submissions</p>
-                </div>
-            </div>
+        <div class="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full lg:w-auto">
+            <a href="/events/radar" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-extrabold text-sm shadow-stage-glow transition-all press-tactile flex items-center justify-center gap-2 cursor-pointer">
+                <i class="fas fa-radar"></i>
+                <span>Launch 4D Radar Scope</span>
+            </a>
+            <a href="/events" class="w-full sm:w-auto px-5 py-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm border border-slate-700 press-tactile flex items-center justify-center cursor-pointer">
+                <span>Browse Directory</span>
+            </a>
         </div>
     </div>
-</div>
+</section>
 
 <!-- Upcoming Verified Events Section -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    <div class="flex flex-col md:flex-row md:items-end justify-between mb-10">
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
         <div>
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center">
-                <i class="fas fa-calendar-days text-pink-600 me-2.5"></i> Upcoming K-Pop Events
+            <h2 class="text-2xl sm:text-4xl font-black text-slate-900 tracking-[-0.03em] flex items-center gap-2.5">
+                <span>Upcoming K-Pop Stage Shows</span>
             </h2>
-            <p class="text-slate-600 text-sm mt-1 font-medium">Verified official & fan-organized K-Pop events happening in Malaysia</p>
+            <p class="text-slate-600 text-sm mt-1.5 font-medium">Verified arena tours, fan meetings, and community gatherings in Malaysia</p>
         </div>
-        <a href="/events" class="mt-4 md:mt-0 text-sm font-bold text-pink-600 hover:text-pink-700 flex items-center cursor-pointer group">
-            <span>Explore All Events</span>
-            <i class="fas fa-chevron-right ms-1.5 group-hover:translate-x-1 transition-transform text-xs"></i>
+        <a href="/events" class="text-xs font-bold text-pink-600 hover:text-pink-700 flex items-center gap-1.5 press-tactile cursor-pointer group">
+            <span>Explore All <%= upcoming_events ? upcoming_events.length : 0 %> Listings</span>
+            <i class="fas fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
         </a>
     </div>
 
-    <!-- Event Cards Grid -->
+    <!-- Event Cards Grid (Impeccable: Ticket-stub style, high visual hierarchy) -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <% if (upcoming_events.length === 0) { %>
-            <div class="col-span-full text-center py-12 bg-white rounded-3xl border border-slate-200">
+        <% if (!upcoming_events || upcoming_events.length === 0) { %>
+            <div class="col-span-full text-center py-16 bg-white rounded-3xl border border-slate-200">
                 <i class="fas fa-calendar-xmark text-4xl text-slate-300 mb-3"></i>
-                <h3 class="text-lg font-bold text-slate-700">No events currently scheduled</h3>
-                <p class="text-xs text-slate-500 mt-1">Check back soon or submit a new event!</p>
+                <h3 class="text-lg font-bold text-slate-800">No events currently scheduled</h3>
+                <p class="text-xs text-slate-500 mt-1">Check back soon or submit a new tour announcement!</p>
             </div>
         <% } %>
-        <% upcoming_events.forEach(function(event) { %>
+
+        <% (upcoming_events || []).forEach(function(event) { %>
             <% 
                 const calcStatus = helpers.getCalculatedEventStatus(event);
-                const isSaved = savedEventIds.includes(event.id);
+                const isSaved = (savedEventIds || []).includes(event.id);
+                const eventSlug = helpers.slugify(event.event_name) || event.id;
             %>
-            <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden flex flex-col group transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                <!-- Poster Banner -->
-                <div class="relative h-52 overflow-hidden bg-slate-100">
+            <article class="bg-white rounded-3xl border border-slate-200/90 overflow-hidden flex flex-col group hover-lift transition-all shadow-xs">
+                <!-- Poster Banner with Overlaid Badges -->
+                <div class="relative h-56 overflow-hidden bg-slate-900">
                     <img src="<%= event.poster_image %>" alt="<%= event.event_name %>" 
                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                          onerror="this.src='https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop'">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-transparent to-black/20"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
                     
-                    <!-- Category & Status Badges -->
-                    <div class="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">
-                        <span class="px-3 py-1 rounded-xl text-[11px] font-bold bg-white text-slate-900 shadow-md">
-                            <%= event.category_name || 'K-Pop Event' %>
+                    <!-- Top Category & Verification Badges -->
+                    <div class="absolute top-3.5 left-3.5 flex flex-wrap gap-1.5 z-10">
+                        <span class="px-2.5 py-1 rounded-xl text-[10px] font-black bg-slate-900/90 text-white backdrop-blur-md border border-white/10 uppercase tracking-wider">
+                            <%= event.category_name || 'Concert' %>
                         </span>
                         <%- helpers.getStatusBadge(calcStatus) %>
                     </div>
 
-                    <!-- Date Badge Overlaid on Image -->
-                    <div class="absolute bottom-3 left-3 bg-white/95 rounded-2xl px-3 py-1.5 text-center shadow-md border border-white/40">
-                        <span class="block text-xs font-bold text-pink-600 uppercase"><%= new Date(event.event_date).toLocaleDateString('en-MY', { month: 'short' }) %></span>
-                        <span class="block text-lg font-extrabold text-slate-900 leading-none"><%= new Date(event.event_date).getDate() %></span>
+                    <!-- Heart Wishlist Toggle Button (Emil Kowalski Tactile Button) -->
+                    <div class="absolute top-3.5 right-3.5 z-10">
+                        <button type="button" onclick="toggleSaveEvent(<%= event.id %>, this)" 
+                                title="Save to Wishlist"
+                                class="w-9 h-9 rounded-2xl <%= isSaved ? 'bg-pink-600 text-white' : 'bg-slate-950/80 text-white hover:text-pink-400' %> backdrop-blur-md flex items-center justify-center text-xs shadow-md press-tactile cursor-pointer border border-white/10">
+                            <i class="<%= isSaved ? 'fas' : 'far' %> fa-heart"></i>
+                        </button>
                     </div>
 
-                    <!-- Floating Top-Right Action Buttons -->
-                    <div class="absolute top-3 right-3 flex items-center space-x-2 z-10">
-                        <button onclick="toggleSaveEvent(<%= event.id %>, this)" 
-                                title="Save Event"
-                                class="w-9 h-9 rounded-full <%= isSaved ? 'bg-rose-500 text-white border-rose-500' : 'bg-white/90 text-slate-700 hover:text-rose-500 border-slate-200' %> border backdrop-blur-md flex items-center justify-center text-xs shadow-md transition-all cursor-pointer hover:scale-110">
-                            <i class="<%= isSaved ? 'fas' : 'far' %> fa-heart text-xs"></i>
-                        </button>
+                    <!-- Date Badge Overlaid on Poster Base -->
+                    <div class="absolute bottom-3.5 left-3.5 bg-slate-950/90 backdrop-blur-md rounded-2xl px-3 py-1.5 border border-white/15 text-center shadow-lg">
+                        <span class="block text-[10px] font-black text-pink-400 uppercase tracking-wider">
+                            <%= new Date(event.event_date).toLocaleDateString('en-MY', { month: 'short' }) %>
+                        </span>
+                        <span class="block text-lg font-black text-white leading-none font-mono">
+                            <%= new Date(event.event_date).getDate() %>
+                        </span>
+                    </div>
+
+                    <!-- Time & Location Strip -->
+                    <div class="absolute bottom-3.5 right-3.5 text-right text-xs text-white font-medium">
+                        <% if (event.cluster_area) { %>
+                            <span class="px-2 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-md text-[10px] text-slate-300 font-bold border border-white/10">
+                                <i class="fas fa-location-dot text-pink-400 me-1"></i> <%= event.cluster_area %>
+                            </span>
+                        <% } %>
                     </div>
                 </div>
 
-                <!-- Card Body -->
-                <div class="p-6 flex-grow flex flex-col justify-between space-y-4">
+                <!-- Card Content -->
+                <div class="p-5 sm:p-6 flex-grow flex flex-col justify-between space-y-4">
                     <div>
-                        <div class="flex items-center text-xs font-bold text-purple-600 mb-2">
-                            <i class="fas fa-microphone-lines me-1.5 text-purple-500"></i>
+                        <div class="text-xs font-bold text-pink-600 mb-1 flex items-center gap-1.5">
+                            <i class="fas fa-microphone-lines text-purple-500"></i>
                             <span><%= event.artist_name || 'Multiple Artists' %></span>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-900 group-hover:text-pink-600 transition-colors line-clamp-2 leading-snug">
+                        <h3 class="text-base sm:text-lg font-black text-slate-900 group-hover:text-pink-600 transition-colors line-clamp-2 leading-snug">
                             <a href="<%= helpers.getEventUrl(event) %>" class="cursor-pointer">
                                 <%= event.event_name %>
                             </a>
                         </h3>
-                    </div>
-
-                    <div class="space-y-2 border-t border-slate-100 pt-4 text-xs text-slate-600 font-medium">
-                        <div class="flex items-center">
-                            <i class="far fa-clock w-4 me-2 text-pink-500"></i>
-                            <span><%= helpers.formatTime(event.start_time) %></span>
-                        </div>
-                        <div class="flex items-center truncate">
-                            <i class="fas fa-location-dot w-4 me-2 text-rose-500"></i>
+                        <p class="text-xs text-slate-500 mt-2 flex items-center gap-1.5 font-medium">
+                            <i class="fas fa-building text-slate-400"></i>
                             <span class="truncate"><%= event.venue_name %>, <%= event.city %></span>
-                        </div>
+                        </p>
                     </div>
 
-                    <!-- Action Button -->
-                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-                        <span class="text-[11px] text-emerald-700 font-bold flex items-center"><i class="fas fa-circle-check me-1 text-emerald-600"></i> Verified</span>
-                        <a href="<%= helpers.getEventUrl(event) %>" 
-                           class="px-5 py-2 rounded-xl bg-pink-50 hover:bg-pink-600 text-pink-700 hover:text-white text-xs font-bold transition-all shadow-sm cursor-pointer">
-                            View Details &rarr;
-                        </a>
+                    <!-- Bottom Action Controls -->
+                    <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                        <div class="text-[11px] font-bold text-emerald-700 flex items-center gap-1">
+                            <i class="fas fa-circle-check text-emerald-600"></i>
+                            <span>Verified Channel</span>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <a href="<%= helpers.getEventUrl(event) %>" 
+                               class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all press-tactile shadow-xs flex items-center gap-1.5">
+                                <span>Details</span>
+                                <i class="fas fa-arrow-right text-[10px] text-pink-400"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </article>
         <% }); %>
     </div>
-</div>
+</section>
 
 <!-- Browse by Category Section -->
-<div class="bg-slate-100/70 border-y border-slate-200 py-16">
+<section class="bg-white border-y border-slate-200/80 py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center max-w-xl mx-auto mb-12">
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Browse by Event Type</h2>
-            <p class="text-slate-600 text-sm mt-2 font-medium">Filter events tailored to your favorite K-Pop activities</p>
+            <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Browse by Event Category</h2>
+            <p class="text-slate-600 text-xs sm:text-sm mt-1.5 font-medium">Filter tailored specifically to your Malaysian K-Pop plans</p>
         </div>
 
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-5">
-            <% 
-                const catStyles = [
-                    { bg: 'bg-pink-50/90 border-pink-200 hover:border-pink-400', icon: 'text-pink-600', text: 'text-pink-900' },
-                    { bg: 'bg-purple-50/90 border-purple-200 hover:border-purple-400', icon: 'text-purple-600', text: 'text-purple-900' },
-                    { bg: 'bg-indigo-50/90 border-indigo-200 hover:border-indigo-400', icon: 'text-indigo-600', text: 'text-indigo-900' },
-                    { bg: 'bg-emerald-50/90 border-emerald-200 hover:border-emerald-400', icon: 'text-emerald-600', text: 'text-emerald-900' }
-                ];
-            %>
-            <% categories.forEach(function(cat, idx) { %>
-                <% const style = catStyles[idx % catStyles.length]; %>
+            <% (categories || []).forEach(function(cat) { %>
                 <a href="/events?category=<%= encodeURIComponent(cat.slug) %>" 
-                   class="<%= style.bg %> p-6 rounded-3xl border hover:shadow-lg transition-all text-center group cursor-pointer">
-                    <div class="w-14 h-14 rounded-2xl bg-white <%= style.icon %> border border-slate-200 mx-auto flex items-center justify-center text-2xl group-hover:scale-110 transition-transform mb-4 shadow-sm">
-                        <i class="fas fa-layer-group"></i>
+                   class="bg-slate-50 hover:bg-white p-6 rounded-3xl border border-slate-200 hover:border-pink-300 shadow-xs hover-lift transition-all text-center group cursor-pointer press-tactile">
+                    <div class="w-12 h-12 rounded-2xl bg-white text-pink-600 border border-slate-200/80 mx-auto flex items-center justify-center text-xl group-hover:scale-110 transition-transform mb-3 shadow-xs">
+                        <i class="fas fa-ticket-simple"></i>
                     </div>
-                    <h3 class="font-extrabold <%= style.text %> text-sm"><%= cat.name %></h3>
-                    <p class="text-xs text-slate-500 mt-1 font-medium"><%= cat.event_count || 0 %> active events</p>
+                    <h3 class="font-extrabold text-slate-900 text-sm group-hover:text-pink-600 transition-colors"><%= cat.name %></h3>
+                    <p class="text-[11px] text-slate-500 mt-1 font-medium"><%= cat.event_count || 0 %> active listings</p>
                 </a>
             <% }); %>
         </div>
     </div>
-</div>
+</section>
 
-<!-- Featured K-Pop Artists -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+<!-- Popular K-Pop Artists Directory Strip -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
     <div class="flex items-center justify-between mb-8">
         <div>
-            <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Popular K-Pop Artists</h2>
-            <p class="text-slate-600 text-sm font-medium">Follow upcoming tours and fan events by group</p>
+            <h2 class="text-2xl font-black text-slate-900 tracking-tight">Featured Artists</h2>
+            <p class="text-slate-600 text-xs sm:text-sm font-medium mt-0.5">Explore idol group biodata, member rosters, and tour archives</p>
         </div>
-        <a href="/events" class="text-sm font-bold text-slate-800 hover:text-slate-900 cursor-pointer">View All Artists &rarr;</a>
+        <a href="/artists" class="text-xs font-bold text-pink-600 hover:text-pink-700 flex items-center gap-1 press-tactile cursor-pointer">
+            <span>View All Artists</span>
+            <i class="fas fa-arrow-right text-[10px]"></i>
+        </a>
     </div>
 
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-5">
-        <% featured_artists.forEach(function(art) { %>
-            <a href="/events?artist_id=<%= art.id %>" 
-               class="bg-white p-5 rounded-3xl border border-slate-200 text-center hover:border-slate-300 hover:shadow-md transition-all group cursor-pointer">
-                <div class="w-20 h-20 rounded-full overflow-hidden mx-auto mb-3 border-2 border-slate-200 group-hover:border-slate-400 transition-colors shadow-sm p-0.5 bg-white">
-                    <img src="<%= art.image_url %>" alt="<%= art.name %>" class="w-full h-full object-cover rounded-full"
+        <% (featured_artists || []).forEach(function(art) { %>
+            <a href="/artists/<%= art.id %>" 
+               class="bg-white p-5 rounded-3xl border border-slate-200 text-center hover:border-purple-300 hover-lift transition-all group cursor-pointer press-tactile shadow-xs">
+                <div class="w-20 h-20 rounded-2xl overflow-hidden mx-auto mb-3 border border-slate-200 shadow-xs p-0.5 bg-slate-100 group-hover:border-purple-400 transition-colors">
+                    <img src="<%= art.image_url %>" alt="<%= art.name %>" class="w-full h-full object-cover rounded-xl"
                          onerror="this.src='https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&auto=format&fit=crop'">
                 </div>
-                <h4 class="font-bold text-sm text-slate-900 truncate"><%= art.name %></h4>
-                <p class="text-[11px] text-slate-500 font-medium"><%= art.group_type %></p>
+                <h4 class="font-black text-sm text-slate-900 truncate group-hover:text-purple-600 transition-colors"><%= art.name %></h4>
+                <p class="text-[11px] text-slate-500 font-medium"><%= art.group_type || 'K-Pop' %></p>
             </a>
         <% }); %>
     </div>
-</div>
+</section>
 
-<!-- Organizer & Fanclub Event Publishing Call-to-Action -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 rounded-3xl p-8 sm:p-12 relative overflow-hidden border border-slate-700 shadow-xl text-white">
+<!-- Organizer & Fanclub Publishing Call-to-Action -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+    <div class="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-900 rounded-3xl p-8 sm:p-12 relative overflow-hidden border border-slate-800 shadow-2xl text-white">
         <div class="absolute -right-10 -bottom-10 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div class="relative z-10 max-w-2xl">
-            <span class="inline-block px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 mb-4 border border-emerald-500/30 shadow-sm">
-                <i class="fas fa-shield-halved me-1 text-emerald-400"></i> Autonomous Dual-AI Verification
+            <span class="inline-block px-3.5 py-1 rounded-full text-xs font-black bg-pink-500 text-white mb-4 shadow-sm">
+                <i class="fas fa-wand-magic-sparkles me-1 text-yellow-300"></i> OpenRouter Gemini 4 Argon OCR
             </span>
-            <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-4">Are you a Concert Organizer or Fanclub Leader?</h2>
+            <h2 class="text-3xl sm:text-4xl font-black tracking-tight mb-4">Are you an Event Host or Fanclub Representative?</h2>
             <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-6 font-medium">
-                Publish and manage your K-Pop events directly on K-Sync Malaysia. Our automated Dual-AI consensus engine validates poster OCR details, official domain authenticity, and venue schedules in real time — putting complete event CRUD in your hands.
+                Publish Malaysian K-Pop events with instant autonomous verification. Paste your official tour poster to auto-extract date, artist, and venue coordinates via multimodal AI vision — published instantly with zero manual admin queues.
             </p>
             <div class="flex flex-wrap gap-3">
-                <% if (typeof currentUser !== 'undefined' && currentUser && (currentUser.role === 'ORGANIZER' || currentUser.role_name === 'ORGANIZER')) { %>
-                    <a href="/organizer/dashboard" class="px-8 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm shadow-md transition-all cursor-pointer flex items-center space-x-2">
-                        <i class="fas fa-gauge"></i>
-                        <span>Go to Organizer Dashboard</span>
-                    </a>
-                    <a href="/organizer/events/new" class="px-8 py-3.5 rounded-2xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-sm shadow-sm transition-all cursor-pointer flex items-center space-x-2">
-                        <i class="fas fa-plus text-pink-500"></i>
-                        <span>Create New Event</span>
-                    </a>
-                <% } else { %>
-                    <a href="/register" class="px-8 py-3.5 rounded-2xl bg-pink-500 hover:bg-pink-600 text-white font-bold text-sm shadow-md transition-all cursor-pointer flex items-center space-x-2">
-                        <i class="fas fa-user-plus"></i>
-                        <span>Join as Organizer / Fanclub</span>
-                    </a>
-                    <a href="/login?redirect=%2Forganizer%2Fdashboard" class="px-8 py-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm border border-slate-600 shadow-sm transition-all cursor-pointer flex items-center space-x-2">
-                        <i class="fas fa-arrow-right-to-bracket text-emerald-400"></i>
-                        <span>Organizer Sign In</span>
-                    </a>
-                <% } %>
+                <a href="/submit-event" class="px-8 py-3.5 rounded-2xl bg-pink-600 hover:bg-pink-500 text-white font-black text-sm shadow-stage-glow transition-all press-tactile flex items-center gap-2 cursor-pointer">
+                    <i class="fas fa-wand-magic-sparkles"></i>
+                    <span>Submit with AI Poster Scanner</span>
+                </a>
+                <a href="/events/radar" class="px-7 py-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm border border-slate-700 press-tactile flex items-center gap-2 cursor-pointer">
+                    <i class="fas fa-radar text-pink-400"></i>
+                    <span>Open 4D Radar</span>
+                </a>
             </div>
         </div>
     </div>
-</div>
+</section>
 
+<!-- Wishlist Save Ajax Handler -->
 <script>
     async function toggleSaveEvent(eventId, btn) {
         try {
@@ -301,15 +292,13 @@
             if (data.status === 'success') {
                 const icon = btn.querySelector('i');
                 if (data.saved) {
-                    btn.classList.add('bg-rose-500', 'text-white', 'border-rose-500');
-                    btn.classList.remove('bg-white/90', 'text-slate-700');
-                    icon.classList.remove('far');
-                    icon.classList.add('fas');
+                    btn.classList.add('bg-pink-600', 'text-white');
+                    btn.classList.remove('bg-slate-950/80', 'text-white');
+                    icon.className = 'fas fa-heart text-xs';
                 } else {
-                    btn.classList.remove('bg-rose-500', 'text-white', 'border-rose-500');
-                    btn.classList.add('bg-white/90', 'text-slate-700');
-                    icon.classList.remove('fas');
-                    icon.classList.add('far');
+                    btn.classList.remove('bg-pink-600', 'text-white');
+                    btn.classList.add('bg-slate-950/80', 'text-white');
+                    icon.className = 'far fa-heart text-xs';
                 }
             }
         } catch (e) {

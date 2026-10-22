@@ -1,23 +1,36 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-50 text-slate-800">
+<html lang="en" class="h-full bg-slate-50 text-slate-900 antialiased">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= typeof title !== 'undefined' ? title : 'K-Sync Malaysia | K-Pop Event Discovery & Community' %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title><%= typeof title !== 'undefined' ? title : 'K-Sync Malaysia | 4D K-Pop Event Intelligence & Community' %></title>
+    
     <!-- Favicon & Brand Touch Icons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="shortcut icon" href="/favicon.ico">
-    <meta name="theme-color" content="#0f172a">
-    <!-- Tailwind CSS CDN -->
+    <meta name="theme-color" content="#090d16">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- Leaflet CSS & JS for 4D Geospatial Event Radar -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Tailwind CSS CDN with Impeccable & Stage Lighting Tokens -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
+                        stage: {
+                            obsidian: '#090D16',
+                            slate: '#0F172A',
+                            card: '#131A2B',
+                        },
                         brand: {
                             50: '#fdf4ff',
                             100: '#fae8ff',
@@ -30,42 +43,173 @@
                             800: '#86198f',
                             900: '#701a75',
                             950: '#4a044e',
+                        },
+                        violet: {
+                            glow: '#8B5CF6',
+                            deep: '#6D28D9',
+                        },
+                        pink: {
+                            cyber: '#EC4899',
+                            hot: '#DB2777',
+                        },
+                        cyan: {
+                            radar: '#06B6D4',
                         }
                     },
                     fontFamily: {
-                        sans: ['Outfit', 'Inter', 'sans-serif'],
+                        sans: ['Outfit', 'Inter', '-apple-system', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
                     },
                     boxShadow: {
-                        'glow': '0 0 25px -5px rgba(217, 70, 239, 0.25)',
-                        'card-hover': '0 20px 25px -5px rgba(236, 72, 153, 0.1), 0 8px 10px -6px rgba(168, 85, 247, 0.1)',
+                        'stage-glow': '0 0 35px -5px rgba(139, 92, 246, 0.3)',
+                        'pink-glow': '0 0 30px -5px rgba(236, 72, 153, 0.35)',
+                        'radar-card': '0 20px 40px -15px rgba(9, 13, 22, 0.15)',
                     }
                 }
             }
         }
     </script>
-    <!-- FontAwesome & Google Fonts -->
+
+    <!-- Google Fonts: Outfit (Display) & Inter (UI) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Emil Kowalski Design Engineering & Mobile-Native Performance Styles -->
     <style>
+        :root {
+            --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+            --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+        }
+
+        /* 1. Mobile-Native Platform Fixes */
+        html {
+            -webkit-tap-highlight-color: transparent;
+            scroll-behavior: smooth;
+        }
+
         body { 
             font-family: 'Outfit', 'Inter', sans-serif;
             background-color: #f8fafc;
-            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
             background-size: 24px 24px;
+            touch-action: manipulation;
         }
+
+        /* 2. Tactile Press Feedback for all interactive controls (Emil Kowalski) */
+        button, a.btn-tactile, .press-tactile {
+            transition: transform 160ms var(--ease-out), opacity 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+            user-select: none;
+        }
+
+        button:active, a.btn-tactile:active, .press-tactile:active {
+            transform: scale(0.97) !important;
+        }
+
+        /* 3. Gated Hover States to eliminate mobile sticky-hover glitches */
+        @media (hover: hover) and (pointer: fine) {
+            .hover-lift:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 20px 25px -5px rgb(15 23 42 / 0.1), 0 8px 10px -6px rgb(15 23 42 / 0.05);
+            }
+        }
+
+        /* 4. Tabular Figures for countdown timers & prices to prevent jitter */
+        .tabular-nums {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* 5. Custom Themed Browser Surfaces */
+        ::selection {
+            background-color: #ec4899;
+            color: #ffffff;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* 6. 4D Radar Animations & Sweeps */
+        @keyframes radar-sweep {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes radar-pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.7);
+            }
+            70% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 16px rgba(236, 72, 153, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(236, 72, 153, 0);
+            }
+        }
+
+        .radar-beam {
+            animation: radar-sweep 4s linear infinite;
+            transform-origin: center center;
+        }
+
+        .radar-blip-pulse {
+            animation: radar-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
         .glass-nav {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
         }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(8px);
+
+        .glass-dark {
+            background: rgba(9, 13, 22, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        /* Leaflet Popover Styling Overrides for Dark Stage Theme */
+        .leaflet-popup-content-wrapper {
+            background: #090D16 !important;
+            color: #ffffff !important;
+            border-radius: 1rem !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+            padding: 0 !important;
+            overflow: hidden;
+        }
+        .leaflet-popup-content {
+            margin: 0 !important;
+            line-height: 1.4 !important;
+        }
+        .leaflet-popup-tip {
+            background: #090D16 !important;
+        }
+        .leaflet-container {
+            font-family: 'Outfit', sans-serif !important;
+            border-radius: 1.5rem;
         }
     </style>
 </head>
-<body class="flex flex-col min-h-screen text-slate-800 antialiased selection:bg-pink-500 selection:text-white">
+<body class="flex flex-col min-h-screen text-slate-800 antialiased selection:bg-pink-500 selection:text-white pb-20 md:pb-0">
 <%- include('./navbar') %>
 <%- include('./flash') %>

@@ -3,211 +3,229 @@
     const path = (typeof activePath !== 'undefined' && activePath) ? activePath : '';
     const userRole = (user && (user.role || user.role_name)) ? String(user.role || user.role_name).toLowerCase() : '';
     const userInit = (user && user.full_name) ? user.full_name.trim().charAt(0).toUpperCase() : 'U';
-    const userFirstName = (user && user.full_name) ? user.full_name.trim().split(' ')[0] : 'User';
+    const userFirstName = (user && user.full_name) ? user.full_name.trim().split(' ')[0] : 'Fan';
     const unread = (typeof unreadCount !== 'undefined') ? Number(unreadCount) : 0;
 %>
-<nav class="sticky top-0 z-50 glass-nav shadow-sm border-b border-slate-200">
+
+<!-- Desktop & Top Navigation Bar -->
+<header class="sticky top-0 z-50 glass-nav border-b border-slate-200/80 shadow-xs transition-all">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
-            <!-- Brand Logo -->
+            <!-- Brand Wordmark & Logo -->
             <div class="flex items-center space-x-3">
-                <a href="/" class="flex items-center space-x-2.5 cursor-pointer">
-                    <div class="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white text-base shadow-sm">
-                        <i class="fas fa-bolt text-pink-400"></i>
+                <a href="/" class="flex items-center space-x-2.5 press-tactile group cursor-pointer" title="K-Sync Malaysia Homepage">
+                    <div class="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white text-base shadow-sm ring-1 ring-slate-900/10 group-hover:scale-105 transition-transform duration-200">
+                        <i class="fas fa-bolt text-pink-400 group-hover:text-pink-300 transition-colors"></i>
                     </div>
                     <div class="flex items-center space-x-1.5">
-                        <span class="text-xl font-bold tracking-tight text-slate-900">K-SYNC</span>
-                        <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-900 text-white uppercase">MY</span>
+                        <span class="text-xl font-black tracking-[-0.03em] text-slate-900 font-sans">K-SYNC</span>
+                        <span class="text-[10px] font-black px-1.5 py-0.5 rounded bg-slate-900 text-white uppercase tracking-wider">MY</span>
                         <% if (userRole === 'organizer') { %>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200 ms-1">ORGANIZER</span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200/80 ms-1 flex items-center gap-1">
+                                <i class="fas fa-circle-check text-[9px] text-emerald-600"></i> HOST
+                            </span>
                         <% } else if (userRole === 'admin') { %>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-purple-100 text-purple-800 border border-purple-200 ms-1">ADMIN</span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800 border border-purple-200/80 ms-1 flex items-center gap-1">
+                                <i class="fas fa-shield-halved text-[9px] text-purple-600"></i> MAINTAINER
+                            </span>
                         <% } %>
                     </div>
                 </a>
             </div>
 
-            <!-- Desktop Navigation Links -->
-            <div class="hidden md:flex items-center space-x-1">
-                <a href="/" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer <%= path === '/' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' %>">
+            <!-- Desktop Navigation Links with Tactile Pills -->
+            <nav class="hidden md:flex items-center space-x-1" aria-label="Main Navigation">
+                <a href="/" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all press-tactile cursor-pointer <%= path === '/' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100/80' %>">
                     <span>Home</span>
                 </a>
-                <a href="/events" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1.5 cursor-pointer <%= path === '/events' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' %>">
-                    <i class="fas fa-compass text-xs"></i>
+                <a href="/events" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer <%= path === '/events' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100/80' %>">
+                    <i class="fas fa-compass text-xs text-slate-400"></i>
                     <span>Events</span>
                 </a>
-                <a href="/events/radar" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1.5 cursor-pointer <%= path === '/events/radar' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' %>">
-                    <i class="fas fa-radar text-xs text-pink-500"></i>
-                    <span>Event Radar</span>
+                <a href="/events/radar" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer <%= path === '/events/radar' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100/80' %>">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-pink-500"></span>
+                    </span>
+                    <span>4D Radar</span>
                 </a>
-                <a href="/artists" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1.5 cursor-pointer <%= path.startsWith('/artists') ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-700 hover:bg-slate-100' %>">
+                <a href="/artists" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer <%= path.startsWith('/artists') ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100/80' %>">
                     <i class="fas fa-users text-xs text-purple-500"></i>
                     <span>Artists</span>
                 </a>
+
                 <% if (userRole === 'organizer') { %>
-                    <a href="/organizer/dashboard" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-colors flex items-center space-x-1.5 cursor-pointer <%= path.startsWith('/organizer') ? 'bg-emerald-700 text-white shadow-sm' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200' %>">
+                    <a href="/organizer/dashboard" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer <%= path.startsWith('/organizer') ? 'bg-emerald-700 text-white shadow-xs' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200' %>">
                         <i class="fas fa-gauge text-xs text-emerald-500"></i>
-                        <span>Organizer Dashboard</span>
+                        <span>Organizer Hub</span>
                     </a>
-                    <a href="/organizer/events/new" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-colors flex items-center space-x-1 cursor-pointer bg-slate-900 hover:bg-slate-800 text-white shadow-sm">
-                        <i class="fas fa-plus text-xs me-1 text-pink-400"></i>
-                        <span>Create Event</span>
+                    <a href="/submit-event" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer bg-slate-900 hover:bg-slate-800 text-white shadow-xs">
+                        <i class="fas fa-wand-magic-sparkles text-xs text-pink-400"></i>
+                        <span>AI Submit</span>
+                    </a>
+                <% } else { %>
+                    <a href="/submit-event" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer bg-slate-900 hover:bg-slate-800 text-white shadow-xs">
+                        <i class="fas fa-plus text-xs text-pink-400"></i>
+                        <span>Host Event</span>
                     </a>
                 <% } %>
 
                 <% if (userRole === 'admin') { %>
-                    <a href="/admin" class="px-3 py-1.5 rounded-lg text-sm font-semibold flex items-center space-x-1.5 cursor-pointer <%= path.startsWith('/admin') ? 'bg-purple-900 text-white shadow-sm' : 'bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200' %>">
+                    <a href="/admin" class="px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 press-tactile cursor-pointer <%= path.startsWith('/admin') ? 'bg-purple-900 text-white shadow-xs' : 'bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200' %>">
                         <i class="fas fa-shield-halved text-xs text-purple-400"></i>
-                        <span>Admin Portal</span>
+                        <span>Maintainer</span>
                     </a>
                 <% } %>
-            </div>
+            </nav>
 
-            <!-- Right Side Auth / User Controls -->
-            <div class="hidden md:flex items-center space-x-3">
+            <!-- Right Controls: Saved, Notifications & User Menu -->
+            <div class="hidden md:flex items-center space-x-2">
                 <% if (user) { %>
                     <!-- Saved Events -->
-                    <a href="/saved-events" class="p-2 text-slate-500 hover:text-pink-600 hover:bg-pink-50 rounded-lg transition-colors cursor-pointer" title="Saved Events">
-                        <i class="fas fa-bookmark"></i>
+                    <a href="/saved-events" class="p-2 text-slate-500 hover:text-pink-600 hover:bg-pink-50 rounded-xl transition-colors press-tactile cursor-pointer" title="Wishlist & Saved Shows">
+                        <i class="fas fa-heart text-sm"></i>
                     </a>
 
-                    <!-- Notifications -->
-                    <a href="/notifications" class="relative p-2 text-slate-500 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors cursor-pointer" title="Notifications">
-                        <i class="fas fa-bell"></i>
+                    <!-- Notifications Bell Tray with Animated Glow -->
+                    <a href="/notifications" class="relative p-2 text-slate-500 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-colors press-tactile cursor-pointer" title="Notification Center">
+                        <i class="fas fa-bell text-sm"></i>
                         <% if (unread > 0) { %>
-                            <span class="absolute top-1 right-1 w-4 h-4 bg-pink-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse">
+                            <span class="absolute top-1 right-1 w-4 h-4 bg-pink-500 text-white text-[10px] font-black rounded-full flex items-center justify-center animate-pulse shadow-xs">
                                 <%= unread > 9 ? '9+' : unread %>
                             </span>
                         <% } %>
                     </a>
 
-                    <!-- User Profile & Dropdown -->
-                    <div class="relative group">
-                        <button class="flex items-center space-x-2 p-1.5 rounded-xl hover:bg-slate-100 transition-colors focus:outline-none cursor-pointer">
+                    <!-- User Profile Dropdown -->
+                    <div class="relative group ms-1">
+                        <button class="flex items-center space-x-2 p-1.5 rounded-xl hover:bg-slate-100 transition-colors press-tactile focus:outline-none cursor-pointer">
                             <% if (user.profile_image) { %>
                                 <img src="<%= user.profile_image %>" alt="<%= user.full_name %>" class="w-8 h-8 rounded-lg object-cover border border-slate-200">
                             <% } else { %>
-                                <div class="w-8 h-8 rounded-lg bg-pink-500 text-white font-bold text-xs flex items-center justify-center">
+                                <div class="w-8 h-8 rounded-lg bg-slate-900 text-white font-black text-xs flex items-center justify-center ring-1 ring-slate-900/10">
                                     <%= userInit %>
                                 </div>
                             <% } %>
-                            <span class="text-sm font-medium text-slate-800"><%= userFirstName %></span>
+                            <span class="text-xs font-bold text-slate-900 font-sans"><%= userFirstName %></span>
                             <i class="fas fa-chevron-down text-[10px] text-slate-400"></i>
                         </button>
-                        <!-- Dropdown menu -->
-                        <div class="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-slate-200 py-1 hidden group-hover:block transition-all z-50">
-                            <div class="px-4 py-2 border-b border-slate-100">
-                                <div class="text-xs text-slate-400">Signed in as</div>
-                                <div class="text-sm font-bold text-slate-800 truncate">@<%= user.username %></div>
+                        <!-- Menu Drawer Popover -->
+                        <div class="absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-xl border border-slate-200 py-1.5 hidden group-hover:block transition-all z-50">
+                            <div class="px-4 py-2.5 border-b border-slate-100">
+                                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Signed in as</div>
+                                <div class="text-xs font-bold text-slate-900 truncate">@<%= user.username %></div>
                             </div>
-                            <a href="/dashboard" class="flex items-center px-4 py-2 text-sm text-pink-600 font-bold hover:bg-pink-50">
+                            <a href="/dashboard" class="flex items-center px-4 py-2 text-xs font-bold text-pink-600 hover:bg-pink-50">
                                 <i class="fas fa-gauge-high w-5 text-pink-500"></i>
                                 <span>My K-Sync Dashboard</span>
                             </a>
-                            <a href="/profile" class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
+                            <a href="/profile" class="flex items-center px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50">
                                 <i class="fas fa-user-circle w-5 text-slate-400"></i>
-                                <span>My Profile</span>
+                                <span>Profile & Settings</span>
                             </a>
                             <% if (userRole === 'organizer') { %>
-                                <a href="/organizer/dashboard" class="flex items-center px-4 py-2 text-sm text-emerald-800 font-semibold hover:bg-emerald-50">
+                                <a href="/organizer/dashboard" class="flex items-center px-4 py-2 text-xs font-bold text-emerald-800 hover:bg-emerald-50">
                                     <i class="fas fa-gauge w-5 text-emerald-600"></i>
-                                    <span>Organizer Dashboard</span>
-                                </a>
-                                <a href="/organizer/events/new" class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
-                                    <i class="fas fa-plus-circle w-5 text-pink-500"></i>
-                                    <span>Create New Event</span>
+                                    <span>Organizer Portal</span>
                                 </a>
                             <% } %>
-                            <a href="/saved-events" class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
-                                <i class="fas fa-bookmark w-5 text-slate-400"></i>
-                                <span>Bookmarked Events</span>
+                            <a href="/saved-events" class="flex items-center px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50">
+                                <i class="fas fa-heart w-5 text-slate-400"></i>
+                                <span>Saved Wishlist</span>
                             </a>
                             <% if (userRole === 'admin') { %>
-                                <a href="/admin/verifications" class="flex items-center px-4 py-2 text-sm text-purple-700 hover:bg-purple-50">
-                                    <i class="fas fa-check-double w-5 text-purple-500"></i>
-                                    <span>Verification Queue</span>
+                                <div class="border-t border-slate-100 my-1"></div>
+                                <a href="/admin/reports" class="flex items-center px-4 py-2 text-xs font-bold text-purple-700 hover:bg-purple-50">
+                                    <i class="fas fa-shield-virus w-5 text-purple-500"></i>
+                                    <span>Audit Scam Reports</span>
                                 </a>
                             <% } %>
                             <div class="border-t border-slate-100 my-1"></div>
-                            <a href="/logout" class="flex items-center px-4 py-2 text-sm text-rose-600 hover:bg-rose-50">
+                            <a href="/logout" class="flex items-center px-4 py-2 text-xs font-bold text-rose-600 hover:bg-rose-50">
                                 <i class="fas fa-arrow-right-from-bracket w-5 text-rose-400"></i>
                                 <span>Log Out</span>
                             </a>
                         </div>
                     </div>
                 <% } else { %>
-                    <a href="/login" class="text-sm font-semibold text-slate-700 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+                    <a href="/login" class="text-xs font-bold text-slate-700 hover:text-slate-900 px-3.5 py-2 rounded-xl hover:bg-slate-100/80 transition-colors press-tactile">
                         Log In
                     </a>
-                    <a href="/register" class="text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 px-4 py-2 rounded-xl shadow-sm transition-all hover:shadow">
+                    <a href="/register" class="text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 px-4 py-2 rounded-xl shadow-xs transition-all press-tactile">
                         Join K-Sync
                     </a>
                 <% } %>
             </div>
 
-            <!-- Mobile Hamburger Button -->
+            <!-- Mobile Top Notification or Auth Icon -->
             <div class="flex md:hidden items-center space-x-2">
-                <button id="mobile-menu-btn" class="p-2 rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none">
-                    <i class="fas fa-bars text-lg"></i>
-                </button>
+                <% if (user) { %>
+                    <a href="/notifications" class="relative p-2 text-slate-600 hover:bg-slate-100 rounded-xl" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <% if (unread > 0) { %>
+                            <span class="absolute top-1 right-1 w-3.5 h-3.5 bg-pink-500 text-white text-[9px] font-black rounded-full flex items-center justify-center">
+                                <%= unread > 9 ? '9+' : unread %>
+                            </span>
+                        <% } %>
+                    </a>
+                    <a href="/profile" class="p-1">
+                        <% if (user.profile_image) { %>
+                            <img src="<%= user.profile_image %>" alt="<%= user.full_name %>" class="w-7 h-7 rounded-lg object-cover">
+                        <% } else { %>
+                            <div class="w-7 h-7 rounded-lg bg-slate-900 text-white font-bold text-xs flex items-center justify-center">
+                                <%= userInit %>
+                            </div>
+                        <% } %>
+                    </a>
+                <% } else { %>
+                    <a href="/login" class="text-xs font-bold text-slate-900 px-3 py-1.5 rounded-lg border border-slate-200 bg-white">
+                        Log In
+                    </a>
+                <% } %>
             </div>
         </div>
     </div>
+</header>
 
-    <!-- Mobile Navigation Drawer -->
-    <div id="mobile-menu" class="hidden md:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-6 space-y-2">
-        <a href="/" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-100">Home</a>
-        <a href="/events" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-100">Discover Events</a>
-        <a href="/events/radar" class="block px-3 py-2 rounded-lg text-base font-medium text-pink-600 hover:bg-pink-50">
-            <i class="fas fa-radar me-2 text-pink-500"></i> Event Radar
+<!-- Mobile-Native Bottom Floating Thumb Dock (Emil Kowalski /mobile-native) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-slate-200/90 shadow-lg px-2 py-2" 
+     style="padding-bottom: max(0.5rem, env(safe-area-inset-bottom));" 
+     aria-label="Mobile Navigation Dock">
+    <div class="grid grid-cols-5 gap-1 items-center max-w-md mx-auto text-center">
+        <!-- Home -->
+        <a href="/" class="flex flex-col items-center py-1 rounded-xl press-tactile <%= path === '/' ? 'text-pink-600 font-extrabold' : 'text-slate-500 font-medium' %>">
+            <i class="fas fa-house text-base mb-0.5"></i>
+            <span class="text-[10px] tracking-tight">Home</span>
         </a>
-        <a href="/artists" class="block px-3 py-2 rounded-lg text-base font-medium text-purple-600 hover:bg-purple-50">
-            <i class="fas fa-users me-2 text-purple-500"></i> Artists Directory
+        <!-- Events -->
+        <a href="/events" class="flex flex-col items-center py-1 rounded-xl press-tactile <%= path === '/events' ? 'text-pink-600 font-extrabold' : 'text-slate-500 font-medium' %>">
+            <i class="fas fa-compass text-base mb-0.5"></i>
+            <span class="text-[10px] tracking-tight">Events</span>
         </a>
-        <% if (userRole === 'organizer') { %>
-            <a href="/organizer/dashboard" class="block px-3 py-2 rounded-lg text-base font-bold text-emerald-800 bg-emerald-50">
-                <i class="fas fa-gauge me-2 text-emerald-600"></i> Organizer Dashboard
+        <!-- 4D Radar -->
+        <a href="/events/radar" class="flex flex-col items-center py-1 rounded-xl press-tactile relative <%= path === '/events/radar' ? 'text-pink-600 font-extrabold' : 'text-slate-500 font-medium' %>">
+            <div class="relative">
+                <i class="fas fa-radar text-base mb-0.5"></i>
+                <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-pink-500 animate-pulse"></span>
+            </div>
+            <span class="text-[10px] tracking-tight">4D Radar</span>
+        </a>
+        <!-- Artists -->
+        <a href="/artists" class="flex flex-col items-center py-1 rounded-xl press-tactile <%= path.startsWith('/artists') ? 'text-pink-600 font-extrabold' : 'text-slate-500 font-medium' %>">
+            <i class="fas fa-users text-base mb-0.5"></i>
+            <span class="text-[10px] tracking-tight">Artists</span>
+        </a>
+        <!-- Dashboard / Saved -->
+        <% if (user) { %>
+            <a href="/dashboard" class="flex flex-col items-center py-1 rounded-xl press-tactile <%= path === '/dashboard' ? 'text-pink-600 font-extrabold' : 'text-slate-500 font-medium' %>">
+                <i class="fas fa-gauge-high text-base mb-0.5"></i>
+                <span class="text-[10px] tracking-tight">My K-Sync</span>
             </a>
-            <a href="/organizer/events/new" class="block px-3 py-2 rounded-lg text-base font-bold text-white bg-slate-900">
-                <i class="fas fa-plus me-2 text-pink-400"></i> Create New Event
+        <% } else { %>
+            <a href="/register" class="flex flex-col items-center py-1 rounded-xl press-tactile text-slate-900 font-bold">
+                <i class="fas fa-sparkles text-base mb-0.5 text-pink-500"></i>
+                <span class="text-[10px] tracking-tight">Join</span>
             </a>
         <% } %>
-        <% if (userRole === 'admin') { %>
-            <a href="/admin" class="block px-3 py-2 rounded-lg text-base font-medium text-purple-700 bg-purple-50">Admin Center</a>
-        <% } %>
-        <div class="border-t border-slate-200 pt-3">
-            <% if (user) { %>
-                <div class="flex items-center space-x-3 px-3 py-2">
-                    <div class="w-10 h-10 rounded-lg bg-pink-500 text-white font-bold flex items-center justify-center">
-                        <%= userInit %>
-                    </div>
-                    <div>
-                        <div class="font-bold text-slate-800"><%= user.full_name %></div>
-                        <div class="text-xs text-slate-500">@<%= user.username %></div>
-                    </div>
-                </div>
-                <a href="/dashboard" class="block px-3 py-2 rounded-lg text-sm font-bold text-pink-600 bg-pink-50">
-                    <i class="fas fa-gauge-high me-2 text-pink-500"></i> My K-Sync Dashboard
-                </a>
-                <a href="/profile" class="block px-3 py-2 rounded-lg text-sm text-slate-700 hover:bg-slate-100">My Profile</a>
-                <a href="/saved-events" class="block px-3 py-2 rounded-lg text-sm text-slate-700 hover:bg-slate-100">Saved Events</a>
-                <a href="/logout" class="block px-3 py-2 rounded-lg text-sm text-rose-600 hover:bg-rose-50">Log Out</a>
-            <% } else { %>
-                <div class="grid grid-cols-2 gap-2 pt-2">
-                    <a href="/login" class="text-center py-2 border border-slate-300 rounded-lg font-semibold text-slate-700">Log In</a>
-                    <a href="/register" class="text-center py-2 bg-slate-900 text-white rounded-lg font-semibold">Join K-Sync</a>
-                </div>
-            <% } %>
-        </div>
     </div>
 </nav>
-
-<script>
-    const mobileBtn = document.getElementById('mobile-menu-btn');
-    const mobileMenu = document.getElementById('mobile-menu');
-    if (mobileBtn && mobileMenu) {
-        mobileBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-    }
-</script>

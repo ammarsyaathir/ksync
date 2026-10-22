@@ -1,4 +1,4 @@
-<%- include('partials/header', { title: event.event_name + ' | K-Sync Malaysia' }) %>
+<%- include('partials/header', { title: event.event_name + ' | Concert Dossier & Live Intel | K-Sync Malaysia' }) %>
 
 <% 
     const calcStatus = helpers.getCalculatedEventStatus(event);
@@ -13,176 +13,236 @@
     const startTimeFormatted = String(event.start_time || '18:00:00').replace(/:/g, '').substring(0, 4) + '00';
     const endTimeFormatted = String(event.end_time || '22:00:00').replace(/:/g, '').substring(0, 4) + '00';
     const gCalDates = `${dateFormatted}T${startTimeFormatted}/${dateFormatted}T${endTimeFormatted}`;
-    const gCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.event_name)}&dates=${gCalDates}&details=${encodeURIComponent(event.description || 'K-Pop Event in Malaysia')}&location=${encodeURIComponent(event.venue_name + ', ' + event.city)}`;
-    const mapQuery = encodeURIComponent(`${event.venue_name} ${event.address || ''} ${event.city} Malaysia`);
+    const gCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.event_name)}&dates=${gCalDates}&details=${encodeURIComponent(event.description || 'K-Pop Concert in Malaysia')}&location=${encodeURIComponent(event.venue_name + ', ' + (event.city || 'Malaysia'))}`;
+    const mapQuery = encodeURIComponent(`${event.venue_name} ${event.address || ''} ${event.city || ''} Malaysia`);
+    const eventSlug = helpers.slugify(event.event_name) || event.id;
+    const displayOrgName = event.promoter_name || event.organization_name || event.submitter_name || (event.organizer_name && event.organizer_name !== 'System Admin' ? event.organizer_name : 'Authorized Tour Production');
+    const rawHandle = event.submitter_social || event.social_handle || '';
+    const cleanHandle = rawHandle.replace(/^@/, '');
+    const orgSocialLink = event.social_url || (rawHandle ? (rawHandle.startsWith('http') ? rawHandle : `https://x.com/${cleanHandle}`) : '');
+    const ticketSec = helpers.getTicketingSecurity(event.official_url, displayOrgName);
+    const eventPosters = (typeof posters !== 'undefined' && posters && posters.length > 0) 
+        ? posters 
+        : [event.poster_image || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop'];
 %>
 
-<!-- Banner Header -->
-<div class="relative bg-gradient-to-b from-pink-100/70 via-purple-50/40 to-slate-50 border-b border-pink-100">
-    <div class="h-64 sm:h-80 w-full relative overflow-hidden bg-slate-900">
+<!-- Electric Concert Stage Hero Banner -->
+<div class="relative bg-slate-950 overflow-hidden border-b border-white/10">
+    <!-- Ambient Stage Lighting Atmosphere -->
+    <div class="absolute inset-0 z-0">
         <img src="<%= event.poster_image %>" alt="<%= event.event_name %>" 
-             class="w-full h-full object-cover opacity-60 blur-xs scale-105"
+             class="w-full h-full object-cover opacity-25 blur-2xl scale-110 pointer-events-none"
              onerror="this.src='https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop'">
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
-        
-        <div class="absolute bottom-6 left-0 right-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
-            <div class="flex flex-wrap items-center gap-2 mb-2">
-                <span class="px-3 py-1 rounded-full text-xs font-bold bg-white text-slate-900 shadow">
-                    <%= event.category_name || 'Event' %>
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent"></div>
+        <div class="absolute -top-32 left-1/4 w-96 h-96 rounded-full bg-violet-600/20 blur-3xl pointer-events-none"></div>
+        <div class="absolute -top-20 right-1/4 w-96 h-96 rounded-full bg-pink-500/20 blur-3xl pointer-events-none"></div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-10">
+        <!-- Breadcrumb Navigation -->
+        <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs font-semibold text-slate-400 mb-6">
+            <a href="/" class="hover:text-white transition-colors">Home</a>
+            <i class="fas fa-chevron-right text-[10px] text-slate-600"></i>
+            <a href="/events" class="hover:text-white transition-colors">Concert Directory</a>
+            <i class="fas fa-chevron-right text-[10px] text-slate-600"></i>
+            <span class="text-pink-400 font-bold truncate max-w-xs sm:max-w-md"><%= event.event_name %></span>
+        </nav>
+
+        <!-- Status Badges Tray -->
+        <div class="flex flex-wrap items-center gap-2.5 mb-4">
+            <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white text-slate-950 shadow-md">
+                <%= event.category_name || 'Concert' %>
+            </span>
+            <%- helpers.getStatusBadge(calcStatus) %>
+            <%- helpers.getVerificationBadge(event.verification_status) %>
+            <% const trust = (event.trust_level || '').toUpperCase(); %>
+            <% if (trust === 'OFFICIAL') { %>
+                <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 backdrop-blur-md flex items-center gap-1.5">
+                    <i class="fas fa-shield-halved text-amber-300"></i> Verified Official Tour
                 </span>
-                <%- helpers.getStatusBadge(calcStatus) %>
-                <%- helpers.getVerificationBadge(event.verification_status) %>
-                <% const trust = (event.trust_level || '').toUpperCase(); %>
-                <% if (trust === 'OFFICIAL') { %>
-                    <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500 text-white shadow-sm flex items-center gap-1.5 border border-emerald-400">
-                        <i class="fas fa-shield-halved text-amber-300"></i> Verified – Official Source
-                    </span>
-                <% } else if (trust === 'COMMUNITY') { %>
-                    <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-purple-600 text-white shadow-sm flex items-center gap-1.5 border border-purple-400">
-                        <i class="fas fa-users text-pink-300"></i> Verified – Community Event
-                    </span>
-                <% } %>
-                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/10 backdrop-blur-md text-slate-200 border border-white/20 flex items-center gap-1.5">
-                    <i class="fas fa-clock-rotate-left text-pink-400"></i> Updated <%= helpers.timeAgo(event.updated_at || event.created_at) %>
+            <% } else if (trust === 'COMMUNITY') { %>
+                <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-violet-500/20 text-violet-300 border border-violet-500/40 backdrop-blur-md flex items-center gap-1.5">
+                    <i class="fas fa-users text-pink-300"></i> Verified Fan Event
                 </span>
-            </div>
-            <% if (event.verification_status === 'SUSPENDED') { %>
-                <div class="mb-3 p-3.5 rounded-2xl bg-rose-600/95 text-white text-xs font-medium flex items-center gap-2.5 backdrop-blur-md border border-rose-400 shadow-lg">
-                    <i class="fas fa-triangle-exclamation text-amber-300 text-lg shrink-0"></i>
-                    <div>
-                        <span class="font-extrabold uppercase tracking-wide">⚠️ Listing Frozen by Moderation:</span>
-                        This listing is currently suspended following a community report. Ticket purchases are halted while evidence is verified with organizers.
-                    </div>
-                </div>
             <% } %>
-            <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mb-2 leading-tight">
-                <%= event.event_name %>
-            </h1>
-            <div class="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-slate-200 font-medium">
-                <span class="flex items-center"><i class="fas fa-microphone-lines me-1.5 text-pink-400"></i> <%= event.artist_name || 'Multiple Artists' %></span>
-                <span class="flex items-center"><i class="fas fa-calendar-day me-1.5 text-purple-400"></i> <%= helpers.formatDate(event.event_date) %></span>
-                <span class="flex items-center">
-                    <i class="fas fa-location-dot me-1.5 text-rose-400"></i> <%= event.venue_name %>, <%= event.city %>
-                    <a href="https://www.google.com/maps/search/?api=1&query=<%= encodeURIComponent(event.venue_name + ' ' + (event.city || 'Malaysia')) %>" 
-                       target="_blank" rel="noopener noreferrer" 
-                       class="ms-2 px-2 py-0.5 rounded-lg bg-white/10 hover:bg-white/20 text-pink-300 hover:text-white text-[11px] font-bold border border-white/20 transition-all inline-flex items-center gap-1">
-                        <i class="fas fa-map-location-dot text-[10px]"></i> Maps ↗
-                    </a>
-                </span>
+            <span class="px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-slate-300 border border-white/10 backdrop-blur-md flex items-center gap-1.5">
+                <i class="fas fa-clock-rotate-left text-pink-400"></i> Updated <%= helpers.timeAgo(event.updated_at || event.created_at) %>
+            </span>
+        </div>
+
+        <% if (event.verification_status === 'SUSPENDED') { %>
+            <div class="mb-5 p-4 rounded-2xl bg-rose-950/90 border border-rose-500 text-rose-100 text-xs font-medium flex items-center gap-3 backdrop-blur-md shadow-xl">
+                <i class="fas fa-triangle-exclamation text-amber-400 text-xl shrink-0"></i>
+                <div>
+                    <span class="font-extrabold uppercase tracking-wide text-amber-300">⚠️ Listing Suspended for Community Safety:</span>
+                    This event has been frozen following verified community reports. Ticket purchases are locked pending official promoter clarification.
+                </div>
             </div>
+        <% } %>
+
+        <!-- Concert Headline -->
+        <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight mb-4 max-w-4xl">
+            <%= event.event_name %>
+        </h1>
+
+        <!-- Event Key Meta Chips -->
+        <div class="flex flex-wrap items-center gap-y-2 gap-x-5 text-xs sm:text-sm text-slate-300 font-medium">
+            <span class="flex items-center gap-2">
+                <i class="fas fa-microphone-lines text-pink-400 text-sm"></i>
+                <strong class="text-white"><%= event.artist_name || 'Multiple Artists' %></strong>
+            </span>
+            <span class="flex items-center gap-2">
+                <i class="fas fa-calendar-day text-violet-400 text-sm"></i>
+                <span><%= helpers.formatDate(event.event_date) %></span>
+            </span>
+            <% if (event.start_time) { %>
+                <span class="flex items-center gap-2">
+                    <i class="fas fa-clock text-cyan-400 text-sm"></i>
+                    <span><%= helpers.formatTime(event.start_time) %> <%= event.end_time ? '– ' + helpers.formatTime(event.end_time) : '' %></span>
+                </span>
+            <% } %>
+            <span class="flex items-center gap-2">
+                <i class="fas fa-location-dot text-rose-400 text-sm"></i>
+                <span><%= event.venue_name %>, <%= event.city %></span>
+                <a href="https://www.google.com/maps/search/?api=1&query=<%= encodeURIComponent(event.venue_name + ' ' + (event.city || 'Malaysia')) %>" 
+                   target="_blank" rel="noopener noreferrer" 
+                   class="ms-1 px-2.5 py-0.5 rounded-lg bg-white/10 hover:bg-white/20 text-pink-300 hover:text-white text-[11px] font-bold border border-white/15 transition-all inline-flex items-center gap-1 press-tactile">
+                    <span>Maps</span>
+                    <i class="fas fa-arrow-up-right-from-square text-[9px]"></i>
+                </a>
+            </span>
         </div>
     </div>
 </div>
 
-<!-- Main Details Layout -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+<!-- Main Details Workspace Grid -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Left 2 Cols: Countdown, Action Bar, Description, Checklist, Biodata, Live Chat -->
-        <div class="lg:col-span-2 space-y-8">
-            <!-- Live Countdown To Event Card -->
+        
+        <!-- Left 2 Cols: Countdown, Action Bar, Description, Guidelines, Posters, Idol Members, Discussion -->
+        <div class="lg:col-span-2 space-y-7">
+            
+            <!-- Live Event Countdown Stage Card -->
             <% if (calcStatus === 'UPCOMING') { %>
-                <div class="p-6 rounded-3xl bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 shadow-lg text-white">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div>
-                            <p class="text-xs font-black flex items-center text-pink-100 uppercase tracking-wider mb-1">
-                                <i class="fas fa-stopwatch me-2 text-white animate-pulse"></i> Live Event Countdown
-                            </p>
-                            <h3 class="text-lg font-extrabold text-white">Get Ready for <%= event.artist_name || 'the Show' %>!</h3>
+                <div class="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-violet-950 via-slate-900 to-pink-950 border border-violet-500/30 shadow-2xl text-white relative overflow-hidden">
+                    <div class="absolute -right-8 -bottom-8 w-48 h-48 bg-pink-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                    <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+                        <div class="space-y-1">
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-pink-500 text-white inline-flex items-center gap-1.5 shadow-xs">
+                                <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+                                Live Showtime Countdown
+                            </span>
+                            <h3 class="text-xl font-black text-white tracking-tight">Counting Down to the Live Stage</h3>
+                            <p class="text-xs text-slate-300">Automatic synchronized countdown based on official venue door opening time.</p>
                         </div>
-                        <div id="countdown-timer" class="grid grid-cols-4 gap-2 text-center shrink-0">
-                            <div class="bg-white/20 backdrop-blur-md rounded-2xl px-3 py-2 border border-white/25 min-w-[62px]">
-                                <span id="cd-days" class="block text-xl font-black">00</span>
-                                <span class="text-[9px] font-bold text-pink-100 uppercase">Days</span>
+                        <div id="countdown-timer" class="grid grid-cols-4 gap-2.5 text-center shrink-0">
+                            <div class="bg-black/60 backdrop-blur-md rounded-2xl px-3.5 py-2.5 border border-white/10 min-w-[64px]">
+                                <span id="cd-days" class="block text-2xl font-black text-pink-400 tabular-nums font-mono">00</span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Days</span>
                             </div>
-                            <div class="bg-white/20 backdrop-blur-md rounded-2xl px-3 py-2 border border-white/25 min-w-[62px]">
-                                <span id="cd-hours" class="block text-xl font-black">00</span>
-                                <span class="text-[9px] font-bold text-pink-100 uppercase">Hours</span>
+                            <div class="bg-black/60 backdrop-blur-md rounded-2xl px-3.5 py-2.5 border border-white/10 min-w-[64px]">
+                                <span id="cd-hours" class="block text-2xl font-black text-white tabular-nums font-mono">00</span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Hours</span>
                             </div>
-                            <div class="bg-white/20 backdrop-blur-md rounded-2xl px-3 py-2 border border-white/25 min-w-[62px]">
-                                <span id="cd-minutes" class="block text-xl font-black">00</span>
-                                <span class="text-[9px] font-bold text-pink-100 uppercase">Mins</span>
+                            <div class="bg-black/60 backdrop-blur-md rounded-2xl px-3.5 py-2.5 border border-white/10 min-w-[64px]">
+                                <span id="cd-minutes" class="block text-2xl font-black text-white tabular-nums font-mono">00</span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Mins</span>
                             </div>
-                            <div class="bg-white/20 backdrop-blur-md rounded-2xl px-3 py-2 border border-white/25 min-w-[62px]">
-                                <span id="cd-seconds" class="block text-xl font-black">00</span>
-                                <span class="text-[9px] font-bold text-pink-100 uppercase">Secs</span>
+                            <div class="bg-black/60 backdrop-blur-md rounded-2xl px-3.5 py-2.5 border border-white/10 min-w-[64px]">
+                                <span id="cd-seconds" class="block text-2xl font-black text-amber-300 tabular-nums font-mono">00</span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Secs</span>
                             </div>
                         </div>
                     </div>
                 </div>
             <% } %>
 
-            <!-- Action Bar (Bookmark, Share, Calendar, Report, Official Link) -->
-            <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
-                <div class="flex flex-wrap items-center gap-2.5">
+            <!-- Unified Outbound Action Control Bar -->
+            <div class="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-sm flex flex-wrap items-center justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-2">
+                    <!-- UC017: Wishlist Toggle -->
                     <button onclick="toggleSaveEvent(<%= event.id %>, this)" 
-                            class="px-4 py-2.5 rounded-xl border <%= isSaved ? 'bg-rose-50 text-rose-600 border-rose-200' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' %> font-bold text-xs flex items-center shadow-xs transition-all cursor-pointer">
+                            class="px-4 py-2.5 rounded-xl border <%= isSaved ? 'bg-rose-50 text-rose-600 border-rose-200 font-extrabold' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200' %> font-bold text-xs flex items-center shadow-xs cursor-pointer press-tactile">
                         <i class="<%= isSaved ? 'fas' : 'far' %> fa-heart me-1.5 text-rose-500"></i>
-                        <span><%= isSaved ? 'Saved' : 'Save Event' %></span>
+                        <span><%= isSaved ? 'Saved to Wishlist' : 'Save Event' %></span>
                     </button>
 
                     <!-- UC018: Crowdsourced Reliability Recommendation / Upvote -->
                     <button onclick="toggleRecommendEvent(<%= event.id %>, this)" 
                             id="btnRecommendEvent"
-                            class="px-4 py-2.5 rounded-xl border <%= (typeof isInterested !== 'undefined' && isInterested) ? 'bg-amber-50 text-amber-700 border-amber-300 font-extrabold' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' %> font-bold text-xs flex items-center shadow-xs transition-all cursor-pointer"
+                            class="px-4 py-2.5 rounded-xl border <%= (typeof isInterested !== 'undefined' && isInterested) ? 'bg-amber-50 text-amber-700 border-amber-300 font-extrabold' : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200' %> font-bold text-xs flex items-center shadow-xs cursor-pointer press-tactile"
                             title="Crowdsourced Reliability: Recommend this legitimate event">
                         <i class="<%= (typeof isInterested !== 'undefined' && isInterested) ? 'fas' : 'far' %> fa-thumbs-up me-1.5 <%= (typeof isInterested !== 'undefined' && isInterested) ? 'text-amber-500' : 'text-slate-400' %>"></i>
                         <span>Recommend</span>
-                        <span id="recommendCountBadge" class="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] <%= (typeof isInterested !== 'undefined' && isInterested) ? 'bg-amber-200 text-amber-900' : 'bg-slate-100 text-slate-600' %> font-extrabold"><%= (typeof interestCount !== 'undefined') ? interestCount : 0 %></span>
+                        <span id="recommendCountBadge" class="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] <%= (typeof isInterested !== 'undefined' && isInterested) ? 'bg-amber-200 text-amber-900' : 'bg-slate-200 text-slate-700' %> font-black"><%= (typeof interestCount !== 'undefined') ? interestCount : 0 %></span>
                     </button>
                     
-                    <% const eventSlug = helpers.slugify(event.event_name) || event.id; %>
+                    <!-- UC010: Share Event Outbound Button -->
                     <button onclick="openShareModal('<%= event.event_name.replace(/'/g, "\\'") %>', '<%= eventSlug %>')" 
-                            class="px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center shadow-xs transition-all cursor-pointer">
+                            class="px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs flex items-center shadow-xs cursor-pointer press-tactile">
                         <i class="fas fa-share-nodes me-1.5 text-pink-500"></i>
                         <span>Share</span>
                     </button>
 
+                    <!-- UC011: Calendar Export Outbound Button -->
                     <button onclick="openCalendarModal()" 
-                            class="px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center shadow-xs transition-all cursor-pointer"
-                            title="Add to Phone Calendar or Google Calendar">
-                        <i class="far fa-calendar-plus me-1.5 text-purple-600"></i>
-                        <span>Add to Calendar</span>
+                            class="px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs flex items-center shadow-xs cursor-pointer press-tactile"
+                            title="Export Calendar (.ics / Google Calendar)">
+                        <i class="far fa-calendar-plus me-1.5 text-violet-600"></i>
+                        <span>Export Calendar</span>
                     </button>
 
+                    <!-- UC019: Report Listing Button -->
                     <button onclick="openReportModal()" 
-                            class="px-3.5 py-2.5 rounded-xl border border-slate-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 text-slate-600 font-bold text-xs flex items-center shadow-xs transition-all cursor-pointer"
+                            class="px-3.5 py-2.5 rounded-xl border border-slate-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 text-slate-600 font-bold text-xs flex items-center shadow-xs cursor-pointer press-tactile"
                             title="File a verified community report regarding tickets, scam, or inaccurate info">
                         <i class="fas fa-flag text-amber-500 me-1.5"></i>
                         <span>Report Listing</span>
                     </button>
                 </div>
 
+                <!-- UC007: Authorized Official Ticketing Gateway -->
                 <% if (event.official_url && event.verification_status !== 'SUSPENDED') { %>
-                    <a href="<%= event.official_url %>" target="_blank" rel="noopener" 
-                       class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md flex items-center">
-                        <i class="fas fa-ticket me-2 text-pink-400"></i> Official Ticket Link &rarr;
+                    <a href="<%= event.official_url %>" target="_blank" rel="noopener noreferrer" 
+                       class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-600 to-violet-600 hover:from-pink-500 hover:to-violet-500 text-white font-black text-xs shadow-md shadow-pink-500/20 flex items-center gap-2 press-tactile">
+                        <i class="fas fa-ticket text-amber-300"></i>
+                        <span>Official Ticket Link</span>
+                        <i class="fas fa-arrow-up-right-from-square text-[10px]"></i>
                     </a>
                 <% } else if (event.verification_status === 'SUSPENDED') { %>
-                    <span class="px-5 py-2.5 rounded-xl bg-slate-100 text-slate-400 font-bold text-xs border border-slate-200 flex items-center cursor-not-allowed">
-                        <i class="fas fa-lock me-2 text-rose-500"></i> Ticket Links Disabled
+                    <span class="px-4 py-2.5 rounded-xl bg-slate-100 text-slate-400 font-bold text-xs border border-slate-200 flex items-center gap-2 cursor-not-allowed">
+                        <i class="fas fa-lock text-rose-500"></i>
+                        <span>Ticket Link Suspended</span>
                     </span>
                 <% } %>
             </div>
 
-            <!-- Description -->
-            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-                <h2 class="text-xl font-bold text-slate-900 mb-4 flex items-center">
-                    <i class="fas fa-circle-info text-pink-600 me-2.5"></i> Event Overview
-                </h2>
-                <div class="text-sm text-slate-600 leading-relaxed space-y-4 whitespace-pre-line font-normal">
-                    <%= event.description || 'No detailed description provided for this event.' %>
+            <!-- Event Overview & Official Description Dossier -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <h2 class="text-xl font-black text-slate-900 flex items-center gap-2.5">
+                        <i class="fas fa-circle-info text-pink-600"></i>
+                        <span>Concert Overview & Dossier</span>
+                    </h2>
+                    <span class="px-3 py-1 rounded-full text-[11px] font-bold bg-violet-50 text-violet-700 border border-violet-200">
+                        Official Release
+                    </span>
+                </div>
+                <div class="text-sm text-slate-700 leading-relaxed space-y-4 whitespace-pre-line font-normal">
+                    <%= event.description || 'No detailed description provided for this concert event.' %>
                 </div>
             </div>
 
-            <!-- Ticket Info & Rules -->
+            <!-- Ticket Tiers, Pricing & Prohibited Items -->
             <% if (event.ticket_info || event.event_rules) { %>
-                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
                     <% if (event.ticket_info) { %>
                         <div>
-                            <h3 class="text-base font-bold text-slate-900 mb-2 flex items-center">
-                                <i class="fas fa-tags text-purple-600 me-2"></i> Ticket Tiers & Prices
+                            <h3 class="text-base font-bold text-slate-900 mb-2.5 flex items-center gap-2">
+                                <i class="fas fa-tags text-violet-600"></i>
+                                <span>Official Ticket Tiers & Pricing</span>
                             </h3>
-                            <div class="text-xs text-slate-600 bg-purple-50/50 p-4 rounded-2xl border border-purple-100 whitespace-pre-line leading-relaxed">
+                            <div class="text-xs text-slate-700 bg-violet-50/60 p-4 rounded-2xl border border-violet-200/70 whitespace-pre-line leading-relaxed font-medium">
                                 <%= event.ticket_info %>
                             </div>
                         </div>
@@ -190,10 +250,11 @@
 
                     <% if (event.event_rules) { %>
                         <div>
-                            <h3 class="text-base font-bold text-slate-900 mb-2 flex items-center">
-                                <i class="fas fa-shield-halved text-pink-600 me-2"></i> Guidelines, Prohibited Items & Rules
+                            <h3 class="text-base font-bold text-slate-900 mb-2.5 flex items-center gap-2">
+                                <i class="fas fa-shield-halved text-pink-600"></i>
+                                <span>Venue Security, Prohibited Items & Rules</span>
                             </h3>
-                            <div class="text-xs text-slate-600 bg-pink-50/50 p-4 rounded-2xl border border-pink-100 whitespace-pre-line leading-relaxed">
+                            <div class="text-xs text-slate-700 bg-pink-50/60 p-4 rounded-2xl border border-pink-200/70 whitespace-pre-line leading-relaxed font-medium">
                                 <%= event.event_rules %>
                             </div>
                         </div>
@@ -201,89 +262,86 @@
                 </div>
             <% } %>
 
-            <!-- Accessibility & Special Facilities (80% Demand in User Research) -->
-            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
+            <!-- Fan Inclusivity & Accessibility Facilities -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-4">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                    <h3 class="text-base sm:text-lg font-bold text-slate-900 flex items-center">
-                        <i class="fas fa-universal-access text-pink-600 me-2.5"></i> Accessibility & Special Facilities
+                    <h3 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2.5">
+                        <i class="fas fa-universal-access text-pink-600"></i>
+                        <span>Accessibility & Fan Facilities</span>
                     </h3>
                     <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-pink-50 text-pink-700 border border-pink-200">
-                        Fan Inclusivity
+                        Inclusivity Verified
                     </span>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-xs">
-                    <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-2.5">
-                        <i class="fas fa-wheelchair text-purple-600 text-base shrink-0 mt-0.5"></i>
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-3">
+                        <i class="fas fa-wheelchair text-violet-600 text-lg shrink-0 mt-0.5"></i>
                         <div>
-                            <strong class="text-slate-900 block font-bold mb-0.5">OKU / Wheelchair Access</strong>
-                            <p class="text-slate-600 leading-relaxed">Dedicated ramp access, accessible passenger lifts, and reserved viewing zones for wheelchair users.</p>
+                            <strong class="text-slate-900 block font-bold mb-1">OKU / Wheelchair Access</strong>
+                            <p class="text-slate-600 leading-relaxed">Dedicated barrier-free ramps, accessible lifts, and reserved viewing zones for wheelchair users.</p>
                         </div>
                     </div>
-                    <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-2.5">
-                        <i class="fas fa-bolt-lightning text-amber-500 text-base shrink-0 mt-0.5"></i>
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-3">
+                        <i class="fas fa-bolt-lightning text-amber-500 text-lg shrink-0 mt-0.5"></i>
                         <div>
-                            <strong class="text-slate-900 block font-bold mb-0.5">Sensory & Strobe Warning</strong>
-                            <p class="text-slate-600 leading-relaxed">Stage performance features sudden loud pyrotechnics, heavy bass, and high-intensity strobe lighting.</p>
+                            <strong class="text-slate-900 block font-bold mb-1">Sensory & Strobe Warning</strong>
+                            <p class="text-slate-600 leading-relaxed">Stage performance features sudden pyrotechnics, heavy sub-bass, and high-intensity strobe lighting.</p>
                         </div>
                     </div>
-                    <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-2.5">
-                        <i class="fas fa-kit-medical text-rose-500 text-base shrink-0 mt-0.5"></i>
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-3">
+                        <i class="fas fa-kit-medical text-rose-500 text-lg shrink-0 mt-0.5"></i>
                         <div>
-                            <strong class="text-slate-900 block font-bold mb-0.5">Medical & Assistance</strong>
-                            <p class="text-slate-600 leading-relaxed">Certified first-aid paramedical booths on-site and priority seating assistance for expectant mothers.</p>
+                            <strong class="text-slate-900 block font-bold mb-1">First Aid & Paramedics</strong>
+                            <p class="text-slate-600 leading-relaxed">On-site paramedic triage booth and priority seating support for expectant mothers.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Official Event Posters & Visual Gallery (Flexible 1-4 Posters: Square, Portrait, Landscape) -->
-            <% 
-                const eventPosters = (typeof posters !== 'undefined' && posters && posters.length > 0) 
-                    ? posters 
-                    : [event.poster_image || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop'];
-            %>
-            <div class="bg-white rounded-3xl p-5 sm:p-7 lg:p-8 border border-slate-200 shadow-sm space-y-5">
+            <!-- Official Event Posters & Visual Gallery -->
+            <div class="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/90 shadow-sm space-y-5">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
                     <div>
-                        <h3 class="text-lg sm:text-xl font-bold text-slate-900 flex items-center">
-                            <i class="fas fa-images text-pink-600 me-2.5"></i> Official Event Posters & Visuals
+                        <h3 class="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fas fa-images text-pink-600"></i>
+                            <span>Official Event Posters & Notices</span>
                         </h3>
-                        <p class="text-xs text-slate-500 mt-1">Official high-resolution promotional posters, seating chart, and event guidelines. Click any poster to view full size.</p>
+                        <p class="text-xs text-slate-500 mt-1">High-resolution promotional key visual, seating map, and door regulations.</p>
                     </div>
                     <span class="self-start sm:self-auto px-3.5 py-1 rounded-full text-xs font-bold bg-pink-50 text-pink-700 border border-pink-200 shrink-0">
-                        <%= eventPosters.length %> <%= eventPosters.length === 1 ? 'Poster' : 'Posters / Notices' %>
+                        <%= eventPosters.length %> <%= eventPosters.length === 1 ? 'Poster' : 'Visuals' %>
                     </span>
                 </div>
 
                 <% if (eventPosters.length === 1) { %>
-                    <!-- Single Hero Poster (Any Aspect Ratio: Square, Portrait, Landscape) -->
-                    <div class="relative bg-slate-950/5 rounded-2xl p-2 sm:p-4 border border-slate-200/80 flex items-center justify-center overflow-hidden group">
+                    <div class="relative bg-slate-950/5 rounded-2xl p-3 sm:p-4 border border-slate-200/80 flex items-center justify-center overflow-hidden group">
                         <img src="<%= eventPosters[0] %>" alt="<%= event.event_name %> Poster"
                              class="max-h-[580px] w-auto max-w-full rounded-xl object-contain shadow-md cursor-pointer hover:scale-[1.01] transition-transform duration-300"
                              onclick="openLightbox('<%= eventPosters[0] %>', '<%= event.event_name.replace(/'/g, "\\'") %>')">
                         <button onclick="openLightbox('<%= eventPosters[0] %>', '<%= event.event_name.replace(/'/g, "\\'") %>')"
-                                class="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 px-4 py-2 rounded-xl bg-slate-900/80 hover:bg-slate-900 text-white text-xs font-bold backdrop-blur-md flex items-center shadow-lg transition-all cursor-pointer">
-                            <i class="fas fa-magnifying-glass-plus me-1.5 text-pink-400"></i> Click to Enlarge
+                                class="absolute bottom-4 right-4 px-4 py-2 rounded-xl bg-slate-950/80 hover:bg-slate-900 text-white text-xs font-bold backdrop-blur-md flex items-center shadow-lg transition-all cursor-pointer press-tactile">
+                            <i class="fas fa-magnifying-glass-plus me-1.5 text-pink-400"></i>
+                            <span>Fullscreen</span>
                         </button>
                     </div>
                 <% } else { %>
-                    <!-- Multi-Poster Gallery Grid (2 to 4 Posters / Seating Map / Notices) -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <% eventPosters.forEach(function(imgUrl, idx) { %>
-                            <div class="relative bg-slate-950/5 rounded-2xl p-3 sm:p-4 border border-slate-200/80 flex flex-col justify-between overflow-hidden group transition-all hover:border-pink-300 hover:shadow-md">
-                                <div class="flex items-center justify-between mb-2.5 px-1">
-                                    <span class="text-[11px] font-extrabold text-slate-600 uppercase tracking-wider flex items-center">
-                                        <i class="fas fa-image me-1.5 text-pink-500"></i>
-                                        <%= idx === 0 ? 'Main Official Poster' : (idx === 1 ? 'Notice / Seating Map' : 'Visual #' + (idx + 1)) %>
+                            <div class="relative bg-slate-950/5 rounded-2xl p-3 border border-slate-200/80 flex flex-col justify-between overflow-hidden group hover:border-pink-300 hover:shadow-md transition-all">
+                                <div class="flex items-center justify-between mb-2 px-1">
+                                    <span class="text-[11px] font-black text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
+                                        <i class="fas fa-image text-pink-500"></i>
+                                        <%= idx === 0 ? 'Main Tour Poster' : (idx === 1 ? 'Seating Chart' : 'Notice #' + (idx + 1)) %>
                                     </span>
                                     <button onclick="openLightbox('<%= imgUrl %>', '<%= event.event_name.replace(/'/g, "\\'") %> - Visual #<%= idx + 1 %>')"
-                                            class="text-xs font-bold text-pink-600 hover:text-pink-700 flex items-center cursor-pointer">
-                                        <i class="fas fa-expand me-1"></i> Fullscreen
+                                            class="text-xs font-bold text-pink-600 hover:text-pink-700 flex items-center gap-1 cursor-pointer press-tactile">
+                                        <i class="fas fa-expand text-[10px]"></i>
+                                        <span>Enlarge</span>
                                     </button>
                                 </div>
-                                <div class="flex items-center justify-center min-h-[280px] sm:min-h-[340px] max-h-[460px] overflow-hidden rounded-xl bg-white/70 p-2">
+                                <div class="flex items-center justify-center min-h-[260px] max-h-[420px] overflow-hidden rounded-xl bg-white/80 p-2">
                                     <img src="<%= imgUrl %>" alt="<%= event.event_name %> - Visual #<%= idx + 1 %>"
-                                         class="max-h-[440px] w-auto max-w-full object-contain rounded-lg shadow-sm cursor-pointer group-hover:scale-[1.02] transition-transform duration-300"
+                                         class="max-h-[400px] w-auto max-w-full object-contain rounded-lg shadow-xs cursor-pointer group-hover:scale-[1.02] transition-transform duration-300"
                                          onclick="openLightbox('<%= imgUrl %>', '<%= event.event_name.replace(/'/g, "\\'") %> - Visual #<%= idx + 1 %>')">
                                 </div>
                             </div>
@@ -292,29 +350,26 @@
                 <% } %>
             </div>
 
-            <!-- Idol Group Members & Biodata (from the `members` table, FK -> artists.id) -->
+            <!-- Idol Group Members & Biodata Section (from `members` table) -->
             <% if (typeof members !== 'undefined' && members && members.length > 0) { %>
-                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-6 border-b border-slate-100 gap-2">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
                         <div>
-                            <h2 class="text-xl font-bold text-slate-900 flex items-center">
-                                <i class="fas fa-users-viewfinder text-purple-600 me-2.5"></i> 
-                                <%= event.artist_name %> Member Profiles & Biodata
+                            <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2.5">
+                                <i class="fas fa-users-viewfinder text-violet-600"></i>
+                                <span><%= event.artist_name %> Member Profiles & Biodata</span>
                             </h2>
-                            <p class="text-xs text-slate-500 mt-1">
-                                Essential personal and career details for <%= event.artist_name %> members.
-                            </p>
+                            <p class="text-xs text-slate-500 mt-1">Official member lineup, positions, and verified profile data.</p>
                         </div>
-                        <span class="self-start sm:self-auto px-3.5 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                        <span class="self-start sm:self-auto px-3.5 py-1 rounded-full text-xs font-bold bg-violet-50 text-violet-700 border border-violet-200">
                             <%= members.length %> <%= members.length === 1 ? 'Idol' : 'Group Members' %>
                         </span>
                     </div>
 
                     <div class="space-y-3.5">
                         <% members.forEach(function(member) { %>
-                            <div class="bg-slate-50/70 hover:bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 hover:border-purple-300 hover:shadow-md transition-all group">
+                            <div class="bg-slate-50/70 hover:bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 hover:border-violet-300 hover:shadow-md transition-all group">
                                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                    <!-- Left: Photo + Identity -->
                                     <div class="flex items-center gap-3.5 sm:gap-4 md:w-72 shrink-0">
                                         <div class="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl overflow-hidden bg-slate-200 shrink-0 border-2 border-white shadow-sm">
                                             <img src="<%= member.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop' %>" 
@@ -323,21 +378,20 @@
                                         </div>
                                         <div class="min-w-0 flex-1">
                                             <div class="flex items-center gap-2 mb-0.5">
-                                                <h4 class="text-base sm:text-lg font-extrabold text-slate-900 truncate"><%= member.stage_name %></h4>
+                                                <h4 class="text-base font-black text-slate-900 truncate"><%= member.stage_name %></h4>
                                                 <% if (member.mbti) { %>
-                                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-pink-100 text-pink-700 uppercase tracking-wider shrink-0">
+                                                    <span class="px-2 py-0.5 rounded text-[10px] font-black bg-pink-100 text-pink-700 uppercase tracking-wider shrink-0">
                                                         <%= member.mbti %>
                                                     </span>
                                                 <% } %>
                                             </div>
                                             <p class="text-xs text-slate-500 font-medium truncate mb-1"><%= member.birth_name %></p>
-                                            <span class="text-[11px] text-purple-700 font-bold bg-purple-50 rounded-lg px-2.5 py-0.5 inline-block border border-purple-100 truncate max-w-full">
+                                            <span class="text-[11px] text-violet-700 font-bold bg-violet-50 rounded-lg px-2.5 py-0.5 inline-block border border-violet-100 truncate max-w-full">
                                                 <%= member.position %>
                                             </span>
                                         </div>
                                     </div>
 
-                                    <!-- Right: 6-cell horizontal biodata chips -->
                                     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-xs text-slate-600 md:border-l md:border-slate-200/80 md:ps-6 pt-3 md:pt-0 border-t border-slate-200/60 md:border-t-0 flex-1">
                                         <div class="bg-white/90 rounded-xl p-2 border border-slate-100 shadow-2xs">
                                             <div class="text-[10px] font-bold text-slate-400 uppercase">DOB</div>
@@ -371,48 +425,53 @@
                 </div>
             <% } %>
 
-            <!-- Event-Based Community Discussion (1-Level Threaded Q&A Forum) -->
-            <div id="discussion" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
-                <!-- Discussion Section Header -->
+            <!-- Anti-Scalper Community Discussion (1-Level Threaded Q&A Forum) -->
+            <!-- Strict Immutability: No Edit Feature Allowed by Design to Prevent Scalper Bait & Switch -->
+            <div id="discussion" class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-6">
+                <!-- Section Header -->
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
                     <div>
-                        <h2 class="text-xl font-bold text-slate-900 flex items-center">
-                            <i class="fas fa-comments text-pink-600 me-2.5"></i> Community Discussion
-                            <span class="ms-3 px-3 py-0.5 rounded-full text-xs font-extrabold bg-pink-50 text-pink-700 border border-pink-200">
-                                <%= totalCommentsCount || (typeof comments !== 'undefined' && comments ? comments.length : (chatMessages ? chatMessages.length : 0)) %> Comments
+                        <h2 class="text-xl font-black text-slate-900 flex items-center gap-2.5">
+                            <i class="fas fa-comments text-pink-600"></i>
+                            <span>Concert Community Discussion</span>
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-pink-50 text-pink-700 border border-pink-200">
+                                <%= totalCommentsCount || (typeof comments !== 'undefined' && comments ? comments.length : (chatMessages ? chatMessages.length : 0)) %>
                             </span>
                         </h2>
-                        <p class="text-xs text-slate-500 mt-1">Ask questions, share concert tips, and connect with fellow Malaysian attendees for this event.</p>
+                        <p class="text-xs text-slate-500 mt-1">Concert logistics, transport carpools, fan chant tips, and venue questions.</p>
                     </div>
                     <% if (isChatLocked) { %>
-                        <span class="self-start sm:self-auto px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
-                            <i class="fas fa-lock me-1"></i> Discussion Archived
+                        <span class="self-start sm:self-auto px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200 shrink-0 flex items-center gap-1.5">
+                            <i class="fas fa-lock"></i>
+                            <span>Discussion Archived</span>
                         </span>
                     <% } else { %>
-                        <span class="self-start sm:self-auto px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block me-1.5"></span> Open Discussion
+                        <span class="self-start sm:self-auto px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                            <span>Live Discussion Open</span>
                         </span>
                     <% } %>
                 </div>
 
-                <!-- Community Discussion Safety Guidelines (Requirement R-42) -->
-                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs text-slate-500 flex items-start gap-2.5">
-                    <i class="fas fa-shield-halved text-pink-500 text-sm shrink-0 mt-0.5"></i>
+                <!-- Discussion Anti-Fraud Safety Notice -->
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs text-slate-600 flex items-start gap-3">
+                    <i class="fas fa-shield-halved text-pink-600 text-base shrink-0 mt-0.5"></i>
                     <div class="leading-relaxed">
-                        <strong class="text-slate-800">Community Discussion Guidelines:</strong>
-                        Feel free to ask questions and share concert advice. Unofficial ticket reselling, scalping, harassment, and unverified rumors are strictly prohibited and subject to immediate moderation.
+                        <strong class="text-slate-900">Anti-Scalper & Safety Notice:</strong>
+                        Ticket reselling, scalping, unverified QR transfers, and commercial solicitations are strictly forbidden. To preserve safety audit trails, posted comments cannot be secretly edited. Violators face permanent account suspension.
                     </div>
                 </div>
 
                 <!-- Input Box (Posting Area) -->
                 <% if (isChatLocked) { %>
                     <div class="p-4 rounded-2xl bg-slate-100 text-xs text-slate-500 font-medium flex items-center gap-2">
-                        <i class="fas fa-lock text-slate-400"></i> This discussion is archived (24-hour post-event archive window reached). All past questions and answers remain visible for reference.
+                        <i class="fas fa-lock text-slate-400"></i>
+                        <span>This discussion is archived (24-hour post-event window reached). All past Q&A remains publicly accessible for reference.</span>
                     </div>
                 <% } else if (userObj) { %>
                     <form id="main-comment-form" onsubmit="postComment(event, null)" class="bg-slate-50/80 p-4 sm:p-5 rounded-2xl border border-slate-200/80 space-y-3">
                         <div class="flex items-start gap-3">
-                            <div class="w-9 h-9 rounded-full bg-pink-100 text-pink-700 font-extrabold text-xs flex items-center justify-center shrink-0 border border-pink-200 overflow-hidden">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-500 to-violet-600 text-white font-black text-xs flex items-center justify-center shrink-0 border border-white/20 shadow-sm overflow-hidden">
                                 <% if (userObj.profile_image) { %>
                                     <img src="<%= userObj.profile_image %>" alt="" class="w-full h-full object-cover">
                                 <% } else { %>
@@ -421,54 +480,54 @@
                             </div>
                             <div class="flex-1">
                                 <textarea id="main-comment-input" rows="3" 
-                                          placeholder="Write a comment or question about this event (e.g. transport, venue guidelines, merchandise, fan chants)..." 
+                                          placeholder="Ask a question or share advice about this concert (e.g. transport, merch queue, entry gates, fan chants)..." 
                                           required
-                                          class="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all resize-y"></textarea>
+                                          class="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all resize-y"></textarea>
                             </div>
                         </div>
                         <div class="flex items-center justify-between pt-1">
                             <span class="text-[11px] text-slate-400 flex items-center gap-1.5">
-                                <i class="fas fa-circle-info text-pink-500"></i> Be respectful and helpful to fellow fans
+                                <i class="fas fa-circle-info text-pink-500"></i>
+                                <span>Be courteous and supportive of fellow fans</span>
                             </span>
                             <button type="submit" id="main-comment-btn" 
-                                    class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer">
-                                <i class="fas fa-paper-plane text-pink-400"></i> Post Comment
+                                    class="px-5 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer press-tactile">
+                                <i class="fas fa-paper-plane text-pink-400"></i>
+                                <span>Post Comment</span>
                             </button>
                         </div>
                     </form>
                 <% } else { %>
-                    <div class="p-5 rounded-2xl bg-gradient-to-r from-pink-50/80 via-purple-50/50 to-indigo-50/80 border border-pink-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="p-5 rounded-2xl bg-gradient-to-r from-pink-50/80 via-violet-50/50 to-indigo-50/80 border border-pink-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div class="flex items-center gap-3.5">
                             <div class="w-10 h-10 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center shrink-0 shadow-2xs">
                                 <i class="fas fa-comments text-lg"></i>
                             </div>
                             <div>
-                                <h4 class="text-xs font-bold text-slate-900">Join the Community Discussion</h4>
-                                <p class="text-[11px] text-slate-500">Please log in or create an account to post questions and share tips with other attendees.</p>
+                                <h4 class="text-xs font-bold text-slate-900">Join the Concert Discussion</h4>
+                                <p class="text-[11px] text-slate-500">Log in or create a free fan account to post questions and connect with fellow concert attendees.</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-2.5 shrink-0">
                             <a href="/login?redirect=/events/<%= event.id %>#discussion" 
-                               class="px-4 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 text-xs font-bold transition-all shadow-2xs">
+                               class="px-4 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 text-xs font-bold transition-all shadow-2xs press-tactile">
                                 Log In
                             </a>
                             <a href="/register" 
-                               class="px-4 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold transition-all shadow-2xs">
+                               class="px-4 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold transition-all shadow-2xs press-tactile">
                                 Register
                             </a>
                         </div>
                     </div>
                 <% } %>
 
-                <!-- The Comment Thread (1-Level Nested) -->
-                <% 
-                    const threadList = (typeof comments !== 'undefined' && comments) ? comments : []; 
-                %>
-                <div class="space-y-5 pt-2">
+                <!-- Thread List (1-Level Nested Q&A) -->
+                <% const threadList = (typeof comments !== 'undefined' && comments) ? comments : []; %>
+                <div class="space-y-4 pt-2">
                     <% if (threadList.length === 0) { %>
                         <div class="text-center py-12 text-slate-400 text-xs font-medium bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
                             <i class="fas fa-comment-dots text-3xl mb-2 text-slate-300 block"></i>
-                            No comments or questions yet. Be the first fan to start the discussion!
+                            <span>No comments yet. Be the first Malaysian fan to start the discussion!</span>
                         </div>
                     <% } else { %>
                         <% threadList.forEach(function(comment) { %>
@@ -478,11 +537,10 @@
                                 const isSubmitter = (event.organizer_id && comment.user_id === event.organizer_id) || Boolean(comment.is_organizer);
                                 const isCommentAdmin = (comment.role || '').toUpperCase() === 'ADMIN';
                             %>
-                            <div id="comment-<%= comment.id %>" class="bg-slate-50/60 hover:bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200/80 transition-all">
-                                <!-- Main Comment Header -->
+                            <div id="comment-<%= comment.id %>" class="bg-slate-50/70 hover:bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200/80 transition-all">
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-9 h-9 rounded-full bg-slate-200 text-slate-700 font-extrabold text-xs flex items-center justify-center shrink-0 border border-slate-300/80 overflow-hidden">
+                                        <div class="w-9 h-9 rounded-full bg-slate-200 text-slate-700 font-black text-xs flex items-center justify-center shrink-0 border border-slate-300/80 overflow-hidden">
                                             <% if (comment.profile_image) { %>
                                                 <img src="<%= comment.profile_image %>" alt="" class="w-full h-full object-cover">
                                             <% } else { %>
@@ -491,17 +549,17 @@
                                         </div>
                                         <div class="min-w-0">
                                             <div class="flex flex-wrap items-center gap-1.5">
-                                                <span class="text-xs font-extrabold text-slate-900 truncate">
+                                                <span class="text-xs font-black text-slate-900 truncate">
                                                     <%= comment.username || comment.full_name %>
                                                 </span>
                                                 <% if (isSubmitter) { %>
-                                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-pink-100 text-pink-700 border border-pink-200 flex items-center gap-1">
+                                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-pink-100 text-pink-700 border border-pink-200 flex items-center gap-1">
                                                         <i class="fas fa-star text-[9px] text-pink-500"></i> Event Submitter
                                                     </span>
                                                 <% } %>
                                                 <% if (isCommentAdmin) { %>
-                                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-purple-100 text-purple-700 border border-purple-200 flex items-center gap-1">
-                                                        <i class="fas fa-shield text-[9px] text-purple-500"></i> Admin
+                                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-violet-100 text-violet-700 border border-violet-200 flex items-center gap-1">
+                                                        <i class="fas fa-shield text-[9px] text-violet-500"></i> Admin
                                                     </span>
                                                 <% } %>
                                                 <span class="text-slate-400 text-[11px] font-normal">
@@ -511,31 +569,28 @@
                                         </div>
                                     </div>
 
-                                    <!-- Delete Action for Author or Admin -->
                                     <% if (isCommentAuthor || isAdmin) { %>
                                         <button onclick="deleteComment(<%= comment.id %>)" 
-                                                class="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors text-xs cursor-pointer" 
-                                                title="<%= isAdmin && !isCommentAuthor ? 'Moderate / Delete comment as Admin' : 'Delete your comment' %>">
+                                                class="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors text-xs cursor-pointer press-tactile" 
+                                                title="<%= isAdmin && !isCommentAuthor ? 'Moderate comment as Admin' : 'Delete your comment' %>">
                                             <i class="fas fa-trash-can"></i>
                                         </button>
                                     <% } %>
                                 </div>
 
-                                <!-- Main Comment Body -->
                                 <div class="text-xs text-slate-700 leading-relaxed whitespace-pre-line mt-2.5 ps-12">
                                     <%= comment.message %>
                                 </div>
 
-                                <!-- Action Controls (Reply Trigger) -->
                                 <% if (!isChatLocked && userObj) { %>
                                     <div class="mt-2.5 ps-12 flex items-center gap-4">
                                         <button onclick="toggleReplyBox(<%= comment.id %>)" 
-                                                class="text-[11px] font-bold text-pink-600 hover:text-pink-700 flex items-center gap-1 cursor-pointer transition-colors">
+                                                class="text-[11px] font-bold text-pink-600 hover:text-pink-700 flex items-center gap-1 cursor-pointer press-tactile">
                                             <i class="fas fa-reply text-[10px]"></i> Reply
                                         </button>
                                     </div>
 
-                                    <!-- Inline Reply Box (Hidden by default) -->
+                                    <!-- Inline Reply Box -->
                                     <form id="reply-form-<%= comment.id %>" 
                                           onsubmit="postComment(event, <%= comment.id %>)" 
                                           class="hidden mt-3 ps-12 space-y-2">
@@ -546,11 +601,11 @@
                                                       class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-500 resize-y"></textarea>
                                             <div class="flex items-center justify-end gap-2">
                                                 <button type="button" onclick="toggleReplyBox(<%= comment.id %>)" 
-                                                        class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 text-xs font-semibold cursor-pointer">
+                                                        class="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 text-xs font-semibold cursor-pointer press-tactile">
                                                     Cancel
                                                 </button>
                                                 <button type="submit" 
-                                                        class="px-4 py-1.5 rounded-lg bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold cursor-pointer shadow-2xs">
+                                                        class="px-4 py-1.5 rounded-lg bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold cursor-pointer shadow-2xs press-tactile">
                                                     Reply
                                                 </button>
                                             </div>
@@ -570,7 +625,7 @@
                                             <div id="comment-<%= reply.id %>" class="bg-white p-3 sm:p-3.5 rounded-xl border border-slate-200/80 shadow-2xs">
                                                 <div class="flex items-start justify-between gap-2">
                                                     <div class="flex items-center gap-2.5">
-                                                        <span class="text-pink-400 font-bold text-xs">↳</span>
+                                                        <span class="text-pink-500 font-bold text-xs">↳</span>
                                                         <div class="w-7 h-7 rounded-full bg-slate-200 text-slate-700 font-bold text-[11px] flex items-center justify-center shrink-0 border border-slate-300 overflow-hidden">
                                                             <% if (reply.profile_image) { %>
                                                                 <img src="<%= reply.profile_image %>" alt="" class="w-full h-full object-cover">
@@ -583,12 +638,12 @@
                                                                 <%= reply.username || reply.full_name %>
                                                             </span>
                                                             <% if (isReplySubmitter) { %>
-                                                                <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-pink-100 text-pink-700 border border-pink-200">
+                                                                <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-pink-100 text-pink-700 border border-pink-200">
                                                                     Event Submitter
                                                                 </span>
                                                             <% } %>
                                                             <% if (isReplyAdmin) { %>
-                                                                <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-purple-100 text-purple-700 border border-purple-200">
+                                                                <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-violet-100 text-violet-700 border border-violet-200">
                                                                     Admin
                                                                 </span>
                                                             <% } %>
@@ -600,7 +655,7 @@
 
                                                     <% if (isReplyAuthor || isAdmin) { %>
                                                         <button onclick="deleteComment(<%= reply.id %>)" 
-                                                                class="text-slate-400 hover:text-rose-600 p-1 rounded hover:bg-rose-50 transition-colors text-xs cursor-pointer" 
+                                                                class="text-slate-400 hover:text-rose-600 p-1 rounded hover:bg-rose-50 transition-colors text-xs cursor-pointer press-tactile" 
                                                                 title="Delete reply">
                                                             <i class="fas fa-trash-can text-[10px]"></i>
                                                         </button>
@@ -621,57 +676,64 @@
             </div>
         </div>
 
-        <!-- Right 1 Col: Event Info Card, Venue Map, Organizer Verification -->
+        <!-- Right 1 Col: Event Summary & Map, Organizer Legitimacy, Reference ID -->
         <div class="space-y-6">
             <!-- Event Schedule & Location Card -->
-            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-5">
-                <h3 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">Event Summary</h3>
+            <div class="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm space-y-5">
+                <h3 class="text-base font-black text-slate-900 border-b border-slate-100 pb-3 flex items-center justify-between">
+                    <span>Showtime & Venue Intel</span>
+                    <span class="text-[11px] font-bold text-pink-600 bg-pink-50 px-2 py-0.5 rounded-full">
+                        <%= event.cluster_area || 'Kuala Lumpur' %>
+                    </span>
+                </h3>
 
                 <div class="space-y-4 text-xs">
                     <div class="flex items-start">
-                        <div class="w-8 h-8 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center shrink-0 me-3">
-                            <i class="far fa-calendar-check"></i>
+                        <div class="w-9 h-9 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center shrink-0 me-3 shadow-2xs">
+                            <i class="far fa-calendar-check text-sm"></i>
                         </div>
                         <div>
-                            <div class="font-bold text-slate-900">Event Date</div>
-                            <div class="text-slate-600"><%= helpers.formatDate(event.event_date) %></div>
+                            <div class="font-bold text-slate-900">Concert Date</div>
+                            <div class="text-slate-600 font-medium"><%= helpers.formatDate(event.event_date) %></div>
                         </div>
                     </div>
 
                     <div class="flex items-start">
-                        <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 me-3">
-                            <i class="far fa-clock"></i>
+                        <div class="w-9 h-9 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center shrink-0 me-3 shadow-2xs">
+                            <i class="far fa-clock text-sm"></i>
                         </div>
                         <div>
-                            <div class="font-bold text-slate-900">Start Time</div>
-                            <div class="text-slate-600"><%= helpers.formatTime(event.start_time) %> <%= event.end_time ? ' - ' + helpers.formatTime(event.end_time) : '' %></div>
+                            <div class="font-bold text-slate-900">Door & Showtime</div>
+                            <div class="text-slate-600 font-medium"><%= helpers.formatTime(event.start_time) %> <%= event.end_time ? '– ' + helpers.formatTime(event.end_time) : '' %></div>
                         </div>
                     </div>
 
                     <div class="flex items-start">
-                        <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 me-3">
-                            <i class="fas fa-location-dot"></i>
+                        <div class="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 me-3 shadow-2xs">
+                            <i class="fas fa-location-dot text-sm"></i>
                         </div>
                         <div>
                             <div class="font-bold text-slate-900"><%= event.venue_name %></div>
+                            <div class="text-slate-500 text-[11px]"><%= event.address ? event.address + ', ' : '' %><%= event.city %>, <%= event.state %></div>
                             <% const mapUrl = event.map_link || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(event.venue_name + ' ' + (event.city || 'Malaysia'))); %>
-                            <a href="<%= mapUrl %>" target="_blank" rel="noopener noreferrer" class="text-pink-600 font-bold hover:underline inline-flex items-center gap-1 mt-1.5">
+                            <a href="<%= mapUrl %>" target="_blank" rel="noopener noreferrer" class="text-pink-600 font-bold hover:underline inline-flex items-center gap-1 mt-1.5 press-tactile">
                                 <i class="fas fa-arrow-up-right-from-square text-[10px]"></i> Open in Google Maps ↗
                             </a>
                         </div>
                     </div>
 
-                    <!-- Embedded Interactive Google Map in Browser -->
+                    <!-- Embedded Interactive Venue Map -->
                     <div class="mt-4 pt-4 border-t border-slate-100">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-[11px] font-bold text-slate-700 uppercase tracking-wider flex items-center">
-                                <i class="fas fa-map-location-dot text-rose-500 me-1.5"></i> Interactive Venue Map
+                            <span class="text-[11px] font-black text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fas fa-map-location-dot text-rose-500"></i> Interactive Venue Map
                             </span>
-                            <a href="https://maps.google.com/?q=<%= mapQuery %>" target="_blank" rel="noopener noreferrer" class="text-[11px] font-bold text-pink-600 hover:underline flex items-center">
-                                <span>Directions</span> <i class="fas fa-arrow-up-right-from-square ms-1 text-[9px]"></i>
+                            <a href="https://maps.google.com/?q=<%= mapQuery %>" target="_blank" rel="noopener noreferrer" class="text-[11px] font-bold text-pink-600 hover:underline flex items-center gap-1">
+                                <span>Directions</span>
+                                <i class="fas fa-arrow-up-right-from-square text-[9px]"></i>
                             </a>
                         </div>
-                        <div class="rounded-2xl overflow-hidden border border-slate-200 shadow-sm h-52 bg-slate-100">
+                        <div class="rounded-2xl overflow-hidden border border-slate-200 shadow-xs h-52 bg-slate-100">
                             <iframe class="w-full h-full border-0" loading="lazy" allowfullscreen 
                                     src="https://maps.google.com/maps?q=<%= mapQuery %>&t=&z=15&ie=UTF8&iwloc=&output=embed">
                             </iframe>
@@ -681,24 +743,21 @@
 
                 <% if (event.transit_info) { %>
                     <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs">
-                        <div class="font-bold text-slate-800 mb-1 flex items-center"><i class="fas fa-train text-purple-600 me-1.5"></i> Public Transit Directions</div>
+                        <div class="font-bold text-slate-800 mb-1 flex items-center gap-1.5">
+                            <i class="fas fa-train text-violet-600"></i>
+                            <span>Public Transit & LRT Directions</span>
+                        </div>
                         <div class="text-slate-600 leading-relaxed"><%= event.transit_info %></div>
                     </div>
                 <% } %>
             </div>
 
             <!-- Organizer / Fanclub Legitimacy Card -->
-            <% 
-                const displayOrgName = event.promoter_name || event.organization_name || event.submitter_name || (event.organizer_name && event.organizer_name !== 'System Admin' ? event.organizer_name : 'Authorized Tour Production');
-                const rawHandle = event.submitter_social || event.social_handle || '';
-                const cleanHandle = rawHandle.replace(/^@/, '');
-                const orgSocialLink = event.social_url || (rawHandle ? (rawHandle.startsWith('http') ? rawHandle : `https://x.com/${cleanHandle}`) : '');
-                const ticketSec = helpers.getTicketingSecurity(event.official_url, displayOrgName);
-            %>
-            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <div class="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm space-y-4">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                    <h3 class="text-base font-bold text-slate-900 flex items-center">
-                        <i class="fas fa-shield-halved text-pink-600 me-2"></i> Organizer Legitimacy
+                    <h3 class="text-base font-black text-slate-900 flex items-center gap-2">
+                        <i class="fas fa-shield-halved text-pink-600"></i>
+                        <span>Organizer Legitimacy</span>
                     </h3>
                     <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full <%= ticketSec.statusClass %>">
                         <i class="fas <%= ticketSec.icon %> me-1"></i> <%= ticketSec.badge %>
@@ -707,7 +766,7 @@
 
                 <div>
                     <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Host / Promoter</div>
-                    <div class="font-extrabold text-base text-slate-900 mt-0.5"><%= displayOrgName %></div>
+                    <div class="font-black text-base text-slate-900 mt-0.5"><%= displayOrgName %></div>
                     
                     <div class="mt-2.5 flex flex-wrap gap-2">
                         <% if (event.is_verified_organizer === 1 || event.promoter_name) { %>
@@ -722,7 +781,7 @@
 
                         <% if (orgSocialLink) { %>
                             <a href="<%= orgSocialLink %>" target="_blank" rel="noopener noreferrer" 
-                               class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 transition-colors">
+                               class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 transition-colors press-tactile">
                                 <i class="fab fa-x-twitter me-1.5 text-pink-600"></i> <%= rawHandle || 'Official Profile' %>
                                 <i class="fas fa-arrow-up-right-from-square text-[9px] ms-1.5 text-pink-400"></i>
                             </a>
@@ -731,9 +790,10 @@
                 </div>
 
                 <!-- Anti-Fraud Trust Check -->
-                <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-200/80 space-y-2 text-[11px] text-slate-600">
-                    <div class="font-bold text-slate-800 text-xs flex items-center">
-                        <i class="fas fa-robot text-purple-600 me-1.5"></i> Dual-AI Verification Safeguards
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 space-y-2 text-[11px] text-slate-600">
+                    <div class="font-bold text-slate-800 text-xs flex items-center gap-1.5">
+                        <i class="fas fa-robot text-violet-600"></i>
+                        <span>Autonomous Dual-AI Verification Audit</span>
                     </div>
                     <div class="flex items-start gap-1.5">
                         <i class="fas fa-check text-emerald-500 text-[10px] mt-0.5"></i>
@@ -744,46 +804,318 @@
                         <span>Official source gateway: <strong class="text-slate-800"><%= ticketSec.domain %></strong></span>
                     </div>
                     <div class="flex items-start gap-1.5">
-                        <i class="fas fa-shield text-purple-500 text-[10px] mt-0.5"></i>
-                        <span>Protected by community double-verification reporting system</span>
+                        <i class="fas fa-shield text-violet-500 text-[10px] mt-0.5"></i>
+                        <span>Backed by 4-layer verified community anti-scalper reporting</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Official K-Sync Verification & Safety Card (Small Card) -->
-            <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 rounded-3xl p-6 text-white shadow-lg space-y-3.5">
+            <!-- Official K-Sync Verification Card & Reference Code -->
+            <div class="bg-gradient-to-br from-slate-950 via-slate-900 to-violet-950 rounded-3xl p-6 text-white shadow-xl space-y-4 border border-white/10">
                 <div class="flex items-center justify-between">
-                    <div class="w-10 h-10 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center text-lg">
+                    <div class="w-10 h-10 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center text-lg shadow-xs">
                         <i class="fas fa-shield-check"></i>
                     </div>
-                    <span class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                        <i class="fas fa-circle-check me-1"></i> Verified Event
+                    <span class="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                        <i class="fas fa-circle-check me-1"></i> Verified Record
                     </span>
                 </div>
                 <div>
-                    <h3 class="font-extrabold text-sm text-white">Event Reference ID</h3>
-                    <p class="text-[11px] text-slate-300 mt-0.5">Use this reference code to track verified event updates.</p>
+                    <h3 class="font-black text-sm text-white">Event Reference Tracking ID</h3>
+                    <p class="text-[11px] text-slate-300 mt-0.5">Use this immutable code to track verified concert schedule changes.</p>
                 </div>
-                <div class="flex items-center justify-between bg-white/10 rounded-xl p-2.5 border border-white/10 font-mono text-xs">
-                    <span class="text-pink-300 font-bold tracking-wider"><%= event.tracking_code || 'KS-2026-TXT001' %></span>
-                    <button onclick="copyRefCode('<%= event.tracking_code || 'KS-2026-TXT001' %>')" 
-                            class="text-[11px] text-slate-300 hover:text-white font-sans font-bold flex items-center cursor-pointer transition-colors">
-                        <i class="far fa-copy me-1 text-xs"></i> Copy
+                <div class="flex items-center justify-between bg-white/10 rounded-xl p-3 border border-white/10 font-mono text-xs">
+                    <span class="text-pink-300 font-bold tracking-wider"><%= event.tracking_code || 'KS-2026-MY001' %></span>
+                    <button onclick="copyRefCode('<%= event.tracking_code || 'KS-2026-MY001' %>')" 
+                            class="text-[11px] text-slate-300 hover:text-white font-sans font-bold flex items-center gap-1 cursor-pointer transition-colors press-tactile">
+                        <i class="far fa-copy text-xs"></i>
+                        <span>Copy</span>
                     </button>
                 </div>
                 <div class="text-[11px] text-slate-300/90 leading-relaxed pt-1 border-t border-white/10 space-y-1">
                     <div class="flex items-start gap-1.5">
                         <i class="fas fa-check text-pink-400 text-[10px] mt-0.5"></i>
-                        <span>Vetted against official tour promoters</span>
+                        <span>Direct synchronization with official promoter calendar</span>
                     </div>
                     <div class="flex items-start gap-1.5">
                         <i class="fas fa-ban text-rose-400 text-[10px] mt-0.5"></i>
-                        <span>Never buy from unverified social media scalpers</span>
+                        <span>Never buy from unauthorized secondary scalpers</span>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
+</div>
+
+<!-- Lightbox Fullscreen Viewer Modal -->
+<div id="lightbox-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden items-center justify-center p-2 sm:p-6" onclick="closeLightbox()">
+    <div class="relative max-w-5xl max-h-[96vh] w-full flex flex-col items-center justify-center" onclick="event.stopPropagation()">
+        <div class="w-full flex items-center justify-between text-white pb-3 px-3">
+            <h4 id="lightbox-title" class="text-sm font-black truncate pr-4 text-slate-100 flex items-center gap-2">
+                <i class="fas fa-image text-pink-400"></i>
+                <span>Official Concert Poster</span>
+            </h4>
+            <div class="flex items-center space-x-2 shrink-0">
+                <a id="lightbox-download" href="#" target="_blank" download class="px-3.5 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 text-white text-xs font-bold flex items-center gap-1.5 transition-colors press-tactile">
+                    <i class="fas fa-download text-pink-400"></i>
+                    <span>Original</span>
+                </a>
+                <button onclick="closeLightbox()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-sm cursor-pointer transition-colors press-tactile" title="Close (Esc)">
+                    <i class="fas fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+        <div class="max-h-[86vh] w-full flex items-center justify-center overflow-auto p-2 bg-slate-950/60 rounded-2xl border border-white/10">
+            <img id="lightbox-img" src="" alt="Enlarged Poster" class="max-h-[82vh] w-auto max-w-full object-contain rounded-xl shadow-2xl">
+        </div>
+    </div>
+</div>
+
+<!-- Interactive Share Modal -->
+<div id="share-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 transform transition-all scale-95 opacity-0 duration-200" id="share-modal-content">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+            <h3 class="text-lg font-black text-slate-900 flex items-center gap-2.5">
+                <i class="fas fa-share-nodes text-pink-600"></i>
+                <span>Share Concert Dossier</span>
+            </h3>
+            <button onclick="closeShareModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-xs cursor-pointer transition-colors press-tactile">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
+
+        <p class="text-xs text-slate-600 mb-4 font-medium">Spread the official concert schedule to fellow Malaysian K-pop fans!</p>
+
+        <!-- Direct Social Share Buttons -->
+        <div class="grid grid-cols-4 gap-3 mb-6">
+            <a id="share-wa" href="#" target="_blank" rel="noopener" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-colors group press-tactile">
+                <i class="fab fa-whatsapp text-2xl mb-1 text-emerald-600 group-hover:scale-110 transition-transform"></i>
+                <span class="text-[10px] font-bold">WhatsApp</span>
+            </a>
+            <a id="share-x" href="#" target="_blank" rel="noopener" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-900 transition-colors group press-tactile">
+                <i class="fab fa-x-twitter text-2xl mb-1 text-slate-900 group-hover:scale-110 transition-transform"></i>
+                <span class="text-[10px] font-bold">X (Twitter)</span>
+            </a>
+            <a id="share-tg" href="#" target="_blank" rel="noopener" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-sky-50 hover:bg-sky-100 text-sky-700 transition-colors group press-tactile">
+                <i class="fab fa-telegram text-2xl mb-1 text-sky-500 group-hover:scale-110 transition-transform"></i>
+                <span class="text-[10px] font-bold">Telegram</span>
+            </a>
+            <a id="share-fb" href="#" target="_blank" rel="noopener" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-blue-50 hover:bg-blue-100 text-blue-700 transition-colors group press-tactile">
+                <i class="fab fa-facebook text-2xl mb-1 text-blue-600 group-hover:scale-110 transition-transform"></i>
+                <span class="text-[10px] font-bold">Facebook</span>
+            </a>
+        </div>
+
+        <!-- Copy Link Box -->
+        <div class="relative">
+            <input type="text" id="share-url-input" readonly 
+                   class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 pl-4 pr-24 text-xs text-slate-700 font-mono focus:outline-none">
+            <button onclick="copyShareUrl()" id="share-copy-btn"
+                    class="absolute right-1.5 top-1.5 bottom-1.5 px-4 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center transition-all cursor-pointer press-tactile">
+                <span>Copy</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive Add to Calendar Modal (.ICS & Google Calendar) -->
+<div id="calendar-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 transform transition-all scale-95 opacity-0 duration-200" id="calendar-modal-content">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+            <h3 class="text-lg font-black text-slate-900 flex items-center gap-2.5">
+                <i class="far fa-calendar-plus text-violet-600"></i>
+                <span>Add to Calendar</span>
+            </h3>
+            <button onclick="closeCalendarModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-xs cursor-pointer transition-colors press-tactile">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
+
+        <p class="text-xs text-slate-600 mb-5 leading-relaxed font-medium">
+            Sync <strong><%= event.event_name %></strong> directly into your smartphone calendar or Google Calendar with automatic showtime alarms.
+        </p>
+
+        <!-- Calendar Options -->
+        <div class="space-y-3 mb-4">
+            <!-- Option 1: Mobile Phone Native Calendar (.ics - iPhone & Android) -->
+            <a href="/events/<%= eventSlug %>/calendar.ics" 
+               class="flex items-center justify-between p-4 rounded-2xl bg-violet-50 hover:bg-violet-100 border border-violet-200/80 transition-all group press-tactile">
+                <div class="flex items-center space-x-3.5">
+                    <div class="w-11 h-11 rounded-xl bg-violet-600 text-white flex items-center justify-center text-lg shadow-sm group-hover:scale-105 transition-transform">
+                        <i class="fas fa-mobile-screen-button"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs font-black text-slate-900 flex items-center">
+                            <span>Phone / Apple Calendar (.ics)</span>
+                            <span class="ms-2 px-2 py-0.5 rounded text-[10px] font-black bg-violet-200 text-violet-800">Native</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 mt-0.5">Saves to iOS / Android calendar with 24h & 2h alarms</p>
+                    </div>
+                </div>
+                <i class="fas fa-download text-violet-600 group-hover:translate-y-0.5 transition-transform ms-2"></i>
+            </a>
+
+            <!-- Option 2: Google Calendar -->
+            <a href="<%= gCalUrl %>" target="_blank" rel="noopener"
+               class="flex items-center justify-between p-4 rounded-2xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 transition-all group press-tactile">
+                <div class="flex items-center space-x-3.5">
+                    <div class="w-11 h-11 rounded-xl bg-white border border-slate-200 text-blue-600 flex items-center justify-center text-lg shadow-xs group-hover:scale-105 transition-transform">
+                        <i class="fab fa-google"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs font-black text-slate-900">Google Calendar</div>
+                        <p class="text-[11px] text-slate-500 mt-0.5">Syncs directly into Google Calendar app</p>
+                    </div>
+                </div>
+                <i class="fas fa-arrow-up-right-from-square text-slate-400 group-hover:text-blue-600 transition-colors ms-2"></i>
+            </a>
+
+            <!-- Option 3: Outlook / Office 365 -->
+            <a href="https://outlook.live.com/calendar/0/deeplink/compose?subject=<%= encodeURIComponent(event.event_name) %>&startdt=<%= rawDate %>T<%= startTimeFormatted %>&enddt=<%= rawDate %>T<%= endTimeFormatted %>&location=<%= encodeURIComponent(event.venue_name + ', ' + (event.city || 'Malaysia')) %>&body=<%= encodeURIComponent(event.description || 'K-Pop Concert in Malaysia') %>" 
+               target="_blank" rel="noopener"
+               class="flex items-center justify-between p-4 rounded-2xl bg-slate-50 hover:bg-sky-50 border border-slate-200 hover:border-sky-200 transition-all group press-tactile">
+                <div class="flex items-center space-x-3.5">
+                    <div class="w-11 h-11 rounded-xl bg-white border border-slate-200 text-sky-600 flex items-center justify-center text-lg shadow-xs group-hover:scale-105 transition-transform">
+                        <i class="fab fa-microsoft"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs font-black text-slate-900">Outlook / Office 365</div>
+                        <p class="text-[11px] text-slate-500 mt-0.5">Sync to Microsoft Outlook calendar</p>
+                    </div>
+                </div>
+                <i class="fas fa-arrow-up-right-from-square text-slate-400 group-hover:text-sky-600 transition-colors ms-2"></i>
+            </a>
+        </div>
+
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-[11px] text-slate-500 flex items-center gap-2">
+            <i class="fas fa-bell text-amber-500 text-xs"></i>
+            <span>Includes 2 automated alerts: 1 day before & 2 hours before showtime.</span>
+        </div>
+    </div>
+</div>
+
+<!-- 4-Layer Double-Verification Report Modal -->
+<div id="report-modal" class="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-slate-100 max-h-[92vh] overflow-y-auto">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+            <div>
+                <h3 class="text-lg font-black text-slate-900 flex items-center gap-2.5">
+                    <i class="fas fa-shield-halved text-rose-600"></i>
+                    <span>Community Safety Report</span>
+                </h3>
+                <p class="text-xs text-slate-500 mt-0.5">Double-Verification Anti-Scam & Accuracy Audit</p>
+            </div>
+            <button onclick="closeReportModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-xs cursor-pointer transition-colors press-tactile">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
+
+        <form onsubmit="submitVerifiedReport(event)" class="space-y-4">
+            <!-- Layer 1: Authenticated Identity Gate -->
+            <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-200 flex items-center justify-between text-xs">
+                <div>
+                    <span class="text-slate-400 font-semibold block text-[10px] uppercase tracking-wider">Layer 1: Verified Identity</span>
+                    <span class="font-bold text-slate-800">
+                        <i class="fas fa-user-check text-emerald-500 me-1"></i> 
+                        <%= userObj ? userObj.username : 'Guest' %> (<%= userObj ? userObj.email : '' %>)
+                    </span>
+                </div>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800">Account Bound</span>
+            </div>
+
+            <!-- Layer 2: Violation Classification -->
+            <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1.5">
+                    Layer 2: Violation Classification <span class="text-rose-500">*</span>
+                </label>
+                <select id="report-reason" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-400 font-medium">
+                    <option value="">-- Select Specific Violation Category --</option>
+                    <option value="SCAM_TICKETS">🚨 Phishing / Fake Ticket Scalper Link (Attempting unofficial resale)</option>
+                    <option value="IMPOSTOR_ORGANIZER">🎭 Impostor / Fake Organizer (Unauthorized promoter identity)</option>
+                    <option value="INACCURATE_SCHEDULE">📅 Inaccurate Venue, Date, or Starting Time</option>
+                    <option value="CANCELLED_EVENT">🚫 Cancelled or Postponed by Artist Agency</option>
+                    <option value="OTHER">⚠️ Other Community Guideline Violation</option>
+                </select>
+            </div>
+
+            <!-- Layer 3: Counter-Evidence & Details -->
+            <div>
+                <div class="flex items-center justify-between mb-1.5">
+                    <label class="block text-xs font-bold text-slate-800">
+                        Layer 3: Detailed Explanation <span class="text-rose-500">*</span>
+                    </label>
+                    <span class="text-[10px] font-mono font-bold"><span id="report-char-count" class="text-rose-500">0</span> / 20 min characters</span>
+                </div>
+                <textarea id="report-details" rows="3" required oninput="updateReportCharCount()"
+                          placeholder="Explain specifically why this listing is fraudulent or inaccurate. Provide context (minimum 20 characters)..."
+                          class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-400 leading-relaxed"></textarea>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1.5">
+                    Counter-Evidence Proof URL <span class="text-slate-400 font-normal">(Optional but recommended)</span>
+                </label>
+                <div class="relative">
+                    <input type="url" id="report-evidence-url" 
+                           placeholder="https://x.com/official_agency/status/... or venue website"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-400">
+                </div>
+                <p class="text-[10px] text-slate-400 mt-1">Link to official agency post, promoter tweet, or venue announcement.</p>
+            </div>
+
+            <!-- Layer 4: Good-Faith Anti-Defamation Declaration -->
+            <div class="bg-rose-50/60 rounded-2xl p-3.5 border border-rose-200 text-xs">
+                <label class="flex items-start gap-2.5 cursor-pointer">
+                    <input type="checkbox" id="report-declaration" required class="mt-0.5 rounded text-rose-600 focus:ring-rose-500">
+                    <span class="text-[11px] text-rose-900 leading-snug">
+                        <strong>Layer 4: Anti-Defamation Declaration:</strong> I declare in good faith that this report contains truthful, verifiable evidence. I acknowledge that submitting false reports against legitimate fan organizers will result in immediate permanent account termination.
+                    </span>
+                </label>
+            </div>
+
+            <div id="report-modal-msg"></div>
+
+            <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
+                <button type="button" onclick="closeReportModal()" class="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs press-tactile">
+                    Cancel
+                </button>
+                <button type="submit" id="report-submit-btn" class="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md transition-all press-tactile">
+                    Submit Verified Report
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Authentication Required Notice Modal for Guest Visitors -->
+<div id="report-auth-modal" class="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-xs hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 text-center">
+        <div class="w-14 h-14 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-2xl mx-auto mb-4">
+            <i class="fas fa-lock"></i>
+        </div>
+        <h3 class="text-lg font-black text-slate-900 mb-1.5">Account Required to Report</h3>
+        <p class="text-xs text-slate-600 leading-relaxed mb-6 font-medium">
+            To protect genuine K-pop fan organizers from anonymous spam and competitor sabotage, all community reports require double-verification with a registered K-Sync account.
+        </p>
+        <div class="space-y-2.5">
+            <a href="/login?redirect=/events/<%= event.id %>" class="block w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs shadow-md press-tactile">
+                Log In to Submit Report
+            </a>
+            <a href="/register" class="block w-full py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs press-tactile">
+                Create Free Account
+            </a>
+            <button type="button" onclick="closeReportModal()" class="text-xs text-slate-400 hover:text-slate-600 pt-1 font-semibold press-tactile">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Toast Notification -->
+<div id="toast" class="fixed bottom-6 right-6 z-50 bg-slate-950 text-white px-5 py-3 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none border border-white/10">
+    <i class="fas fa-circle-check text-emerald-400"></i>
+    <span id="toast-msg">Copied to clipboard!</span>
 </div>
 
 <script>
@@ -822,13 +1154,13 @@
                 const icon = btn.querySelector('i');
                 if (badge) badge.textContent = data.count;
                 if (data.recommended) {
-                    btn.className = "px-4 py-2.5 rounded-xl border bg-amber-50 text-amber-700 border-amber-300 font-extrabold text-xs flex items-center shadow-xs transition-all cursor-pointer";
+                    btn.className = "px-4 py-2.5 rounded-xl border bg-amber-50 text-amber-700 border-amber-300 font-extrabold text-xs flex items-center shadow-xs cursor-pointer press-tactile";
                     if (icon) icon.className = "fas fa-thumbs-up me-1.5 text-amber-500";
-                    if (badge) badge.className = "ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] bg-amber-200 text-amber-900 font-extrabold";
+                    if (badge) badge.className = "ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] bg-amber-200 text-amber-900 font-black";
                 } else {
-                    btn.className = "px-4 py-2.5 rounded-xl border bg-white text-slate-700 border-slate-200 hover:bg-slate-50 font-bold text-xs flex items-center shadow-xs transition-all cursor-pointer";
+                    btn.className = "px-4 py-2.5 rounded-xl border bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200 font-bold text-xs flex items-center shadow-xs cursor-pointer press-tactile";
                     if (icon) icon.className = "far fa-thumbs-up me-1.5 text-slate-400";
-                    if (badge) badge.className = "ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] bg-slate-100 text-slate-600 font-extrabold";
+                    if (badge) badge.className = "ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] bg-slate-200 text-slate-700 font-black";
                 }
             }
         } catch (e) {
@@ -1003,13 +1335,13 @@
             if (data.status === 'success') {
                 const el = document.getElementById(`comment-${messageId}`);
                 if (el) {
-                    el.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    el.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
                     el.style.opacity = '0';
                     el.style.transform = 'scale(0.95)';
                     setTimeout(() => {
                         window.location.hash = 'discussion';
                         window.location.reload();
-                    }, 300);
+                    }, 250);
                 } else {
                     window.location.reload();
                 }
@@ -1022,7 +1354,6 @@
         }
     }
 
-    // Toast Helper
     function showToast(msg) {
         const toast = document.getElementById('toast');
         const toastMsg = document.getElementById('toast-msg');
@@ -1035,10 +1366,9 @@
         }
     }
 
-    // Share Modal Logic
     function openShareModal(eventName, eventSlug) {
         const origin = window.location.origin;
-        const slug = eventSlug || '<%= helpers.slugify(event.event_name) || event.id %>';
+        const slug = eventSlug || '<%= eventSlug %>';
         const url = origin + '/events/' + slug;
 
         if (navigator.share && /mobile|android|iphone/i.test(navigator.userAgent)) {
@@ -1068,9 +1398,8 @@
         }, 10);
     }
 
-    // Auto-update browser URL bar from /events/24 to /events/name-of-event
     document.addEventListener('DOMContentLoaded', () => {
-        const cleanSlug = '<%= helpers.slugify(event.event_name) || event.id %>';
+        const cleanSlug = '<%= eventSlug %>';
         if (cleanSlug && !window.location.pathname.endsWith('/' + cleanSlug)) {
             window.history.replaceState({}, '', '/events/' + cleanSlug);
         }
@@ -1079,12 +1408,16 @@
     function closeShareModal() {
         const modal = document.getElementById('share-modal');
         const content = document.getElementById('share-modal-content');
-        content.classList.remove('scale-100', 'opacity-100');
-        content.classList.add('scale-95', 'opacity-0');
+        if (content) {
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+        }
         setTimeout(() => {
-            modal.classList.remove('flex');
-            modal.classList.add('hidden');
-        }, 200);
+            if (modal) {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }
+        }, 180);
     }
 
     function openCalendarModal() {
@@ -1101,19 +1434,23 @@
     function closeCalendarModal() {
         const modal = document.getElementById('calendar-modal');
         const content = document.getElementById('calendar-modal-content');
-        content.classList.remove('scale-100', 'opacity-100');
-        content.classList.add('scale-95', 'opacity-0');
+        if (content) {
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+        }
         setTimeout(() => {
-            modal.classList.remove('flex');
-            modal.classList.add('hidden');
-        }, 200);
+            if (modal) {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }
+        }, 180);
     }
 
     function copyShareUrl() {
         const input = document.getElementById('share-url-input');
         input.select();
         navigator.clipboard.writeText(input.value);
-        showToast('Event link copied to clipboard!');
+        showToast('Concert link copied to clipboard!');
         const btn = document.getElementById('share-copy-btn');
         btn.innerHTML = '<i class="fas fa-check text-emerald-400"></i>';
         setTimeout(() => { btn.innerText = 'Copy'; }, 2000);
@@ -1124,8 +1461,8 @@
         showToast('Reference code ' + code + ' copied!');
     }
 
-    // Live Countdown Timer
-    const eventDateStr = "<%= event.event_date %>";
+    // Live Synchronized Countdown Timer
+    const eventDateStr = "<%= event.event_date instanceof Date ? event.event_date.toISOString().split('T')[0] : event.event_date %>";
     const startTimeStr = "<%= event.start_time || '18:00:00' %>";
     const targetTime = new Date(`${eventDateStr}T${startTimeStr}`).getTime();
 
@@ -1136,7 +1473,7 @@
         if (diff <= 0) {
             const timerEl = document.getElementById('countdown-timer');
             if (timerEl) {
-                timerEl.innerHTML = '<div class="col-span-4 bg-white/20 py-2 px-4 rounded-xl text-xs font-bold">Event Started / Live!</div>';
+                timerEl.innerHTML = '<div class="col-span-4 bg-emerald-500/20 text-emerald-300 py-2.5 px-4 rounded-xl text-xs font-black border border-emerald-500/30">Concert Live / Showtime Active!</div>';
             }
             return;
         }
@@ -1157,17 +1494,17 @@
         if (cdSeconds) cdSeconds.textContent = String(seconds).padStart(2, '0');
     }
 
-    if (targetTime) {
+    if (targetTime && !isNaN(targetTime)) {
         updateCountdown();
         setInterval(updateCountdown, 1000);
     }
 
-    // Lightbox Fullscreen Viewer Logic
+    // Lightbox Logic
     function openLightbox(imgSrc, title) {
         const modal = document.getElementById('lightbox-modal');
         if (!modal) return;
         document.getElementById('lightbox-img').src = imgSrc;
-        document.getElementById('lightbox-title').textContent = title || 'Official Event Poster';
+        document.getElementById('lightbox-title').querySelector('span').textContent = title || 'Official Event Poster';
         document.getElementById('lightbox-download').href = imgSrc;
         modal.classList.remove('hidden');
         modal.classList.add('flex');
@@ -1183,274 +1520,13 @@
     }
 
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'Escape') {
+            closeLightbox();
+            closeShareModal();
+            closeCalendarModal();
+            closeReportModal();
+        }
     });
 </script>
-
-<!-- Interactive Share Modal -->
-<div id="share-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 transform transition-all scale-95 opacity-0 duration-200" id="share-modal-content">
-        <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
-            <h3 class="text-lg font-bold text-slate-900 flex items-center">
-                <i class="fas fa-share-nodes text-pink-600 me-2.5"></i> Share This Event
-            </h3>
-            <button onclick="closeShareModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-xs cursor-pointer transition-colors">
-                <i class="fas fa-xmark"></i>
-            </button>
-        </div>
-
-        <p class="text-xs text-slate-600 mb-4 font-medium">Spread the word to fellow Malaysian K-pop fans!</p>
-
-        <!-- Direct Social Share Buttons -->
-        <div class="grid grid-cols-4 gap-3 mb-6">
-            <a id="share-wa" href="#" target="_blank" rel="noopener" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-colors group">
-                <i class="fab fa-whatsapp text-2xl mb-1 text-emerald-600 group-hover:scale-110 transition-transform"></i>
-                <span class="text-[10px] font-bold">WhatsApp</span>
-            </a>
-            <a id="share-x" href="#" target="_blank" rel="noopener" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-900 transition-colors group">
-                <i class="fab fa-x-twitter text-2xl mb-1 text-slate-900 group-hover:scale-110 transition-transform"></i>
-                <span class="text-[10px] font-bold">X (Twitter)</span>
-            </a>
-            <a id="share-tg" href="#" target="_blank" rel="noopener" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-sky-50 hover:bg-sky-100 text-sky-700 transition-colors group">
-                <i class="fab fa-telegram text-2xl mb-1 text-sky-500 group-hover:scale-110 transition-transform"></i>
-                <span class="text-[10px] font-bold">Telegram</span>
-            </a>
-            <a id="share-fb" href="#" target="_blank" rel="noopener" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-blue-50 hover:bg-blue-100 text-blue-700 transition-colors group">
-                <i class="fab fa-facebook text-2xl mb-1 text-blue-600 group-hover:scale-110 transition-transform"></i>
-                <span class="text-[10px] font-bold">Facebook</span>
-            </a>
-        </div>
-
-        <!-- Copy Link Input Box -->
-        <div class="relative">
-            <input type="text" id="share-url-input" readonly 
-                   class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 pl-4 pr-24 text-xs text-slate-700 font-mono focus:outline-none">
-            <button onclick="copyShareUrl()" id="share-copy-btn"
-                    class="absolute right-1.5 top-1.5 bottom-1.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center transition-all cursor-pointer">
-                <span>Copy</span>
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- Interactive Add to Calendar Modal (Phone Native .ICS & Google) -->
-<div id="calendar-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 transform transition-all scale-95 opacity-0 duration-200" id="calendar-modal-content">
-        <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
-            <h3 class="text-lg font-bold text-slate-900 flex items-center">
-                <i class="far fa-calendar-plus text-purple-600 me-2.5"></i> Add to Calendar
-            </h3>
-            <button onclick="closeCalendarModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-xs cursor-pointer transition-colors">
-                <i class="fas fa-xmark"></i>
-            </button>
-        </div>
-
-        <p class="text-xs text-slate-600 mb-5 leading-relaxed font-medium">
-            Save <strong><%= event.event_name %></strong> to your phone device calendar or Google Calendar with automatic alarms before the concert.
-        </p>
-
-        <!-- Calendar Options -->
-        <div class="space-y-3 mb-4">
-            <!-- Option 1: Mobile Phone Native Calendar (.ics - iPhone & Android) -->
-            <a href="/events/<%= helpers.slugify(event.event_name) || event.id %>/calendar.ics" 
-               class="flex items-center justify-between p-4 rounded-2xl bg-purple-50 hover:bg-purple-100 border border-purple-200/80 transition-all group">
-                <div class="flex items-center space-x-3.5">
-                    <div class="w-11 h-11 rounded-xl bg-purple-600 text-white flex items-center justify-center text-lg shadow-sm group-hover:scale-105 transition-transform">
-                        <i class="fas fa-mobile-screen-button"></i>
-                    </div>
-                    <div>
-                        <div class="text-xs font-black text-slate-900 flex items-center">
-                            <span>Phone / Apple Calendar (.ics)</span>
-                            <span class="ms-2 px-2 py-0.5 rounded text-[10px] font-extrabold bg-purple-200 text-purple-800">Phone Native</span>
-                        </div>
-                        <p class="text-[11px] text-slate-500 mt-0.5">Saves to iPhone / Samsung calendar with 24h & 2h alarm reminders</p>
-                    </div>
-                </div>
-                <i class="fas fa-download text-purple-600 group-hover:translate-y-0.5 transition-transform ms-2"></i>
-            </a>
-
-            <!-- Option 2: Google Calendar App / Web -->
-            <a href="<%= gCalUrl %>" target="_blank" rel="noopener"
-               class="flex items-center justify-between p-4 rounded-2xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 transition-all group">
-                <div class="flex items-center space-x-3.5">
-                    <div class="w-11 h-11 rounded-xl bg-white border border-slate-200 text-blue-600 flex items-center justify-center text-lg shadow-xs group-hover:scale-105 transition-transform">
-                        <i class="fab fa-google"></i>
-                    </div>
-                    <div>
-                        <div class="text-xs font-black text-slate-900">Google Calendar</div>
-                        <p class="text-[11px] text-slate-500 mt-0.5">Syncs directly into Google Calendar app or web account</p>
-                    </div>
-                </div>
-                <i class="fas fa-arrow-up-right-from-square text-slate-400 group-hover:text-blue-600 transition-colors ms-2"></i>
-            </a>
-
-            <!-- Option 3: Outlook / Office 365 -->
-            <a href="https://outlook.live.com/calendar/0/deeplink/compose?subject=<%= encodeURIComponent(event.event_name) %>&startdt=<%= rawDate %>T<%= startTimeFormatted %>&enddt=<%= rawDate %>T<%= endTimeFormatted %>&location=<%= encodeURIComponent(event.venue_name + ', ' + event.city) %>&body=<%= encodeURIComponent(event.description || 'K-Pop Event in Malaysia') %>" 
-               target="_blank" rel="noopener"
-               class="flex items-center justify-between p-4 rounded-2xl bg-slate-50 hover:bg-sky-50 border border-slate-200 hover:border-sky-200 transition-all group">
-                <div class="flex items-center space-x-3.5">
-                    <div class="w-11 h-11 rounded-xl bg-white border border-slate-200 text-sky-600 flex items-center justify-center text-lg shadow-xs group-hover:scale-105 transition-transform">
-                        <i class="fab fa-microsoft"></i>
-                    </div>
-                    <div>
-                        <div class="text-xs font-black text-slate-900">Outlook / Office 365</div>
-                        <p class="text-[11px] text-slate-500 mt-0.5">Sync to Microsoft Outlook on smartphone or desktop</p>
-                    </div>
-                </div>
-                <i class="fas fa-arrow-up-right-from-square text-slate-400 group-hover:text-sky-600 transition-colors ms-2"></i>
-            </a>
-        </div>
-
-        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-[11px] text-slate-500 flex items-center">
-            <i class="fas fa-bell text-amber-500 me-2 text-xs"></i>
-            <span>Includes 2 automated device alerts: 1 day before & 2 hours before showtime.</span>
-        </div>
-    </div>
-</div>
-
-<!-- Multi-Layer Double-Verification Report Modal -->
-<div id="report-modal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs hidden items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-slate-100 max-h-[92vh] overflow-y-auto">
-        <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
-            <div>
-                <h3 class="text-lg font-black text-slate-900 flex items-center">
-                    <i class="fas fa-shield-halved text-rose-600 me-2.5"></i> Community Safety Report
-                </h3>
-                <p class="text-xs text-slate-500 mt-0.5">Double-Verification Anti-Scam & Accuracy Audit</p>
-            </div>
-            <button onclick="closeReportModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-xs cursor-pointer transition-colors">
-                <i class="fas fa-xmark"></i>
-            </button>
-        </div>
-
-        <form onsubmit="submitVerifiedReport(event)" class="space-y-4">
-            <!-- Layer 1: Authenticated User Gate -->
-            <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-200 flex items-center justify-between text-xs">
-                <div>
-                    <span class="text-slate-400 font-semibold block text-[10px] uppercase tracking-wider">Layer 1: Verified Identity</span>
-                    <span class="font-bold text-slate-800">
-                        <i class="fas fa-user-check text-emerald-500 me-1"></i> 
-                        <%= userObj ? userObj.username : 'Guest' %> (<%= userObj ? userObj.email : '' %>)
-                    </span>
-                </div>
-                <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800">Account Bound</span>
-            </div>
-
-            <!-- Layer 2: Violation Classification -->
-            <div>
-                <label class="block text-xs font-bold text-slate-800 mb-1.5">
-                    Layer 2: Violation Classification <span class="text-rose-500">*</span>
-                </label>
-                <select id="report-reason" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-400 font-medium">
-                    <option value="">-- Select Specific Violation Category --</option>
-                    <option value="SCAM_TICKETS">🚨 Phishing / Fake Ticket Scalper Link (Attempting to steal money or unofficial resale)</option>
-                    <option value="IMPOSTOR_ORGANIZER">🎭 Impostor / Fake Organizer (Unauthorized or fake fanclub identity)</option>
-                    <option value="INACCURATE_SCHEDULE">📅 Inaccurate Venue, Date, or Starting Time</option>
-                    <option value="CANCELLED_EVENT">🚫 Cancelled or Postponed by Artist Agency</option>
-                    <option value="OTHER">⚠️ Other Community Guideline Violation</option>
-                </select>
-            </div>
-
-            <!-- Layer 3: Counter-Evidence & Detailed Description -->
-            <div>
-                <div class="flex items-center justify-between mb-1.5">
-                    <label class="block text-xs font-bold text-slate-800">
-                        Layer 3: Detailed Explanation <span class="text-rose-500">*</span>
-                    </label>
-                    <span class="text-[10px] font-mono font-bold"><span id="report-char-count" class="text-rose-500">0</span> / 20 min characters</span>
-                </div>
-                <textarea id="report-details" rows="3" required oninput="updateReportCharCount()"
-                          placeholder="Explain specifically why this listing is fraudulent or inaccurate. Provide context (minimum 20 characters)..."
-                          class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-400 leading-relaxed"></textarea>
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-slate-800 mb-1.5">
-                    Counter-Evidence Proof URL <span class="text-slate-400 font-normal">(Optional but recommended)</span>
-                </label>
-                <div class="relative">
-                    <input type="url" id="report-evidence-url" 
-                           placeholder="https://x.com/official_agency/status/... or venue website"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-400">
-                </div>
-                <p class="text-[10px] text-slate-400 mt-1">Link to official agency tweet, promoter announcement, or cafe cancellation post.</p>
-            </div>
-
-            <!-- Layer 4: Good-Faith Anti-Defamation Declaration -->
-            <div class="bg-rose-50/60 rounded-2xl p-3.5 border border-rose-200 text-xs">
-                <label class="flex items-start gap-2.5 cursor-pointer">
-                    <input type="checkbox" id="report-declaration" required class="mt-0.5 rounded text-rose-600 focus:ring-rose-500">
-                    <span class="text-[11px] text-rose-900 leading-snug">
-                        <strong>Layer 4: Anti-Defamation Declaration:</strong> I declare in good faith that this report contains truthful, verifiable evidence. I acknowledge that submitting false, defamatory, or abusive reports against legitimate fanclubs will result in an immediate permanent ban of my K-Sync account.
-                    </span>
-                </label>
-            </div>
-
-            <div id="report-modal-msg"></div>
-
-            <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
-                <button type="button" onclick="closeReportModal()" class="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs">
-                    Cancel
-                </button>
-                <button type="submit" id="report-submit-btn" class="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md transition-all">
-                    Submit Verified Report
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Authentication Required Notice Modal for Guest Visitors -->
-<div id="report-auth-modal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs hidden items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 text-center">
-        <div class="w-14 h-14 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-2xl mx-auto mb-4">
-            <i class="fas fa-lock"></i>
-        </div>
-        <h3 class="text-lg font-black text-slate-900 mb-1.5">Account Required to Report</h3>
-        <p class="text-xs text-slate-600 leading-relaxed mb-6 font-medium">
-            To protect genuine K-pop fanclubs and organizers from anonymous spam and competitor sabotage, all community reports require double-verification with a registered K-Sync account.
-        </p>
-        <div class="space-y-2.5">
-            <a href="/login?redirect=/events/<%= event.id %>" class="block w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md">
-                Log In to Submit Report
-            </a>
-            <a href="/register" class="block w-full py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs">
-                Create Free Account
-            </a>
-            <button type="button" onclick="closeReportModal()" class="text-xs text-slate-400 hover:text-slate-600 pt-1 font-semibold">
-                Cancel
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- Fullscreen Poster Lightbox Modal -->
-<div id="lightbox-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden items-center justify-center p-2 sm:p-6" onclick="closeLightbox()">
-    <div class="relative max-w-5xl max-h-[96vh] w-full flex flex-col items-center justify-center" onclick="event.stopPropagation()">
-        <div class="w-full flex items-center justify-between text-white pb-3 px-3">
-            <h4 id="lightbox-title" class="text-sm font-extrabold truncate pr-4 text-slate-100 flex items-center">
-                <i class="fas fa-image me-2 text-pink-400"></i>
-                <span>Official Event Poster</span>
-            </h4>
-            <div class="flex items-center space-x-2 shrink-0">
-                <a id="lightbox-download" href="#" target="_blank" download class="px-3.5 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 text-white text-xs font-bold flex items-center transition-colors">
-                    <i class="fas fa-download me-1.5 text-pink-400"></i> Open Original
-                </a>
-                <button onclick="closeLightbox()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-sm cursor-pointer transition-colors" title="Close (Esc)">
-                    <i class="fas fa-xmark"></i>
-                </button>
-            </div>
-        </div>
-        <div class="max-h-[86vh] w-full flex items-center justify-center overflow-auto p-2 bg-slate-950/40 rounded-2xl border border-white/10">
-            <img id="lightbox-img" src="" alt="Enlarged Poster" class="max-h-[82vh] w-auto max-w-full object-contain rounded-xl shadow-2xl">
-        </div>
-    </div>
-</div>
-
-<!-- Floating Toast Notification -->
-<div id="toast" class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
-    <i class="fas fa-circle-check text-emerald-400"></i>
-    <span id="toast-msg">Copied to clipboard!</span>
-</div>
 
 <%- include('partials/footer') %>

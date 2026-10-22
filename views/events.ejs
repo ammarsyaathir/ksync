@@ -1,43 +1,55 @@
 <%- include('partials/header', { title: 'Discover K-Pop Events | K-Sync Malaysia' }) %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    <!-- Header Banner -->
-    <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/80 pb-6">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <!-- Header Banner (Impeccable: Bold display voice, no eyebrows) -->
+    <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-200/80 pb-6">
         <div>
-            <div class="flex items-center space-x-2 mb-2">
-                <span class="px-3 py-1 rounded-full text-xs font-bold bg-pink-100 text-pink-700 border border-pink-200">
-                    <i class="fas fa-compass me-1 text-pink-500"></i> Event Discovery Directory
+            <div class="flex items-center space-x-2.5 mb-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-slate-900 text-white shadow-xs">
+                    <i class="fas fa-compass text-pink-400"></i>
+                    EVENT DIRECTORY
+                </span>
+                <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-pink-100 text-pink-700 border border-pink-200/80">
+                    Malaysia
                 </span>
             </div>
-            <h1 class="text-3xl font-bold text-slate-900 tracking-tight flex items-center">
+            <h1 class="text-3xl sm:text-5xl font-black text-slate-900 tracking-[-0.035em] leading-tight">
                 Discover K-Pop Events
             </h1>
-            <p class="text-slate-600 text-sm mt-1 font-medium">Search, filter, and track verified concerts, fan meetings, and cupsleeve gatherings in Malaysia.</p>
+            <p class="text-slate-600 text-sm sm:text-base mt-2 max-w-2xl font-medium leading-relaxed">
+                Filter and track verified concerts, fan meetings, and cupsleeve gatherings across Malaysia.
+            </p>
         </div>
-        <div class="flex items-center gap-2 shrink-0 self-start md:self-auto">
-            <a href="/events/radar" class="px-4 py-2 rounded-2xl text-xs font-bold bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-sm flex items-center transition-all">
-                <i class="fas fa-radar me-1.5 text-yellow-300 animate-pulse"></i> Event Radar
+
+        <div class="flex items-center gap-2.5 shrink-0">
+            <a href="/events/radar" class="px-4 py-2.5 rounded-2xl text-xs font-black bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white shadow-stage-glow flex items-center gap-2 press-tactile transition-all">
+                <i class="fas fa-radar text-cyan-300"></i>
+                <span>Open 4D Radar</span>
             </a>
-            <span class="px-4 py-2 rounded-2xl text-xs font-bold bg-slate-900 text-white shadow-sm flex items-center">
-                <i class="fas fa-calendar-check me-2 text-pink-400"></i> <%= events.length %> Verified Event(s)
+            <span class="px-4 py-2.5 rounded-2xl text-xs font-black bg-slate-900 text-white shadow-sm flex items-center gap-2">
+                <i class="fas fa-calendar-check text-pink-400"></i>
+                <span><%= events.length %> Stage Listings</span>
             </span>
         </div>
     </div>
 
-    <!-- Quick Artist Filters -->
-    <div class="mb-8">
-        <div class="flex items-center justify-between mb-3">
-            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Quick Filter by Artist:</span>
-            <% if (selectedArtist || selectedCategory || searchKeyword) { %>
-                <a href="/events" class="text-xs font-bold text-pink-600 hover:text-pink-700">Clear All Filters</a>
+    <!-- Quick Artist Filter Strip -->
+    <div class="mb-6">
+        <div class="flex items-center justify-between mb-2.5">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Quick Filter by Artist:</span>
+            <% if (selectedArtist || selectedCategory || searchKeyword || selectedLocation) { %>
+                <a href="/events" class="text-xs font-bold text-pink-600 hover:text-pink-700 flex items-center gap-1 press-tactile">
+                    <i class="fas fa-rotate-left text-[10px]"></i>
+                    <span>Reset All Filters</span>
+                </a>
             <% } %>
         </div>
         <div class="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-none">
-            <a href="/events" class="px-3.5 py-1.5 rounded-full text-xs font-bold shrink-0 <%= !selectedArtist ? 'bg-slate-900 text-white shadow-sm' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50' %>">
+            <a href="/events" class="px-4 py-1.5 rounded-full text-xs font-bold shrink-0 transition-all press-tactile <%= !selectedArtist ? 'bg-slate-900 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50' %>">
                 All Artists
             </a>
             <% all_artists.forEach(function(art) { %>
-                <a href="/events?artist=<%= art.id %>" class="px-3.5 py-1.5 rounded-full text-xs font-bold shrink-0 flex items-center space-x-1.5 <%= selectedArtist == art.id ? 'bg-pink-600 text-white shadow-sm' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50' %>">
+                <a href="/events?artist=<%= art.id %>" class="px-3.5 py-1.5 rounded-full text-xs font-bold shrink-0 flex items-center space-x-1.5 transition-all press-tactile <%= selectedArtist == art.id ? 'bg-pink-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50' %>">
                     <% if (art.image_url) { %>
                         <img src="<%= art.image_url %>" alt="" class="w-4 h-4 rounded-full object-cover">
                     <% } %>
@@ -48,18 +60,18 @@
     </div>
 
     <!-- Filter & Search Controls Bar -->
-    <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-200 mb-8">
+    <div class="bg-white rounded-3xl p-5 shadow-xs border border-slate-200 mb-8">
         <form action="/events" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-            <!-- Search Text -->
+            <!-- Search Text Input -->
             <div class="relative lg:col-span-2">
-                <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                <input type="text" name="search" value="<%= searchKeyword || '' %>" placeholder="Search event, artist, venue..." 
-                       class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-300">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" name="search" value="<%= searchKeyword || '' %>" placeholder="Search event, artist, or venue..." 
+                       class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-pink-500">
             </div>
 
             <!-- Category Select -->
             <div>
-                <select name="category" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-300">
+                <select name="category" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-pink-500">
                     <option value="">All Categories</option>
                     <% all_categories.forEach(function(c) { %>
                         <option value="<%= c.slug %>" <%= selectedCategory === c.slug ? 'selected' : '' %>><%= c.name %></option>
@@ -69,7 +81,7 @@
 
             <!-- Location Select -->
             <div>
-                <select name="location" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-300">
+                <select name="location" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-pink-500">
                     <option value="">All Locations</option>
                     <% all_locations.forEach(function(loc) { %>
                         <option value="<%= loc %>" <%= selectedLocation === loc ? 'selected' : '' %>><%= loc %></option>
@@ -79,8 +91,9 @@
 
             <!-- Submit Button -->
             <div>
-                <button type="submit" class="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center">
-                    <i class="fas fa-filter me-1.5"></i> Apply Filters
+                <button type="submit" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-xs font-black transition-all press-tactile shadow-xs flex items-center justify-center gap-1.5 cursor-pointer">
+                    <i class="fas fa-filter text-pink-400 text-xs"></i>
+                    <span>Apply Filters</span>
                 </button>
             </div>
         </form>
@@ -88,102 +101,102 @@
 
     <!-- Events Grid -->
     <% if (events.length === 0) { %>
-        <div class="text-center py-16 bg-white rounded-3xl border border-slate-200 shadow-sm">
-            <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mx-auto mb-4">
+        <div class="text-center py-20 bg-white rounded-3xl border border-slate-200 shadow-xs">
+            <div class="w-16 h-16 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mx-auto mb-4">
                 <i class="fas fa-magnifying-glass"></i>
             </div>
-            <h3 class="text-lg font-bold text-slate-800">No events found matching your criteria</h3>
-            <p class="text-xs text-slate-500 mt-1 mb-6">Try clearing filters or search for another artist or keyword.</p>
-            <a href="/events" class="px-6 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs shadow-sm hover:bg-slate-800 transition-all">
-                Clear Filters
+            <h3 class="text-lg font-black text-slate-900">No events found matching your criteria</h3>
+            <p class="text-xs text-slate-500 mt-1 mb-6 max-w-sm mx-auto">Try broadening your search keyword or clearing the category and location filters.</p>
+            <a href="/events" class="px-6 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs shadow-xs hover:bg-slate-800 transition-all press-tactile">
+                Reset All Filters
             </a>
         </div>
     <% } else { %>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <% events.forEach(function(event) { %>
                 <% 
                     const calcStatus = helpers.getCalculatedEventStatus(event);
-                    const isSaved = savedEventIds.includes(event.id);
+                    const isSaved = (savedEventIds || []).includes(event.id);
+                    const eventSlug = helpers.slugify(event.event_name) || event.id;
                 %>
-                <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden flex flex-col group transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                <article class="bg-white rounded-3xl border border-slate-200/90 overflow-hidden flex flex-col group hover-lift transition-all shadow-xs">
                     <!-- Poster Banner -->
-                    <div class="relative h-48 overflow-hidden bg-slate-100">
+                    <div class="relative h-52 overflow-hidden bg-slate-900">
                         <img src="<%= event.poster_image %>" alt="<%= event.event_name %>" 
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                              onerror="this.src='https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop'">
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-transparent to-black/20"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
                         
-                        <!-- Category Badge -->
-                        <div class="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10">
-                            <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-white text-slate-900 shadow">
+                        <!-- Top Category & Status Badges -->
+                        <div class="absolute top-3.5 left-3.5 flex flex-wrap gap-1.5 z-10">
+                            <span class="px-2.5 py-1 rounded-xl text-[10px] font-black bg-slate-900/90 text-white backdrop-blur-md border border-white/10 uppercase tracking-wider">
                                 <%= event.category_name || 'Event' %>
                             </span>
                             <%- helpers.getStatusBadge(calcStatus) %>
                         </div>
 
                         <!-- Date Overlay -->
-                        <div class="absolute bottom-3 left-3 bg-white/95 rounded-xl px-2.5 py-1 text-center shadow-md">
-                            <span class="block text-[10px] font-bold text-pink-600 uppercase"><%= new Date(event.event_date).toLocaleDateString('en-MY', { month: 'short' }) %></span>
-                            <span class="block text-base font-extrabold text-slate-900 leading-none"><%= new Date(event.event_date).getDate() %></span>
+                        <div class="absolute bottom-3.5 left-3.5 bg-slate-950/90 backdrop-blur-md rounded-2xl px-3 py-1.5 border border-white/15 text-center shadow-lg">
+                            <span class="block text-[10px] font-black text-pink-400 uppercase tracking-wider">
+                                <%= new Date(event.event_date).toLocaleDateString('en-MY', { month: 'short' }) %>
+                            </span>
+                            <span class="block text-lg font-black text-white leading-none font-mono">
+                                <%= new Date(event.event_date).getDate() %>
+                            </span>
                         </div>
 
-                        <!-- Save Button -->
-                        <div class="absolute top-3 right-3 z-10">
-                            <button onclick="toggleSaveEvent(<%= event.id %>, this)" 
+                        <!-- Wishlist Heart Button -->
+                        <div class="absolute top-3.5 right-3.5 z-10">
+                            <button type="button" onclick="toggleSaveEvent(<%= event.id %>, this)" 
                                     title="Save Event"
-                                    class="w-8 h-8 rounded-full <%= isSaved ? 'bg-rose-500 text-white' : 'bg-white/90 text-slate-700 hover:text-rose-500' %> border border-slate-200 flex items-center justify-center text-xs shadow transition-all cursor-pointer hover:scale-110">
-                                <i class="<%= isSaved ? 'fas' : 'far' %> fa-heart text-xs"></i>
+                                    class="w-9 h-9 rounded-2xl <%= isSaved ? 'bg-pink-600 text-white' : 'bg-slate-950/80 text-white hover:text-pink-400' %> backdrop-blur-md flex items-center justify-center text-xs shadow-md press-tactile cursor-pointer border border-white/10">
+                                <i class="<%= isSaved ? 'fas' : 'far' %> fa-heart"></i>
                             </button>
                         </div>
                     </div>
 
                     <!-- Card Body -->
-                    <div class="p-5 flex-grow flex flex-col justify-between space-y-3">
+                    <div class="p-5 sm:p-6 flex-grow flex flex-col justify-between space-y-4">
                         <div>
-                            <div class="flex items-center text-xs font-bold text-purple-600 mb-1.5">
-                                <i class="fas fa-microphone-lines me-1 text-purple-500"></i>
+                            <div class="flex items-center text-xs font-bold text-pink-600 mb-1 gap-1.5">
+                                <i class="fas fa-microphone-lines text-purple-500"></i>
                                 <span><%= event.artist_name || 'Various Artists' %></span>
                             </div>
-                            <h3 class="text-base font-bold text-slate-900 group-hover:text-pink-600 transition-colors line-clamp-2 leading-snug">
+                            <h3 class="text-base font-black text-slate-900 group-hover:text-pink-600 transition-colors line-clamp-2 leading-snug">
                                 <a href="<%= helpers.getEventUrl(event) %>">
                                     <%= event.event_name %>
                                 </a>
                             </h3>
-                        </div>
-
-                        <div class="space-y-1.5 border-t border-slate-100 pt-3 text-xs text-slate-600 font-medium">
-                            <div class="flex items-center">
-                                <i class="far fa-clock w-4 me-1.5 text-pink-500"></i>
-                                <span><%= helpers.formatTime(event.start_time) %></span>
-                            </div>
-                            <div class="flex items-center truncate">
-                                <i class="fas fa-location-dot w-4 me-1.5 text-rose-500"></i>
+                            <p class="text-xs text-slate-500 mt-2 flex items-center gap-1.5 font-medium">
+                                <i class="fas fa-building text-slate-400"></i>
                                 <span class="truncate"><%= event.venue_name %>, <%= event.city %></span>
-                            </div>
+                            </p>
                         </div>
 
                         <!-- Card Footer -->
-                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
                             <div class="flex flex-col">
-                                <span class="text-[11px] text-emerald-700 font-bold flex items-center">
-                                    <i class="fas fa-circle-check me-1 text-emerald-600"></i> Verified
+                                <span class="text-[11px] text-emerald-700 font-bold flex items-center gap-1">
+                                    <i class="fas fa-circle-check text-emerald-600"></i> Verified
                                 </span>
                                 <span class="text-[10px] text-slate-400">
                                     Updated <%= helpers.timeAgo(event.updated_at || event.created_at) %>
                                 </span>
                             </div>
                             <a href="<%= helpers.getEventUrl(event) %>" 
-                               class="px-4 py-1.5 rounded-xl bg-pink-50 hover:bg-pink-600 text-pink-700 hover:text-white text-xs font-bold transition-all shadow-sm">
-                                View Details &rarr;
+                               class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all press-tactile shadow-xs flex items-center gap-1.5">
+                                <span>Details</span>
+                                <i class="fas fa-arrow-right text-[10px] text-pink-400"></i>
                             </a>
                         </div>
                     </div>
-                </div>
+                </article>
             <% }); %>
         </div>
     <% } %>
 </div>
 
+<!-- Wishlist Save Ajax Handler -->
 <script>
     async function toggleSaveEvent(eventId, btn) {
         try {
@@ -199,15 +212,13 @@
             if (data.status === 'success') {
                 const icon = btn.querySelector('i');
                 if (data.saved) {
-                    btn.classList.add('bg-rose-500', 'text-white');
-                    btn.classList.remove('bg-white/90', 'text-slate-700');
-                    icon.classList.remove('far');
-                    icon.classList.add('fas');
+                    btn.classList.add('bg-pink-600', 'text-white');
+                    btn.classList.remove('bg-slate-950/80', 'text-white');
+                    icon.className = 'fas fa-heart text-xs';
                 } else {
-                    btn.classList.remove('bg-rose-500', 'text-white');
-                    btn.classList.add('bg-white/90', 'text-slate-700');
-                    icon.classList.remove('fas');
-                    icon.classList.add('far');
+                    btn.classList.remove('bg-pink-600', 'text-white');
+                    btn.classList.add('bg-slate-950/80', 'text-white');
+                    icon.className = 'far fa-heart text-xs';
                 }
             }
         } catch (e) {
