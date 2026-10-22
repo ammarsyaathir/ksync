@@ -252,17 +252,22 @@
             <!-- Google Maps Mount Point -->
             <div id="radar-google-map" class="w-full h-full z-10 hidden"></div>
 
-            <!-- Map Engine Toggle (Radar Dark vs Google Maps Live) -->
-            <div class="absolute bottom-4 left-4 z-20 flex items-center bg-slate-950/90 backdrop-blur-md rounded-2xl p-1 border border-slate-700/80 shadow-xl">
+            <!-- Map Engine Toggle (CARTO Dark vs CARTO Voyager vs Google Maps Live) -->
+            <div class="absolute bottom-4 left-4 z-20 flex items-center bg-slate-950/90 backdrop-blur-md rounded-2xl p-1 border border-slate-700/80 shadow-xl gap-1">
                 <button type="button" id="btn-engine-radar" onclick="switchMapEngine('radar')"
-                        class="px-3.5 py-1.5 rounded-xl text-xs font-black bg-pink-600 text-white flex items-center gap-1.5 press-tactile transition-all cursor-pointer shadow-xs">
+                        class="px-3 py-1.5 rounded-xl text-xs font-black bg-pink-600 text-white flex items-center gap-1.5 press-tactile transition-all cursor-pointer shadow-xs">
                     <i class="fas fa-satellite-dish text-white text-[11px]"></i>
-                    <span>4D Radar Sweep</span>
+                    <span>CARTO Dark</span>
+                </button>
+                <button type="button" id="btn-engine-voyager" onclick="switchMapEngine('voyager')"
+                        class="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white flex items-center gap-1.5 press-tactile transition-all cursor-pointer">
+                    <i class="fas fa-map text-emerald-400 text-[11px]"></i>
+                    <span>CARTO Voyager</span>
                 </button>
                 <button type="button" id="btn-engine-google" onclick="switchMapEngine('google')"
-                        class="px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white flex items-center gap-1.5 press-tactile transition-all cursor-pointer">
+                        class="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white flex items-center gap-1.5 press-tactile transition-all cursor-pointer">
                     <i class="fab fa-google text-blue-400 text-[11px]"></i>
-                    <span>Google Maps (Satellite/Roadmap)</span>
+                    <span>Google Maps</span>
                 </button>
             </div>
 
@@ -518,6 +523,7 @@
     let currentMapEngine = 'radar';
     let map = null;
     let markersLayer = null;
+    let cartoTileLayer = null;
     let gRadarMap = null;
     let gRadarMarkers = [];
     let gInfoWindow = null;
@@ -525,6 +531,7 @@
     let currentFilteredEvents = [];
     let sweepInterval = null;
     let isSweeping = false;
+    const cartoKey = "<%= typeof cartoApiKey !== 'undefined' ? cartoApiKey : 'cb1_4rvy_1_933f092a5de2104f28a689ca' %>";
 
     document.addEventListener('DOMContentLoaded', () => {
         try {
@@ -552,10 +559,11 @@
             attributionControl: false
         });
 
-        // Add sleek CartoDB Dark Matter tile layer
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        // Add CARTO Basemaps tile layer authenticated with user CARTO API Key
+        cartoTileLayer = L.tileLayer(`https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png?key=${cartoKey}`, {
             maxZoom: 19,
-            subdomains: 'abcd'
+            subdomains: 'abcd',
+            attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
         }).addTo(map);
 
         L.control.zoom({ position: 'bottomright' }).addTo(map);
@@ -571,22 +579,33 @@
         const leafletContainer = document.getElementById('radar-leaflet-map');
         const googleContainer = document.getElementById('radar-google-map');
         const btnRadar = document.getElementById('btn-engine-radar');
+        const btnVoyager = document.getElementById('btn-engine-voyager');
         const btnGoogle = document.getElementById('btn-engine-google');
 
-        if (engine === 'radar') {
+        const activeClass = 'px-3 py-1.5 rounded-xl text-xs font-black text-white flex items-center gap-1.5 press-tactile transition-all cursor-pointer shadow-xs';
+        const inactiveClass = 'px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white flex items-center gap-1.5 press-tactile transition-all cursor-pointer';
+
+        if (engine === 'radar' || engine === 'voyager') {
             leafletContainer.classList.remove('hidden');
             googleContainer.classList.add('hidden');
 
-            btnRadar.className = 'px-3.5 py-1.5 rounded-xl text-xs font-black bg-pink-600 text-white flex items-center gap-1.5 press-tactile transition-all cursor-pointer shadow-xs';
-            btnGoogle.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white flex items-center gap-1.5 press-tactile transition-all cursor-pointer';
+            const tileStyle = engine === 'radar' ? 'dark_all' : 'voyager';
+            if (cartoTileLayer) {
+                cartoTileLayer.setUrl(`https://{s}.basemaps.cartocdn.com/rastertiles/${tileStyle}/{z}/{x}/{y}{r}.png?key=${cartoKey}`);
+            }
+
+            if (btnRadar) btnRadar.className = engine === 'radar' ? `${activeClass} bg-pink-600` : inactiveClass;
+            if (btnVoyager) btnVoyager.className = engine === 'voyager' ? `${activeClass} bg-emerald-600` : inactiveClass;
+            if (btnGoogle) btnGoogle.className = inactiveClass;
 
             if (map) map.invalidateSize();
         } else {
             leafletContainer.classList.add('hidden');
             googleContainer.classList.remove('hidden');
 
-            btnGoogle.className = 'px-3.5 py-1.5 rounded-xl text-xs font-black bg-blue-600 text-white flex items-center gap-1.5 press-tactile transition-all cursor-pointer shadow-xs';
-            btnRadar.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white flex items-center gap-1.5 press-tactile transition-all cursor-pointer';
+            if (btnGoogle) btnGoogle.className = `${activeClass} bg-blue-600`;
+            if (btnRadar) btnRadar.className = inactiveClass;
+            if (btnVoyager) btnVoyager.className = inactiveClass;
 
             if (!gRadarMap) {
                 initGoogleRadarMap();

@@ -1619,8 +1619,11 @@
                     zoom: 15,
                     attributionControl: false
                 });
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                    maxZoom: 19
+                const cartoKey = "<%= typeof cartoApiKey !== 'undefined' ? cartoApiKey : 'cb1_4rvy_1_933f092a5de2104f28a689ca' %>";
+                L.tileLayer(`https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${cartoKey}`, {
+                    maxZoom: 19,
+                    subdomains: 'abcd',
+                    attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
                 }).addTo(lMap);
                 L.marker([venueLat, venueLng]).addTo(lMap)
                     .bindPopup(`<strong>${venueName}</strong><br><a href="https://maps.google.com/?q=<%= mapQuery %>" target="_blank" style="color: #ec4899; font-weight: bold;">Open in Google Maps ↗</a>`)

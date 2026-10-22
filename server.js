@@ -85,9 +85,10 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // User Injection & Flash Handler Middleware
 app.use(populateCurrentUser);
 
-// Expose Google Maps API Key to all views
+// Expose Google Maps & CARTO Basemaps API Keys to all views
 app.use((req, res, next) => {
   res.locals.googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY || 'AIzaSyAI6j0xuTti4MvqbpHWhSb1O4TFiEYrjFc';
+  res.locals.cartoApiKey = process.env.CARTO_API_KEY || 'cb1_4rvy_1_933f092a5de2104f28a689ca';
   next();
 });
 
