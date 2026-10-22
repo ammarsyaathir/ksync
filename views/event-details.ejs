@@ -24,6 +24,31 @@
     const eventPosters = (typeof posters !== 'undefined' && posters && posters.length > 0) 
         ? posters 
         : [event.poster_image || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop'];
+
+    // Venue GPS Coordinate Resolver for Google Maps & Leaflet
+    let venueCoords = [3.1408, 101.7088]; // Default KL center
+    const venueLower = (event.venue_name || '').toLowerCase();
+    const cityLower = (event.city || '').toLowerCase();
+
+    if (venueLower.includes('axiata') || venueLower.includes('bukit jalil')) {
+        venueCoords = [3.0583, 101.6917];
+    } else if (venueLower.includes('zepp') || venueLower.includes('lalaport') || venueLower.includes('bbcc')) {
+        venueCoords = [3.1408, 101.7088];
+    } else if (venueLower.includes('mega star') || venueLower.includes('sungei wang')) {
+        venueCoords = [3.1451, 101.7114];
+    } else if (venueLower.includes('sunway') || venueLower.includes('jiospace') || cityLower.includes('petaling')) {
+        venueCoords = [3.0729, 101.6074];
+    } else if (venueLower.includes('spice') || cityLower.includes('penang')) {
+        venueCoords = [5.3283, 100.2825];
+    } else if (venueLower.includes('austin') || cityLower.includes('johor')) {
+        venueCoords = [1.5542, 103.7766];
+    } else if (venueLower.includes('mitec')) {
+        venueCoords = [3.1788, 101.6678];
+    } else if (venueLower.includes('wtc') || venueLower.includes('world trade')) {
+        venueCoords = [3.1690, 101.6918];
+    } else if (venueLower.includes('kl sentral') || venueLower.includes('sentral')) {
+        venueCoords = [3.1342, 101.6865];
+    }
 %>
 
 <!-- Electric Concert Stage Hero Banner -->
@@ -722,21 +747,20 @@
                         </div>
                     </div>
 
-                    <!-- Embedded Interactive Venue Map -->
+                    <!-- Interactive Google Maps Venue Explorer -->
                     <div class="mt-4 pt-4 border-t border-slate-100">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-[11px] font-black text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
                                 <i class="fas fa-map-location-dot text-rose-500"></i> Interactive Venue Map
                             </span>
-                            <a href="https://maps.google.com/?q=<%= mapQuery %>" target="_blank" rel="noopener noreferrer" class="text-[11px] font-bold text-pink-600 hover:underline flex items-center gap-1">
+                            <a href="https://maps.google.com/?q=<%= mapQuery %>" target="_blank" rel="noopener noreferrer" class="text-[11px] font-bold text-pink-600 hover:underline flex items-center gap-1 press-tactile">
                                 <span>Directions</span>
                                 <i class="fas fa-arrow-up-right-from-square text-[9px]"></i>
                             </a>
                         </div>
-                        <div class="rounded-2xl overflow-hidden border border-slate-200 shadow-xs h-52 bg-slate-100">
-                            <iframe class="w-full h-full border-0" loading="lazy" allowfullscreen 
-                                    src="https://maps.google.com/maps?q=<%= mapQuery %>&t=&z=15&ie=UTF8&iwloc=&output=embed">
-                            </iframe>
+                        <div class="rounded-2xl overflow-hidden border border-slate-200/90 shadow-xs h-56 bg-slate-950 relative">
+                            <!-- Interactive Map Canvas (Powered by Google Maps JS API with Leaflet Fallback) -->
+                            <div id="venue-google-map" class="w-full h-full"></div>
                         </div>
                     </div>
                 </div>
@@ -1527,6 +1551,96 @@
             closeReportModal();
         }
     });
+
+    // Venue GPS Coordinates
+    const venueLat = <%= venueCoords[0] %>;
+    const venueLng = <%= venueCoords[1] %>;
+    const venueName = "<%= event.venue_name.replace(/"/g, '\\"') %>";
+
+    function initVenueMap() {
+        const mapContainer = document.getElementById('venue-google-map');
+        if (!mapContainer) return;
+
+        // 1. Primary Engine: Google Maps JavaScript API (Powered by API Key)
+        if (typeof google !== 'undefined' && google.maps && google.maps.Map) {
+            try {
+                const venueLocation = { lat: venueLat, lng: venueLng };
+                const gMap = new google.maps.Map(mapContainer, {
+                    center: venueLocation,
+                    zoom: 15,
+                    mapTypeControl: false,
+                    streetViewControl: false,
+                    fullscreenControl: true,
+                    zoomControl: true,
+                    styles: [
+                        { elementType: "geometry", stylers: [{ color: "#1d2c4d" }] },
+                        { elementType: "labels.text.fill", stylers: [{ color: "#8ec3b9" }] },
+                        { elementType: "labels.text.stroke", stylers: [{ color: "#1a3646" }] },
+                        { featureType: "administrative.country", elementType: "geometry.stroke", stylers: [{ color: "#4b6878" }] },
+                        { featureType: "road", elementType: "geometry", stylers: [{ color: "#304a7d" }] },
+                        { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#253b65" }] },
+                        { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#98a5be" }] },
+                        { featureType: "transit", elementType: "geometry", stylers: [{ color: "#2f3948" }] },
+                        { featureType: "transit.station", elementType: "labels.text.fill", stylers: [{ color: "#d59563" }] },
+                        { featureType: "water", elementType: "geometry", stylers: [{ color: "#17263c" }] }
+                    ]
+                });
+
+                const marker = new google.maps.Marker({
+                    position: venueLocation,
+                    map: gMap,
+                    title: venueName,
+                    animation: google.maps.Animation.DROP
+                });
+
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `<div style="padding: 6px; font-family: sans-serif; color: #090d16;">
+                        <strong style="font-size: 13px;">${venueName}</strong>
+                        <p style="font-size: 11px; margin: 4px 0; color: #475569;"><%= (event.address ? event.address + ', ' : '') + event.city %></p>
+                        <a href="https://maps.google.com/?q=<%= mapQuery %>" target="_blank" rel="noopener noreferrer" style="font-size: 11px; font-weight: bold; color: #db2777; text-decoration: none;">Get Driving / Transit Directions ↗</a>
+                    </div>`
+                });
+
+                marker.addListener("click", () => {
+                    infoWindow.open(gMap, marker);
+                });
+                return;
+            } catch (err) {
+                console.warn('Google Maps error, trying Leaflet fallback:', err);
+            }
+        }
+
+        // 2. Resilient Fallback Engine: Leaflet Map
+        if (typeof L !== 'undefined') {
+            try {
+                if (mapContainer._leaflet_id) return;
+                const lMap = L.map(mapContainer, {
+                    center: [venueLat, venueLng],
+                    zoom: 15,
+                    attributionControl: false
+                });
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                    maxZoom: 19
+                }).addTo(lMap);
+                L.marker([venueLat, venueLng]).addTo(lMap)
+                    .bindPopup(`<strong>${venueName}</strong><br><a href="https://maps.google.com/?q=<%= mapQuery %>" target="_blank" style="color: #ec4899; font-weight: bold;">Open in Google Maps ↗</a>`)
+                    .openPopup();
+            } catch (e) {
+                console.error('Leaflet fallback error:', e);
+            }
+        }
+    }
+
+    // Trigger initialization on DOM ready and window load
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(initVenueMap, 300);
+    });
+    window.addEventListener('load', () => {
+        setTimeout(initVenueMap, 600);
+    });
 </script>
+
+<!-- Official Google Maps JavaScript API with Key -->
+<script src="https://maps.googleapis.com/maps/api/js?key=<%= typeof googleMapsApiKey !== 'undefined' ? googleMapsApiKey : 'AIzaSyAI6j0xuTti4MvqbpHWhSb1O4TFiEYrjFc' %>&callback=initVenueMap" async defer onerror="initVenueMap()"></script>
 
 <%- include('partials/footer') %>

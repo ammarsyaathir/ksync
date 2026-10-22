@@ -85,6 +85,12 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // User Injection & Flash Handler Middleware
 app.use(populateCurrentUser);
 
+// Expose Google Maps API Key to all views
+app.use((req, res, next) => {
+  res.locals.googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY || 'AIzaSyAI6j0xuTti4MvqbpHWhSb1O4TFiEYrjFc';
+  next();
+});
+
 // Mount Application Routes
 app.use('/', authRoutes);
 app.use('/', eventRoutes);
