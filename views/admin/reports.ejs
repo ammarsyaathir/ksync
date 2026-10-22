@@ -120,7 +120,7 @@
                                 <td class="p-3.5">
                                     <div class="font-mono text-[10px] text-pink-600 font-bold mb-0.5">#REP-<%= r.id %></div>
                                     <% if (r.event_name) { %>
-                                        <a href="/events/<%= r.event_id %>" target="_blank" class="font-bold text-slate-900 hover:text-pink-600 transition-colors block text-xs">
+                                        <a href="/events/<%= helpers.slugify(r.event_name) || r.event_id %>" target="_blank" class="font-bold text-slate-900 hover:text-pink-600 transition-colors block text-xs">
                                             <%= r.event_name %> <i class="fas fa-arrow-up-right-from-square text-[9px] ms-1 text-slate-400"></i>
                                         </a>
                                         <div class="text-[10px] text-slate-400 font-mono mt-0.5">Ref: <%= r.tracking_code %></div>

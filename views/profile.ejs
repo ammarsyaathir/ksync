@@ -11,6 +11,44 @@
                 <%= currentUser.role_name %>
             </span>
         </div>
+    <% 
+        const role = (currentUser && (currentUser.role || currentUser.role_name)) ? String(currentUser.role || currentUser.role_name).toUpperCase() : '';
+        const isOrganizer = role === 'ORGANIZER';
+        const isAdmin = role === 'ADMIN';
+    %>
+    <!-- Actor-Tailored Sub-Nav Pills -->
+    <div class="flex flex-wrap items-center gap-2 mb-8">
+        <% if (isOrganizer) { %>
+            <a href="/profile" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-white shadow-xs">
+                <i class="fas fa-building me-1.5 text-pink-400"></i> Organization Profile
+            </a>
+            <a href="/organizer/dashboard" class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition-all">
+                <i class="fas fa-gauge me-1.5 text-emerald-600"></i> Organizer Hub
+            </a>
+            <a href="/submit-event" class="px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition-all">
+                <i class="fas fa-plus me-1.5 text-pink-500"></i> Publish Concert
+            </a>
+        <% } else if (isAdmin) { %>
+            <a href="/profile" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-white shadow-xs">
+                <i class="fas fa-user-shield me-1.5 text-purple-400"></i> Admin Profile
+            </a>
+            <a href="/admin" class="px-4 py-2 rounded-xl text-xs font-bold bg-purple-50 text-purple-800 border border-purple-200 hover:bg-purple-100 transition-all">
+                <i class="fas fa-shield-halved me-1.5 text-purple-600"></i> Maintainer Hub
+            </a>
+            <a href="/admin/reports" class="px-4 py-2 rounded-xl text-xs font-bold bg-rose-50 text-rose-800 border border-rose-200 hover:bg-rose-100 transition-all">
+                <i class="fas fa-shield-virus me-1.5 text-rose-600"></i> Scam Reports
+            </a>
+        <% } else { %>
+            <a href="/profile" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-white shadow-xs">
+                <i class="fas fa-user me-1.5 text-pink-400"></i> My Profile
+            </a>
+            <a href="/passport" class="px-4 py-2 rounded-xl text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 transition-all">
+                <i class="fas fa-passport me-1.5 text-amber-600"></i> Concert Passport & Badges
+            </a>
+            <a href="/saved-events" class="px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition-all">
+                <i class="fas fa-heart me-1.5 text-rose-500"></i> Saved Wishlist
+            </a>
+        <% } %>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">

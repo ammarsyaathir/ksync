@@ -14,7 +14,7 @@
                 <span>Events</span>
             </a>
             <% if (selectedEvent) { %>
-                <a href="/events/<%= selectedEvent.id %>" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-pink-950/40 border border-pink-500/30 text-pink-300 text-xs font-bold hover:bg-pink-900/40 transition-all">
+                <a href="<%= helpers.getEventUrl(selectedEvent) %>" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-pink-950/40 border border-pink-500/30 text-pink-300 text-xs font-bold hover:bg-pink-900/40 transition-all" title="View <%= selectedEvent.event_name %> Details">
                     <i class="fas fa-ticket text-[10px] text-pink-400"></i>
                     <span class="truncate max-w-[200px]"><%= selectedEvent.artist_name || selectedEvent.event_name %></span>
                 </a>

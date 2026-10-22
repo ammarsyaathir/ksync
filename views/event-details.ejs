@@ -2,8 +2,12 @@
 
 <% 
     const calcStatus = helpers.getCalculatedEventStatus(event);
-    const isSaved = isSavedEvent;
+    const isSaved = (typeof isSavedEvent !== 'undefined') ? isSavedEvent : false;
     const userObj = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : null;
+    const userRole = (userObj && (userObj.role || userObj.role_name)) ? String(userObj.role || userObj.role_name).toLowerCase() : '';
+    const isOrganizer = userRole === 'organizer';
+    const isAdmin = userRole === 'admin';
+    const isFanOrGuest = !isOrganizer && !isAdmin;
     
     // Calendar URL generation
     const rawDate = (event.event_date instanceof Date) 
@@ -217,21 +221,41 @@
                         <span>Export Calendar</span>
                     </button>
 
-                    <!-- 3D Stadium & Seating POV Sightlines -->
-                    <a href="/venues/seating-3d?event=<%= event.id %>&venue=<%= event.venue_id || 1 %>" 
-                       class="px-4 py-2.5 rounded-xl border border-pink-200 bg-pink-50 hover:bg-pink-100 text-pink-700 font-extrabold text-xs flex items-center shadow-xs cursor-pointer press-tactile transition-all"
-                       title="Explore 3D Stadium & Seat Sightlines in WebGL">
-                        <i class="fas fa-cube me-1.5 text-pink-600"></i>
-                        <span>3D Arena POV</span>
-                    </a>
+                    <% if (isFanOrGuest) { %>
+                        <!-- 3D Stadium & Seating POV Sightlines (Fans & Guests only) -->
+                        <a href="/venues/seating-3d?event=<%= event.id %>&venue=<%= event.venue_id || 1 %>" 
+                           class="px-4 py-2.5 rounded-xl border border-pink-200 bg-pink-50 hover:bg-pink-100 text-pink-700 font-extrabold text-xs flex items-center shadow-xs cursor-pointer press-tactile transition-all"
+                           title="Explore 3D Stadium & Seat Sightlines in WebGL">
+                            <i class="fas fa-cube me-1.5 text-pink-600"></i>
+                            <span>3D Arena POV</span>
+                        </a>
 
-                    <!-- UC: Stamp to Concert Passport -->
-                    <a href="/passport?event_id=<%= event.id %>" 
-                       class="px-4 py-2.5 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-800 font-extrabold text-xs flex items-center shadow-xs cursor-pointer press-tactile transition-all"
-                       title="Claim digital stamp to your K-Sync Passport">
-                        <i class="fas fa-passport me-1.5 text-amber-600"></i>
-                        <span>Stamp Passport</span>
-                    </a>
+                        <!-- UC: Stamp to Concert Passport (Fans & Guests only) -->
+                        <a href="/passport?event_id=<%= event.id %>" 
+                           class="px-4 py-2.5 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-800 font-extrabold text-xs flex items-center shadow-xs cursor-pointer press-tactile transition-all"
+                           title="Claim digital stamp to your K-Sync Passport">
+                            <i class="fas fa-passport me-1.5 text-amber-600"></i>
+                            <span>Stamp Passport</span>
+                        </a>
+                    <% } %>
+
+                    <% if (isOrganizer || isAdmin) { %>
+                        <% if (isAdmin || (userObj && userObj.id === event.organizer_id)) { %>
+                            <!-- Host / Maintainer Management Quick Actions -->
+                            <a href="/organizer/events/<%= event.id %>/edit" 
+                               class="px-4 py-2.5 rounded-xl border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-extrabold text-xs flex items-center shadow-xs cursor-pointer press-tactile transition-all"
+                               title="Edit Listing Information">
+                                <i class="fas fa-pen-to-square me-1.5 text-emerald-600"></i>
+                                <span>Edit Listing</span>
+                            </a>
+                            <a href="/organizer/events/<%= event.id %>/verification" 
+                               class="px-4 py-2.5 rounded-xl border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-800 font-bold text-xs flex items-center shadow-xs cursor-pointer press-tactile transition-all"
+                               title="View Verification Checklist">
+                                <i class="fas fa-shield-check me-1.5 text-purple-600"></i>
+                                <span>Verification</span>
+                            </a>
+                        <% } %>
+                    <% } %>
 
                     <!-- UC019: Report Listing Button -->
                     <button onclick="openReportModal()" 
@@ -610,7 +634,7 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-2.5 shrink-0">
-                            <a href="/login?redirect=/events/<%= event.id %>#discussion" 
+                            <a href="/login?redirect=/events/<%= eventSlug %>#discussion" 
                                class="px-4 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 text-xs font-bold transition-all shadow-2xs press-tactile">
                                 Log In
                             </a>
@@ -1260,7 +1284,7 @@
             To protect genuine K-pop fan organizers from anonymous spam and competitor sabotage, all community reports require double-verification with a registered K-Sync account.
         </p>
         <div class="space-y-2.5">
-            <a href="/login?redirect=/events/<%= event.id %>" class="block w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs shadow-md press-tactile">
+            <a href="/login?redirect=/events/<%= eventSlug %>" class="block w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs shadow-md press-tactile">
                 Log In to Submit Report
             </a>
             <a href="/register" class="block w-full py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs press-tactile">

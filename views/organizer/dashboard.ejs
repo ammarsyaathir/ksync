@@ -176,7 +176,7 @@
                                 <td class="py-4 px-6 text-right">
                                     <div class="flex items-center justify-end gap-2">
                                         <% if (event.verification_status === 'VERIFIED') { %>
-                                            <a href="/events/<%= event.id %>" target="_blank" class="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700" title="View Public Listing">
+                                            <a href="<%= helpers.getEventUrl(event) %>" target="_blank" class="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700" title="View Public Listing">
                                                 <i class="fas fa-arrow-up-right-from-square"></i>
                                             </a>
                                         <% } %>

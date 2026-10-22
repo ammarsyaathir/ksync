@@ -151,7 +151,7 @@
                     </div>
 
                     <div class="mt-4 flex items-center justify-center gap-2">
-                        <a href="/events/<%= nextEvent.id %>-<%= nextSlug %>" class="px-4 py-2 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold transition-all flex items-center gap-1.5 press-tactile">
+                        <a href="/events/<%= nextSlug %>" class="px-4 py-2 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold transition-all flex items-center gap-1.5 press-tactile">
                             <span>Open Details</span>
                             <i class="fas fa-arrow-right text-[10px]"></i>
                         </a>
@@ -207,7 +207,7 @@
                                         <%- helpers.getStatusBadge(calcStatus) %>
                                     </div>
                                     <h3 class="text-sm font-black text-slate-900 truncate">
-                                        <a href="/events/<%= event.id %>-<%= eventSlug %>" class="hover:text-pink-600 transition-colors">
+                                        <a href="/events/<%= eventSlug %>" class="hover:text-pink-600 transition-colors">
                                             <%= event.event_name %>
                                         </a>
                                     </h3>
@@ -219,7 +219,7 @@
                             </div>
 
                             <div class="flex items-center space-x-2 shrink-0 self-end sm:self-center">
-                                <a href="/events/<%= event.id %>-<%= eventSlug %>" class="px-3.5 py-1.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs transition-all press-tactile">
+                                <a href="/events/<%= eventSlug %>" class="px-3.5 py-1.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs transition-all press-tactile">
                                     View
                                 </a>
                                 <% if (event.ticket_url) { %>
@@ -262,14 +262,14 @@
                                         <i class="fas fa-thumbs-up text-xs"></i>
                                         <span>Recommended by You</span>
                                     </div>
-                                    <a href="/events/<%= rec.id %>-<%= recSlug %>" class="text-xs font-bold text-slate-900 hover:text-pink-600 truncate block mt-0.5">
+                                    <a href="/events/<%= recSlug %>" class="text-xs font-bold text-slate-900 hover:text-pink-600 truncate block mt-0.5">
                                         <%= rec.event_name %>
                                     </a>
                                     <div class="text-[10px] text-slate-400 mt-1">
                                         <%= rec.total_recommendations %> Community Upvote<%= rec.total_recommendations !== 1 ? 's' : '' %>
                                     </div>
                                 </div>
-                                <a href="/events/<%= rec.id %>-<%= recSlug %>" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs shrink-0 press-tactile">
+                                <a href="/events/<%= recSlug %>" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs shrink-0 press-tactile">
                                     View
                                 </a>
                             </div>

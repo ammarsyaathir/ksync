@@ -15,15 +15,20 @@ router.get('/notifications', requireAuth, async (req, res) => {
     // 1. Proactively generate event countdown reminders for user's saved events
     await generateEventRemindersForUser(userId);
 
-    // 2. Fetch notifications
-    let query = "SELECT * FROM notifications WHERE user_id = ?";
+    // 2. Fetch notifications with event slug for clean URL navigation
+    let query = `
+      SELECT n.*, e.event_name, e.slug as event_slug 
+      FROM notifications n 
+      LEFT JOIN events e ON n.event_id = e.id 
+      WHERE n.user_id = ?
+    `;
     const params = [userId];
 
     if (filter === 'unread') {
-      query += " AND is_read = 0";
+      query += " AND n.is_read = 0";
     }
 
-    query += " ORDER BY created_at DESC LIMIT 60";
+    query += " ORDER BY n.created_at DESC LIMIT 60";
     const notifications = await db.query(query, params);
 
     // 3. Count total unread

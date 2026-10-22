@@ -119,7 +119,7 @@
                     <!-- Action Controls -->
                     <div class="flex items-center space-x-2 shrink-0 self-end sm:self-center mt-2 sm:mt-0">
                         <% if (n.event_id) { %>
-                            <a href="/events/<%= n.event_id %>" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-xs flex items-center">
+                            <a href="/events/<%= n.event_slug || helpers.slugify(n.event_name || '') || n.event_id %>" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-xs flex items-center">
                                 <span>View Event</span>
                                 <i class="fas fa-arrow-right text-[10px] ms-1.5"></i>
                             </a>

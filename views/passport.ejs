@@ -242,7 +242,9 @@
                                         </div>
 
                                         <div>
-                                            <div class="text-xs font-black text-white tracking-tight line-clamp-1"><%= stamp.event_name %></div>
+                                            <a href="/events/<%= helpers.slugify(stamp.event_name) %>" class="text-xs font-black text-white hover:text-pink-400 tracking-tight line-clamp-1 block transition-colors" title="View <%= stamp.event_name %>">
+                                                <%= stamp.event_name %>
+                                            </a>
                                             <div class="text-[11px] font-bold <%= style.text %>"><%= stamp.artist_name || 'K-Pop Artist' %></div>
                                         </div>
 

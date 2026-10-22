@@ -20,6 +20,16 @@ router.get('/passport', async (req, res) => {
       return res.redirect('/login');
     }
 
+    if (user.role === 'ORGANIZER') {
+      req.session.flash = { info: 'The Concert Passport & attendance stamps are fan features. Manage your listings from the Organizer Hub.' };
+      return res.redirect('/organizer/dashboard');
+    }
+
+    if (user.role === 'ADMIN') {
+      req.session.flash = { info: 'The Concert Passport is a fan feature. Manage the system from the Maintainer Hub.' };
+      return res.redirect('/admin');
+    }
+
     const passportData = await getUserPassportData(userId);
 
     // Fetch verified events that the fan can stamp into their passport

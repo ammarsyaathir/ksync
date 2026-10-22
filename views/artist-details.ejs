@@ -148,7 +148,7 @@
                                 </div>
                                 
                                 <h3 class="text-base font-bold text-slate-900 group-hover:text-pink-600 transition-colors line-clamp-2">
-                                    <a href="/events/<%= event.id %>-<%= eventSlug %>">
+                                    <a href="/events/<%= eventSlug %>">
                                         <%= event.event_name %>
                                     </a>
                                 </h3>
@@ -166,7 +166,7 @@
                             </div>
 
                             <div class="pt-3 border-t border-slate-100 flex items-center gap-2">
-                                <a href="/events/<%= event.id %>-<%= eventSlug %>" 
+                                <a href="/events/<%= eventSlug %>" 
                                    class="flex-1 py-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs text-center transition-all press-tactile">
                                     Event Details
                                 </a>
@@ -293,7 +293,7 @@
                     <div class="bg-white rounded-2xl p-4 border border-slate-200 flex items-center space-x-3 opacity-80 hover:opacity-100 transition-opacity">
                         <img src="<%= event.poster_image %>" alt="" class="w-14 h-14 rounded-xl object-cover shrink-0">
                         <div class="min-w-0 flex-1">
-                            <a href="/events/<%= event.id %>-<%= eventSlug %>" class="text-xs font-bold text-slate-900 hover:text-pink-600 truncate block">
+                            <a href="/events/<%= eventSlug %>" class="text-xs font-bold text-slate-900 hover:text-pink-600 truncate block">
                                 <%= event.event_name %>
                             </a>
                             <div class="text-[11px] text-slate-500"><%= helpers.formatDate(event.event_date) %> · <%= event.venue_name %></div>

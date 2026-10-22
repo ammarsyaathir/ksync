@@ -91,7 +91,7 @@
                             data-status="<%= (ev.event_status || 'UPCOMING').toUpperCase() %>">
                             <td class="p-3.5 font-mono font-bold text-slate-400">#<%= ev.id %></td>
                             <td class="p-3.5 max-w-[240px]">
-                                <a href="/events/<%= ev.id %>" target="_blank" class="font-bold text-slate-900 hover:text-purple-600 transition-colors block truncate" title="<%= ev.event_name %>">
+                                <a href="<%= helpers.getEventUrl(ev) %>" target="_blank" class="font-bold text-slate-900 hover:text-purple-600 transition-colors block truncate" title="<%= ev.event_name %>">
                                     <%= ev.event_name %>
                                 </a>
                                 <div class="text-[10px] text-slate-400 flex items-center space-x-1.5 mt-0.5">
@@ -126,7 +126,7 @@
                             </td>
                             <td class="p-3.5 text-right whitespace-nowrap">
                                 <div class="flex items-center justify-end space-x-1.5">
-                                    <a href="/events/<%= ev.id %>" target="_blank" class="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors" title="View Public Page">
+                                    <a href="<%= helpers.getEventUrl(ev) %>" target="_blank" class="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors" title="View Public Page">
                                         <i class="fas fa-arrow-up-right-from-square text-xs"></i>
                                     </a>
                                     <form action="/admin/events/delete" method="POST" onsubmit="return confirm('Permanently delete this event listing?')" class="inline">
