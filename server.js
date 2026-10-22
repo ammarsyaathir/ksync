@@ -115,9 +115,12 @@ process.on('unhandledRejection', (reason, promise) => {
 process.on('uncaughtException', (err) => {
   console.error('💥 [Process] Uncaught Exception:', err);
 });
+process.on('exit', (code) => {
+  console.log(`[Process] Node.js exiting with code: ${code}`);
+});
 
 // Start Server
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`\n===========================================================`);
   console.log(`🚀 K-Sync Malaysia (JavaScript / Node.js Express) Running!`);
   console.log(`📍 URL: http://localhost:${PORT}`);
@@ -125,5 +128,12 @@ app.listen(PORT, () => {
   console.log(`✨ Mode: ${process.env.NODE_ENV || 'development'}`);
   console.log(`===========================================================\n`);
 });
+
+server.on('error', (err) => {
+  console.error('💥 [Server Error]:', err);
+});
+
+// Ensure Node event loop stays permanently active in background daemons
+setInterval(() => {}, 1000 * 60 * 60);
 
 export default app;
