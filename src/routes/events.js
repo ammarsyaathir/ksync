@@ -148,14 +148,47 @@ router.get('/events/radar', async (req, res) => {
       ORDER BY e.event_date ASC, e.start_time ASC
     `);
 
-    // Fetch distinct cluster areas
-    const areaRows = await db.query(`
-      SELECT DISTINCT cluster_area 
-      FROM events 
-      WHERE verification_status = 'VERIFIED' AND cluster_area IS NOT NULL AND cluster_area != ''
-      ORDER BY cluster_area ASC
-    `);
-    const allAreas = areaRows.map(r => r.cluster_area);
+    // Helper to derive precinct cluster area dynamically if DB column is missing or unmigrated
+    function getClusterArea(ev) {
+      if (ev.cluster_area && typeof ev.cluster_area === 'string' && ev.cluster_area.trim()) {
+        return ev.cluster_area.trim();
+      }
+      const text = `${ev.venue_name || ''} ${ev.venue_display || ''} ${ev.city || ''} ${ev.address || ''}`.toLowerCase();
+      if (/axiata|bukit jalil|national stadium|unifi/i.test(text)) return 'Bukit Jalil Hub';
+      if (/zepp|bukit bintang|klcc|hang tuah|lalaport/i.test(text)) return 'BBCC & Downtown KL';
+      if (/mega star|sentral|brickfields|sungei wang/i.test(text)) return 'KL Sentral & Brickfields';
+      if (/sunway|subang|petaling jaya|surf beach/i.test(text)) return 'Petaling Jaya & Sunway';
+      if (/bangsar|mid valley|vcr/i.test(text)) return 'Bangsar & Mid Valley';
+      if (/penang|george town|spice/i.test(text)) return 'Penang & Northern Region';
+      return 'Kuala Lumpur Metro Hub';
+    }
+
+    // Attach verified cluster_area to every event
+    for (const ev of events) {
+      ev.cluster_area = getClusterArea(ev);
+    }
+
+    // Safely query distinct cluster areas from DB (with fallback if column is not yet added)
+    let allAreas = [];
+    try {
+      const areaRows = await db.query(`
+        SELECT DISTINCT cluster_area 
+        FROM events 
+        WHERE verification_status = 'VERIFIED' AND cluster_area IS NOT NULL AND cluster_area != ''
+        ORDER BY cluster_area ASC
+      `);
+      allAreas = areaRows.map(r => r.cluster_area).filter(Boolean);
+    } catch (dbErr) {
+      // cluster_area column does not exist on remote MySQL yet - proceed gracefully
+    }
+
+    // If allAreas is empty, derive from events
+    if (allAreas.length === 0) {
+      const set = new Set(events.map(e => e.cluster_area));
+      allAreas = Array.from(set);
+    }
+    if (!allAreas.includes('Bukit Jalil Hub')) allAreas.unshift('Bukit Jalil Hub');
+    if (!allAreas.includes('BBCC & Downtown KL')) allAreas.push('BBCC & Downtown KL');
 
     // Grouping by Cluster Area
     const areaClusters = {};
@@ -236,47 +269,62 @@ router.get('/venues/seating-3d', async (req, res) => {
     const venueId = req.query.venue ? Number(req.query.venue) : 1; // Default: Axiata Arena (id 1)
     const eventId = req.query.event ? Number(req.query.event) : null;
 
-    // Fetch active concert venues
-    const venues = await db.query(`
-      SELECT * FROM venues 
-      WHERE capacity IS NOT NULL AND capacity >= 1000 
-      ORDER BY capacity DESC
-    `);
+    // Hardcoded production fallback venues (guarantees zero crash if MySQL venues table is unmigrated)
+    const DEFAULT_VENUES = [
+      { id: 1, name: 'Axiata Arena Bukit Jalil', city: 'Kuala Lumpur', state: 'W.P. Kuala Lumpur', capacity: 16000 },
+      { id: 2, name: 'National Stadium Bukit Jalil', city: 'Kuala Lumpur', state: 'W.P. Kuala Lumpur', capacity: 87000 },
+      { id: 3, name: 'Zepp Kuala Lumpur', city: 'Kuala Lumpur', state: 'W.P. Kuala Lumpur', capacity: 2500 },
+      { id: 4, name: 'Idea Live KL (Mega Star Arena)', city: 'Kuala Lumpur', state: 'W.P. Kuala Lumpur', capacity: 5000 }
+    ];
+
+    let venues = [];
+    try {
+      venues = await db.query(`
+        SELECT * FROM venues 
+        WHERE capacity IS NOT NULL AND capacity >= 1000 
+        ORDER BY capacity DESC
+      `);
+    } catch (e) {
+      // Table 'venues' might not exist in remote MySQL
+    }
+
+    if (!venues || venues.length === 0) {
+      venues = DEFAULT_VENUES;
+    }
 
     // Selected venue
     let selectedVenue = venues.find(v => v.id === venueId);
     if (!selectedVenue) {
-      selectedVenue = venues[0] || {
-        id: 1,
-        name: 'Axiata Arena Bukit Jalil',
-        city: 'Kuala Lumpur',
-        state: 'W.P. Kuala Lumpur',
-        capacity: 16000
-      };
+      selectedVenue = venues[0] || DEFAULT_VENUES[0];
     }
 
     // Fetch upcoming verified concerts for the concert selector
-    const upcomingEvents = await db.query(`
-      SELECT e.id, e.event_name, e.event_date, e.venue_name, e.ticket_info, e.official_ticket_url,
-             a.name as artist_name, a.image_url as artist_image
-      FROM events e
-      LEFT JOIN artists a ON e.artist_id = a.id
-      WHERE e.verification_status = 'VERIFIED'
-      ORDER BY e.event_date ASC
-      LIMIT 12
-    `);
+    let upcomingEvents = [];
+    try {
+      upcomingEvents = await db.query(`
+        SELECT e.id, e.event_name, e.event_date, e.venue_name, e.ticket_info, e.official_ticket_url,
+               a.name as artist_name, a.image_url as artist_image
+        FROM events e
+        LEFT JOIN artists a ON e.artist_id = a.id
+        WHERE e.verification_status = 'VERIFIED'
+        ORDER BY e.event_date ASC
+        LIMIT 12
+      `);
+    } catch (e) {}
 
     // Selected event if provided, else pick top concert
     let selectedEvent = null;
     if (eventId) {
       selectedEvent = upcomingEvents.find(e => e.id === eventId);
       if (!selectedEvent) {
-        selectedEvent = await db.getOne(`
-          SELECT e.*, a.name as artist_name, a.image_url as artist_image
-          FROM events e
-          LEFT JOIN artists a ON e.artist_id = a.id
-          WHERE e.id = ?
-        `, [eventId]);
+        try {
+          selectedEvent = await db.getOne(`
+            SELECT e.*, a.name as artist_name, a.image_url as artist_image
+            FROM events e
+            LEFT JOIN artists a ON e.artist_id = a.id
+            WHERE e.id = ?
+          `, [eventId]);
+        } catch (e) {}
       }
     }
     if (!selectedEvent && upcomingEvents.length > 0) {

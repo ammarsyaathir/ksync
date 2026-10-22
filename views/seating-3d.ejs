@@ -502,8 +502,8 @@
         ledCtx.fillStyle = '#ffffff';
         ledCtx.font = 'bold 28px "Outfit", sans-serif';
         ledCtx.textAlign = 'center';
-        const artist = "<%= (selectedEvent && selectedEvent.artist_name) ? selectedEvent.artist_name.replace(/"/g, '') : 'K-SYNC TOUR LIVE' %>";
-        ledCtx.fillText(artist.toUpperCase(), 256, 75);
+        const artist = <%- JSON.stringify((selectedEvent && selectedEvent.artist_name) ? selectedEvent.artist_name : 'K-SYNC TOUR LIVE') %>;
+        ledCtx.fillText(String(artist).toUpperCase(), 256, 75);
 
         ledCtx.font = 'bold 14px "JetBrains Mono", monospace';
         ledCtx.fillStyle = '#f472b6';
@@ -799,8 +799,8 @@
     async function initAnthemAudio() {
         const audio = document.getElementById('sim-audio-player');
         const titleEl = document.getElementById('sim-song-title');
-        const artist = "<%= (selectedEvent && selectedEvent.artist_name) ? selectedEvent.artist_name.replace(/"/g, '') : 'SEVENTEEN' %>";
-        const tour = "<%= (selectedEvent && selectedEvent.event_name) ? selectedEvent.event_name.replace(/"/g, '') : 'RIGHT HERE WORLD TOUR' %>";
+        const artist = <%- JSON.stringify((selectedEvent && selectedEvent.artist_name) ? selectedEvent.artist_name : 'SEVENTEEN') %>;
+        const tour = <%- JSON.stringify((selectedEvent && selectedEvent.event_name) ? selectedEvent.event_name : 'RIGHT HERE WORLD TOUR') %>;
 
         try {
             const res = await fetch(`/api/music/preview?artist=${encodeURIComponent(artist)}&title=${encodeURIComponent(tour)}`);
