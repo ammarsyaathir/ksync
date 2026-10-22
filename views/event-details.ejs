@@ -747,7 +747,7 @@
                         </div>
                     </div>
 
-                    <!-- Interactive Google Maps Venue Explorer -->
+                    <!-- Interactive Venue Map Explorer -->
                     <div class="mt-4 pt-4 border-t border-slate-100">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-[11px] font-black text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
@@ -759,13 +759,59 @@
                             </a>
                         </div>
                         <div class="rounded-2xl overflow-hidden border border-slate-200 shadow-xs h-56 bg-slate-100 relative">
-                            <!-- Native Embedded Google Maps Embed (Zero-Billing Reliable Engine) -->
-                            <iframe class="w-full h-full border-0" loading="lazy" allowfullscreen 
-                                    referrerpolicy="no-referrer-when-downgrade"
-                                    src="https://maps.google.com/maps?q=<%= mapQuery %>&t=&z=15&ie=UTF8&iwloc=&output=embed">
-                            </iframe>
+                            <!-- Guaranteed Render Map via CARTO Basemaps & Leaflet -->
+                            <div id="venue-carto-map" class="w-full h-full z-10"></div>
                         </div>
                     </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                            const mapContainer = document.getElementById('venue-carto-map');
+                            if (!mapContainer || typeof L === 'undefined') return;
+
+                            try {
+                                const venueCoords = [<%= venueCoords[0] %>, <%= venueCoords[1] %>];
+                                const vMap = L.map('venue-carto-map', {
+                                    center: venueCoords,
+                                    zoom: 15,
+                                    zoomControl: true,
+                                    attributionControl: false
+                                });
+
+                                const cartoKey = "<%= typeof cartoApiKey !== 'undefined' ? cartoApiKey : 'cb1_4rvy_1_933f092a5de2104f28a689ca' %>";
+                                L.tileLayer(`https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${cartoKey}`, {
+                                    maxZoom: 19,
+                                    subdomains: 'abcd'
+                                }).addTo(vMap);
+
+                                const customIcon = L.divIcon({
+                                    className: 'venue-marker-pin',
+                                    html: `
+                                        <div style="transform: translate(-50%, -50%);">
+                                            <div style="width: 32px; height: 32px; border-radius: 12px; background: #0f172a; border: 2px solid #ec4899; box-shadow: 0 4px 14px rgba(236,72,153,0.4); display: flex; align-items: center; justify-content: center; color: white;">
+                                                <i class="fas fa-location-dot" style="color: #f472b6; font-size: 14px;"></i>
+                                            </div>
+                                        </div>
+                                    `,
+                                    iconSize: [32, 32],
+                                    iconAnchor: [16, 16]
+                                });
+
+                                L.marker(venueCoords, { icon: customIcon }).addTo(vMap)
+                                    .bindPopup(`
+                                        <div style="padding: 4px; font-family: ui-sans-serif, system-ui, sans-serif; min-width: 180px;">
+                                            <strong style="font-size: 13px; color: #0f172a;"><%= event.venue_name.replace(/"/g, '\\"') %></strong>
+                                            <p style="font-size: 11px; color: #64748b; margin: 4px 0;"><%= (event.address ? event.address + ', ' : '') + event.city %></p>
+                                            <a href="https://maps.google.com/?q=<%= mapQuery %>" target="_blank" rel="noopener noreferrer" style="font-size: 11px; font-weight: bold; color: #db2777; text-decoration: none;">Open in Google Maps ↗</a>
+                                        </div>
+                                    `)
+                                    .openPopup();
+
+                                setTimeout(() => { vMap.invalidateSize(); }, 300);
+                            } catch (e) {
+                                console.error('Venue map error:', e);
+                            }
+                        });
+                    </script>
                 </div>
 
                 <% if (event.transit_info) { %>
