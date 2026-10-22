@@ -118,6 +118,15 @@ process.on('uncaughtException', (err) => {
 process.on('exit', (code) => {
   console.log(`[Process] Node.js exiting with code: ${code}`);
 });
+process.on('SIGINT', () => {
+  console.log('⚠️ [Process] SIGINT received, keeping server running.');
+});
+process.on('SIGTERM', () => {
+  console.log('⚠️ [Process] SIGTERM received, keeping server running.');
+});
+process.on('SIGHUP', () => {
+  console.log('⚠️ [Process] SIGHUP received, keeping server running.');
+});
 
 // Start Server
 const server = app.listen(PORT, () => {
