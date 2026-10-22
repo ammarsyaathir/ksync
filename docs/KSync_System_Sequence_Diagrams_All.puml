@@ -1,956 +1,303 @@
-@startuml KSync_All_System_Sequence_Diagrams
+@startuml KSync_System_Sequence_Diagrams_All
+skinparam defaultFontName "Outfit, Arial, sans-serif"
+skinparam roundcorner 10
+skinparam shadowing true
+skinparam monochrome false
 
-' ========================================
-' UC01: Register New Fan Account
-' ========================================
-@startuml UC01_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC01: System Sequence Diagram - Register New Fan Account
+' ==============================================================================
+' SSD 1: MULTIMODAL POSTER OCR & AUTONOMOUS SUBMISSION (UC027 & AV01 - AV06)
+' ==============================================================================
+@startuml SSD01_MultimodalSubmission
+title System Sequence Diagram: UC027 & AV01-AV06 - Multimodal Poster OCR & Autonomous Submission
+actor "Organizer\n(Event Host)" as Organizer
+boundary "Browser UI\n(ksync.my)" as UI
+control "Event Controller\n(/submit-event)" as Controller
+entity "AI Service\n(OpenRouter)" as AIService
+entity "Autonomous\nVerifier" as Verifier
+database "SQLite Database\n(ksync.db)" as DB
 
-actor Guest
-participant ":System" as System
+Organizer -> UI: Pastes poster image URL & clicks "AI Auto-Extract"
+UI -> Controller: POST /api/events/extract-poster { poster_url }
+activate Controller
 
-Guest -> System : openRegisterPage()
-System --> Guest : displayRegisterForm()
-Guest -> System : submitRegisterDetails(name, username, email, password)
-System -> System : validateRegisterData(email, username, password)
-alt invalid data or existing email
-    System --> Guest : showValidationErrors(errors)
-else valid data
-    System -> System : hashPasswordWithBcrypt(password)
-    System -> System : createFanAccount(userData)
-    System --> Guest : showRegistrationSuccess(userID)
+Controller -> AIService: POST https://openrouter.ai/api/v1/chat/completions\n(model: "google/gemini-4-argon", image_url)
+activate AIService
+AIService --> Controller: Return extracted JSON (artist, title, venue, date, city)
+deactivate AIService
+
+Controller --> UI: 200 OK { extractedFields }
+deactivate Controller
+UI --> Organizer: Pre-fill event submission form fields
+
+Organizer -> UI: Reviews details, enters ticketing URL & evidence URL, clicks "Publish"
+UI -> Controller: POST /submit-event { title, artist, venue, date, ticket_url, evidence_url }
+activate Controller
+
+Controller -> Verifier: executeAuditPipeline(listingPayload)
+activate Verifier
+
+Verifier -> Verifier: AV01: Audit ticket_url against verified provider whitelist\n(GoLive, BookMyShow, Ticket2U)
+Verifier -> Verifier: AV02: Resolve evidence_url (HTTP 200 check, readable text bytes)
+Verifier -> Verifier: AV03: Verify start_date >= CURRENT_DATE
+Verifier -> DB: AV04: Query events where start_date = :date (duplicate check)
+DB --> Verifier: Return matching events count
+
+alt Hard Gates Passed
+  Verifier -> Verifier: Calculate token overlap (title, artist, venue, city)
+  Verifier -> AIService: AV06: Request cross-model consensus audit
+  AIService --> Verifier: Return consensus decision (PASSED, 22 pts)
+  Verifier -> Verifier: Calculate total Trust Score (e.g. 88/100) & assign Badge
+  Verifier --> Controller: VerificationResult { score: 88, badge: "VERIFIED_OFFICIAL", telemetry }
+  deactivate Verifier
+
+  Controller -> DB: INSERT INTO events (status = 'PUBLISHED', trust_score = 88, verification_details)
+  activate DB
+  DB --> Controller: Event created (id: 104)
+  deactivate DB
+
+  Controller --> UI: 302 Redirect /events/104/verification
+  UI --> Organizer: Display 14-point Verification Breakdown & Trust Badge
+else Hard Gate Failed (e.g. Unreachable Evidence URL)
+  Verifier --> Controller: VerificationResult { passed: false, failedGate: "AV02_UNREACHABLE" }
+  Controller -> DB: INSERT INTO events (status = 'DRAFT_FLAGGED')
+  Controller --> UI: 400 Bad Request { error: "Evidence URL unreachable (HTTP 404)" }
+  UI --> Organizer: Display specific diagnostic remediation prompt
 end
+deactivate Controller
 @enduml
 
+' ==============================================================================
+' SSD 2: EVENT RADAR & TRANSIT CORRIDORS (UC005 & UC008)
+' ==============================================================================
+@startuml SSD02_EventRadar
+title System Sequence Diagram: UC005 & UC008 - Event Radar Precinct Clustering & Transit Route
+actor "Guest / Fan" as User
+boundary "Browser UI\n(ksync.my)" as UI
+control "Radar Controller\n(/events/radar)" as Controller
+database "SQLite Database\n(ksync.db)" as DB
+boundary "Google Maps\nTransit Navigation" as GoogleMaps
 
-' ========================================
-' UC02: Log In to Account
-' ========================================
-@startuml UC02_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC02: System Sequence Diagram - Log In to Account
+User -> UI: Navigates to "/events/radar"
+UI -> Controller: GET /events/radar
+activate Controller
 
-actor User
-participant ":System" as System
+Controller -> DB: SELECT * FROM events WHERE status = 'PUBLISHED' ORDER BY start_date ASC
+activate DB
+DB --> Controller: Return events list
+deactivate DB
 
-User -> System : openLoginPage()
-System --> User : displayLoginForm()
-User -> System : submitCredentials(email, password)
-System -> System : verifyCredentials(email, password)
-alt invalid credentials
-    System --> User : showLoginError(message)
-else valid credentials
-    System -> System : createSession(userID, role)
-    System --> User : redirectUserToDashboard(role)
+Controller -> Controller: Group events by cluster_area (Bukit Jalil, BBCC, Mega Star, PJ/Sunway)
+Controller -> Controller: Group events by same-weekend cohorts (strftime('%Y-W%W', start_date))
+Controller --> UI: Render Event Radar View with precinct metrics & weekend cohorts
+deactivate Controller
+
+User -> UI: Clicks target precinct (e.g. "Bukit Jalil Hub") & selects event
+UI --> User: Displays event dossier with venue transit guidelines
+
+User -> UI: Clicks "Transit Directions / Open Map" (UC008)
+UI -> GoogleMaps: Open external web intent: maps.google.com/search/?api=1&query={venue_coordinates}
+GoogleMaps --> User: Presents live LRT/MRT public transit route (Sri Petaling Line)
+@enduml
+
+' ==============================================================================
+' SSD 3: PERSONALIZED FAN DASHBOARD & COUNTDOWN SYNC (UC016)
+' ==============================================================================
+@startuml SSD03_PersonalDashboard
+title System Sequence Diagram: UC016 - Personalized Fan Dashboard & Live Countdown Sync
+actor "Fan\n(Member)" as Fan
+boundary "Browser UI\n(ksync.my)" as UI
+control "Dashboard Controller\n(/dashboard)" as Controller
+database "SQLite Database\n(ksync.db)" as DB
+
+Fan -> UI: Clicks "My K-Sync" / Dashboard in header
+UI -> Controller: GET /dashboard (Session Cookie)
+activate Controller
+
+Controller -> DB: SELECT e.* FROM saved_events s JOIN events e ON s.event_id = e.id WHERE s.user_id = :userId ORDER BY e.start_date ASC
+activate DB
+DB --> Controller: Return saved upcoming events
+deactivate DB
+
+Controller -> DB: SELECT count(*) AS unread FROM notifications WHERE user_id = :userId AND is_read = 0
+activate DB
+DB --> Controller: Return unread count
+deactivate DB
+
+Controller -> Controller: Identify nearest upcoming showtime
+Controller --> UI: Render Dashboard View (events, nearestShowtime, unreadCount)
+deactivate Controller
+
+UI -> UI: Initialize client-side ticking digital countdown timer (Days:Hours:Mins:Secs)
+UI --> Fan: Display personal command center with live ticking concert clock
+@enduml
+
+' ==============================================================================
+' SSD 4: ANTI-SCALPER IMMUTABLE DISCUSSION Q&A (UC020, UC021, UC022)
+' ==============================================================================
+@startuml SSD04_DiscussionForum
+title System Sequence Diagram: UC020 - UC022 - Anti-Scalper Discussion Q&A Flow
+actor "Fan A" as FanA
+actor "Fan B" as FanB
+boundary "Browser UI\n(ksync.my)" as UI
+control "Chat Controller\n(/api/chat/:eventId)" as Controller
+database "SQLite Database\n(ksync.db)" as DB
+
+FanA -> UI: Types logistical inquiry & clicks "Post Comment" (UC020)
+UI -> Controller: POST /api/chat/104 { message: "What time does Axiata gate open for CAT 1?" }
+activate Controller
+
+Controller -> Controller: Sanitize message HTML & validate length
+Controller -> DB: INSERT INTO event_chat_messages (event_id, user_id, message, parent_id=NULL)
+activate DB
+DB --> Controller: Created message (id: 501)
+deactivate DB
+Controller --> UI: 201 Created { messageId: 501, author: "FanA", timestamp }
+deactivate Controller
+UI --> FanA: Display comment card in discussion thread
+
+== Threaded Reply Flow ==
+FanB -> UI: Clicks "Reply" on comment #501 & submits answer (UC021)
+UI -> Controller: POST /api/chat/104 { message: "Gates open at 4:30 PM for soundcheck!", parent_id: 501 }
+activate Controller
+
+Controller -> Controller: Enforce strictly 1-level deep threading (parent_id = 501)
+Controller -> DB: INSERT INTO event_chat_messages (event_id, user_id, message, parent_id=501)
+activate DB
+DB --> Controller: Created reply (id: 502)
+deactivate DB
+
+Controller -> DB: INSERT INTO notifications (user_id = FanA.id, type = 'REPLY', title = "Fan B replied to your inquiry")
+Controller --> UI: 201 Created { replyId: 502, parent_id: 501 }
+deactivate Controller
+UI --> FanB: Display nested reply under comment #501
+
+== Anti-Scalper Immutability Enforcement ==
+note over FanA, Controller
+  **ANTI-SCALPER SECURITY POLICY:**
+  PUT / PATCH routes are deliberately unexposed.
+  Comments can NEVER be edited after posting.
+  Only DELETE (UC022) is supported.
+end note
+
+FanA -> UI: Clicks delete trash icon on comment #501
+UI -> Controller: DELETE /api/chat/501
+activate Controller
+Controller -> DB: DELETE FROM event_chat_messages WHERE id = 501 AND user_id = :FanA_Id
+DB --> Controller: 1 row affected
+Controller --> UI: 200 OK { success: true }
+deactivate Controller
+UI --> FanA: Remove comment from UI
+@enduml
+
+' ==============================================================================
+' SSD 5: CROWDSOURCED RELIABILITY VOTING (UC018)
+' ==============================================================================
+@startuml SSD05_CrowdUpvote
+title System Sequence Diagram: UC018 - Crowdsourced Reliability Voting
+actor "Fan" as Fan
+boundary "Browser UI\n(ksync.my)" as UI
+control "Event API\n(/api/events/:id/recommend)" as Controller
+database "SQLite Database\n(ksync.db)" as DB
+
+Fan -> UI: Clicks "Recommend Event" (thumbs up) on event dossier
+UI -> Controller: POST /api/events/104/recommend (Session Cookie)
+activate Controller
+
+Controller -> DB: SELECT id FROM event_recommendations WHERE user_id = :userId AND event_id = 104
+activate DB
+DB --> Controller: Return existing vote record (if any)
+deactivate DB
+
+alt No Vote Exists (Upvote)
+  Controller -> DB: INSERT INTO event_recommendations (user_id, event_id, vote_type) VALUES (:userId, 104, 'UP')
+  activate DB
+  DB --> Controller: Insert successful
+  deactivate DB
+else Vote Already Exists (Toggle Off)
+  Controller -> DB: DELETE FROM event_recommendations WHERE user_id = :userId AND event_id = 104
+  activate DB
+  DB --> Controller: Delete successful
+  deactivate DB
 end
+
+Controller -> DB: SELECT count(*) AS total FROM event_recommendations WHERE event_id = 104
+activate DB
+DB --> Controller: Return total recommendations count
+deactivate DB
+
+Controller --> UI: 200 OK { recommended: boolean, count: total }
+deactivate Controller
+UI --> Fan: Update thumbs-up button state and increment tally
 @enduml
 
+' ==============================================================================
+' SSD 6: LOGISTICAL BROADCAST & PUSH ALERTS (UC030)
+' ==============================================================================
+@startuml SSD06_LogisticalBroadcast
+title System Sequence Diagram: UC030 - Logistical Broadcast & Push Alerts to Ticket Holders
+actor "Organizer" as Organizer
+boundary "Browser UI\n(ksync.my)" as UI
+control "Updates Controller\n(/api/events/:id/updates)" as Controller
+database "SQLite Database\n(ksync.db)" as DB
 
-' ========================================
-' UC03: Log Out of Account
-' ========================================
-@startuml UC03_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC03: System Sequence Diagram - Log Out of Account
+Organizer -> UI: Inputs urgent notice ("Soundcheck queue closes at 3:00 PM") & clicks "Broadcast Update"
+UI -> Controller: POST /api/events/104/updates { title, content, urgency: 'URGENT' }
+activate Controller
 
-actor User
-participant ":System" as System
+Controller -> DB: Verify organizer owns event #104
+DB --> Controller: Authorized
 
-User -> System : requestLogout()
-System --> User : displayLogoutConfirmation()
-System -> System : destroySessionCookies()
-@enduml
+Controller -> DB: INSERT INTO event_updates (event_id, title, content, urgency)
+activate DB
+DB --> Controller: Update created (id: 201)
+deactivate DB
 
+Controller -> DB: SELECT user_id FROM saved_events WHERE event_id = 104
+activate DB
+DB --> Controller: Return list of fan user IDs who wishlisted this event
+deactivate DB
 
-' ========================================
-' UC04: View Profile Details
-' ========================================
-@startuml UC04_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC04: System Sequence Diagram - View Profile Details
-
-actor Fan
-participant ":System" as System
-
-Fan -> System : openProfilePage()
-System --> Fan : displayProfileDetails(userData)
-System -> System : fetchUserProfile(sessionUserID)
-@enduml
-
-
-' ========================================
-' UC05: Update Profile Information
-' ========================================
-@startuml UC05_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC05: System Sequence Diagram - Update Profile Information
-
-actor Fan
-participant ":System" as System
-
-Fan -> System : openEditProfile()
-System --> Fan : displayProfileForm(userData)
-Fan -> System : submitProfileUpdates(name, bio, location, handle)
-System -> System : validateProfileInput()
-alt validation error
-    System --> Fan : showProfileErrors()
-else valid input
-    System -> System : updateUserRecord(userID, data)
-    System --> Fan : showUpdateSuccessToast()
+loop For each saved fan
+  Controller -> DB: INSERT INTO notifications (user_id, event_id, type = 'EVENT_UPDATE', title, message)
 end
+
+Controller --> UI: 201 Created { updateId: 201, notifiedFansCount }
+deactivate Controller
+UI --> Organizer: Confirmation toast ("Update posted & push alerts dispatched to fans")
 @enduml
 
+' ==============================================================================
+' SSD 7: SCAM REPORT AUDITING & MAINTAINER OVERRIDE (UC036)
+' ==============================================================================
+@startuml SSD07_ScamReport
+title System Sequence Diagram: UC036 - Scam Report Auditing & Maintainer Override
+actor "Fan\n(Reporter)" as Fan
+actor "System Maintainer\n(Admin)" as Maintainer
+boundary "Browser UI\n(ksync.my)" as UI
+control "Report Controller\n(/admin/reports)" as Controller
+database "SQLite Database\n(ksync.db)" as DB
 
-' ========================================
-' UC06: Change Account Password
-' ========================================
-@startuml UC06_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC06: System Sequence Diagram - Change Account Password
+Fan -> UI: Submits scam flag ("Fake scalper ticket link on event #99")
+UI -> Controller: POST /api/events/99/report { reason, details }
+Controller -> DB: INSERT INTO reports (event_id=99, user_id, reason, details, status='PENDING')
+Controller --> UI: 200 OK { message: "Report logged" }
 
-actor User
-participant ":System" as System
+Maintainer -> UI: Navigates to Maintainer Portal (`/admin/reports`)
+UI -> Controller: GET /admin/reports
+Controller -> DB: SELECT r.*, e.title, u.email FROM reports r JOIN events e ON r.event_id = e.id JOIN users u ON r.user_id = u.id WHERE r.status = 'PENDING'
+DB --> Controller: Return pending reports queue
+Controller --> UI: Render reports management dashboard
 
-User -> System : submitPasswordChange(currentPass, newPass, confirmPass)
-System -> System : verifyCurrentPassword(currentPass)
-alt incorrect current pass or mismatch
-    System --> User : showPasswordError(msg)
-else verified & match
-    System -> System : hashNewPassword(newPass)
-    System -> System : updatePasswordHash(userID)
-    System --> User : showPasswordChangeSuccess()
-end
+Maintainer -> UI: Reviews evidence, confirms scam, clicks "Enforce Take Down"
+UI -> Controller: POST /admin/reports/12/action { action: 'TAKE_DOWN_EVENT' }
+activate Controller
+
+Controller -> DB: UPDATE events SET status = 'CANCELLED' WHERE id = 99
+Controller -> DB: UPDATE reports SET status = 'RESOLVED' WHERE id = 12
+Controller -> DB: INSERT INTO activity_logs (user_id = Maintainer.id, action = 'EVENT_TAKEDOWN', details = "Event #99 cancelled due to confirmed scam")
+Controller --> UI: 200 OK { success: true }
+deactivate Controller
+UI --> Maintainer: Display confirmation badge and update queue
 @enduml
-
-
-' ========================================
-' UC07: Browse Featured Upcoming Events
-' ========================================
-@startuml UC07_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC07: System Sequence Diagram - Browse Featured Upcoming Events
-
-actor User
-participant ":System" as System
-
-User -> System : openHomePage()
-System --> User : displayFeaturedCarouselAndCards(eventList)
-System -> System : queryFeaturedVerifiedEvents(limit=6)
-@enduml
-
-
-' ========================================
-' UC08: Browse Events Directory
-' ========================================
-@startuml UC08_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC08: System Sequence Diagram - Browse Events Directory
-
-actor User
-participant ":System" as System
-
-User -> System : openEventsDirectory()
-System --> User : displayEventsCatalogGrid(events)
-System -> System : queryAllVerifiedEvents()
-@enduml
-
-
-' ========================================
-' UC09: Search Events by Keyword
-' ========================================
-@startuml UC09_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC09: System Sequence Diagram - Search Events by Keyword
-
-actor User
-participant ":System" as System
-
-User -> System : searchEvents(keyword)
-System -> System : executeKeywordSearch(keyword)
-alt no matches
-    System --> User : displayEmptySearchState()
-else matches found
-    System --> User : displayMatchingEvents(results)
-end
-@enduml
-
-
-' ========================================
-' UC10: Filter Events by Artist, Category & City
-' ========================================
-@startuml UC10_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC10: System Sequence Diagram - Filter Events by Artist, Category & City
-
-actor User
-participant ":System" as System
-
-User -> System : selectFilters(categorySlug, artistID, city)
-System --> User : displayFilteredEventGrid(filteredEvents)
-System -> System : queryFilteredCatalog(categorySlug, artistID, city)
-@enduml
-
-
-' ========================================
-' UC11: View Event Details & Embedded Venue
-' ========================================
-@startuml UC11_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC11: System Sequence Diagram - View Event Details & Embedded Venue
-
-actor User
-participant ":System" as System
-
-User -> System : openEventDetails(eventID)
-System --> User : displayEventPage(eventData, venueMap, ticketTiers)
-System -> System : fetchEventWithArtistVenueChat(eventID)
-@enduml
-
-
-' ========================================
-' UC12: View Artist & Idol Member Biodata
-' ========================================
-@startuml UC12_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC12: System Sequence Diagram - View Artist & Idol Member Biodata
-
-actor User
-participant ":System" as System
-
-User -> System : openArtistBiodataSection(artistID)
-System --> User : displayMemberProfileCards(membersArray)
-System -> System : parseArtistMembersJSON(artistID)
-@enduml
-
-
-' ========================================
-' UC13: Submit Public Event Listing
-' ========================================
-@startuml UC13_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC13: System Sequence Diagram - Submit Public Event Listing
-
-actor Submitter
-participant ":System" as System
-
-Submitter -> System : openSubmissionForm()
-System --> Submitter : displayPublicSubmissionForm()
-Submitter -> System : submitEvent(eventData, posterImage)
-System -> System : validateSubmissionData()
-alt missing required fields or file > 5MB
-    System --> Submitter : showSubmissionErrors(errors)
-else valid submission
-    System -> System : generateTrackingCode()
-    System -> System : savePendingEvent(data)
-    System -> System : sendConfirmationEmail()
-    System --> Submitter : showSubmissionSuccess(trackingCode)
-end
-@enduml
-
-
-' ========================================
-' UC14: Track Submission Status by Tracking Code
-' ========================================
-@startuml UC14_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC14: System Sequence Diagram - Track Submission Status by Tracking Code
-
-actor Submitter
-participant ":System" as System
-
-Submitter -> System : openStatusLookupPage()
-System --> Submitter : displayTrackingInput()
-Submitter -> System : lookupTrackingCode(code)
-System -> System : queryEventByTrackingCode(code)
-alt code not found
-    System --> Submitter : showCodeNotFoundError()
-else code exists
-    System --> Submitter : displayStatusTimeline(event, feedback)
-end
-@enduml
-
-
-' ========================================
-' UC15: Resubmit Rejected Event Listing
-' ========================================
-@startuml UC15_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC15: System Sequence Diagram - Resubmit Rejected Event Listing
-
-actor Submitter
-participant ":System" as System
-
-Submitter -> System : openResubmitForm(code)
-System --> Submitter : displayPreFilledForm(eventData, rejectionReason)
-Submitter -> System : resubmitCorrectedDetails(code, correctedData)
-System -> System : updateEventAndResetStatus(code)
-System --> Submitter : showResubmissionConfirmation(code)
-@enduml
-
-
-' ========================================
-' UC16: Bookmark Event (Save to Favorites)
-' ========================================
-@startuml UC16_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC16: System Sequence Diagram - Bookmark Event (Save to Favorites)
-
-actor Fan
-participant ":System" as System
-
-Fan -> System : bookmarkEvent(eventID)
-System -> System : checkAuthenticationAndExisting(userID, eventID)
-alt not authenticated
-    System --> Fan : promptLoginModal()
-else authenticated
-    System -> System : insertSavedEvent(userID, eventID)
-    System --> Fan : updateHeartIconState(saved=true)
-end
-@enduml
-
-
-' ========================================
-' UC17: View Saved Events List
-' ========================================
-@startuml UC17_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC17: System Sequence Diagram - View Saved Events List
-
-actor Fan
-participant ":System" as System
-
-Fan -> System : openSavedEvents()
-System --> Fan : displaySavedEventsList(savedCards)
-System -> System : querySavedEventsWithCountdowns(userID)
-@enduml
-
-
-' ========================================
-' UC18: Remove Event from Bookmarks
-' ========================================
-@startuml UC18_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC18: System Sequence Diagram - Remove Event from Bookmarks
-
-actor Fan
-participant ":System" as System
-
-Fan -> System : removeBookmark(eventID)
-System --> Fan : updateHeartIconState(saved=false)
-System -> System : deleteSavedEvent(userID, eventID)
-@enduml
-
-
-' ========================================
-' UC19: View Event Discussion Live Chat
-' ========================================
-@startuml UC19_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC19: System Sequence Diagram - View Event Discussion Live Chat
-
-actor User
-participant ":System" as System
-
-User -> System : openEventChatHub(eventID)
-System --> User : renderChatMessageStream(messages)
-System -> System : fetchChatMessages(eventID)
-@enduml
-
-
-' ========================================
-' UC20: Post Event Chat Message
-' ========================================
-@startuml UC20_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC20: System Sequence Diagram - Post Event Chat Message
-
-actor Fan
-participant ":System" as System
-
-Fan -> System : postChatMessage(eventID, messageText)
-System -> System : verifyChatWindowActive(eventID)
-alt event ended > 24 hours ago
-    System --> Fan : showChatLockedError()
-else chat active
-    System -> System : sanitizeInput()
-    System -> System : insertChatMessage(eventID, userID, text)
-    System --> Fan : appendNewMessageToStream()
-end
-@enduml
-
-
-' ========================================
-' UC21: Submit Event Content Report
-' ========================================
-@startuml UC21_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC21: System Sequence Diagram - Submit Event Content Report
-
-actor User
-participant ":System" as System
-
-User -> System : clickReportEvent(eventID)
-System --> User : displayReportModal()
-User -> System : submitReport(eventID, reason, details)
-System -> System : saveReportRecord(eventID, reason, details)
-System --> User : showReportConfirmationToast()
-@enduml
-
-
-' ========================================
-' UC22: View In-App Notifications
-' ========================================
-@startuml UC22_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC22: System Sequence Diagram - View In-App Notifications
-
-actor Fan
-participant ":System" as System
-
-Fan -> System : openNotifications()
-System --> Fan : displayNotificationsList(notifications)
-System -> System : fetchUserNotifications(userID)
-@enduml
-
-
-' ========================================
-' UC23: Mark Notifications as Read
-' ========================================
-@startuml UC23_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC23: System Sequence Diagram - Mark Notifications as Read
-
-actor Fan
-participant ":System" as System
-
-Fan -> System : markAllNotificationsRead()
-System --> Fan : resetNavbarBadgeCount(0)
-System -> System : updateNotificationsReadStatus(userID)
-@enduml
-
-
-' ========================================
-' UC24: View Admin Dashboard & KPI Metrics
-' ========================================
-@startuml UC24_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC24: System Sequence Diagram - View Admin Dashboard & KPI Metrics
-
-actor Admin
-participant ":System" as System
-
-Admin -> System : openAdminDashboard()
-System --> Admin : displayDashboardWithKPIs(metrics, logs)
-System -> System : aggregateMetricsAndLogs()
-@enduml
-
-
-' ========================================
-' UC25: View Audit Activity Logs
-' ========================================
-@startuml UC25_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC25: System Sequence Diagram - View Audit Activity Logs
-
-actor Admin
-participant ":System" as System
-
-Admin -> System : openAuditLogs()
-System --> Admin : displayAuditLogsTable(logs)
-System -> System : queryActivityLogsWithUsers()
-@enduml
-
-
-' ========================================
-' UC26: View Pending Verification Queue
-' ========================================
-@startuml UC26_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC26: System Sequence Diagram - View Pending Verification Queue
-
-actor Admin
-participant ":System" as System
-
-Admin -> System : openVerificationQueue()
-System --> Admin : displayPendingQueue(pendingEvents)
-System -> System : queryPendingEventsWithEvidence()
-@enduml
-
-
-' ========================================
-' UC27: Approve Event Submission Live
-' ========================================
-@startuml UC27_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC27: System Sequence Diagram - Approve Event Submission Live
-
-actor Admin
-participant ":System" as System
-
-Admin -> System : approveEvent(eventID)
-System --> Admin : showApprovalSuccessNotification()
-System -> System : updateVerificationStatus(eventID, 'VERIFIED')
-System -> System : recordAuditLog('APPROVE_EVENT', eventID)
-System -> System : sendApprovalEmail(eventID)
-@enduml
-
-
-' ========================================
-' UC28: Reject Event Submission with Feedback
-' ========================================
-@startuml UC28_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC28: System Sequence Diagram - Reject Event Submission with Feedback
-
-actor Admin
-participant ":System" as System
-
-Admin -> System : rejectEvent(eventID, rejectionReason)
-System --> Admin : showRejectionCompletedNotice()
-System -> System : updateVerificationStatus(eventID, 'REJECTED')
-System -> System : saveRejectionReason(eventID, reason)
-System -> System : recordAuditLog('REJECT_EVENT')
-System -> System : sendRejectionEmail()
-@enduml
-
-
-' ========================================
-' UC29: View Content Reports List
-' ========================================
-@startuml UC29_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC29: System Sequence Diagram - View Content Reports List
-
-actor Admin
-participant ":System" as System
-
-Admin -> System : openReportsInbox()
-System --> Admin : displayReportsTable(reportsList)
-System -> System : queryReportsWithEventsAndUsers()
-@enduml
-
-
-' ========================================
-' UC30: Resolve Content Report
-' ========================================
-@startuml UC30_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC30: System Sequence Diagram - Resolve Content Report
-
-actor Admin
-participant ":System" as System
-
-Admin -> System : resolveReport(reportID)
-System --> Admin : showResolutionSuccessNotification()
-System -> System : updateReportStatus(reportID, 'RESOLVED')
-@enduml
-
-
-' ========================================
-' UC31: View All Events Management List
-' ========================================
-@startuml UC31_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC31: System Sequence Diagram - View All Events Management List
-
-actor Admin
-participant ":System" as System
-
-Admin -> System : openEventsManagement()
-System --> Admin : displayEventsManagementTable(allEvents)
-System -> System : queryAllEvents()
-@enduml
-
-
-' ========================================
-' UC32: Update Event Listing Status
-' ========================================
-@startuml UC32_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC32: System Sequence Diagram - Update Event Listing Status
-
-actor Admin
-participant ":System" as System
-
-Admin -> System : updateEventStatus(eventID, newStatus)
-System --> Admin : showStatusUpdatedNotice()
-System -> System : updateEventStatusColumn(eventID, newStatus)
-System -> System : recordAuditLog('UPDATE_STATUS', eventID)
-@enduml
-
-
-' ========================================
-' UC33: Delete Event Listing
-' ========================================
-@startuml UC33_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC33: System Sequence Diagram - Delete Event Listing
-
-actor Admin
-participant ":System" as System
-
-Admin -> System : requestDeleteEvent(eventID)
-System --> Admin : displayDeleteConfirmationDialog(eventID)
-Admin -> System : confirmDeleteEvent(eventID)
-System -> System : deleteEventAndCascadeChildren(eventID)
-System -> System : recordAuditLog('DELETE_EVENT')
-System --> Admin : showDeleteSuccessToast()
-@enduml
-
-
-' ========================================
-' UC34: View Event Categories
-' ========================================
-@startuml UC34_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC34: System Sequence Diagram - View Event Categories
-
-actor Admin
-participant ":System" as System
-
-Admin -> System : openCategoriesPage()
-System --> Admin : displayCategoriesTable(categories)
-System -> System : queryCategoriesWithCounts()
-@enduml
-
-
-' ========================================
-' UC35: Create Event Category
-' ========================================
-@startuml UC35_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC35: System Sequence Diagram - Create Event Category
-
-actor Admin
-participant ":System" as System
-
-Admin -> System : createCategory(name, slug, color)
-System -> System : validateUniqueCategorySlug(slug)
-alt duplicate slug exists
-    System --> Admin : showDuplicateCategoryError()
-else unique slug
-    System -> System : insertCategory(name, slug, color)
-    System -> System : recordAuditLog('CREATE_CATEGORY')
-    System --> Admin : showCategoryCreatedSuccess()
-end
-@enduml
-
-
-' ========================================
-' UC36: Delete Event Category
-' ========================================
-@startuml UC36_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC36: System Sequence Diagram - Delete Event Category
-
-actor Admin
-participant ":System" as System
-
-Admin -> System : deleteCategory(categoryID)
-System -> System : checkLinkedEvents(categoryID)
-alt linked to existing events
-    System --> Admin : showForeignConstraintError()
-else unreferenced
-    System -> System : deleteCategoryRecord(categoryID)
-    System -> System : recordAuditLog('DELETE_CATEGORY')
-    System --> Admin : showCategoryDeletedNotice()
-end
-@enduml
-
-
-' ========================================
-' UC37: View Artist Catalog
-' ========================================
-@startuml UC37_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC37: System Sequence Diagram - View Artist Catalog
-
-actor Admin
-participant ":System" as System
-
-Admin -> System : openArtistsCatalog()
-System --> Admin : displayArtistsTable(artists)
-System -> System : queryAllArtists()
-@enduml
-
-
-' ========================================
-' UC38: Create Artist Profile with Biodata
-' ========================================
-@startuml UC38_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC38: System Sequence Diagram - Create Artist Profile with Biodata
-
-actor Admin
-participant ":System" as System
-
-Admin -> System : createArtist(name, groupType, agency, imageURL, membersJSON)
-System --> Admin : showArtistCreatedSuccess()
-System -> System : validateArtistData()
-System -> System : insertArtistRecord(name, groupType, agency, imageURL, membersJSON)
-System -> System : recordAuditLog('CREATE_ARTIST')
-@enduml
-
-
-' ========================================
-' UC39: Delete Artist Profile
-' ========================================
-@startuml UC39_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC39: System Sequence Diagram - Delete Artist Profile
-
-actor Admin
-participant ":System" as System
-
-Admin -> System : requestDeleteArtist(artistID)
-System --> Admin : displayDeleteConfirmation(artistID)
-Admin -> System : confirmDeleteArtist(artistID)
-System -> System : deleteArtistAndSetNullEvents(artistID)
-System -> System : recordAuditLog('DELETE_ARTIST')
-System --> Admin : showDeleteSuccess()
-@enduml
-
-
-' ========================================
-' UC40: View Registered Users List
-' ========================================
-@startuml UC40_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC40: System Sequence Diagram - View Registered Users List
-
-actor Admin
-participant ":System" as System
-
-Admin -> System : openUsersManagement()
-System --> Admin : displayUsersTable(users)
-System -> System : queryUsersWithRoles()
-@enduml
-
-
-' ========================================
-' UC41: Delete User Account
-' ========================================
-@startuml UC41_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC41: System Sequence Diagram - Delete User Account
-
-actor Admin
-participant ":System" as System
-
-Admin -> System : requestDeleteUser(targetUserID)
-System -> System : checkIsRootAdmin(targetUserID)
-alt target is root admin (id=1)
-    System --> Admin : showRootAdminProtectedError()
-else regular user
-    System -> System : deleteUserAndCascade(targetUserID)
-    System -> System : recordAuditLog('DELETE_USER')
-    System --> Admin : showUserDeletedSuccess()
-end
-@enduml
-
-
-' ========================================
-' UC42: View Interactive Google Map & Directions in Browser
-' ========================================
-@startuml UC42_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC42: System Sequence Diagram - View Interactive Google Map & Directions in Browser
-
-actor User
-participant ":System" as System
-
-User -> System : viewVenueLocationSection(eventID)
-System --> User : displayInteractiveVenueMap()
-User -> System : clickGetDirections()
-System -> System : renderGoogleMapIframe(venueCoordinates)
-System --> User : launchNavigationWindow()
-@enduml
-
-
-' ========================================
-' UC43: View Real-Time Event Countdown Timer
-' ========================================
-@startuml UC43_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC43: System Sequence Diagram - View Real-Time Event Countdown Timer
-
-actor User
-participant ":System" as System
-
-User -> System : openEventPage(eventID)
-System -> System : calculateRemainingTime(eventDate, startTime)
-alt event started or past
-    System --> User : displayEventLiveBadge()
-else upcoming
-    System -> System : startIntervalTimer(1000ms)
-    System --> User : displayTickingClock(days, hrs, mins, secs)
-end
-@enduml
-
-
-' ========================================
-' UC44: Share Event via Multi-Channel Social Modal
-' ========================================
-@startuml UC44_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC44: System Sequence Diagram - Share Event via Multi-Channel Social Modal
-
-actor User
-participant ":System" as System
-
-User -> System : clickShareEventButton()
-System -> System : detectPlatformCapabilities()
-alt mobile device with navigator.share
-    System --> User : openNativeShareSheet()
-else desktop browser
-    System --> User : displayShareModal(WhatsApp, X, Telegram, FB, CopyLink)
-end
-@enduml
-
-
-' ========================================
-' UC45: Manage Concert Day Survival Checklist
-' ========================================
-@startuml UC45_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC45: System Sequence Diagram - Manage Concert Day Survival Checklist
-
-actor User
-participant ":System" as System
-
-User -> System : toggleChecklistItem(itemID, isChecked)
-System --> User : animateProgressBar(progressPercent)
-System -> System : saveChecklistStateToLocalStorage(itemID, isChecked)
-System -> System : calculatePreparedPercentage()
-@enduml
-
-
-' ========================================
-' UC46: Add Event to Google Calendar
-' ========================================
-@startuml UC46_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC46: System Sequence Diagram - Add Event to Google Calendar
-
-actor User
-participant ":System" as System
-
-User -> System : clickAddToGoogleCalendar()
-System --> User : openGoogleCalendarTab()
-System -> System : formatISO8601Timestamps()
-System -> System : constructGoogleCalendarURL()
-@enduml
-
-
-' ========================================
-' UC47: Copy Event Verification Reference Code
-' ========================================
-@startuml UC47_SSD
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-title UC47: System Sequence Diagram - Copy Event Verification Reference Code
-
-actor User
-participant ":System" as System
-
-User -> System : clickCopyReferenceCode()
-System --> User : displayFloatingToastNotice('Reference code copied!')
-System -> System : writeTrackingCodeToClipboard(trackingCode)
-@enduml
-
 
 @enduml

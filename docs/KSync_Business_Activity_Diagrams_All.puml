@@ -1,1208 +1,325 @@
-@startuml KSync_All_Business_Activity_Diagrams
+@startuml KSync_Business_Activity_Diagrams_All
+skinparam defaultFontName "Outfit, Arial, sans-serif"
+skinparam roundcorner 10
+skinparam shadowing true
+skinparam monochrome false
 
-' ========================================
-' UC01: Register New Fan Account
-' ========================================
-@startuml UC01_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC01: Business Activity Diagram - Register New Fan Account
+' ==============================================================================
+' ACTIVITY 1: USER REGISTRATION & ROLE ASSIGNMENT (UC001)
+' ==============================================================================
+@startuml AD01_Registration
+title Activity Diagram: UC001 - Register Account & Role Assignment
+skinparam defaultFontName "Outfit, Arial, sans-serif"
 
 |Guest|
 start
-:Click "Register" link in navbar;
-:Fill personal details (name, username, email, password);
-:Click "Register" button;
+:Click "Register" in navigation bar;
+:Choose registration method;
+if (Registration Type?) then (Email & Password)
+  :Enter Name, Username, Email, Password;
+  :Select Role Preference (Fan / Organizer);
+  :Submit registration form;
+  |System|
+  :Validate email format (RFC 5322);
+  :Check uniqueness in `users` table;
+  if (Email or Username exists?) then (Yes)
+    :Return validation conflict error;
+    |Guest|
+    :Display error feedback;
+    stop
+  else (No)
+    |System|
+    :Hash password via Bcrypt (cost 10);
+    :Insert record into `users` (status='ACTIVE');
+  endif
+else (Google OAuth 2.0)
+  |Guest|
+  :Click "Continue with Google";
+  |Google OAuth Service|
+  :Authenticate user & issue OAuth ID token;
+  |System|
+  :Verify token & extract verified email, name, avatar;
+  :Check if Google account is linked;
+  if (User exists?) then (Yes)
+    :Retrieve existing user profile;
+  else (No)
+    :Create new user record with Google profile;
+  endif
+endif
+
 |System|
-:Validate field formats & check unique email;
+:Establish HTTP-only session cookie;
+:Initialize default notification preferences;
+:Redirect to Personalized Dashboard (/dashboard);
 |Guest|
-if (Input valid & unique email?) then (Valid)
-  |System|
-  :Hash password using Bcrypt (10 rounds);
-  :INSERT INTO users (role_id=3);
-  :Establish authenticated session;
-  :Redirect to dashboard with welcome alert;
-  stop
-else (Invalid / Exists)
-  |System|
-  :Display validation error message;
-  stop
-endif
-@enduml
-
-
-' ========================================
-' UC02: Log In to Account
-' ========================================
-@startuml UC02_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC02: Business Activity Diagram - Log In to Account
-
-|User|
-start
-:Navigate to "/login";
-:Enter email address and password;
-:Click "Log In" button;
-|System|
-:Query user by email and verify Bcrypt hash;
-|User|
-if (Credentials valid?) then (Valid)
-  |System|
-  :Initialize session cookie;
-  :Redirect user to intended destination or home;
-  stop
-else (Invalid)
-  |System|
-  :Display "Invalid email or password" error banner;
-  stop
-endif
-@enduml
-
-
-' ========================================
-' UC03: Log Out of Account
-' ========================================
-@startuml UC03_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC03: Business Activity Diagram - Log Out of Account
-
-|User|
-start
-:Click "Log Out" from profile dropdown;
-|System|
-:Destroy server-side session object;
-:Clear authentication cookie token;
-:Redirect user to home page with confirmation;
+:View welcome notification;
 stop
 @enduml
 
+' ==============================================================================
+' ACTIVITY 2: EVENT RADAR & PRECINCT CLUSTERING (UC005)
+' ==============================================================================
+@startuml AD02_EventRadar
+title Activity Diagram: UC005 - Event Radar Corridor Clustering & Same-Weekend Exploration
+skinparam defaultFontName "Outfit, Arial, sans-serif"
 
-' ========================================
-' UC04: View Profile Details
-' ========================================
-@startuml UC04_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC04: Business Activity Diagram - View Profile Details
-
-|Fan|
+|Guest / Fan|
 start
-:Click profile avatar in navigation bar;
+:Navigate to "/events/radar";
 |System|
-:Query users table by session user ID;
-:Render profile dashboard with account info;
-stop
-@enduml
-
-
-' ========================================
-' UC05: Update Profile Information
-' ========================================
-@startuml UC05_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC05: Business Activity Diagram - Update Profile Information
-
-|Fan|
-start
-:Edit display name, bio, city/location, or social handle;
-:Click "Save Changes" button;
-|System|
-:Validate field length and format constraints;
-|Fan|
-if (Input valid?) then (Valid)
+:Query all confirmed and active Malaysian events;
+:Map venues to predefined Malaysian precincts\n(Bukit Jalil Hub, BBCC & Downtown KL, Mega Star Arena, PJ/Sunway);
+:Calculate same-weekend cohorts using strftime('%Y-W%W', start_date);
+:Render interactive Event Radar view;
+|Guest / Fan|
+:Browse clustered corridor overview;
+if (Select corridor filter?) then (Yes)
+  :Click target precinct card (e.g. "Bukit Jalil Hub");
   |System|
-  :UPDATE users SET name, bio, location, handle;
-  :Refresh active session user cache;
-  :Show green "Profile updated" notification;
-  stop
-else (Invalid)
-  |System|
-  :Display field validation warning;
-  stop
-endif
-@enduml
-
-
-' ========================================
-' UC06: Change Account Password
-' ========================================
-@startuml UC06_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC06: Business Activity Diagram - Change Account Password
-
-|User|
-start
-:Enter current password, new password, and confirmation;
-:Click "Update Password" button;
-|System|
-:Verify current password Bcrypt hash and confirm match;
-|User|
-if (Password verified & matched?) then (Yes)
-  |System|
-  :Hash new password with Bcrypt;
-  :UPDATE users SET password_hash = newHash;
-  :Show success toast notification;
-  stop
+  :Filter and display only events located within that precinct;
+  :Highlight transit connectivity (e.g. Sri Petaling LRT);
 else (No)
-  |System|
-  :Display error: incorrect password or mismatch;
-  stop
+  :Browse chronological same-weekend timeline cards;
 endif
-@enduml
-
-
-' ========================================
-' UC07: Browse Featured Upcoming Events
-' ========================================
-@startuml UC07_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC07: Business Activity Diagram - Browse Featured Upcoming Events
-
-|User|
-start
-:Visit platform root URL ("/");
-|System|
-:SELECT * FROM events WHERE verification_status = "VERIFIED" ORDER BY event_date ASC LIMIT 6;
-:Render featured banner carousel and event cards;
+|Guest / Fan|
+:Select event to view detailed dossier;
 stop
 @enduml
 
+' ==============================================================================
+' ACTIVITY 3: EVENT DOSSIER & OUTBOUND HANDSHAKES (UC006 - UC011)
+' ==============================================================================
+@startuml AD03_EventDossier
+title Activity Diagram: UC006 - UC011 - Event Dossier & Interactive Outbound Handshakes
+skinparam defaultFontName "Outfit, Arial, sans-serif"
 
-' ========================================
-' UC08: Browse Events Directory
-' ========================================
-@startuml UC08_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC08: Business Activity Diagram - Browse Events Directory
-
-|User|
+|Guest / Fan|
 start
-:Click "Events" in navigation bar;
+:Select event card from Directory or Radar;
 |System|
-:Query verified events joined with artists & categories;
-:Render complete responsive event card catalog;
-stop
-@enduml
-
-
-' ========================================
-' UC09: Search Events by Keyword
-' ========================================
-@startuml UC09_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC09: Business Activity Diagram - Search Events by Keyword
-
-|User|
-start
-:Input search keyword into search bar;
-:Press Enter or submit search;
-|System|
-:Execute SQL query with LIKE wildcards across event, artist, and venue names;
-|User|
-if (Matches found?) then (Yes)
+:Fetch event details, venue transit guidelines, verified evidence, and updates;
+:Calculate remaining time to showtime;
+:Render event dossier with live digital countdown clock;
+|Guest / Fan|
+:Review concert details, venue guidelines, and organizer trust badge;
+fork
+  :Click "Buy Official Tickets" (UC007);
   |System|
-  :Render filtered event cards matching query;
-  stop
+  :Verify ticketing domain against partner whitelist\n(GoLive Asia, BookMyShow, Ticket2U, BigTix);
+  :Open external ticketing portal in secure tab (rel="noopener noreferrer");
+  detach
+fork again
+  :Click "Transit Directions / Open Map" (UC008);
+  |System|
+  :Format destination query with venue coordinates and LRT/MRT stops;
+  :Open Google Maps transit routing interface;
+  detach
+fork again
+  :Click "Organizer Social Profile" (UC009);
+  |System|
+  :Open verified promoter X / Instagram profile in new tab;
+  detach
+fork again
+  :Click "Share Event" (UC010);
+  |System|
+  :Open Share Modal (WhatsApp, X, Telegram, Clipboard);
+  |Guest / Fan|
+  :Select sharing channel or copy formatted link to clipboard;
+  detach
+fork again
+  :Click "Add to Calendar" (UC011);
+  |System|
+  if (Platform chosen?) then (Google Calendar)
+    :Build web intent URL with ISO 8601 showtime & venue;
+    :Open Google Calendar scheduling interface;
+  else (iCal / Outlook)
+    :Generate and stream RFC 5545 .ics file;
+    :Trigger browser file download;
+  endif
+  detach
+end fork
+stop
+@enduml
+
+' ==============================================================================
+' ACTIVITY 4: PERSONALIZED FAN DASHBOARD ("MY K-SYNC") (UC016)
+' ==============================================================================
+@startuml AD04_PersonalDashboard
+title Activity Diagram: UC016 - Personalized Fan Dashboard & Live Countdown Sync
+skinparam defaultFontName "Outfit, Arial, sans-serif"
+
+|Fan|
+start
+:Click "Dashboard" or "My K-Sync" in header;
+|System|
+:Verify active fan session;
+:Query `saved_events` joined with `events`;
+:Sort by `start_date ASC` to identify nearest upcoming concert;
+if (Upcoming saved events exist?) then (Yes)
+  :Calculate time delta to showtime;
+  :Initialize live ticking digital countdown clock (Days:Hours:Mins:Secs);
+  :Query user's recommendation votes and discussion history;
+  :Retrieve unread in-app notification count;
+  :Render command center view with active concert countdown;
 else (No)
-  |System|
-  :Display friendly "No events found" empty state;
-  stop
+  :Render empty-state guide with "Explore Upcoming Events" CTA;
 endif
-@enduml
-
-
-' ========================================
-' UC10: Filter Events by Artist, Category & City
-' ========================================
-@startuml UC10_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC10: Business Activity Diagram - Filter Events by Artist, Category & City
-
-|User|
-start
-:Select category filter pill, artist dropdown, or city filter;
-|System|
-:Build dynamic parameterized SQL WHERE conditions;
-:Update card grid asynchronously with matching events;
+|Fan|
+:Manage saved concerts, review schedule alerts, or jump to event discussions;
 stop
 @enduml
 
+' ==============================================================================
+' ACTIVITY 5: ANTI-SCALPER DISCUSSION FORUM (UC020, UC021, UC022)
+' ==============================================================================
+@startuml AD05_DiscussionForum
+title Activity Diagram: UC020 - UC022 - Anti-Scalper Immutable Discussion Q&A Forum
+skinparam defaultFontName "Outfit, Arial, sans-serif"
 
-' ========================================
-' UC11: View Event Details & Embedded Venue
-' ========================================
-@startuml UC11_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC11: Business Activity Diagram - View Event Details & Embedded Venue
-
-|User|
+|Fan|
 start
-:Click on any event card in directory;
+:Scroll to "Community Discussions & Q&A" section;
+if (Action?) then (Post Top-Level Comment - UC020)
+  :Type inquiry into comment textarea;
+  :Click "Post Comment";
+  |System|
+  :Sanitize HTML entities to prevent XSS attacks;
+  :Validate length (1 to 1000 characters);
+  :INSERT INTO `event_chat_messages` (parent_id = NULL);
+  :Render comment card with author avatar;
+else if (Reply to Comment - UC021)
+  :Click "Reply" underneath target comment;
+  :Type response into inline reply form;
+  :Click "Submit Reply";
+  |System|
+  :Sanitize text content;
+  :Flatten `parent_id` to enforce strictly 1-level deep threading;
+  :INSERT INTO `event_chat_messages` (parent_id = target_id);
+  :Dispatch in-app notification to parent comment author;
+  :Render nested reply card under parent comment;
+else if (Delete Comment - UC022)
+  :Click trash icon on own comment;
+  |System|
+  :Prompt deletion confirmation dialog;
+  |Fan|
+  :Confirm deletion;
+  |System|
+  :Verify session user owns the comment (or is Maintainer);
+  :DELETE FROM `event_chat_messages` WHERE id = :id;
+  :Remove comment card from UI;
+endif
+
 |System|
-:Query event record joined with artist, tickets, and venue;
-:Render event hero banner, ticket tiers, embedded Google Map, transit guide, and chat hub;
+note right
+  **ANTI-SCALPER DIRECTIVE:**
+  Comment EDITING is strictly prohibited.
+  Prevent scalpers from posting innocent queries
+  and subsequently swapping text for unauthorized
+  ticketing links or illegal phone contacts.
+end note
 stop
 @enduml
 
+' ==============================================================================
+' ACTIVITY 6: AUTONOMOUS VERIFICATION ENGINE PIPELINE (UC027 & AV01 - AV06)
+' ==============================================================================
+@startuml AD06_AutonomousVerification
+title Activity Diagram: UC027 & AV01 - AV06 - Multimodal Poster OCR & Autonomous Verification Pipeline
+skinparam defaultFontName "Outfit, Arial, sans-serif"
 
-' ========================================
-' UC12: View Artist & Idol Member Biodata
-' ========================================
-@startuml UC12_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC12: Business Activity Diagram - View Artist & Idol Member Biodata
-
-|User|
-start
-:Scroll to "Member Profiles & Biodata" section on event page;
-|System|
-:Parse JSON string from artists.members column;
-:Render individual member cards with portrait, positions, birthday, blood type & MBTI;
-stop
-@enduml
-
-
-' ========================================
-' UC13: Submit Public Event Listing
-' ========================================
-@startuml UC13_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC13: Business Activity Diagram - Submit Public Event Listing
-
-|Submitter|
+|Organizer|
 start
 :Navigate to "/submit-event";
-:Fill event details, pick preset venue, upload poster, enter email;
-:Click "Submit Event" button;
-|System|
-:Validate required fields and uploaded poster image size;
-|Submitter|
-if (Inputs valid?) then (Valid)
+:Provide official announcement poster image URL;
+:Click "AI Auto-Extract from Poster" (UC027);
+
+|Autonomous Verification Engine|
+:Execute AV05 (Multimodal OCR Vision Extraction);
+:Send image to OpenRouter Gemini 4 Argon (`google/gemini-4-argon`);
+:Parse structured JSON (Tour Name, Artist, Venue, Date, City);
+:Pre-fill event submission form fields;
+
+|Organizer|
+:Review and confirm extracted details;
+:Input official ticketing URL and source evidence URL;
+:Click "Publish Event Listing";
+
+|Autonomous Verification Engine|
+partition "Hard Gates Audit" {
+  :AV01: Audit Ticketing Domain against Whitelist (BookMyShow, GoLive, Ticket2U);
+  :AV02: Resolve Evidence URL (HTTP 200 check, readable text byte measurement);
+  :AV03: Verify Date Validity (Future date, chronological end date);
+  :AV04: Check Duplicate Listings (Fuzzy match artist + venue + date);
+}
+
+if (All Hard Gates Passed?) then (Yes)
+  partition "14-Point Attribute Match & Consensus" {
+    :Compute Token Overlap (Title, Artist, Venue, City, Date);
+    :AV06: Cross-Model AI Consensus Audit (Gemini 4 Argon vs Local Rules);
+    :Compute Total Verification Score (0 - 100);
+    if (Score >= 75 AND Ticketing Whitelisted?) then (Official Tier)
+      :Assign Badge: `VERIFIED_OFFICIAL`;
+    else (Community Tier)
+      :Assign Badge: `COMMUNITY_UNVERIFIED`;
+    endif
+  }
   |System|
-  :Upload poster file via Multer;
-  :Generate unique reference tracking code (e.g. KS-2026-TXT001);
-  :INSERT INTO events (verification_status="PENDING");
-  :Send confirmation email to submitter;
-  :Display success confirmation page with tracking code;
+  :INSERT INTO `events` (status = 'PUBLISHED');
+  :Store full audit telemetry in `verification_details` JSON;
+  :Redirect organizer to Verification Breakdown view;
+  |Organizer|
+  :Review 14-point score breakdown & diagnostic tips;
   stop
-else (Invalid)
+else (Hard Gate Failed)
   |System|
-  :Display form validation error notice;
-  stop
-endif
-@enduml
-
-
-' ========================================
-' UC14: Track Submission Status by Tracking Code
-' ========================================
-@startuml UC14_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC14: Business Activity Diagram - Track Submission Status by Tracking Code
-
-|Submitter|
-start
-:Navigate to "/check-submission";
-:Enter reference tracking code (e.g. KS-2026-TXT001);
-:Click "Check Status" button;
-|System|
-:Query events table by tracking_code;
-|Submitter|
-if (Tracking code found?) then (Found)
-  |System|
-  :Display review status badge (PENDING / VERIFIED / REJECTED);
-  :Render review timeline and administrator feedback notes;
-  stop
-else (Not Found)
-  |System|
-  :Display "Tracking code not found" alert notice;
+  :Flag listing with specific gate failure reason\n(e.g. Unreachable Evidence URL or Duplicate Event);
+  :Save as `DRAFT_FLAGGED`;
+  |Organizer|
+  :Display actionable remediation prompt;
   stop
 endif
 @enduml
 
-
-' ========================================
-' UC15: Resubmit Rejected Event Listing
-' ========================================
-@startuml UC15_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC15: Business Activity Diagram - Resubmit Rejected Event Listing
-
-|Submitter|
-start
-:Inspect administrator rejection reason on tracking portal;
-:Modify flagged details (e.g. date, venue, or ticketing URL);
-:Click "Resubmit Event" button;
-|System|
-:UPDATE events SET details, verification_status="PENDING", rejection_reason=NULL;
-:Record resubmission action in system audit log;
-:Display resubmission confirmation notice with same tracking code;
-stop
-@enduml
-
-
-' ========================================
-' UC16: Bookmark Event (Save to Favorites)
-' ========================================
-@startuml UC16_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC16: Business Activity Diagram - Bookmark Event (Save to Favorites)
+' ==============================================================================
+' ACTIVITY 7: SCAM REPORT AUDITING & MAINTAINER OVERRIDE (UC036)
+' ==============================================================================
+@startuml AD07_ScamReport
+title Activity Diagram: UC036 - Community Scam Report Auditing & Maintainer Override
+skinparam defaultFontName "Outfit, Arial, sans-serif"
 
 |Fan|
 start
-:Click heart "Save Event" button on event card or details page;
+:Discover suspicious listing (fake ticket link / fraudulent fanmeet);
+:Click "Report Event" (UC019);
+:Select reason ("Scam / Fake Ticket Link") and provide details;
+:Submit report;
+
 |System|
-:Check if user is authenticated;
-|Fan|
-if (Authenticated?) then (Yes)
-  |System|
-  :INSERT INTO saved_events (user_id, event_id);
-  :Update heart icon to filled rose color asynchronously;
-  stop
-else (No)
-  |System|
-  :Display login prompt modal;
-  stop
+:INSERT INTO `reports` (status = 'PENDING');
+if (Report count on event >= 3?) then (Yes)
+  :Automatically tag listing with amber Community Caution warning;
 endif
-@enduml
 
-
-' ========================================
-' UC17: View Saved Events List
-' ========================================
-@startuml UC17_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC17: Business Activity Diagram - View Saved Events List
-
-|Fan|
-start
-:Click "Saved Events" link in navigation bar;
-|System|
-:SELECT * FROM saved_events JOIN events WHERE user_id = ?;
-:Render personal saved events page with live countdown timers;
-stop
-@enduml
-
-
-' ========================================
-' UC18: Remove Event from Bookmarks
-' ========================================
-@startuml UC18_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC18: Business Activity Diagram - Remove Event from Bookmarks
-
-|Fan|
-start
-:Click filled heart icon on an already bookmarked event;
-|System|
-:DELETE FROM saved_events WHERE user_id=? AND event_id=?;
-:Revert heart icon to empty outline state asynchronously;
-stop
-@enduml
-
-
-' ========================================
-' UC19: View Event Discussion Live Chat
-' ========================================
-@startuml UC19_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC19: Business Activity Diagram - View Event Discussion Live Chat
-
-|User|
-start
-:Scroll to "Event Fan Chat Hub" section on event page;
-|System|
-:Query event_chat_messages JOIN users for event ID;
-:Render chronological discussion feed with fan avatars and timestamps;
-stop
-@enduml
-
-
-' ========================================
-' UC20: Post Event Chat Message
-' ========================================
-@startuml UC20_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC20: Business Activity Diagram - Post Event Chat Message
-
-|Fan|
-start
-:Type discussion message into chat input field;
-:Click "Send" button;
-|System|
-:Check if event chat is within active window (<24h post-event);
-|Fan|
-if (Chat active?) then (Active)
+|System Maintainer|
+:Navigate to Maintainer Portal (`/admin/reports`);
+:Review pending reports queue;
+:Inspect reported listing dossier and submitted evidence;
+if (Scam / Fraud Confirmed?) then (Yes)
+  :Select "Enforce Take Down";
   |System|
-  :Sanitize message input text;
-  :INSERT INTO event_chat_messages;
-  :Append new message to chat stream asynchronously;
-  stop
-else (Locked)
+  :UPDATE `events` SET status = 'CANCELLED';
+  :UPDATE `reports` SET status = 'RESOLVED';
+  :Log administrative override in `activity_logs`;
+  :Dispatch notification to affected fans;
+  |System Maintainer|
+  :Optionally suspend submitter account;
+else (False Alarm)
+  |System Maintainer|
+  :Select "Dismiss Report";
   |System|
-  :Display "Chat room locked 24 hours post-event" banner;
-  stop
+  :UPDATE `reports` SET status = 'DISMISSED';
 endif
-@enduml
-
-
-' ========================================
-' UC21: Submit Event Content Report
-' ========================================
-@startuml UC21_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC21: Business Activity Diagram - Submit Event Content Report
-
-|User|
-start
-:Click "Report" button on event action bar;
-:Select report reason (e.g. Inaccurate Date/Fake Event) and enter details;
-:Click "Submit Report" button;
-|System|
-:INSERT INTO reports (event_id, user_id, reason, details, status="PENDING");
-:Display green confirmation toast: "Report submitted to moderators";
 stop
 @enduml
-
-
-' ========================================
-' UC22: View In-App Notifications
-' ========================================
-@startuml UC22_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC22: Business Activity Diagram - View In-App Notifications
-
-|Fan|
-start
-:Click notification bell icon in navigation bar;
-|System|
-:Query notifications table for active user ID;
-:Render notification feed with unread indicators;
-stop
-@enduml
-
-
-' ========================================
-' UC23: Mark Notifications as Read
-' ========================================
-@startuml UC23_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC23: Business Activity Diagram - Mark Notifications as Read
-
-|Fan|
-start
-:Click "Mark all as read" button;
-|System|
-:UPDATE notifications SET is_read = 1 WHERE user_id = ?;
-:Reset navbar unread badge counter to 0;
-stop
-@enduml
-
-
-' ========================================
-' UC24: View Admin Dashboard & KPI Metrics
-' ========================================
-@startuml UC24_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC24: Business Activity Diagram - View Admin Dashboard & KPI Metrics
-
-|Admin|
-start
-:Navigate to "/admin";
-|System|
-:Verify user has role_id = 1 (Admin);
-|Admin|
-if (Is Admin?) then (Authorized)
-  |System|
-  :Aggregate counts: total events, pending submissions, registered users;
-  :Retrieve recent activity logs;
-  :Render administrative control center dashboard;
-  stop
-else (Unauthorized)
-  |System|
-  :Deny access and redirect to home page with warning;
-  stop
-endif
-@enduml
-
-
-' ========================================
-' UC25: View Audit Activity Logs
-' ========================================
-@startuml UC25_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC25: Business Activity Diagram - View Audit Activity Logs
-
-|Admin|
-start
-:Navigate to "/admin/logs";
-|System|
-:SELECT * FROM activity_logs JOIN users ORDER BY created_at DESC;
-:Render immutable audit log table with action badges and timestamps;
-stop
-@enduml
-
-
-' ========================================
-' UC26: View Pending Verification Queue
-' ========================================
-@startuml UC26_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC26: Business Activity Diagram - View Pending Verification Queue
-
-|Admin|
-start
-:Navigate to "/admin/verifications";
-|System|
-:SELECT * FROM events WHERE verification_status = "PENDING";
-:Render verification table with submitter details, poster previews, and proof URLs;
-stop
-@enduml
-
-
-' ========================================
-' UC27: Approve Event Submission Live
-' ========================================
-@startuml UC27_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC27: Business Activity Diagram - Approve Event Submission Live
-
-|Admin|
-start
-:Inspect official proof link and ticketing evidence;
-:Click "Approve Event" button;
-|System|
-:UPDATE events SET verification_status = "VERIFIED";
-:INSERT INTO activity_logs (action="APPROVE_EVENT");
-:Dispatch approval email with live URL to organizer;
-:Publish event to public catalog and refresh queue;
-stop
-@enduml
-
-
-' ========================================
-' UC28: Reject Event Submission with Feedback
-' ========================================
-@startuml UC28_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC28: Business Activity Diagram - Reject Event Submission with Feedback
-
-|Admin|
-start
-:Enter rejection feedback reason (e.g. "Official ticketing link missing");
-:Click "Reject Event" button;
-|System|
-:UPDATE events SET verification_status = "REJECTED", rejection_reason = ?;
-:INSERT INTO activity_logs (action="REJECT_EVENT");
-:Dispatch rejection feedback email to submitter;
-:Refresh verification queue;
-stop
-@enduml
-
-
-' ========================================
-' UC29: View Content Reports List
-' ========================================
-@startuml UC29_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC29: Business Activity Diagram - View Content Reports List
-
-|Admin|
-start
-:Navigate to "/admin/reports";
-|System|
-:Query reports table joined with events and reporting users;
-:Render moderation table with status tags and event links;
-stop
-@enduml
-
-
-' ========================================
-' UC30: Resolve Content Report
-' ========================================
-@startuml UC30_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC30: Business Activity Diagram - Resolve Content Report
-
-|Admin|
-start
-:Investigate reported listing and apply corrections;
-:Click "Mark as Resolved" button;
-|System|
-:UPDATE reports SET status = "RESOLVED" WHERE id = ?;
-:Record moderation action in activity_logs;
-:Refresh reports management table;
-stop
-@enduml
-
-
-' ========================================
-' UC31: View All Events Management List
-' ========================================
-@startuml UC31_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC31: Business Activity Diagram - View All Events Management List
-
-|Admin|
-start
-:Navigate to "/admin/events";
-|System|
-:SELECT * FROM events joined with categories & artists;
-:Render complete event management table with status toggles;
-stop
-@enduml
-
-
-' ========================================
-' UC32: Update Event Listing Status
-' ========================================
-@startuml UC32_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC32: Business Activity Diagram - Update Event Listing Status
-
-|Admin|
-start
-:Select new event status (UPCOMING / ONGOING / COMPLETED);
-:Click "Update Status" button;
-|System|
-:UPDATE events SET event_status = ? WHERE id = ?;
-:INSERT INTO activity_logs (action="UPDATE_STATUS");
-:Reload management table with updated badge;
-stop
-@enduml
-
-
-' ========================================
-' UC33: Delete Event Listing
-' ========================================
-@startuml UC33_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC33: Business Activity Diagram - Delete Event Listing
-
-|Admin|
-start
-:Click Delete icon on event row;
-|System|
-:Show "Delete Event" confirmation dialog;
-|Admin|
-if (Confirm Delete?) then (Delete)
-  :Click "Delete";
-  |System|
-  :DELETE FROM events WHERE id = ?;
-  :Cascade delete saved_events & chat messages;
-  :INSERT INTO activity_logs (action="DELETE_EVENT");
-  :Show success toast notification;
-  stop
-else (Cancel)
-  |Admin|
-  :Click "Cancel";
-  |System|
-  :Close dialog (no changes made);
-  stop
-endif
-@enduml
-
-
-' ========================================
-' UC34: View Event Categories
-' ========================================
-@startuml UC34_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC34: Business Activity Diagram - View Event Categories
-
-|Admin|
-start
-:Navigate to "/admin/categories";
-|System|
-:Query event_categories joined with event counts;
-:Render categories table with badge color previews;
-stop
-@enduml
-
-
-' ========================================
-' UC35: Create Event Category
-' ========================================
-@startuml UC35_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC35: Business Activity Diagram - Create Event Category
-
-|Admin|
-start
-:Enter category name, slug, and badge color;
-:Click "Add Category" button;
-|System|
-:Validate category name and unique slug constraint;
-|Admin|
-if (Slug unique?) then (Unique)
-  |System|
-  :INSERT INTO event_categories (name, slug, color);
-  :INSERT INTO activity_logs (action="CREATE_CATEGORY");
-  :Reload categories list with new category;
-  stop
-else (Duplicate)
-  |System|
-  :Display "Category slug already exists" error;
-  stop
-endif
-@enduml
-
-
-' ========================================
-' UC36: Delete Event Category
-' ========================================
-@startuml UC36_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC36: Business Activity Diagram - Delete Event Category
-
-|Admin|
-start
-:Click Delete icon on category row;
-|System|
-:Check if category is currently referenced in events table;
-|Admin|
-if (Category referenced in events?) then (Referenced)
-  |System|
-  :Show error dialog: Cannot delete category with linked events (RESTRICT);
-  stop
-else (Unreferenced)
-  |Admin|
-  :Confirm Delete;
-  |System|
-  :DELETE FROM event_categories WHERE id = ?;
-  :Record action in activity_logs;
-  :Reload categories table;
-  stop
-endif
-@enduml
-
-
-' ========================================
-' UC37: View Artist Catalog
-' ========================================
-@startuml UC37_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC37: Business Activity Diagram - View Artist Catalog
-
-|Admin|
-start
-:Navigate to "/admin/artists";
-|System|
-:SELECT * FROM artists ORDER BY name ASC;
-:Render artist catalog table with group type and agency badges;
-stop
-@enduml
-
-
-' ========================================
-' UC38: Create Artist Profile with Biodata
-' ========================================
-@startuml UC38_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC38: Business Activity Diagram - Create Artist Profile with Biodata
-
-|Admin|
-start
-:Enter artist name, group type, agency, and image URL;
-:Input member biodata details into member table;
-:Click "Add Artist" button;
-|System|
-:Serialize member biodata array into JSON string;
-:INSERT INTO artists (name, group_type, agency, image_url, members);
-:INSERT INTO activity_logs (action="CREATE_ARTIST");
-:Reload artist catalog with new profile;
-stop
-@enduml
-
-
-' ========================================
-' UC39: Delete Artist Profile
-' ========================================
-@startuml UC39_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC39: Business Activity Diagram - Delete Artist Profile
-
-|Admin|
-start
-:Click Delete icon on artist row;
-|System|
-:Show "Delete Artist" confirmation modal;
-|Admin|
-if (Confirm Delete?) then (Delete)
-  :Click "Delete";
-  |System|
-  :DELETE FROM artists WHERE id = ?;
-  :Set artist_id = NULL on linked events (ON DELETE SET NULL);
-  :INSERT INTO activity_logs (action="DELETE_ARTIST");
-  :Show success toast notification;
-  stop
-else (Cancel)
-  |Admin|
-  :Click "Cancel";
-  |System|
-  :Close modal without changes;
-  stop
-endif
-@enduml
-
-
-' ========================================
-' UC40: View Registered Users List
-' ========================================
-@startuml UC40_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC40: Business Activity Diagram - View Registered Users List
-
-|Admin|
-start
-:Navigate to "/admin/users";
-|System|
-:SELECT * FROM users JOIN roles;
-:Render registered users table with role badges and registration dates;
-stop
-@enduml
-
-
-' ========================================
-' UC41: Delete User Account
-' ========================================
-@startuml UC41_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC41: Business Activity Diagram - Delete User Account
-
-|Admin|
-start
-:Click Delete icon on target user row;
-|System|
-:Verify target user is not primary root administrator;
-|Admin|
-if (Is root admin?) then (Yes)
-  |System|
-  :Display error: Root administrator account cannot be deleted;
-  stop
-else (No)
-  |Admin|
-  :Confirm Delete;
-  |System|
-  :DELETE FROM users WHERE id = ?;
-  :Cascade delete user bookmarks and chat messages;
-  :INSERT INTO activity_logs (action="DELETE_USER");
-  :Show success notification;
-  stop
-endif
-@enduml
-
-
-' ========================================
-' UC42: View Interactive Google Map & Directions in Browser
-' ========================================
-@startuml UC42_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC42: Business Activity Diagram - View Interactive Google Map & Directions in Browser
-
-|User|
-start
-:Scroll to "Venue & Location" sidebar card on event page;
-:Click "Directions" or "Open Google Maps" button;
-|System|
-:Render embedded Google Maps iframe displaying venue coordinates;
-:Launch Google Maps navigation in new browser tab with turn-by-turn routing;
-stop
-@enduml
-
-
-' ========================================
-' UC43: View Real-Time Event Countdown Timer
-' ========================================
-@startuml UC43_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC43: Business Activity Diagram - View Real-Time Event Countdown Timer
-
-|User|
-start
-:Open event details page;
-|System|
-:Calculate difference between current timestamp and event start time;
-|User|
-if (Event is upcoming?) then (Upcoming)
-  |System|
-  :Initialize client-side setInterval(1000ms);
-  :Update Days, Hours, Minutes, Seconds display in hero banner;
-  stop
-else (Live / Past)
-  |System|
-  :Display "Event Started / Live Now" badge;
-  stop
-endif
-@enduml
-
-
-' ========================================
-' UC44: Share Event via Multi-Channel Social Modal
-' ========================================
-@startuml UC44_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC44: Business Activity Diagram - Share Event via Multi-Channel Social Modal
-
-|User|
-start
-:Click "Share" button on event action bar;
-|System|
-:Check if device supports native navigator.share() API;
-|User|
-if (Native share supported?) then (Yes (Mobile))
-  |System|
-  :Invoke native navigator.share() dialog;
-  stop
-else (No (Desktop))
-  |User|
-  :Select social channel or click "Copy Link";
-  |System|
-  :Open share modal with WhatsApp, X, Telegram, Facebook & Copy Link;
-  :Launch target share page or write URL to clipboard with confirmation toast;
-  stop
-endif
-@enduml
-
-
-' ========================================
-' UC45: Manage Concert Day Survival Checklist
-' ========================================
-@startuml UC45_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC45: Business Activity Diagram - Manage Concert Day Survival Checklist
-
-|User|
-start
-:Check off prepared item on 7-item concert survival checklist;
-|System|
-:Read updated state of checked items;
-:Calculate prepared percentage (e.g. 5/7 Prepared - 71%);
-:Persist checked item IDs in browser localStorage;
-:Animate progress bar fill to current completion rate;
-stop
-@enduml
-
-
-' ========================================
-' UC46: Add Event to Google Calendar
-' ========================================
-@startuml UC46_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC46: Business Activity Diagram - Add Event to Google Calendar
-
-|User|
-start
-:Click "Add to Calendar" button on event action bar;
-|System|
-:Format event title, ISO dates, venue, and description into query string;
-:Construct "calendar.google.com/calendar/render?action=TEMPLATE" URL;
-:Open pre-filled Google Calendar event creation tab;
-stop
-@enduml
-
-
-' ========================================
-' UC47: Copy Event Verification Reference Code
-' ========================================
-@startuml UC47_Activity
-skinparam monochrome true
-skinparam shadowing false
-skinparam defaultFontName Arial
-skinparam defaultTextAlignment center
-
-title UC47: Business Activity Diagram - Copy Event Verification Reference Code
-
-|User|
-start
-:Click copy icon on Official Verification card;
-|System|
-:Write tracking code string (e.g. KS-2026-TXT001) to clipboard;
-:Show floating green toast notification: "Reference code copied to clipboard!";
-stop
-@enduml
-
 
 @enduml

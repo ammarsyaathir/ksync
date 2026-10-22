@@ -1,296 +1,151 @@
-<USER_REQUEST>
-For your FYP, K-Sync Malaysia: A Centralized Platform for K-Pop Event Information and Fan Community Discussions, I recommend organising the complete use case specification into four main actors: Guest, Registered Fan, Event Organizer and System Admin.
-
-The design below follows your chosen workflow: organizers can submit events without registering an account, while the System Admin reviews submissions before publishing them. It also covers event discovery, fan community discussions, event verification, reporting and audit logs.
-
-# 1. System actors
-
-| No. | Actor                  | Description                                                                                                                                  |
-| --- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Guest                  | A visitor who can discover events and view publicly available information without logging in.                                                |
-| 2   | Registered Fan         | A fan who has registered and logged in to access personalised features and participate in discussions.                                       |
-| 3   | Event Organizer        | A person or organisation that submits K-Pop event information for verification without creating an account.                                  |
-| 4   | System Admin           | An authorised administrator responsible for reviewing submissions, managing event listings, handling reports and maintaining system records. |
-| 5   | Email Service          | An external system that sends submission confirmations and approval or rejection notifications, if email notifications are implemented.      |
-| 6   | Authentication Service | An external service that verifies user credentials or OTPs, if an external authentication provider is used.                                  |
-
-Note: Email Service and Authentication Service are supporting external actors, not the four main human actors. Include them in your final diagram only if your implementation uses them.
-
-# 2. Complete use case list
-
-## A. Account and authentication management
-
-| ID   | Use case                   | Actor                        | Description                                                                   |
-| ---- | -------------------------- | ---------------------------- | ----------------------------------------------------------------------------- |
-| UC01 | Register Account           | Guest                        | Creates a new fan account by providing the required registration information. |
-| UC02 | Verify Email Address / OTP | Guest                        | Verifies the user's email address or OTP during registration, if required.    |
-| UC03 | Log In                     | Registered Fan, System Admin | Authenticates a user and grants access according to their assigned role.      |
-| UC04 | Log Out                    | Registered Fan, System Admin | Ends the current authenticated session.                                       |
-| UC05 | Manage Profile             | Registered Fan               | Allows the fan to view and update personal profile information.               |
-| UC06 | Change Password            | Registered Fan, System Admin | Allows an authenticated user to change their password.                        |
-| UC07 | Recover Account            | Guest                        | Allows a user to recover access through an approved recovery process.         |
-
-Include / extend relationships
-
-| Base use case    | Relationship             | Related use case           | Explanation                                                                                                 |
-| ---------------- | ------------------------ | -------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Register Account | `«include»`              | Verify Email Address / OTP | Use only if verification is mandatory for every registration.                                               |
-| Manage Profile   | `«extend»`               | Change Password            | Password changes are an optional action from profile management, if that is how your interface works.       |
-| Log In           | No relationship required | Recover Account            | Account recovery is normally a separate flow initiated when login fails or the user forgets their password. |
-
-Actor inheritance: Registered Fan and System Admin can share a generalised parent actor such as Authenticated User if they share login and logout functionality. Do not make Event Organizer a subtype of Registered Fan.
-
-## B. Event discovery and information
-
-| ID   | Use case                       | Actor                        | Description                                                                                                          |
-| ---- | ------------------------------ | ---------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| UC08 | Browse Events                  | Guest, Registered Fan        | Displays published K-Pop events in a chronological or categorised listing.                                           |
-| UC09 | Search Events                  | Guest, Registered Fan        | Searches published events by event name, artist, group or keyword.                                                   |
-| UC10 | Filter Events                  | Guest, Registered Fan        | Filters events by date, location, event category or artist.                                                          |
-| UC11 | View Event Details             | Guest, Registered Fan        | Displays verified event details such as date, time, venue, organiser, rules and official source links.               |
-| UC12 | View Event Verification Status | Guest, Registered Fan        | Displays whether an event is pending, verified, rejected, postponed or cancelled, as appropriate to the public view. |
-| UC13 | Save / Bookmark Event          | Registered Fan               | Saves an event to the fan's personal list for future reference.                                                      |
-| UC14 | View Saved Events              | Registered Fan               | Displays events bookmarked by the fan.                                                                               |
-| UC15 | View Event Discussion          | Guest, Registered Fan        | Displays discussion posts and replies associated with an event, subject to visibility rules.                         |
-| UC16 | View Event Change History      | Registered Fan, System Admin | Shows relevant recorded changes to event information, if the history is exposed to users.                            |
-
-Include / extend relationships
-
-| Base use case         | Relationship          | Related use case      | Explanation                                                                                                                           |
-| --------------------- | --------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| Browse Events         | `«include»`           | View Event Details    | Not required in strict UML. Browsing does not always mean a visitor opens an event, so connect these use cases independently instead. |
-| View Event Details    | `«extend»`            | View Event Discussion | Viewing a discussion is optional when the fan opens an event.                                                                         |
-| Save / Bookmark Event | No `«include»` needed | Log In                | The Registered Fan actor is already authenticated; do not create an include relationship solely to represent login.                   |
-| View Saved Events     | No `«include»` needed | Save / Bookmark Event | Users can view their saved list even if they do not save a new event during that session.                                             |
-
-The search, filter, browse and event-detail use cases should generally be connected directly to Guest and Registered Fan. They are distinct user goals rather than mandatory substeps of one another.
-
-## C. Event organizer submission without an account
-
-| ID   | Use case                        | Actor                            | Description                                                                                             |
-| ---- | ------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| UC17 | Submit Event                    | Event Organizer                  | Submits a new K-Pop event through a public submission form without registering an account.              |
-| UC18 | Provide Event Details           | Event Organizer                  | Enters event title, artist, date, time, venue, category and other required information.                 |
-| UC19 | Provide Supporting Evidence     | Event Organizer                  | Supplies official source links, poster URLs or other evidence supporting the submitted details.         |
-| UC20 | Receive Submission Confirmation | Event Organizer, Email Service\* | Receives confirmation that the submission has been received and assigned a reference number.            |
-| UC21 | Check Submission Status         | Event Organizer                  | Checks whether the submission is pending, approved or rejected using a reference number or secure link. |
-| UC22 | Receive Decision Notification   | Event Organizer, Email Service\* | Receives the approval or rejection outcome and any rejection reason.                                    |
-| UC23 | Correct and Resubmit Event      | Event Organizer                  | Corrects rejected or incomplete event information and resubmits it, if this feature is implemented.     |
-
-\*Email Service is included as an actor only when notifications are sent through an external email provider.
-
-Include / extend relationships
-
-| Base use case              | Relationship        | Related use case                | Explanation                                                                                                                                                                                                                                     |
-| -------------------------- | ------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Submit Event               | `«include»`         | Provide Event Details           | Required event information must be supplied.                                                                                                                                                                                                    |
-| Submit Event               | `«include»`         | Provide Supporting Evidence     | Use if evidence is mandatory for every submission. If evidence is optional, do not use `«include»`.                                                                                                                                             |
-| Submit Event               | `«include»`         | Receive Submission Confirmation | Use if the system always displays or sends a confirmation after successful submission.                                                                                                                                                          |
-| Check Submission Status    | No include required | Receive Decision Notification   | Checking status and receiving a notification are separate interactions.                                                                                                                                                                         |
-| Correct and Resubmit Event | `«extend»`          | Check Submission Status         | This can be modelled as optional behaviour after the organizer discovers a rejected submission, but only if the resubmission flow is initiated from the status-checking process. Otherwise, connect both use cases directly to Event Organizer. |
-
-Important: Because the organizer does not have an account, do not include `Edit Own Event`, `Manage Organizer Profile` or `Verify Organizer Account` unless you introduce a secure alternative such as a unique editing link.
-
-## D. Administrator submission review and verification
-
-| ID   | Use case                  | Actor        | Description                                                                        |
-| ---- | ------------------------- | ------------ | ---------------------------------------------------------------------------------- |
-| UC24 | View Pending Submissions  | System Admin | Displays submitted events waiting for review.                                      |
-| UC25 | Review Event Submission   | System Admin | Examines submitted event information before deciding whether to publish it.        |
-| UC26 | Check Supporting Evidence | System Admin | Checks official links, posters and other evidence for reliability and consistency. |
-| UC27 | Approve Submission        | System Admin | Approves an event submission that satisfies the system's verification criteria.    |
-| UC28 | Reject Submission         | System Admin | Rejects a submission that fails verification requirements and records the reason.  |
-| UC29 | Record Decision Reason    | System Admin | Records the justification for approval or rejection to support accountability.     |
-| UC30 | Publish Approved Event    | System Admin | Makes an approved event visible in the public event listing.                       |
-| UC31 | View Submission History   | System Admin | Reviews previous submission decisions and status changes.                          |
-
-Include / extend relationships
-
-| Base use case           | Relationship         | Related use case              | Explanation                                                                                                                                      |
-| ----------------------- | -------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Review Event Submission | `«include»`          | Check Supporting Evidence     | Evidence checking is a required step in the proposed review workflow.                                                                            |
-| Approve Submission      | `«include»`          | Record Decision Reason        | Use if every decision must have a recorded justification.                                                                                        |
-| Reject Submission       | `«include»`          | Record Decision Reason        | A rejection should always include a documented reason under the proposed policy.                                                                 |
-| Approve Submission      | `«include»`          | Publish Approved Event        | Use if approval automatically publishes the event. If the administrator publishes it in a separate later action, model the use cases separately. |
-| Reject Submission       | No mandatory include | Receive Decision Notification | The notification is triggered by the decision process but may be handled asynchronously by the system.                                           |
-
-For fairness, define verification criteria such as the availability of official source links, consistency of the event date and venue, and whether the submitted event falls within the system's scope. Record the decision and reason in the audit log. This helps reduce unexplained or inconsistent decisions.
+# K-Sync Malaysia: Formal Use Case Specification (All 42 Use Cases)
 
+**Project Title:** K-Sync Malaysia: A Centralized Platform for K-Pop Event Information and Fan Community Discussions  
+**Document Type:** Formal System Use Case Specification (SRS Section 3.2)  
+**System Architecture:** Autonomous Verification Engine, Event Radar, Artist Profiles & Fan Command Center  
+**Total Use Cases:** 42 Use Cases  
+**Actor Taxonomy:**
+* **Guest (Unauthenticated Public Visitor):** Public discovery, search, radar clustering, idol directories, and outbound handshakes.
+* **Fan (Authenticated Member - Inherits Guest):** Personalized dashboard, wishlist, crowdsourced reliability upvoting, immutable 1-level discussions, and notifications.
+* **Organizer / Submitter (Authenticated Event Host - Inherits Fan):** Event listings submission, OpenRouter Gemini 4 Argon Vision OCR, 14-point verification breakdown, and logistical updates.
+* **System Maintainer (Platform Administrator):** Master taxonomies (Venues with transit routes, Artists with member biodata, Categories), scam report audits, and platform overrides.
+* **Autonomous Verification Engine (Automated Application Engine):** Whitelist domain checks, URL reachability tests, date validity, duplicate detection, multimodal OCR vision, and AI consensus scoring.
 
-### Admin Multi-Source Cross-Verification Protocol & Decision Table
+---
 
-To eliminate fake, misleading, or deceptive submissions while retaining frictionless Model 2 public submission, the System Admin executes the following cross-verification protocol:
+## 1. Actor Hierarchy & Relationship Model
 
-**Core Verification Principle**: Approve an event *only* if its core details (Artist, Date, Malaysian Venue) can be matched to an authoritative source that the submitter does not control.
+```
+       [ GUEST (Unauthenticated Public Visitor) ]
+             |-- (Public Discovery, Browsing & Outbound Handshakes)
+             |---> UC001: Register Account (Email / Google OAuth)
+             |---> UC002: Browse Events Directory
+             |---> UC003: Search Events (Artist, Group, Title, Venue, City)
+             |---> UC004: Filter Events (Category, Artist, State, Precinct)
+             |---> UC005: View Event Radar (Precinct Clusters & Same-Weekend Cohorts)
+             |---> UC006: View Event Details (Live Countdown, Verified Evidence, Updates)
+             |---> UC007: Open Official Ticket Link (Whitelisted Partner Handshake)
+             |---> UC008: Open Venue Map & Transit Route (External Google Maps & Transit)
+             |---> UC009: Open Organizer Social Profile Link (External X / Instagram)
+             |---> UC010: Share Event (WhatsApp, X, Telegram, Clipboard Copy)
+             |---> UC011: Export Event to Calendar (Google Calendar / .ics File)
+             |---> UC012: Browse Artists Directory (Idol Groups & Soloists)
+             |---> UC013: View Artist & Member Profiles (Biodata & MY Tour Archive)
+             |---> UC014: View Event Discussion & Comments (Public Read-Only)
+             ^
+             | (inherits all Guest capabilities)
+             |
+       [ FAN (Authenticated Member) ]
+             |-- (Personal Management, Community Trust & Discussions)
+             |---> UC015: Manage Personal Profile
+             |---> UC016: View Personalized Dashboard ("My K-Sync" Command Center)
+             |---> UC017: Bookmark / Save Event (Wishlist Toggle)
+             |---> UC018: Recommend / Upvote Event (Crowdsourced Reliability Voting)
+             |---> UC019: Report Suspicious Listing (Scam, Fake Ticket Link Alert)
+             |---> UC020: Post Discussion Comment (Event Logistics / Inquiries)
+             |---> UC021: Reply to Discussion Comment (1-Level Threaded Q&A)
+             |---> UC022: Delete Own Discussion Comment (Anti-Scalper Immutability)
+             |---> UC023: View In-App Notifications (Notification Bell Tray)
+             |---> UC024: Mark Notification as Read
+             |---> UC025: Manage Notification Settings (Email & In-App Preferences)
+             ^
+             | (inherits all Fan capabilities)
+             |
+ [ ORGANIZER / SUBMITTER (Authenticated Event Host) ]
+             |-- (Publishing, Multimodal OCR & Verification Telemetry)
+             |---> UC026: View Organizer Dashboard (Listings & Verification Metrics)
+             |---> UC027: Submit Event Listing (AI Vision OCR Scanner with Gemini 4 Argon)
+             |---> UC028: Edit Event Listing (Draft / Correct Flagged Listing)
+             |---> UC029: View Verification Breakdown (14-Point Attribute Match & Evidence Audit)
+             |---> UC030: Post Logistical Event Update (Gate Times / Official Notice Alert)
+             |---> UC031: Request Organizer Badge (Official Fanclub Credentials)
 
-| What the Admin Finds | Assigned Trust Level | Public Badge | Action & Notification |
-| :--- | :--- | :--- | :--- |
-| **2 or more independent official sources match** (e.g. Artist Weverse/Agency tour schedule + Malaysian promoter announcement/ticketing page + Venue calendar) | `OFFICIAL` | 🛡️ **Verified – Official Source** | **Approve & Publish**. Real-time notification email sent with tracking status updated to `VERIFIED`. |
-| **Only the organizer's own post**, but from a genuine Malaysian fanclub account with active history (>3 months, past cupsleeve/fan projects) | `COMMUNITY` | 🎪 **Verified – Community Event** | **Approve & Publish**. Badge informs fans that it is community-organized. |
-| **No independent source, brand-new suspicious account (<30 days), or mismatched date/venue** | `REJECTED` | *(Hidden from Public)* | **Reject Submission**. System records rejection reason; submitter receives email notification with instructions to provide valid evidence (UC23). |
-| **The same event already exists in directory** | `REJECTED` | *(Hidden from Public)* | **Reject as Duplicate**. Point submitter to existing listing. |
+ [ SYSTEM MAINTAINER (Platform Administrator) ]
+             |-- (Platform Governance, Master Taxonomies & Scam Moderation)
+             |---> UC032: View Maintainer Portal (System Analytics & Audit Logs)
+             |---> UC033: Manage Event Categories (Concert, Fanmeet, Cafe Event)
+             |---> UC034: Manage Venues Database (Transit Links, Seating Capacity)
+             |---> UC035: Manage Artists & Member Roster (Normalized Biodata)
+             |---> UC036: Audit Scam Reports (Investigate Flags & Enforce Suspensions)
 
-#### Required Event Submission & Authenticity Fields
-- `evidence_link` (*Required*): Primary URL link to the official announcement (Weverse, X, Instagram, Ticketing platform).
-- `organizer_name` (*Required*): Entity or fanclub organizing the event.
-- `organizer_social_url` (*Required*): Link to organizer's active social profile for account age and project history auditing.
-- `organizer_type` (*Required*): Categorized as `Fanclub`, `Event Company`, `Venue`, or `Agency`.
-- `trust_level` (*System-Assigned*): `OFFICIAL` (Official Source) or `COMMUNITY` (Community Event).
-- `admin_verification_notes` (*Audit Trail*): Admin notes documenting which independent sources were checked (stored for FYP audit defense).
-- `organizer_id` (*Nullable*): Set to `NULL` for guest community submissions.
-
-
-## E. Published event management
-
-| ID   | Use case                              | Actor        | Description                                                                                           |
-| ---- | ------------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------- |
-| UC32 | Manage Published Events               | System Admin | Opens administrative controls for published event listings.                                           |
-| UC33 | Edit Event Information                | System Admin | Corrects inaccurate dates, venues, links or other event details.                                      |
-| UC34 | Update Event Status                   | System Admin | Marks an event as upcoming, postponed, cancelled or completed when supported by verified information. |
-| UC35 | Unpublish Event                       | System Admin | Temporarily removes an event from public listings when it should no longer be displayed.              |
-| UC36 | Archive Event                         | System Admin | Retains completed or obsolete event records for reference instead of permanently deleting them.       |
-| UC37 | Manage Artists, Venues and Categories | System Admin | Adds or updates the reference data used to organise event listings.                                   |
-
-Include / extend relationships
-
-| Base use case           | Relationship | Related use case       | Explanation                                                                                                                        |
-| ----------------------- | ------------ | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| Manage Published Events | `«include»`  | Edit Event Information | Only if entering the management workflow always includes editing; usually it does not, so independent associations are preferable. |
-| Manage Published Events | `«include»`  | Update Event Status    | Not recommended: an admin may manage an event without changing its status.                                                         |
-| Update Event Status     | `«extend»`   | Edit Event Information | Use only if status changes are an optional action within the edit workflow. Otherwise, keep them separate.                         |
-
-In the final diagram, connect the System Admin directly to each supported management use case rather than forcing unrelated tasks to use `«include»`.
-
-## F. Fan community discussions and interaction
-
-| ID   | Use case                         | Actor                 | Description                                                                           |
-| ---- | -------------------------------- | --------------------- | ------------------------------------------------------------------------------------- |
-| UC38 | Search Discussions               | Guest, Registered Fan | Searches discussion posts by keyword or event.                                        |
-| UC39 | Create Discussion Post           | Registered Fan        | Creates a general discussion post linked to an event or community topic.              |
-| UC40 | Post Question                    | Registered Fan        | Publishes a question about an event or related topic.                                 |
-| UC41 | Reply to Discussion              | Registered Fan        | Replies to a discussion post or another user's contribution.                          |
-| UC42 | Answer Question                  | Registered Fan        | Provides an answer to a question posted by another fan.                               |
-| UC43 | Edit Own Post                    | Registered Fan        | Edits a discussion post created by the current user.                                  |
-| UC44 | Delete Own Post                  | Registered Fan        | Deletes the user's own post, subject to system rules.                                 |
-| UC45 | Report Event or Post             | Registered Fan        | Reports misleading event information, spam or inappropriate discussion content.       |
-| UC46 | Receive Discussion Notifications | Registered Fan        | Receives notifications about replies or relevant discussion activity, if implemented. |
-
-Include / extend relationships
-
-| Base use case                    | Relationship        | Related use case                           | Explanation                                                                                                                                             |
-| -------------------------------- | ------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Create Discussion Post           | `«include»`         | Log In                                     | Do not use this in the use case diagram if Registered Fan already represents an authenticated actor.                                                    |
-| Reply to Discussion              | No include required | View Event Discussion                      | A reply is a separate goal that usually starts after the fan views the discussion.                                                                      |
-| Answer Question                  | No include required | Post Question                              | Questions can be answered independently; answering does not require the same user to post a question.                                                   |
-| Edit Own Post                    | No include required | Create Discussion Post                     | Editing is a later action and does not happen every time a post is created.                                                                             |
-| Delete Own Post                  | No include required | Create Discussion Post                     | Deletion is a separate action on an existing post.                                                                                                      |
-| Report Event or Post             | `«extend»`          | View Event Details / View Event Discussion | Reporting is optional behaviour initiated while viewing event information or a discussion. Choose the appropriate base use case for each report target. |
-| Receive Discussion Notifications | No include required | Reply to Discussion                        | Notifications may be generated when a reply occurs, but they are not necessarily part of the user's reply interaction.                                  |
-
-You can keep both `Post Question` and `Create Discussion Post` if your system genuinely distinguishes question-and-answer posts from general discussions. If not, simplify the design to Create Discussion Post and Reply to Discussion, with a post category field to distinguish questions.
-
-## G. Reports, moderation and accountability
-
-| ID   | Use case                     | Actor                   | Description                                                                                        |
-| ---- | ---------------------------- | ----------------------- | -------------------------------------------------------------------------------------------------- |
-| UC47 | View Reports                 | System Admin            | Displays reports submitted by fans for investigation.                                              |
-| UC48 | Investigate Report           | System Admin            | Reviews the reported event or post and checks supporting information.                              |
-| UC49 | Take Action on Report        | System Admin            | Dismisses an invalid report, removes inappropriate content or initiates an appropriate correction. |
-| UC50 | Moderate Discussion Content  | System Admin            | Hides or removes content that violates the community rules.                                        |
-| UC51 | Manage User Accounts         | System Admin            | Restricts or disables abusive accounts if account administration is included in the project scope. |
-| UC52 | View Audit Log               | System Admin            | Reviews records of important administrative actions and system decisions.                          |
-| UC53 | Record Administrative Action | System Admin / System\* | Stores the action, actor, timestamp and relevant decision details for accountability.              |
-
-\*The system itself may generate the audit record automatically. If you represent the system as an actor in the use case diagram, that can be misleading; usually, show the audit log as a use case initiated by an administrator and document automatic logging as a system requirement.
-
-Include / extend relationships
-
-| Base use case                          | Relationship        | Related use case             | Explanation                                                                       |
-| -------------------------------------- | ------------------- | ---------------------------- | --------------------------------------------------------------------------------- |
-| Investigate Report                     | `«include»`         | View Reports                 | Use if the investigation always begins by opening a report from the report queue. |
-| Take Action on Report                  | `«extend»`          | Investigate Report           | Taking action is conditional on the investigation findings.                       |
-| Moderate Discussion Content            | `«extend»`          | Investigate Report           | Moderation may occur when an investigated report concerns inappropriate content.  |
-| View Audit Log                         | No include required | Record Administrative Action | Reviewing the audit log is separate from recording a new action.                  |
-| Approve Submission / Reject Submission | `«include»`         | Record Administrative Action | Use if every approval or rejection is automatically recorded for audit purposes.  |
-
-## H. Optional and conditional features
-
-These use cases should appear in your final diagram only if they are part of your confirmed scope and you plan to implement them.
-
-| ID   | Use case                            | Actor                                | Description                                                                 | Recommendation                                                  |
-| ---- | ----------------------------------- | ------------------------------------ | --------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| UC54 | Auto-Fill Event Details from Poster | Event Organizer, external AI service | Extracts potential event details from a poster to reduce manual data entry. | Optional; include only if AI poster recognition is implemented. |
-| UC55 | Find Event Buddy                    | Registered Fan                       | Helps fans discover other users who want to attend the same event.          | Optional; requires additional privacy and matching rules.       |
-| UC56 | Receive Event Update Notification   | Registered Fan                       | Notifies fans about changes to saved or followed events.                    | Optional; include only if a notification mechanism is built.    |
-| UC57 | View Submission Status Timeline     | Event Organizer                      | Displays the sequence of submission, review and decision statuses.          | Optional; useful if the system stores status history.           |
-| UC58 | Manage Notification Preferences     | Registered Fan                       | Allows users to choose which notifications they want to receive.            | Optional; only needed if notification settings are implemented. |
-
-I would exclude merchandise inventory, QR-based collection, ticket booking, ticket purchasing and shopping-cart functions from this use case model because they are outside the event-information and fan-discussion scope described here.
-
-# 3. Consolidated include and extend relationship list
-
-Use this as the relationship checklist when drawing the final diagram in draw\.io. These are the relationships I recommend only where the described behaviour is genuinely mandatory or conditional.
-
-| Source use case             | Relationship | Target use case                                                          |
-| --------------------------- | ------------ | ------------------------------------------------------------------------ |
-| Register Account            | `«include»`  | Verify Email Address / OTP (if mandatory)                                |
-| Submit Event                | `«include»`  | Provide Event Details                                                    |
-| Submit Event                | `«include»`  | Provide Supporting Evidence (if mandatory)                               |
-| Submit Event                | `«include»`  | Receive Submission Confirmation (if guaranteed)                          |
-| Review Event Submission     | `«include»`  | Check Supporting Evidence                                                |
-| Approve Submission          | `«include»`  | Record Decision Reason (if mandatory)                                    |
-| Reject Submission           | `«include»`  | Record Decision Reason                                                   |
-| Approve Submission          | `«include»`  | Publish Approved Event (if publication is automatic)                     |
-| Report Event or Post        | `«extend»`   | View Event Details or View Event Discussion                              |
-| Take Action on Report       | `«extend»`   | Investigate Report                                                       |
-| Moderate Discussion Content | `«extend»`   | Investigate Report (when applicable)                                     |
-| Correct and Resubmit Event  | `«extend»`   | Check Submission Status (only if the correction flow is initiated there) |
-
-UML direction reminder:
-
-- `«include»`: the dashed arrow points from the including use case towards the included use case.
-- `«extend»`: the dashed arrow points from the extending use case towards the base use case.
-
-Do not connect every related function using `«include»` or `«extend»`. A direct actor association is sufficient when two use cases are separate user goals.
-
-# 4. Actor-to-use-case summary
-
-| Actor                  | Main use cases                                                                |
-| ---------------------- | ----------------------------------------------------------------------------- |
-| Guest                  | UC01, UC02, UC07, UC08–UC12, UC15, UC38                                       |
-| Registered Fan         | UC03–UC06, UC08–UC16, UC38–UC46, UC56, UC58                                   |
-| Event Organizer        | UC17–UC23, UC54, UC57                                                         |
-| System Admin           | UC03, UC04, UC06, UC24–UC37, UC47–UC53                                        |
-| Email Service          | UC20, UC22 and UC46/UC56 where external email delivery is implemented         |
-| Authentication Service | UC01–UC03, UC06–UC07 where external authentication or recovery is implemented |
-| External AI service    | UC54 only, if implemented                                                     |
-
-This summary includes optional functions for completeness; it does not mean you must implement all of them.
-
-# 5. Recommended final scope for your FYP
-
-For a manageable diploma/degree FYP implementation, I recommend prioritising these features:
-
-Core 1 — Event discovery
-
-Browse, search, filter, view event details and view verification status.
-
-Core 2 — Public event submission and verification
-
-Submit an event without an account, provide evidence, check status, review, approve or reject, notify the organizer and publish approved listings.
-
-Core 3 — Fan community
-
-Register, log in, manage profile, create posts, ask and answer questions, reply, and report inappropriate or misleading content.
-
-Core 4 — Administration and accountability
-
-Manage published events, investigate reports, moderate content, record decision reasons and view audit logs.
-
-Features such as event buddies, AI poster extraction, notification preferences and advanced user account controls can be treated as optional extensions.
-
-One final recommendation: use a separate system workflow or activity diagram to show the full submission process from organizer submission through verification, approval/rejection and publication. The use case diagram identifies who can perform each function; the activity diagram explains how the process flows. This distinction will make your FYP documentation clearer and easier to defend during your presentation.
-</USER_REQUEST>
-<ADDITIONAL_METADATA>
-The current local time is: 2026-10-13T02:39:20+08:00.
-</ADDITIONAL_METADATA>
+ [ AUTONOMOUS VERIFICATION ENGINE (Automated Application Engine) ]
+             |-- (Instant Real-Time Verification Pipeline)
+             |---> AV01: Audit Whitelisted Ticketing Domain
+             |---> AV02: Resolve Evidence URL & Readability
+             |---> AV03: Verify Date & Time Validity
+             |---> AV04: Check Duplicate Event Listings
+             |---> AV05: Multimodal OCR Vision Extraction (OpenRouter Gemini 4 Argon)
+             |---> AV06: Cross-Model AI Consensus Audit (Argon -> Gemma -> Local Rules)
+```
+
+---
+
+## 2. Master Use Case Registry (All 42 Use Cases)
+
+| ID | Module | Use Case Name | Primary Actor | Secondary Actors | Key Relationships |
+| :---: | :--- | :--- | :--- | :--- | :--- |
+| **UC001** | Module 1 | Register Account | Guest | Google OAuth Provider | Transition to Fan / Organizer |
+| **UC002** | Module 1 | Browse Events Directory | Guest | Fan, Organizer, Maintainer | Base listing catalog |
+| **UC003** | Module 1 | Search Events | Guest | Fan, Organizer, Maintainer | Case-insensitive keyword search |
+| **UC004** | Module 1 | Filter Events | Guest | Fan, Organizer, Maintainer | Category, state, artist, precinct |
+| **UC005** | Module 1 | View Event Radar | Guest | Fan, Organizer, Maintainer | Precinct & same-weekend clustering |
+| **UC006** | Module 1 | View Event Details | Guest | Fan, Organizer, Maintainer | Real-time countdown & verification |
+| **UC007** | Module 1 | Open Official Ticket Link | Guest | Fan, Organizer, Maintainer | Whitelisted ticketing handshake |
+| **UC008** | Module 1 | Open Venue Map & Transit Route | Guest | Fan, Organizer, Maintainer | External Google Maps & LRT routing |
+| **UC009** | Module 1 | Open Organizer Social Profile Link | Guest | Fan, Organizer, Maintainer | External X / Instagram profile |
+| **UC010** | Module 1 | Share Event | Guest | Fan, Organizer, Maintainer | WhatsApp, X, Telegram, Clipboard |
+| **UC011** | Module 1 | Export Event to Calendar | Guest | Fan, Organizer, Maintainer | Google Calendar web / iCal (.ics) |
+| **UC012** | Module 1 | Browse Artists Directory | Guest | Fan, Organizer, Maintainer | Boy/Girl groups and soloists |
+| **UC013** | Module 1 | View Artist & Member Profiles | Guest | Fan, Organizer, Maintainer | Normalized idol member biodata |
+| **UC014** | Module 1 | View Event Discussion & Comments | Guest | Fan, Organizer, Maintainer | Public read-only Q&A viewing |
+| **UC015** | Module 2 | Manage Personal Profile | Fan | Organizer, Maintainer | Profile bio, name, password |
+| **UC016** | Module 2 | View Personalized Dashboard ("My K-Sync") | Fan | Organizer, Maintainer | Live countdown & saved shows |
+| **UC017** | Module 2 | Bookmark / Save Event | Fan | Organizer, Maintainer | Wishlist storage (`saved_events`) |
+| **UC018** | Module 2 | Recommend / Upvote Event | Fan | Organizer, Maintainer | Crowdsourced reliability score |
+| **UC019** | Module 2 | Report Suspicious Listing | Fan | System Maintainer | Escalates to `reports` queue |
+| **UC020** | Module 2 | Post Discussion Comment | Fan | Organizer, Maintainer | Immutable public commentary |
+| **UC021** | Module 2 | Reply to Discussion Comment | Fan | Organizer, Maintainer | 1-level threaded Q&A |
+| **UC022** | Module 2 | Delete Own Discussion Comment | Fan | System Maintainer | Anti-scalper immutability (No edit) |
+| **UC023** | Module 2 | View In-App Notifications | Fan | Organizer, Maintainer | Bell tray alerts |
+| **UC024** | Module 2 | Mark Notification as Read | Fan | Organizer, Maintainer | Unread badge clearance |
+| **UC025** | Module 2 | Manage Notification Settings | Fan | Organizer, Maintainer | Schedule & countdown preferences |
+| **UC026** | Module 3 | View Organizer Dashboard | Organizer | System Maintainer | Event management & status |
+| **UC027** | Module 3 | Submit Event Listing | Organizer | Autonomous Verification Engine | Includes `AV01`, `AV05` |
+| **UC028** | Module 3 | Edit Event Listing | Organizer | System Maintainer | Re-triggers autonomous audit |
+| **UC029** | Module 3 | View Verification Breakdown | Organizer | Guest, Fan, Maintainer | Includes `AV06` |
+| **UC030** | Module 3 | Post Logistical Event Update | Organizer | System Maintainer | Alerts saved ticket holders |
+| **UC031** | Module 3 | Request Organizer Badge | Organizer | System Maintainer | Verified promoter application |
+| **UC032** | Module 4 | View Maintainer Portal | System Maintainer | N/A | System telemetry & analytics |
+| **UC033** | Module 4 | Manage Event Categories | System Maintainer | N/A | Taxonomy CRUD |
+| **UC034** | Module 4 | Manage Venues Database | System Maintainer | N/A | Transit routes & coordinates |
+| **UC035** | Module 4 | Manage Artists & Member Roster | System Maintainer | N/A | Normalized idol database |
+| **UC036** | Module 4 | Audit Scam Reports | System Maintainer | Fan (Reporter) | Fraud sanctions & overrides |
+| **AV01** | Module 5 | Audit Whitelisted Ticketing Domain | AutoVerifier | N/A | Whitelist domain check |
+| **AV02** | Module 5 | Resolve Evidence URL & Readability | AutoVerifier | N/A | HTTP fetch & byte check |
+| **AV03** | Module 5 | Verify Date & Time Validity | AutoVerifier | N/A | Future date validation |
+| **AV04** | Module 5 | Check Duplicate Event Listings | AutoVerifier | N/A | Fuzzy match artist + date + venue |
+| **AV05** | Module 5 | Multimodal OCR Vision Extraction | AutoVerifier | OpenRouter Gemini 4 Argon | Vision poster text extraction |
+| **AV06** | Module 5 | Cross-Model AI Consensus Audit | AutoVerifier | Gemini 4 Argon, Gemma, Local | Consensus score calculation |
+
+---
+
+## 3. Structural Directives & Business Architecture
+
+### 3.1 Autonomous Verification vs. Manual Admin Approval
+* Traditional manual admin approval queues introduce severe publishing delays and administrative fatigue.
+* In K-Sync Malaysia, listings submitted by authenticated organizers are immediately audited by the **Autonomous Verification Engine (AV01–AV06)**.
+* Listings passing the hard gates (Reachable evidence URL, valid dates, whitelisted ticket provider, no duplicates) receive instant publication with a **Trust Score (0–100)** and public **Trust Badge (`VERIFIED_OFFICIAL` vs `COMMUNITY_UNVERIFIED`)**.
+* System Maintainers retain supervisory power to audit scam reports (UC036) and override flagged listings, but are completely removed from the routine publishing critical path.
+
+### 3.2 Anti-Scalper Discussion Immutability
+* Secondary ticket scalpers frequently post legitimate logistical queries in fan forums, wait for upvotes, and subsequently edit the comment body to replace text with unauthorized scalper phone numbers or scam ticketing links.
+* To completely eliminate this vector of fraud, **K-Sync Malaysia strictly prohibits comment editing**.
+* Users may post (UC020), reply (UC021), and delete their own comments (UC022), but comments cannot be modified once published.
+
+### 3.3 Explicit Outbound Button Modeling
+* Per academic software engineering requirements, interactive handshakes with external services are modeled as first-class use cases:
+  * **UC007:** Whitelisted Ticketing Link Handshake
+  * **UC008:** Google Maps & Transit Route Handshake
+  * **UC009:** Organizer Social Profile Link Handshake
+  * **UC010:** Multi-Platform Event Sharing
+  * **UC011:** Calendar (.ics & Google Calendar) Export

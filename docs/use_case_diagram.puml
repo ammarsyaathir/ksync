@@ -1,103 +1,101 @@
-@startuml KSync_Malaysia_Use_Case_Diagram_30UC
+@startuml KSync_Malaysia_Complete_System_Use_Cases
 skinparam packageStyle rectangle
 skinparam actorStyle awesome
 skinparam monochrome false
 skinparam shadowing true
-skinparam defaultFontName "Arial"
+skinparam defaultFontName "Outfit, Arial, sans-serif"
 skinparam defaultFontSize 11
-skinparam roundcorner 10
+skinparam roundcorner 12
 
-title K-Sync Malaysia: System Use Case Diagram (30 Core Use Cases)\nA Centralized Platform for K-Pop Event Information and Fan Community Discussions
+title K-Sync Malaysia: Complete Redesigned Use Case Architecture (42 Use Cases)\nAutonomous Verification Engine, Event Radar, Artist Profiles & Fan Command Center
 
 ' ==============================================================================
-' ACTORS (3 Human Actors Only - System Actor Removed as Requested)
+' ACTORS HIERARCHY
 ' ==============================================================================
-actor "Fan / Guest" as FanGuest #LightSkyBlue
-actor "Organizer / Submitter\n(No Account)" as Submitter #SandyBrown
-actor "System Administrator" as Admin #MediumOrchid
+actor "Guest\n(Public Visitor)" as Guest #LightSkyBlue
+actor "Fan\n(Authenticated Member)" as Fan #LightPink
+actor "Organizer / Submitter\n(Verified Event Host)" as Organizer #SandyBrown
+actor "System Maintainer\n(Administrator)" as Maintainer #MediumOrchid
+actor "Autonomous Verification\nEngine (AI / Heuristic)" as AutoVerifier <<Application Engine>> #MediumSeaGreen
+
+Fan -up-|> Guest
+Organizer -up-|> Fan
 
 ' ==============================================================================
 ' SYSTEM BOUNDARY
 ' ==============================================================================
-rectangle "K-Sync Malaysia System (ksync.my)" {
+rectangle "K-Sync Malaysia System Platform (ksync.my)" {
 
     ' --------------------------------------------------------------------------
-    ' Module A: Account & Profile Management (3 UCs)
+    ' MODULE 1: PUBLIC DISCOVERY & OUTBOUND CONNECTIONS (Guest Actor)
     ' --------------------------------------------------------------------------
-    package "A. Account & Profile Management" {
-        usecase "UC01: Register Account" as UC01
-        usecase "UC02: Log In\n(Email / Google Sign-In)" as UC02
-        usecase "UC03: Manage Profile" as UC03
+    package "1. Public Discovery & Outbound Experience (Guest)" {
+        usecase "UC001: Register Account\n(Email / Google OAuth)" as UC001
+        usecase "UC002: Browse Events Directory" as UC002
+        usecase "UC003: Search Events\n(Artist, Venue, Title, City)" as UC003
+        usecase "UC004: Filter Events\n(Category, State, Date)" as UC004
+        usecase "UC005: View Event Radar\n(Precinct Clusters & Weekends)" as UC005
+        usecase "UC006: View Event Details\n(Countdown, Evidence, Updates)" as UC006
+        usecase "UC007: Open Official Ticket Link\n(Whitelisted Partner URL)" as UC007
+        usecase "UC008: Open Venue Map & Transit\n(Google Maps & LRT Directions)" as UC008
+        usecase "UC009: Open Organizer Social Link\n(Official X / Instagram)" as UC009
+        usecase "UC010: Share Event\n(WhatsApp, X, Telegram, Link)" as UC010
+        usecase "UC011: Export Event to Calendar\n(Google Calendar / .ics)" as UC011
+        usecase "UC012: Browse Artists Directory\n(Boy/Girl Groups & Soloists)" as UC012
+        usecase "UC013: View Artist & Member Profiles\n(Biodata & MY Tour Archive)" as UC013
+        usecase "UC014: View Event Discussions\n(Public Read Q&A Comments)" as UC014
     }
 
     ' --------------------------------------------------------------------------
-    ' Module B: Event Discovery & Information (4 UCs)
+    ' MODULE 2: PERSONAL MANAGEMENT & COMMUNITY VALIDATION (Fan Actor)
     ' --------------------------------------------------------------------------
-    package "B. Event Discovery & Information" {
-        usecase "UC04: Browse Events" as UC04
-        usecase "UC05: Search Events" as UC05
-        usecase "UC06: Filter Events" as UC06
-        usecase "UC07: View Event Details" as UC07
+    package "2. Personal Management & Community Validation (Fan)" {
+        usecase "UC015: Manage Personal Profile" as UC015
+        usecase "UC016: View Personalized Dashboard\n('My K-Sync' Command Center)" as UC016
+        usecase "UC017: Bookmark / Save Event\n(Wishlist Toggle)" as UC017
+        usecase "UC018: Recommend / Upvote Event\n(Crowdsourced Reliability Voting)" as UC018
+        usecase "UC019: Report Suspicious Listing\n(Scam / Fake Ticket Alert)" as UC019
+        usecase "UC020: Post Discussion Comment\n(Logistical Inquiries)" as UC020
+        usecase "UC021: Reply to Discussion Comment\n(1-Level Threaded Q&A)" as UC021
+        usecase "UC022: Delete Own Comment\n(Anti-Scalper Immutability)" as UC022
+        usecase "UC023: View In-App Notifications\n(Schedule Shifts & Countdowns)" as UC023
+        usecase "UC024: Mark Notification as Read" as UC024
+        usecase "UC025: Manage Notification Settings\n(Email & In-App Preferences)" as UC025
     }
 
     ' --------------------------------------------------------------------------
-    ' Module C: Saved & Shared Events (3 UCs)
+    ' MODULE 3: EVENT HOSTING & VERIFICATION (Organizer Actor)
     ' --------------------------------------------------------------------------
-    package "C. Saved & Shared Events" {
-        usecase "UC08: Save / Unsave Event" as UC08
-        usecase "UC09: View Saved Events" as UC09
-        usecase "UC10: Share Event\n(WhatsApp, X, Telegram, Copy Link)" as UC10
+    package "3. Event Publishing & Verification (Organizer)" {
+        usecase "UC026: View Organizer Dashboard\n(Listings & Metrics)" as UC026
+        usecase "UC027: Submit Event Listing\n(AI Vision OCR Scanner)" as UC027
+        usecase "UC028: Edit Event Listing\n(Draft / Correct Flagged Listing)" as UC028
+        usecase "UC029: View Verification Breakdown\n(Attribute Match & Evidence Audit)" as UC029
+        usecase "UC030: Post Logistical Event Update\n(Gate Times / Notice Alert)" as UC030
+        usecase "UC031: Request Organizer Badge\n(Official Fanclub Credentials)" as UC031
     }
 
     ' --------------------------------------------------------------------------
-    ' Module D: Public Event Submission (Without Account) (3 UCs)
+    ' MODULE 4: PLATFORM GOVERNANCE & STEWARDSHIP (System Maintainer Actor)
     ' --------------------------------------------------------------------------
-    package "D. Public Event Submission (Without Account)" {
-        usecase "UC11: Submit Event\n(Model 2: No Account)" as UC11
-        usecase "Provide Event Details\n& Supporting Evidence" as UC11_Details
-        usecase "UC12: Check Submission Status\n(Tracking Code)" as UC12
-        usecase "UC13: Correct and Resubmit Event" as UC13
+    package "4. Platform Governance & Stewardship (System Maintainer)" {
+        usecase "UC032: View Maintainer Portal\n(System Analytics & Logs)" as UC032
+        usecase "UC033: Manage Event Categories\n(Concert, Fanmeet, Cafe)" as UC033
+        usecase "UC034: Manage Venues Database\n(Transit Links, Capacity)" as UC034
+        usecase "UC035: Manage Artists & Member Roster\n(Normalized Biodata)" as UC035
+        usecase "UC036: Audit Scam Reports\n(Enforce Suspension Overrides)" as UC036
     }
 
     ' --------------------------------------------------------------------------
-    ' Module E: Submission Review & Verification (5 UCs)
+    ' MODULE 5: AUTONOMOUS VERIFICATION ENGINE (Automated Engine)
     ' --------------------------------------------------------------------------
-    package "E. Submission Review & Verification" {
-        usecase "UC14: View Pending Submissions" as UC14
-        usecase "UC15: Review Event Submission" as UC15
-        usecase "UC16: Approve and Publish Submission" as UC16
-        usecase "UC17: Reject Submission\n(Mandatory Reason)" as UC17
-        usecase "UC18: Manage Verified Organizer Status" as UC18
-    }
-
-    ' --------------------------------------------------------------------------
-    ' Module F: Published Event Management (6 UCs)
-    ' --------------------------------------------------------------------------
-    package "F. Published Event Management" {
-        usecase "UC19: Edit Event Information" as UC19
-        usecase "UC20: Update Event Status" as UC20
-        usecase "UC21: Unpublish / Delete Event" as UC21
-        usecase "UC22: Manage Event Categories" as UC22
-        usecase "UC23: Manage Venues" as UC23
-        usecase "UC24: Manage Artists and Member Profiles" as UC24
-    }
-
-    ' --------------------------------------------------------------------------
-    ' Module G: Fan Community Discussions (4 UCs)
-    ' --------------------------------------------------------------------------
-    package "G. Fan Community Discussions" {
-        usecase "UC25: View Event Discussion" as UC25
-        usecase "UC26: Create Discussion Post" as UC26
-        usecase "UC27: Reply to Discussion\n(1-Level Nested)" as UC27
-        usecase "UC28: Delete Own Comment" as UC28
-    }
-
-    ' --------------------------------------------------------------------------
-    ' Module H: Content Moderation & Governance (2 UCs)
-    ' --------------------------------------------------------------------------
-    package "H. Content Moderation & Governance" {
-        usecase "UC29: Report Event" as UC29
-        usecase "UC30: Investigate and Moderate Report" as UC30
+    package "5. Autonomous Verification Engine" {
+        usecase "AV01: Audit Whitelisted Ticketing Domain" as AV01
+        usecase "AV02: Resolve Evidence URL & Readability" as AV02
+        usecase "AV03: Verify Date & Time Validity" as AV03
+        usecase "AV04: Check Duplicate Event Listings" as AV04
+        usecase "AV05: Multimodal OCR Vision Extraction\n(OpenRouter Gemini 4 Argon)" as AV05
+        usecase "AV06: Cross-Model AI Consensus Audit\n(Argon -> Gemma -> Dots)" as AV06
     }
 }
 
@@ -105,48 +103,60 @@ rectangle "K-Sync Malaysia System (ksync.my)" {
 ' ACTOR ASSOCIATIONS
 ' ==============================================================================
 
-' 1. Fan / Guest Associations
-FanGuest --> UC01
-FanGuest --> UC02
-FanGuest --> UC03
-FanGuest --> UC04
-FanGuest --> UC05
-FanGuest --> UC06
-FanGuest --> UC07
-FanGuest --> UC08
-FanGuest --> UC09
-FanGuest --> UC10
-FanGuest --> UC25
-FanGuest --> UC26
-FanGuest --> UC27
-FanGuest --> UC28
-FanGuest --> UC29
+' Guest Connections
+Guest --> UC001
+Guest --> UC002
+Guest --> UC003
+Guest --> UC004
+Guest --> UC005
+Guest --> UC006
+Guest --> UC007
+Guest --> UC008
+Guest --> UC009
+Guest --> UC010
+Guest --> UC011
+Guest --> UC012
+Guest --> UC013
+Guest --> UC014
 
-' 2. Organizer / Submitter Associations (Model 2)
-Submitter --> UC11
-Submitter --> UC12
+' Fan Connections (inherits Guest)
+Fan --> UC015
+Fan --> UC016
+Fan --> UC017
+Fan --> UC018
+Fan --> UC019
+Fan --> UC020
+Fan --> UC021
+Fan --> UC022
+Fan --> UC023
+Fan --> UC024
+Fan --> UC025
 
-' 3. System Administrator Associations
-Admin --> UC02
-Admin --> UC14
-Admin --> UC15
-Admin --> UC16
-Admin --> UC17
-Admin --> UC18
-Admin --> UC19
-Admin --> UC20
-Admin --> UC21
-Admin --> UC22
-Admin --> UC23
-Admin --> UC24
-Admin --> UC28
-Admin --> UC30
+' Organizer Connections (inherits Fan)
+Organizer --> UC026
+Organizer --> UC027
+Organizer --> UC028
+Organizer --> UC029
+Organizer --> UC030
+Organizer --> UC031
 
-' ==============================================================================
-' UML RELATIONSHIPS: «include» and «extend»
-' ==============================================================================
-UC11 ..> UC11_Details : <<include>>
-UC13 ..> UC12 : <<extend>>
-UC29 ..> UC07 : <<extend>>
+' Maintainer Connections
+Maintainer --> UC032
+Maintainer --> UC033
+Maintainer --> UC034
+Maintainer --> UC035
+Maintainer --> UC036
+
+' Autonomous Engine Connections
+AutoVerifier --> AV01
+AutoVerifier --> AV02
+AutoVerifier --> AV03
+AutoVerifier --> AV04
+AutoVerifier --> AV05
+AutoVerifier --> AV06
+
+UC027 ..> AV05 : <<include>>
+UC027 ..> AV01 : <<include>>
+UC029 ..> AV06 : <<include>>
 
 @enduml

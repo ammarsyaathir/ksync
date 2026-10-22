@@ -78,22 +78,40 @@ function createBullet(text) {
   });
 }
 
+function createCallout(title, body) {
+  return new Table({
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    rows: [
+      new TableRow({
+        children: [
+          new TableCell({
+            children: [
+              new Paragraph({
+                children: [
+                  new TextRun({ text: title + " ", bold: true, color: COLOR_ACCENT, size: 22 }),
+                  new TextRun({ text: body, size: 22 })
+                ]
+              })
+            ],
+            shading: { fill: "FDF2F8", type: ShadingType.CLEAR },
+            borders: {
+              left: { style: BorderStyle.SINGLE, size: 24, color: COLOR_ACCENT },
+              top: { style: BorderStyle.NONE },
+              right: { style: BorderStyle.NONE },
+              bottom: { style: BorderStyle.NONE }
+            },
+            margins: { top: 120, bottom: 120, left: 160, right: 160 }
+          })
+        ]
+      })
+    ]
+  });
+}
+
 /**
- * Creates an academic SRS Use Case Specification Table following the exact university template:
- * - Actor
- * - Description
- * - Preconditions
- * - Postconditions
- * - Priority
- * - Frequency of Use
- * - Normal Course of Events (Actor | System)
- * - Alternative Courses
- * - Exceptions
- * - Includes
- * - Notes and Issues
+ * Creates an academic SRS Use Case Specification Table following university templates
  */
 function createUseCaseTable(data) {
-  // Normal course steps rows
   const normalCourseRows = data.normalCourse.map((step, idx) => {
     return new TableRow({
       children: [
@@ -161,11 +179,13 @@ function createUseCaseTable(data) {
   });
 
   function row(label, contentOrComponent) {
-    const isComponent = Array.isArray(contentOrComponent) || typeof contentOrComponent === 'object' && !(contentOrComponent instanceof String);
-    let cellContent = [];
-
+    let cellContent;
     if (typeof contentOrComponent === 'string') {
-      cellContent = [new Paragraph({ children: [new TextRun({ text: contentOrComponent, size: 20 })] })];
+      const lines = contentOrComponent.split('\n');
+      cellContent = lines.map(line => new Paragraph({
+        children: [new TextRun({ text: line, size: 20 })],
+        spacing: { after: 40 }
+      }));
     } else if (Array.isArray(contentOrComponent)) {
       cellContent = contentOrComponent;
     } else {
@@ -228,864 +248,831 @@ function createUseCaseTable(data) {
   ];
 }
 
-// Full Use Cases Data List (All 41 Standard Use Cases + 6 Feature Use Cases = 47 Total)
+// 42 Use Cases aligned with docs/use_case_diagram.puml and supervisor directives
 const allUseCases = [
-  // MODULE 1: AUTH & PROFILE
+  // ==========================================
+  // MODULE 1: PUBLIC DISCOVERY & OUTBOUND (GUEST)
+  // ==========================================
   {
-    id: "UC01",
-    name: "Register New Fan Account",
-    actors: "Guest (Visitor)",
-    description: "An unregistered visitor creates a new fan account on the platform by providing personal credentials (full name, username, email, and password) to participate in community discussions, live chats, and event bookmarking.",
-    preconditions: "1. The visitor has accessed the web platform.\n2. The visitor is not currently logged into any account.\n3. The visitor has a valid email address.",
-    postconditions: "The system registers a new user record in the 'users' table with role 'Fan' (role_id = 3) and establishes an authenticated user session.",
+    id: "UC001",
+    name: "Register Account",
+    actors: "Guest, Google OAuth Service",
+    description: "A public visitor registers a new user account using email/password or Google OAuth to transition to an authenticated Fan or Organizer.",
+    preconditions: "1. Visitor has accessed the platform.\n2. Visitor is currently unauthenticated.",
+    postconditions: "New user record created in `users` table with role 'Fan' (or 'Organizer') and session established.",
     priority: "High",
-    frequency: "Once per new fan user",
+    frequency: "Once per new user",
     normalCourse: [
-      { actor: "User clicks the 'Register' link in the navigation bar.", system: "System displays the account registration form with name, username, email, and password fields." },
-      { actor: "User enters valid personal details and clicks the 'Register' button.", system: "System validates field formats, hashes password using Bcrypt, inserts record into database, and redirects user to dashboard with success message." }
+      { actor: "Visitor clicks 'Register' in navbar.", system: "Renders registration form requesting Full Name, Username, Email, and Password." },
+      { actor: "Visitor enters valid details and clicks 'Register'.", system: "Validates email syntax, hashes password with Bcrypt (cost 10), saves record, and establishes session." }
     ],
-    alternatives: "2a. User registers with Google OAuth:\n  2a.1 System authenticates Google credential and links Google profile picture and email.",
-    exceptions: "E1: Email or username already registered in the system.\nE2: Password is shorter than 6 characters.\nE3: Network connection or database failure.",
+    alternatives: "2a. Visitor clicks 'Continue with Google':\n  2a.1 System executes OAuth 2.0 handshake, retrieves email & avatar, and creates account.",
+    exceptions: "E1: Email or username already exists.\nE2: Password under 6 characters.",
     includes: "Not Applicable",
-    notes: "Emails must adhere to RFC 5322 format. Username must be unique across all registered users."
+    notes: "Adheres to RFC 5322 email validation standards."
   },
   {
-    id: "UC02",
-    name: "Log In to Account",
-    actors: "Registered Fan, System Administrator",
-    description: "A registered fan or administrator authenticates their identity by entering their registered email address and password to gain authorized access to member or administrator privileges.",
-    preconditions: "1. User possesses an active registered account.\n2. User is not currently authenticated in the current session.",
-    postconditions: "The system creates an active session cookie, stores user ID and role, and exposes role-specific navigation menus.",
-    priority: "High",
-    frequency: "Regular, upon each visit session",
-    normalCourse: [
-      { actor: "User navigates to the login page ('/login').", system: "System displays login interface with email and password input fields." },
-      { actor: "User enters registered email and password, then clicks 'Log In'.", system: "System verifies credentials against database Bcrypt hash, initializes session, and redirects user to their intended destination or home page." }
-    ],
-    alternatives: "2a. System Administrator logs in:\n  2a.1 System detects role 'Admin' and redirects directly to '/admin' dashboard.",
-    exceptions: "E1: Email not found in database.\nE2: Password mismatch.\nE3: Account is flagged as SUSPENDED by administrator.",
-    includes: "Not Applicable",
-    notes: "Session is configured with 7-day persistence and HTTP-only cookie security."
-  },
-  {
-    id: "UC03",
-    name: "Log Out of Account",
-    actors: "Registered Fan, System Administrator",
-    description: "An authenticated user terminates their active login session to secure their account from unauthorized access on shared devices.",
-    preconditions: "1. User is currently logged into the system.",
-    postconditions: "The active session is destroyed, cookies are cleared, and user status returns to unauthenticated Guest.",
-    priority: "Medium",
-    frequency: "Regular, upon session termination",
-    normalCourse: [
-      { actor: "User clicks 'Log Out' from the user profile dropdown menu.", system: "System destroys server-side session, clears session cookies, and redirects user to the home page with a logout confirmation message." }
-    ],
-    alternatives: "Not Applicable",
-    exceptions: "E1: Session already expired or previously invalidated.",
-    includes: "Not Applicable",
-    notes: "Clears all cached session flash tokens and active user globals."
-  },
-  {
-    id: "UC04",
-    name: "View Profile Details",
-    actors: "Registered Fan",
-    description: "A logged-in fan views their personal profile information, including registered name, username handle, email, bio, location, and account creation date.",
-    preconditions: "1. Fan is logged in.",
-    postconditions: "The system presents the user profile dashboard.",
-    priority: "Medium",
-    frequency: "Occasional",
-    normalCourse: [
-      { actor: "Fan clicks profile avatar in the navigation bar.", system: "System retrieves user record from 'users' table based on active session user ID." },
-      { actor: "Fan reviews personal account details.", system: "System renders profile view with editable fields and password update section." }
-    ],
-    alternatives: "Not Applicable",
-    exceptions: "E1: User session expired -> System redirects to '/login'.",
-    includes: "Not Applicable",
-    notes: "Read-only display of core fields with clear action buttons to edit."
-  },
-  {
-    id: "UC05",
-    name: "Update Profile Information",
-    actors: "Registered Fan",
-    description: "A registered fan modifies their public profile details, including their display name, bio description, Malaysian city/state location, and social handle.",
-    preconditions: "1. Fan is authenticated.\n2. Fan is on the profile page.",
-    postconditions: "The system updates the user record in the database and refreshes session cache.",
-    priority: "Medium",
-    frequency: "Low, as needed",
-    normalCourse: [
-      { actor: "Fan edits full name, bio, location, or social handle fields and clicks 'Save Changes'.", system: "System validates input lengths, updates corresponding columns in 'users' table, updates active session user object, and renders success flash notification." }
-    ],
-    alternatives: "Not Applicable",
-    exceptions: "E1: Full name field left empty.\nE2: Bio text exceeds 500 characters.",
-    includes: "Not Applicable",
-    notes: "Email address remains immutable to prevent account takeover."
-  },
-  {
-    id: "UC06",
-    name: "Change Account Password",
-    actors: "Registered Fan, System Administrator",
-    description: "User changes their account password by providing their current password and entering a new password with confirmation.",
-    preconditions: "1. User is authenticated.",
-    postconditions: "The system hashes the new password and updates 'password_hash' in the 'users' table.",
-    priority: "High",
-    frequency: "Infrequent (Security)",
-    normalCourse: [
-      { actor: "User navigates to the 'Change Password' card on profile page.", system: "System renders current password, new password, and confirm password fields." },
-      { actor: "User enters current password and confirmed new password, then clicks 'Update Password'.", system: "System validates current password with Bcrypt, verifies new password match and length, updates password_hash in database, and displays confirmation." }
-    ],
-    alternatives: "Not Applicable",
-    exceptions: "E1: Current password is incorrect.\nE2: New password and confirm password do not match.\nE3: New password is shorter than 6 characters.",
-    includes: "Not Applicable",
-    notes: "Old password hash is immediately overwritten; active session is preserved."
-  },
-
-  // MODULE 2: EVENT DISCOVERY
-  {
-    id: "UC07",
-    name: "Browse Featured Upcoming Events",
-    actors: "Guest, Registered Fan",
-    description: "Users explore verified upcoming Malaysian K-pop concerts, fan meetings, and cupsleeve events displayed on the platform landing page.",
-    preconditions: "1. System is accessible online.",
-    postconditions: "System renders top verified events ordered by event date.",
-    priority: "High",
-    frequency: "Very High",
-    normalCourse: [
-      { actor: "User visits root URL ('/').", system: "System queries 'events' table for verified upcoming events (LIMIT 6) and renders event cards with posters, dates, and embedded venues." }
-    ],
-    alternatives: "Not Applicable",
-    exceptions: "E1: Database connection failure.",
-    includes: "Not Applicable",
-    notes: "Only events with verification_status = 'VERIFIED' are published."
-  },
-  {
-    id: "UC08",
+    id: "UC002",
     name: "Browse Events Directory",
-    actors: "Guest, Registered Fan",
-    description: "Users browse the complete chronological catalog of all verified K-pop events happening across Malaysia.",
-    preconditions: "1. System is operational.",
-    postconditions: "Full verified events catalog rendered.",
+    actors: "Guest",
+    description: "Visitor browses the complete chronological catalog of upcoming and community K-Pop events in Malaysia.",
+    preconditions: "System database is online.",
+    postconditions: "Renders chronological cards with verification badges, dates, and venue precincts.",
     priority: "High",
-    frequency: "High",
+    frequency: "Very Frequent",
     normalCourse: [
-      { actor: "User clicks 'Events' in navigation bar.", system: "System queries all verified events, categories, and artists, rendering the comprehensive events directory." }
+      { actor: "Visitor navigates to '/events'.", system: "Queries `events` table ordered by `start_date ASC`." },
+      { actor: "Visitor scrolls through listings.", system: "Renders responsive grid with badges (VERIFIED_OFFICIAL, COMMUNITY_UNVERIFIED)." }
     ],
-    alternatives: "Not Applicable",
-    exceptions: "E1: No events currently scheduled -> System renders friendly empty state with event submission invitation.",
+    alternatives: "2a. No active events: System displays empty state illustration with filter clear CTA.",
+    exceptions: "E1: Database error. Displays graceful error banner.",
     includes: "Not Applicable",
-    notes: "Events are ordered by event_date ASC and start_time ASC."
+    notes: "Complies with Impeccable Design Card Elevation tokens."
   },
   {
-    id: "UC09",
-    name: "Search Events by Keyword",
-    actors: "Guest, Registered Fan",
-    description: "Users execute free-text keyword search across event names, artist names, and venue locations in the directory.",
-    preconditions: "1. User is on event directory page.",
-    postconditions: "Matching events displayed according to search query.",
+    id: "UC003",
+    name: "Search Events",
+    actors: "Guest",
+    description: "Searches events by keyword across artist name, tour name, venue, or host city.",
+    preconditions: "Guest is on an event directory view.",
+    postconditions: "Displays filtered event cards matching keyword query.",
     priority: "High",
     frequency: "High",
     normalCourse: [
-      { actor: "User inputs search keyword (e.g. 'TXT' or 'Zepp') and presses Enter.", system: "System performs parameterized SQL query with LIKE wildcards across event_name, artist_name, and venue_name, updating results." }
+      { actor: "Guest types keyword (e.g. 'BOYNEXTDOOR' or 'Axiata') in search bar.", system: "Debounces input and executes SQL LIKE match on title, artist, venue, and city." },
+      { actor: "Guest views search results.", system: "Renders matching event cards and active search pill with total match count." }
     ],
-    alternatives: "1a. User clears search term -> System resets to full event listing.",
-    exceptions: "E1: No events match search keyword.",
-    includes: "UC08: Browse Events Directory",
-    notes: "Case-insensitive substring search matching."
+    alternatives: "2a. Zero matches: System displays suggestion to broaden search terms.",
+    exceptions: "E1: Malformed input. Parameterized SQL queries prevent injection.",
+    includes: "Not Applicable",
+    notes: "Case-insensitive utf8mb4 keyword lookup."
   },
   {
-    id: "UC10",
-    name: "Filter Events by Artist, Category & City",
-    actors: "Guest, Registered Fan",
-    description: "Users filter event listings by selecting specific artist groups, event categories (Concert, Fan Meeting, Cupsleeve), or Malaysian cities (Kuala Lumpur, Shah Alam).",
-    preconditions: "1. User is on events page.",
-    postconditions: "Event catalog filtered dynamically based on criteria.",
+    id: "UC004",
+    name: "Filter Events",
+    actors: "Guest",
+    description: "Filters events by category (Concert, Fanmeet, Cafe Event), artist, Malaysian state, or precinct area.",
+    preconditions: "Events directory is open.",
+    postconditions: "URL query params updated and view re-rendered with matching subset.",
+    priority: "High",
+    frequency: "High",
+    normalCourse: [
+      { actor: "Guest selects filter pills (e.g. Category: 'Concert', State: 'Kuala Lumpur').", system: "Builds dynamic SQL query and updates results view." },
+      { actor: "Guest inspects filtered list.", system: "Displays refined subset with active filter badge indicators." }
+    ],
+    alternatives: "1a. Guest clicks 'Clear All': System resets filters to default chronology.",
+    exceptions: "E1: Invalid filter parameter. System ignores unknown params.",
+    includes: "Not Applicable",
+    notes: "Maintains bookmarkable filter state via clean URL parameters."
+  },
+  {
+    id: "UC005",
+    name: "View Event Radar",
+    actors: "Guest",
+    description: "Explores events grouped by geographical precinct corridors (Bukit Jalil, BBCC, Mega Star Arena, PJ/Sunway) and same-weekend cohorts.",
+    preconditions: "Active events exist in database.",
+    postconditions: "Displays interactive Event Radar grouped by geographic precinct and calendar weekend.",
+    priority: "High",
+    frequency: "Regular",
+    normalCourse: [
+      { actor: "Guest clicks 'Event Radar' (/events/radar).", system: "Aggregates events by `cluster_area` and computes same-weekend cohorts via strftime('%Y-W%W', start_date)." },
+      { actor: "Guest clicks precinct corridor (e.g. 'Bukit Jalil Hub').", system: "Filters and displays events occurring in that precinct corridor with transit tips." }
+    ],
+    alternatives: "2a. Guest clicks weekend cohort: System displays all concerts happening on that weekend.",
+    exceptions: "E1: Missing cluster_area. Defaults to 'Kuala Lumpur Metro Hub'.",
+    includes: "Not Applicable",
+    notes: "Directly solves FYP survey demand for inter-fandom travel and meetup logistics."
+  },
+  {
+    id: "UC006",
+    name: "View Event Details",
+    actors: "Guest",
+    description: "Views full event dossier with live digital countdown timer, schedule, venue transit guidelines, verified evidence link, and discussion thread.",
+    preconditions: "Event exists in database.",
+    postconditions: "Renders event dossier with real-time countdown clock and verification badge.",
+    priority: "High",
+    frequency: "Extremely High",
+    normalCourse: [
+      { actor: "Guest clicks an event card.", system: "Fetches event, artist biodata, venue transit details, and community messages." },
+      { actor: "Guest inspects event details.", system: "Calculates time delta to showtime and starts client-side ticking digital countdown." }
+    ],
+    alternatives: "2a. Past Event: Countdown replaced with 'Event Concluded' badge.",
+    exceptions: "E1: Invalid event ID. Returns 404 page.",
+    includes: "Not Applicable",
+    notes: "Includes structured JSON-LD schema for search indexing."
+  },
+  {
+    id: "UC007",
+    name: "Open Official Ticket Link",
+    actors: "Guest",
+    description: "Navigates directly to the external authorized ticketing partner (BookMyShow, GoLive Asia, Ticket2U, BigTix) with partner domain validation.",
+    preconditions: "Event has a ticketing URL configured.",
+    postconditions: "Opens official ticketing portal in a new browser tab (rel='noopener noreferrer').",
+    priority: "High",
+    frequency: "High",
+    normalCourse: [
+      { actor: "Guest clicks 'Buy Official Tickets'.", system: "Validates domain against whitelisted provider registry." },
+      { actor: "Guest arrives at ticketing site.", system: "Opens partner checkout portal in external browser tab." }
+    ],
+    alternatives: "1a. Free Event: Button displays 'Free Admission' and opens announcement page.",
+    exceptions: "E1: Dead link. Prompts user to report via Report Listing modal.",
+    includes: "Not Applicable",
+    notes: "Supervisor Directive: Outbound interactive handshakes modeled explicitly."
+  },
+  {
+    id: "UC008",
+    name: "Open Venue Map & Transit Route",
+    actors: "Guest",
+    description: "Launches Google Maps with venue coordinates, transit stop guidelines (e.g. Sri Petaling LRT), and driving directions.",
+    preconditions: "Venue has address or map coordinates.",
+    postconditions: "Opens Google Maps navigation interface pre-loaded with transit routing.",
     priority: "Medium",
     frequency: "High",
     normalCourse: [
-      { actor: "User selects category pill or dropdown filters.", system: "System constructs dynamic SQL WHERE clause with selected artist_id, category_slug, or city, updating the card grid." }
+      { actor: "Guest clicks 'Get Transit Directions / Open Map'.", system: "Formats Google Maps URL: https://www.google.com/maps/search/?api=1&query={encoded_venue}." },
+      { actor: "Guest navigates via Google Maps.", system: "Presents public transit LRT/MRT routing." }
     ],
     alternatives: "Not Applicable",
-    exceptions: "E1: Selected filter combination yields 0 events.",
-    includes: "UC08: Browse Events Directory",
-    notes: "Supports combining category and city filters simultaneously."
-  },
-  {
-    id: "UC11",
-    name: "View Event Details & Embedded Venue",
-    actors: "Guest, Registered Fan",
-    description: "Users view complete event information, including official dates, start/end times, ticket tiers, venue guidelines, embedded Google Map, and public transit guide.",
-    preconditions: "1. The requested event exists in the database.",
-    postconditions: "Detailed event view rendered with all interactive components.",
-    priority: "High",
-    frequency: "Very High",
-    normalCourse: [
-      { actor: "User clicks on any event card.", system: "System queries 'events' joined with 'artists' and 'event_categories', retrieves embedded venue details and chat messages, and renders event details page." }
-    ],
-    alternatives: "Not Applicable",
-    exceptions: "E1: Event ID not found -> System redirects to '/events' with flash warning.",
+    exceptions: "E1: Missing address. Defaults query to venue name and host city.",
     includes: "Not Applicable",
-    notes: "Includes embedded Google Maps iframe for direct in-browser inspection."
+    notes: "Fulfills FYP survey requirement for transit assistance."
   },
   {
-    id: "UC12",
-    name: "View Artist & Idol Member Biodata",
-    actors: "Guest, Registered Fan",
-    description: "Users inspect individual idol member profiles and career details (stage name, real birth name, group positions, birthdate, zodiac, height, blood type, and MBTI) for the performing artist.",
-    preconditions: "1. Event has an associated artist.\n2. Artist record has populated member JSON array.",
-    postconditions: "System renders individual member cards with portrait photos and fact badges.",
+    id: "UC009",
+    name: "Open Organizer Social Profile Link",
+    actors: "Guest",
+    description: "Opens official promoter social profile (X/Twitter, Instagram) to inspect official announcements, gate notices, and merchandise guides.",
+    preconditions: "Organizer social handle or URL configured on event.",
+    postconditions: "Opens promoter official page in a new browser tab.",
+    priority: "Medium",
+    frequency: "Medium",
+    normalCourse: [
+      { actor: "Guest clicks organizer social handle badge (@ime.malaysia).", system: "Resolves verified social profile URL." },
+      { actor: "Guest views organizer channel.", system: "Opens destination social feed securely." }
+    ],
+    alternatives: "Not Applicable",
+    exceptions: "E1: Social link unconfigured. Button renders promoter name as plain text.",
+    includes: "Not Applicable",
+    notes: "Promotes promoter accountability and transparency."
+  },
+  {
+    id: "UC010",
+    name: "Share Event",
+    actors: "Guest",
+    description: "Shares event dossier across WhatsApp, X, Telegram, or copies formatted link to clipboard.",
+    preconditions: "Guest is on event details view.",
+    postconditions: "Share modal rendered or event link copied with confirmation toast.",
     priority: "Medium",
     frequency: "High",
     normalCourse: [
-      { actor: "User views event details page and navigates to the 'Member Profiles & Biodata' section.", system: "System parses JSON string from 'artists.members' and renders 5 interactive member profile cards." }
+      { actor: "Guest clicks 'Share Event'.", system: "Opens Share Modal with WhatsApp, X, Telegram, and Copy Link options." },
+      { actor: "Guest clicks 'Copy Link'.", system: "Copies URL to clipboard and triggers 'Link Copied!' toast." }
     ],
-    alternatives: "1a. Artist has no members array (Soloist) -> System renders soloist biography card.",
-    exceptions: "E1: Corrupted JSON data in database -> System falls back to empty array without crashing.",
-    includes: "UC11: View Event Details & Embedded Venue",
-    notes: "Eliminates need for detached artist_members table."
+    alternatives: "2a. Mobile browser supports Web Share API: Triggers native OS share drawer.",
+    exceptions: "E1: Clipboard blocked. Displays fallback selectable text box.",
+    includes: "Not Applicable",
+    notes: "Lightweight reactive micro-interaction."
+  },
+  {
+    id: "UC011",
+    name: "Export Event to Calendar",
+    actors: "Guest",
+    description: "Exports event showtime and venue to Google Calendar web intent or downloads RFC 5545 .ics file.",
+    preconditions: "Event has valid start and end dates.",
+    postconditions: "Google Calendar scheduling tab opens or .ics file downloads to user device.",
+    priority: "Medium",
+    frequency: "Medium",
+    normalCourse: [
+      { actor: "Guest clicks 'Add to Calendar' dropdown and selects 'Google Calendar'.", system: "Constructs Google Calendar URL with ISO 8601 UTC date and venue info." },
+      { actor: "Guest reviews pre-filled event.", system: "Opens Google Calendar in new tab ready to save." }
+    ],
+    alternatives: "1a. Guest selects '.ics File': System streams RFC 5545 iCalendar file.",
+    exceptions: "E1: Missing end time. Defaults duration to 3 hours from start.",
+    includes: "Not Applicable",
+    notes: "Directly solves calendar sync survey feature."
+  },
+  {
+    id: "UC012",
+    name: "Browse Artists Directory",
+    actors: "Guest",
+    description: "Explores the directory of K-Pop artists, idol boy groups, girl groups, and soloists with tours or fan events in Malaysia.",
+    preconditions: "Artists catalog populated in database.",
+    postconditions: "Renders catalog cards featuring artist banners, agency labels, and member rosters.",
+    priority: "High",
+    frequency: "Regular",
+    normalCourse: [
+      { actor: "Guest clicks 'Artists' in navbar (/artists).", system: "Queries `artists` table with active upcoming Malaysian event counts." },
+      { actor: "Guest browses artist cards.", system: "Renders grid with group types (Boy Group, Girl Group, Soloist)." }
+    ],
+    alternatives: "Not Applicable",
+    exceptions: "E1: Database error. Displays empty catalog fallback.",
+    includes: "Not Applicable",
+    notes: "Normalized database architecture with foreign keys to member records."
+  },
+  {
+    id: "UC013",
+    name: "View Artist & Member Profiles",
+    actors: "Guest",
+    description: "Inspects individual idol profile including agency affiliation, biography, normalized member biodata, and Malaysian tour history.",
+    preconditions: "Artist exists in database.",
+    postconditions: "Renders idol dossier with connected Malaysian tour chronology.",
+    priority: "High",
+    frequency: "Regular",
+    normalCourse: [
+      { actor: "Guest clicks artist card (e.g. 'BOYNEXTDOOR').", system: "Queries artist, joins `members` table (stage name, real name, role, DOB), and fetches linked events." },
+      { actor: "Guest reviews idol biodata and Malaysian tour timeline.", system: "Displays member cards and clickable event chronology." }
+    ],
+    alternatives: "1a. Solo Artist: Member section collapses gracefully.",
+    exceptions: "E1: Artist ID not found. Returns 404.",
+    includes: "Not Applicable",
+    notes: "Normalized `members` table eliminates unindexed text bloat."
+  },
+  {
+    id: "UC014",
+    name: "View Event Discussion & Comments",
+    actors: "Guest",
+    description: "Reads public community discussions, ticketing Q&A, and logistics tips submitted by verified fans on an event listing.",
+    preconditions: "Event exists in database.",
+    postconditions: "Renders chronological comments with 1-level nested fan replies.",
+    priority: "High",
+    frequency: "Extremely High",
+    normalCourse: [
+      { actor: "Guest scrolls to discussion section on event dossier.", system: "Queries `event_chat_messages` where `event_id = :id` ordered by `created_at ASC`." },
+      { actor: "Guest reads community questions and organizer replies.", system: "Renders 1-level nested threaded layout with verified organizer badges." }
+    ],
+    alternatives: "2a. Zero comments: Displays prompt inviting fans to ask the first inquiry.",
+    exceptions: "E1: Deleted user author. Displays 'Deleted User' label.",
+    includes: "Not Applicable",
+    notes: "Public read-only access for unauthenticated guests."
   },
 
-  // MODULE 3: PUBLIC SUBMISSION (MODEL 2)
+  // ==========================================
+  // MODULE 2: PERSONAL MANAGEMENT & VALIDATION (FAN)
+  // ==========================================
   {
-    id: "UC13",
-    name: "Submit Public Event Listing",
-    actors: "Guest, Event Organizer (Public Submitter)",
-    description: "An event organizer or fanclub submits a new Malaysian K-pop event through an open public form with venue presets, poster upload, and evidence URL without registering an account.",
-    preconditions: "1. Submitter possesses event details, venue address, and official proof link.",
-    postconditions: "System generates a unique tracking code (e.g. KS-2026-TXT001), stores event with status 'PENDING', and sends confirmation email.",
-    priority: "High",
-    frequency: "Regular",
-    normalCourse: [
-      { actor: "User navigates to '/submit-event'.", system: "System displays Model 2 submission form with Malaysian venue presets and file upload." },
-      { actor: "User fills event name, date, time, selects preset venue, attaches poster, enters email, and clicks submit.", system: "System uploads poster via Multer, generates cryptographic tracking code, creates record in 'events' with verification_status = 'PENDING', logs activity, sends confirmation email, and redirects to success screen." }
-    ],
-    alternatives: "Not Applicable",
-    exceptions: "E1: Required fields missing (name, date, venue, city).\nE2: Poster file is not an image or exceeds 5MB.",
-    includes: "Not Applicable",
-    notes: "Fulfills Chapter 1 Scope 1.6.1: organizers do not need accounts."
-  },
-  {
-    id: "UC14",
-    name: "Track Submission Status by Tracking Code",
-    actors: "Guest, Event Organizer (Public Submitter)",
-    description: "Submitter checks the real-time review status (PENDING, VERIFIED, REJECTED) of their submitted event using their unique reference tracking code.",
-    preconditions: "1. Submitter possesses a tracking code issued upon submission.",
-    postconditions: "System displays verification status timeline and administrator feedback notes.",
-    priority: "High",
-    frequency: "Regular",
-    normalCourse: [
-      { actor: "User navigates to '/check-submission'.", system: "System displays tracking code search box." },
-      { actor: "User enters tracking code (e.g. 'KS-2026-TXT001') and clicks 'Check Status'.", system: "System queries 'events' by tracking_code and displays review status card, event preview, and administrator feedback." }
-    ],
-    alternatives: "Not Applicable",
-    exceptions: "E1: Tracking code not found in database.",
-    includes: "Not Applicable",
-    notes: "Completely public status tracker requiring no login."
-  },
-  {
-    id: "UC15",
-    name: "Resubmit Rejected Event Listing",
-    actors: "Guest, Event Organizer (Public Submitter)",
-    description: "Submitter corrects flagged details on a rejected event submission and resets status back to PENDING for administrator re-verification.",
-    preconditions: "1. Event submission was marked 'REJECTED' by administrator.\n2. Submitter accessed status page.",
-    postconditions: "Event details updated; verification_status reset to 'PENDING'.",
+    id: "UC015",
+    name: "Manage Personal Profile",
+    actors: "Fan",
+    description: "Manages personal profile information, including display name, username, bio, location, and password credentials.",
+    preconditions: "Fan is logged in.",
+    postconditions: "`users` record updated and session refreshed.",
     priority: "Medium",
     frequency: "Occasional",
     normalCourse: [
-      { actor: "User views administrator rejection feedback on tracking page.", system: "System reveals editable inline resubmission form pre-filled with existing data." },
-      { actor: "User updates corrected date, venue, or ticketing proof link and clicks 'Resubmit Event'.", system: "System updates event record, clears rejection reason, resets verification_status to 'PENDING', logs audit trail, and notifies administrator." }
+      { actor: "Fan navigates to '/profile'.", system: "Loads current profile data, notification toggles, and organizer status." },
+      { actor: "Fan updates display name, bio, or favorite artists, and clicks 'Save'.", system: "Validates input lengths, updates `users` record, and displays success toast." }
     ],
-    alternatives: "Not Applicable",
-    exceptions: "E1: Event is already verified (resubmission disabled).",
-    includes: "UC14: Track Submission Status by Tracking Code",
-    notes: "Maintains the exact same tracking code across resubmission cycles."
-  },
-
-  // MODULE 4: FAN COMMUNITY & BOOKMARKS
-  {
-    id: "UC16",
-    name: "Bookmark Event (Save to Favorites)",
-    actors: "Registered Fan",
-    description: "Fan saves an upcoming event to their personal bookmarked collection for quick access and live countdown tracking.",
-    preconditions: "1. Fan is authenticated.",
-    postconditions: "Record inserted into 'saved_events' table.",
-    priority: "Medium",
-    frequency: "High",
-    normalCourse: [
-      { actor: "Fan clicks the heart 'Save Event' button on event card or details page.", system: "System sends AJAX request, inserts record into 'saved_events', and updates heart icon to filled rose color." }
-    ],
-    alternatives: "1a. Guest clicks save -> System responds with unauthorized and prompts login.",
-    exceptions: "E1: Event already bookmarked -> System triggers UC18 (Remove Bookmark).",
+    alternatives: "2a. Change Password: Fan enters current and new password; system verifies hash before updating.",
+    exceptions: "E1: Current password mismatch. Rejects update.",
     includes: "Not Applicable",
-    notes: "Asynchronous toggle via AJAX fetch."
+    notes: "Protected via CSRF tokens."
   },
   {
-    id: "UC17",
-    name: "View Saved Events List",
-    actors: "Registered Fan",
-    description: "Fan views their personalized collection of saved events with countdown timers.",
-    preconditions: "1. Fan is authenticated.",
-    postconditions: "System renders saved events list.",
-    priority: "Medium",
-    frequency: "Regular",
-    normalCourse: [
-      { actor: "Fan clicks 'Saved Events' in the navigation bar.", system: "System queries 'saved_events' joined with 'events' for active user ID and renders saved events cards." }
-    ],
-    alternatives: "1a. User has zero saved events -> System displays empty state with button to explore events.",
-    exceptions: "E1: Session expired -> Redirects to login.",
-    includes: "Not Applicable",
-    notes: "Displays live countdown days remaining for each saved show."
-  },
-  {
-    id: "UC18",
-    name: "Remove Event from Bookmarks",
-    actors: "Registered Fan",
-    description: "Fan removes a previously bookmarked event from their saved list.",
-    preconditions: "1. Fan is authenticated.\n2. Event is currently saved.",
-    postconditions: "Record deleted from 'saved_events'.",
-    priority: "Low",
-    frequency: "Occasional",
-    normalCourse: [
-      { actor: "Fan clicks the filled heart icon on an already saved event.", system: "System deletes matching row from 'saved_events' and updates heart icon to empty outline state." }
-    ],
-    alternatives: "Not Applicable",
-    exceptions: "E1: Record not found in 'saved_events'.",
-    includes: "Not Applicable",
-    notes: "Asynchronous toggle action."
-  },
-  {
-    id: "UC19",
-    name: "View Event Discussion Live Chat",
-    actors: "Guest, Registered Fan",
-    description: "Users view community discussion messages and Q&A from fellow attendees inside the dedicated event chat hub.",
-    preconditions: "1. User is on event details page.",
-    postconditions: "Chat message history rendered chronologically.",
+    id: "UC016",
+    name: "View Personalized Dashboard ('My K-Sync')",
+    actors: "Fan",
+    description: "Views personal command center summarizing saved upcoming events, active ticking countdown to nearest concert, upvoting history, and alerts.",
+    preconditions: "Fan is logged in.",
+    postconditions: "Renders personalized timeline, live ticking clock, and saved event cards.",
     priority: "High",
-    frequency: "Very High",
+    frequency: "Frequent",
     normalCourse: [
-      { actor: "User scrolls to 'Event Fan Chat Hub' section.", system: "System fetches messages from 'event_chat_messages' joined with 'users' and renders message stream." }
+      { actor: "Fan clicks 'My K-Sync' / Dashboard (/dashboard).", system: "Queries `saved_events` joined with `events`, identifies nearest upcoming show, and counts unread notifications." },
+      { actor: "Fan tracks upcoming concerts.", system: "Initializes live digital countdown ticking towards nearest saved show." }
     ],
-    alternatives: "Not Applicable",
-    exceptions: "E1: Chat window has expired (>24 hours post-event) -> System displays 'Chat Closed' banner.",
-    includes: "UC11: View Event Details & Embedded Venue",
-    notes: "Chat automatically locks 24 hours after concert conclusion."
+    alternatives: "2a. No saved events: Renders empty-state card with 'Discover Upcoming Events' CTA.",
+    exceptions: "E1: Session expired. Redirects to login with return URL.",
+    includes: "Not Applicable",
+    notes: "Key FYP survey requirement for personalized fan dashboard."
   },
   {
-    id: "UC20",
-    name: "Post Event Chat Message",
-    actors: "Registered Fan",
-    description: "Fan posts a message, question, or soundcheck tip to the event discussion stream.",
-    preconditions: "1. Fan is authenticated.\n2. Event is within active chat window (<24 hours post-event).",
-    postconditions: "New record inserted into 'event_chat_messages'.",
+    id: "UC017",
+    name: "Bookmark / Save Event",
+    actors: "Fan",
+    description: "Toggles bookmark status on an event listing to save it to personal wishlist for quick access and automated schedule alerts.",
+    preconditions: "Fan is logged in and viewing an event.",
+    postconditions: "Record toggled in `saved_events` table; bookmark icon updates state.",
     priority: "High",
     frequency: "High",
     normalCourse: [
-      { actor: "Fan enters message text into chat input field and clicks 'Send'.", system: "System sanitizes input, inserts row into 'event_chat_messages', and updates chat stream." }
+      { actor: "Fan clicks Bookmark icon on event card or dossier.", system: "Dispatches AJAX POST to `/api/events/:id/save`." },
+      { actor: "Fan views updated icon.", system: "Toggles `saved_events` record, returns `{ saved: true }`, and highlights bookmark icon." }
     ],
-    alternatives: "1a. Guest attempts to send -> Input replaced with prompt to log in or register.",
-    exceptions: "E1: Message text is empty.\nE2: Chat window has locked.",
-    includes: "UC19: View Event Discussion Live Chat",
-    notes: "Preserves event-focused community coordination."
+    alternatives: "1a. Event already bookmarked: System deletes record (unsave) and removes highlight.",
+    exceptions: "E1: Guest clicks bookmark. Displays modal prompting login or register.",
+    includes: "Not Applicable",
+    notes: "Instant reactive UI update without page reload."
   },
   {
-    id: "UC21",
-    name: "Submit Event Content Report",
-    actors: "Registered Fan, Guest",
-    description: "User flags an inaccurate event listing, incorrect date, or fake ticket link to administrators for review.",
-    preconditions: "1. User is viewing event details page.",
-    postconditions: "Record created in 'reports' table with status 'PENDING'.",
+    id: "UC018",
+    name: "Recommend / Upvote Event",
+    actors: "Fan",
+    description: "Casts a crowdsourced reliability vote (thumbs up) on an event listing to signal community trust in listing authenticity.",
+    preconditions: "Fan is logged in and event is published.",
+    postconditions: "Vote recorded in `event_recommendations` table and public recommendation tally updates.",
     priority: "High",
-    frequency: "Occasional",
+    frequency: "High",
     normalCourse: [
-      { actor: "User clicks 'Report' button on the event action bar.", system: "System prompts user for report reason and additional details." },
-      { actor: "User enters reason (e.g. Inaccurate Date/Venue, Fake Event) and clicks submit.", system: "System inserts record into 'reports', links user ID (if logged in) and event ID, and displays confirmation." }
+      { actor: "Fan clicks 'Recommend Event' (thumbs up).", system: "Dispatches POST to `/api/events/:id/recommend`." },
+      { actor: "Fan views updated tally.", system: "Toggles record in `event_recommendations`, returns new count, and highlights button." }
+    ],
+    alternatives: "1a. Retract Vote: Clicking again removes vote and decrements count.",
+    exceptions: "E1: Unique compound index (user_id, event_id) strictly prevents duplicate voting.",
+    includes: "Not Applicable",
+    notes: "Directly powers community reliability score."
+  },
+  {
+    id: "UC019",
+    name: "Report Suspicious Listing",
+    actors: "Fan",
+    description: "Submits a formal moderation report flagging an event for suspected scam ticket links, fraudulent fan gatherings, or outdated show info.",
+    preconditions: "Fan is logged in.",
+    postconditions: "Report logged in `reports` table with status 'PENDING' for maintainer review.",
+    priority: "High",
+    frequency: "Low",
+    normalCourse: [
+      { actor: "Fan clicks 'Report Event' in event footer.", system: "Opens Report Modal with categories: Scam Link, Cancelled Event, Inaccurate Info." },
+      { actor: "Fan selects reason, inputs details, and clicks 'Submit Report'.", system: "Inserts record into `reports` (status='PENDING') and displays confirmation toast." }
     ],
     alternatives: "Not Applicable",
-    exceptions: "E1: Report reason is left empty.",
-    includes: "UC11: View Event Details & Embedded Venue",
-    notes: "Directly fulfills Chapter 1 Solution 1.3.3 & Scope 1.6.1 content reporting."
+    exceptions: "E1: Empty reason. Blocks submission and prompts input.",
+    includes: "Not Applicable",
+    notes: "Listings receiving >=3 active scam reports automatically display an amber caution warning."
   },
   {
-    id: "UC22",
+    id: "UC020",
+    name: "Post Discussion Comment",
+    actors: "Fan",
+    description: "Posts a top-level inquiry or logistical tip in the event's public discussion thread.",
+    preconditions: "Fan is logged in.",
+    postconditions: "Comment saved to `event_chat_messages` and rendered in discussion thread.",
+    priority: "High",
+    frequency: "High",
+    normalCourse: [
+      { actor: "Fan enters message in discussion input and clicks 'Post Comment'.", system: "Sanitizes HTML entities against XSS and validates length (1 to 1000 characters)." },
+      { actor: "Fan views posted message.", system: "Inserts into `event_chat_messages` (parent_id = NULL) and renders comment card." }
+    ],
+    alternatives: "Not Applicable",
+    exceptions: "E1: Empty comment. Rejects submission with client alert.",
+    includes: "Not Applicable",
+    notes: "ANTI-SCALPER POLICY: Comments are strictly immutable once posted (no edit capability)."
+  },
+  {
+    id: "UC021",
+    name: "Reply to Discussion Comment",
+    actors: "Fan",
+    description: "Submits a direct answer to an existing discussion comment, establishing a 1-level nested Q&A thread.",
+    preconditions: "Fan is logged in and parent comment exists.",
+    postconditions: "Reply recorded with `parent_id` referencing parent; notification sent to parent author.",
+    priority: "High",
+    frequency: "High",
+    normalCourse: [
+      { actor: "Fan clicks 'Reply' underneath specific comment.", system: "Opens inline reply form under parent comment." },
+      { actor: "Fan types answer and clicks 'Submit Reply'.", system: "Inserts into `event_chat_messages` (parent_id = target_id) and notifies parent author." }
+    ],
+    alternatives: "1a. Replying to a reply: System automatically flattens `parent_id` to root comment.",
+    exceptions: "E1: Parent comment was deleted. Displays error alert.",
+    includes: "Not Applicable",
+    notes: "Strictly enforces 1-level threading to preserve clean mobile rendering."
+  },
+  {
+    id: "UC022",
+    name: "Delete Own Discussion Comment",
+    actors: "Fan",
+    description: "Deletes a comment previously authored by the user. Editing is strictly disabled platform-wide to prevent scalper fraud.",
+    preconditions: "Fan is logged in and is the author of the comment (or System Maintainer).",
+    postconditions: "Comment removed from database; UI updates cleanly.",
+    priority: "Medium",
+    frequency: "Occasional",
+    normalCourse: [
+      { actor: "Fan clicks trash icon on own comment.", system: "Prompts confirmation modal: 'Delete this comment?'." },
+      { actor: "Fan confirms deletion.", system: "Executes DELETE FROM event_chat_messages WHERE id = :id AND user_id = :userId and removes DOM card." }
+    ],
+    alternatives: "1a. System Maintainer Override: Maintainer can delete any abusive comment.",
+    exceptions: "E1: Unauthorized attempt. Returns 403 Forbidden.",
+    includes: "Not Applicable",
+    notes: "Supervisor Directive: Discussion comments support deletion, but NEVER editing."
+  },
+  {
+    id: "UC023",
     name: "View In-App Notifications",
-    actors: "Registered Fan",
-    description: "Fan views their notification feed for queue alerts, verified updates, and administrative announcements.",
-    preconditions: "1. Fan is authenticated.",
-    postconditions: "Notification list rendered with unread indicators.",
+    actors: "Fan",
+    description: "Opens notification bell tray to review alerts regarding showtime shifts, ticket on-sale countdowns, discussion replies, and listings.",
+    preconditions: "Fan is logged in.",
+    postconditions: "Renders notification dropdown with unread badge counter.",
     priority: "Medium",
-    frequency: "Regular",
+    frequency: "High",
     normalCourse: [
-      { actor: "Fan clicks bell icon in navigation bar.", system: "System queries 'notifications' for user ID and renders notification list." }
+      { actor: "Fan clicks Notification Bell icon in header.", system: "Queries `notifications` where `user_id = :id` ordered by `created_at DESC` (limit 20)." },
+      { actor: "Fan clicks an alert.", system: "Navigates directly to the relevant event or discussion anchor." }
     ],
-    alternatives: "Not Applicable",
-    exceptions: "E1: No notifications exist.",
+    alternatives: "2a. Zero notifications: Displays 'All caught up! No new notifications.'.",
+    exceptions: "E1: Session expired. Prompts sign in.",
     includes: "Not Applicable",
-    notes: "Navbar displays unread counter badge dynamically."
+    notes: "Live unread badge count updates reactively."
   },
   {
-    id: "UC23",
-    name: "Mark Notifications as Read",
-    actors: "Registered Fan",
-    description: "Fan marks all unread notifications as read to clear the navbar alert badge.",
-    preconditions: "1. Fan is on notifications page with unread items.",
-    postconditions: "System updates 'is_read = 1' for user notifications.",
+    id: "UC024",
+    name: "Mark Notification as Read",
+    actors: "Fan",
+    description: "Marks a single notification or all active notifications as read to clear unread badge indicators.",
+    preconditions: "Fan has unread notifications.",
+    postconditions: "Notification `is_read` column updated to 1; unread bell counter decrements.",
     priority: "Low",
     frequency: "Regular",
     normalCourse: [
-      { actor: "Fan clicks 'Mark all as read' button.", system: "System executes UPDATE query on 'notifications' setting is_read = 1 and resets unread badge to 0." }
+      { actor: "Fan clicks 'Mark all as read' in notification dropdown.", system: "Issues POST to `/notifications/mark-all-read`." },
+      { actor: "Fan views cleared badge.", system: "Executes UPDATE notifications SET is_read = 1 WHERE user_id = :id and clears red counter." }
+    ],
+    alternatives: "1a. Single click: Clicking individual alert marks it as read automatically upon redirect.",
+    exceptions: "Not Applicable",
+    includes: "Not Applicable",
+    notes: "Asynchronous fetch update."
+  },
+  {
+    id: "UC025",
+    name: "Manage Notification Settings",
+    actors: "Fan",
+    description: "Customizes alert delivery channels and toggles for schedule updates, countdown reminders, and community replies.",
+    preconditions: "Fan is on profile settings view (/profile).",
+    postconditions: "Notification preference columns updated in `users` table.",
+    priority: "Medium",
+    frequency: "Low",
+    normalCourse: [
+      { actor: "Fan navigates to Notification Settings tab on profile page.", system: "Renders toggles: notify_event_updates, notify_countdown_reminders, notify_discussion_replies." },
+      { actor: "Fan adjusts toggles and clicks 'Save Preferences'.", system: "Updates columns in `users` table and displays confirmation alert." }
     ],
     alternatives: "Not Applicable",
-    exceptions: "Not Applicable",
-    includes: "UC22: View In-App Notifications",
-    notes: "Asynchronous action."
+    exceptions: "E1: Database write error. Serves error toast.",
+    includes: "Not Applicable",
+    notes: "Integrated directly into `users` schema via migration."
   },
 
-  // MODULE 5: ADMINISTRATOR REVIEW & VERIFICATION
+  // ==========================================
+  // MODULE 3: EVENT PUBLISHING & VERIFICATION (ORGANIZER)
+  // ==========================================
   {
-    id: "UC24",
-    name: "View Admin Dashboard & KPI Metrics",
-    actors: "System Administrator",
-    description: "Administrator monitors total events, pending submissions count, registered users, and recent audit logs on the control center.",
-    preconditions: "1. Administrator is authenticated with role_id = 1.",
-    postconditions: "System renders administrator dashboard with KPI metrics.",
-    priority: "High",
-    frequency: "Daily",
-    normalCourse: [
-      { actor: "Administrator navigates to '/admin'.", system: "System verifies admin role, aggregates counts from 'events', 'users', and 'activity_logs', and renders dashboard." }
-    ],
-    alternatives: "1a. Non-admin user attempts access -> System denies access and redirects to home page with warning.",
-    exceptions: "E1: Unauthorized session.",
-    includes: "Not Applicable",
-    notes: "Protected by requireAdmin middleware."
-  },
-  {
-    id: "UC25",
-    name: "View Audit Activity Logs",
-    actors: "System Administrator",
-    description: "Administrator reviews historical audit trail of all administrative approvals, rejections, and security events.",
-    preconditions: "1. Administrator is authenticated.",
-    postconditions: "Audit logs table rendered chronologically.",
-    priority: "Medium",
-    frequency: "Regular",
-    normalCourse: [
-      { actor: "Administrator navigates to '/admin/logs'.", system: "System queries 'activity_logs' joined with 'users' and renders chronological audit trail." }
-    ],
-    alternatives: "Not Applicable",
-    exceptions: "Not Applicable",
-    includes: "Not Applicable",
-    notes: "Immutable audit log supporting accountability."
-  },
-  {
-    id: "UC26",
-    name: "View Pending Verification Queue",
-    actors: "System Administrator",
-    description: "Administrator accesses queue of pending public event submissions awaiting review.",
-    preconditions: "1. Administrator is authenticated.",
-    postconditions: "System renders pending submissions with evidence links.",
-    priority: "High",
-    frequency: "Daily",
-    normalCourse: [
-      { actor: "Administrator navigates to '/admin/verifications'.", system: "System retrieves all events with verification_status = 'PENDING' and renders verification queue." }
-    ],
-    alternatives: "Not Applicable",
-    exceptions: "E1: Queue is empty -> Displays 'No pending submissions'." ,
-    includes: "Not Applicable",
-    notes: "Shows submitter contact and proof URLs."
-  },
-  {
-    id: "UC27",
-    name: "Approve Event Submission Live",
-    actors: "System Administrator",
-    description: "Administrator approves a pending event submission, publishing it live to the public directory and sending approval notification.",
-    preconditions: "1. Administrator is viewing pending event.",
-    postconditions: "verification_status updated to 'VERIFIED'; audit log recorded; email dispatched.",
-    priority: "High",
-    frequency: "Daily",
-    normalCourse: [
-      { actor: "Administrator inspects evidence link and clicks 'Approve Event'.", system: "System updates verification_status to 'VERIFIED', writes entry to 'activity_logs', dispatches approval email to submitter, and reloads queue." }
-    ],
-    alternatives: "Not Applicable",
-    exceptions: "E1: Event ID missing or database error.",
-    includes: "UC26: View Pending Verification Queue",
-    notes: "Immediately makes event discoverable across directory."
-  },
-  {
-    id: "UC28",
-    name: "Reject Event Submission with Feedback",
-    actors: "System Administrator",
-    description: "Administrator rejects an unverified, duplicate, or fraudulent submission with recorded feedback.",
-    preconditions: "1. Administrator is reviewing pending event.",
-    postconditions: "verification_status updated to 'REJECTED'; rejection reason saved; email sent.",
-    priority: "High",
-    frequency: "Daily",
-    normalCourse: [
-      { actor: "Administrator enters rejection reason and clicks 'Reject Event'.", system: "System updates record with rejection_reason and status 'REJECTED', logs audit entry, sends email to submitter, and reloads queue." }
-    ],
-    alternatives: "Not Applicable",
-    exceptions: "E1: Rejection reason empty -> Prompt user for reason.",
-    includes: "UC26: View Pending Verification Queue",
-    notes: "Submitter can review reason and resubmit via UC15."
-  },
-  {
-    id: "UC29",
-    name: "View Content Reports List",
-    actors: "System Administrator",
-    description: "Administrator inspects community content reports filed by fans against inaccurate or suspicious events.",
-    preconditions: "1. Administrator is authenticated.",
-    postconditions: "Reports inbox table rendered.",
+    id: "UC026",
+    name: "View Organizer Dashboard",
+    actors: "Organizer",
+    description: "Reviews event management dashboard displaying all submitted listings, current verification scores, active ticket click-through metrics, and quick actions.",
+    preconditions: "User is authenticated as Organizer.",
+    postconditions: "Renders organizer management portal with listing performance cards.",
     priority: "High",
     frequency: "Regular",
     normalCourse: [
-      { actor: "Administrator navigates to '/admin/reports'.", system: "System queries 'reports' joined with 'events' and 'users' and renders reporting management table." }
+      { actor: "Organizer clicks 'Organizer Portal' (/organizer/dashboard).", system: "Queries `events` where `organizer_id = :id`, calculates verification percentages, and counts recommendations." },
+      { actor: "Organizer reviews listings and metrics.", system: "Renders table with actions: Edit, View Verification Breakdown, Post Update." }
     ],
-    alternatives: "Not Applicable",
-    exceptions: "Not Applicable",
+    alternatives: "2a. Zero listings: Displays 'You have not submitted any events yet' with prominent Submit button.",
+    exceptions: "E1: Unauthenticated. Redirects to login.",
     includes: "Not Applicable",
-    notes: "Empowers community-driven content moderation."
+    notes: "Seamless auto-role assignment upon first event submission."
   },
   {
-    id: "UC30",
-    name: "Resolve Content Report",
-    actors: "System Administrator",
-    description: "Administrator investigates a reported listing, applies necessary corrections, and marks report as resolved.",
-    preconditions: "1. Administrator is on reports page.",
-    postconditions: "reports.status updated to 'RESOLVED'.",
-    priority: "Medium",
-    frequency: "Regular",
-    normalCourse: [
-      { actor: "Administrator clicks 'Mark as Resolved' for target report.", system: "System updates report status to 'RESOLVED', records action, and refreshes report table." }
-    ],
-    alternatives: "Not Applicable",
-    exceptions: "Not Applicable",
-    includes: "UC29: View Content Reports List",
-    notes: "Maintains clear resolution trail."
-  },
-
-  // MODULE 6: ADMIN CATALOG CRUD
-  {
-    id: "UC31",
-    name: "View All Events Management List",
-    actors: "System Administrator",
-    description: "Administrator views full table of all events in the system regardless of status.",
-    preconditions: "1. Administrator is logged in.",
-    postconditions: "Events management table displayed.",
-    priority: "Medium",
-    frequency: "Regular",
-    normalCourse: [
-      { actor: "Administrator navigates to '/admin/events'.", system: "System queries all records from 'events' and renders management table." }
-    ],
-    alternatives: "Not Applicable",
-    exceptions: "Not Applicable",
-    includes: "Not Applicable",
-    notes: "Supports sorting and status filtering."
-  },
-  {
-    id: "UC32",
-    name: "Update Event Listing Status",
-    actors: "System Administrator",
-    description: "Administrator manually toggles event status between UPCOMING, ONGOING, and COMPLETED.",
-    preconditions: "1. Administrator is on events management page.",
-    postconditions: "event_status updated in database.",
-    priority: "Medium",
-    frequency: "Regular",
-    normalCourse: [
-      { actor: "Administrator selects new status and clicks 'Update Status'.", system: "System updates event_status column, logs action in 'activity_logs', and reloads page." }
-    ],
-    alternatives: "Not Applicable",
-    exceptions: "Not Applicable",
-    includes: "UC31: View All Events Management List",
-    notes: "Status determines chat lock and countdown display."
-  },
-  {
-    id: "UC33",
-    name: "Delete Event Listing",
-    actors: "System Administrator",
-    description: "Administrator permanently removes a fraudulent or canceled event listing from the system.",
-    preconditions: "1. Administrator is on events management page.",
-    postconditions: "Event record and cascading child records deleted.",
+    id: "UC027",
+    name: "Submit Event Listing",
+    actors: "Organizer, Autonomous Verification Engine",
+    description: "Submits a new Malaysian K-Pop event listing, assisted by the Multimodal OCR Vision Scanner (OpenRouter Gemini 4 Argon) to auto-extract poster details.",
+    preconditions: "Organizer is logged in.",
+    postconditions: "Event inserted into `events` table; Autonomous Verification Engine executes instant audit.",
     priority: "High",
-    frequency: "Low",
-    normalCourse: [
-      { actor: "Administrator clicks 'Delete' and confirms deletion prompt.", system: "System executes DELETE query on 'events', cascading to saved_events and chat messages, logs action, and refreshes list." }
-    ],
-    alternatives: "Not Applicable",
-    exceptions: "E1: Deletion cancelled by administrator.",
-    includes: "UC31: View All Events Management List",
-    notes: "Cascading deletion preserves referential integrity."
-  },
-  {
-    id: "UC34",
-    name: "View Event Categories",
-    actors: "System Administrator",
-    description: "Administrator inspects existing event categories and event counts per category.",
-    preconditions: "1. Administrator is logged in.",
-    postconditions: "Categories management table rendered.",
-    priority: "Low",
-    frequency: "Occasional",
-    normalCourse: [
-      { actor: "Administrator navigates to '/admin/categories'.", system: "System queries 'event_categories' with event counts and renders categories table." }
-    ],
-    alternatives: "Not Applicable",
-    exceptions: "Not Applicable",
-    includes: "Not Applicable",
-    notes: "Displays badge color preview."
-  },
-  {
-    id: "UC35",
-    name: "Create Event Category",
-    actors: "System Administrator",
-    description: "Administrator adds a new category classification to the platform.",
-    preconditions: "1. Administrator is on categories page.",
-    postconditions: "New record inserted into 'event_categories'.",
-    priority: "Medium",
-    frequency: "Low",
-    normalCourse: [
-      { actor: "Administrator enters category name, slug, and badge color, then clicks 'Add Category'.", system: "System validates unique slug, inserts record into 'event_categories', logs action, and reloads page." }
-    ],
-    alternatives: "Not Applicable",
-    exceptions: "E1: Category name or slug already exists.",
-    includes: "UC34: View Event Categories",
-    notes: "Slug is auto-sanitized for URL safety."
-  },
-  {
-    id: "UC36",
-    name: "Delete Event Category",
-    actors: "System Administrator",
-    description: "Administrator deletes an unused event category.",
-    preconditions: "1. Administrator is on categories page.",
-    postconditions: "Category removed from database.",
-    priority: "Low",
-    frequency: "Low",
-    normalCourse: [
-      { actor: "Administrator clicks 'Delete' on an unreferenced category.", system: "System executes DELETE on 'event_categories', logs action, and reloads page." }
-    ],
-    alternatives: "Not Applicable",
-    exceptions: "E1: Category is currently linked to existing events (RESTRICT prevents deletion).",
-    includes: "UC34: View Event Categories",
-    notes: "Protected by foreign key RESTRICT constraint."
-  },
-  {
-    id: "UC37",
-    name: "View Artist Catalog",
-    actors: "System Administrator",
-    description: "Administrator views catalog of all registered K-Pop idol groups and soloists.",
-    preconditions: "1. Administrator is logged in.",
-    postconditions: "Artist catalog table rendered.",
-    priority: "Medium",
     frequency: "Regular",
     normalCourse: [
-      { actor: "Administrator navigates to '/admin/artists'.", system: "System queries 'artists' table and displays management table." }
+      { actor: "Organizer navigates to '/submit-event' and enters poster image URL.", system: "Triggers AV05 (OpenRouter Gemini 4 Argon Vision OCR) and auto-extracts title, artist, venue, date." },
+      { actor: "Organizer reviews pre-filled fields, inputs ticketing and evidence URLs, and submits.", system: "Runs AV01–AV04 autonomous checks, computes trust score, persists listing, and redirects to Verification Breakdown." }
     ],
-    alternatives: "Not Applicable",
-    exceptions: "Not Applicable",
-    includes: "Not Applicable",
-    notes: "Shows agency and group type."
+    alternatives: "1a. Manual Entry: Organizer fills all fields manually without AI scanner.",
+    exceptions: "E1: Mandatory fields missing. Form blocks submission.\nE2: Hard gate failure. Listing saved as DRAFT_FLAGGED with specific remediation.",
+    includes: "AV01: Audit Whitelisted Ticketing Domain, AV05: Multimodal OCR Vision Extraction",
+    notes: "Fully autonomous publishing with zero manual admin approval bottleneck."
   },
   {
-    id: "UC38",
-    name: "Create Artist Profile with Biodata",
-    actors: "System Administrator",
-    description: "Administrator creates a new artist profile with agency, photo asset, and JSON member biodatas.",
-    preconditions: "1. Administrator is on artists page.",
-    postconditions: "New record inserted into 'artists'.",
+    id: "UC028",
+    name: "Edit Event Listing",
+    actors: "Organizer",
+    description: "Updates details of an existing draft or flagged listing to improve its verification score, update gate times, or adjust ticketing details.",
+    preconditions: "Organizer owns the listing (or is System Maintainer).",
+    postconditions: "Event record updated and re-scored by Autonomous Verification Engine.",
     priority: "Medium",
     frequency: "Occasional",
     normalCourse: [
-      { actor: "Administrator enters artist name, group type, agency, and image URL, then clicks 'Add Artist'.", system: "System validates fields, inserts row into 'artists', logs audit entry, and reloads page." }
+      { actor: "Organizer clicks 'Edit Listing' (/events/:id/edit).", system: "Populates form with existing event data and current audit diagnostic tips." },
+      { actor: "Organizer updates evidence link or ticketing URL and clicks 'Save'.", system: "Updates `events` record, re-runs autonomous audit, recalculates trust score, and displays updated breakdown." }
     ],
     alternatives: "Not Applicable",
-    exceptions: "E1: Artist name left empty.",
-    includes: "UC37: View Artist Catalog",
-    notes: "Supports single-table JSON biodata embedding."
+    exceptions: "E1: Non-owner attempt. Returns 403 Forbidden.",
+    includes: "Not Applicable",
+    notes: "Preserves audit trail in `activity_logs`."
   },
   {
-    id: "UC39",
-    name: "Delete Artist Profile",
-    actors: "System Administrator",
-    description: "Administrator deletes an artist entry from catalog.",
-    preconditions: "1. Administrator is on artists page.",
-    postconditions: "Artist deleted; linked events set artist_id to NULL.",
-    priority: "Low",
-    frequency: "Low",
+    id: "UC029",
+    name: "View Verification Breakdown",
+    actors: "Organizer, Guest, Fan",
+    description: "Inspects the transparent 14-point autonomous verification score and audit diagnostics explaining exactly why marks were awarded or deducted.",
+    preconditions: "Event listing exists in database.",
+    postconditions: "Renders audit report showing hard gate results, attribute match percentages, and AI consensus logs.",
+    priority: "High",
+    frequency: "High",
     normalCourse: [
-      { actor: "Administrator clicks 'Delete' on artist record.", system: "System executes DELETE on 'artists', sets foreign keys to NULL on linked events, logs action, and refreshes list." }
+      { actor: "User clicks 'View Verification Breakdown' on event dossier or dashboard.", system: "Loads verification telemetry: Hard Gates, 14-point Attribute Overlap, Evidence Byte count, and AI Votes." },
+      { actor: "User reviews breakdown and diagnostic recommendations.", system: "Presents score (e.g. 88/100), Trust Badge, and actionable remediation advice." }
     ],
     alternatives: "Not Applicable",
     exceptions: "Not Applicable",
-    includes: "UC37: View Artist Catalog",
-    notes: "Foreign key ON DELETE SET NULL protects events."
+    includes: "AV06: Cross-Model AI Consensus Audit",
+    notes: "Directly solves user's transparent score breakdown requirement."
   },
   {
-    id: "UC40",
-    name: "View Registered Users List",
-    actors: "System Administrator",
-    description: "Administrator reviews full table of all registered fan and organizer accounts.",
-    preconditions: "1. Administrator is logged in.",
-    postconditions: "User directory table rendered with role badges.",
+    id: "UC030",
+    name: "Post Logistical Event Update",
+    actors: "Organizer",
+    description: "Broadcasts an official logistical announcement (e.g. door opening times, bag size restrictions, weather alerts) directly to fans who saved the event.",
+    preconditions: "Organizer owns the listing.",
+    postconditions: "Update record created in `event_updates`; in-app alerts dispatched to saved ticket holders.",
     priority: "Medium",
+    frequency: "Occasional",
+    normalCourse: [
+      { actor: "Organizer clicks 'Post Logistical Update' on event dossier or dashboard.", system: "Opens update modal requesting Title, Urgency (Info, Warning, Urgent), and Message." },
+      { actor: "Organizer enters notice details and clicks 'Broadcast Update'.", system: "Inserts into `event_updates`, creates in-app notifications for saved fans, and displays update banner on dossier." }
+    ],
+    alternatives: "Not Applicable",
+    exceptions: "E1: Content exceeds 2000 characters. Prompts concise phrasing.",
+    includes: "Not Applicable",
+    notes: "Solves Chapter 1 problem of fragmented last-minute announcements."
+  },
+  {
+    id: "UC031",
+    name: "Request Organizer Badge",
+    actors: "Organizer",
+    description: "Submits official credentials (fanclub registration, SSM business registration, or previous promoter portfolio) to obtain a verified organizer gold badge.",
+    preconditions: "User is logged in.",
+    postconditions: "Verification request submitted; `users.is_verified_organizer` queued for maintainer review.",
+    priority: "Low",
+    frequency: "Once per organizer",
+    normalCourse: [
+      { actor: "Organizer navigates to '/profile' and clicks 'Request Verified Badge'.", system: "Displays modal requesting Organization Name, Social Handle, and Documentation URL." },
+      { actor: "Organizer submits credentials and supporting link.", system: "Updates `users.organization_name`, `users.verification_proof`, and flags for maintainer review." }
+    ],
+    alternatives: "Not Applicable",
+    exceptions: "E1: Invalid URL. Prompts valid link.",
+    includes: "Not Applicable",
+    notes: "Verified badge grants high trust weighting on all submitted events."
+  },
+
+  // ==========================================
+  // MODULE 4: PLATFORM GOVERNANCE (SYSTEM MAINTAINER)
+  // ==========================================
+  {
+    id: "UC032",
+    name: "View Maintainer Portal",
+    actors: "System Maintainer",
+    description: "Accesses administrative master portal displaying global platform statistics, listing health metrics, active scam reports, and audit logs.",
+    preconditions: "User is authenticated with role 'Admin'.",
+    postconditions: "Renders admin portal overview with platform analytics.",
+    priority: "High",
     frequency: "Regular",
     normalCourse: [
-      { actor: "Administrator navigates to '/admin/users'.", system: "System queries 'users' joined with 'roles' and renders user management table." }
+      { actor: "Maintainer navigates to '/admin'.", system: "Verifies admin session, aggregates total users, active events, pending scam reports, and recent audits." },
+      { actor: "Maintainer inspects metrics.", system: "Displays executive metrics dashboard with management shortcuts." }
     ],
-    alternatives: "Not Applicable",
+    alternatives: "1a. Non-admin attempt: Redirects to /login with 403 Forbidden.",
     exceptions: "Not Applicable",
     includes: "Not Applicable",
-    notes: "Shows registration timestamps and status."
+    notes: "Protected by requireAdmin Express middleware."
   },
   {
-    id: "UC41",
-    name: "Delete User Account",
-    actors: "System Administrator",
-    description: "Administrator terminates and deletes a malicious or violating user account.",
-    preconditions: "1. Administrator is on user management page.",
-    postconditions: "User record deleted; cascading child records removed.",
+    id: "UC033",
+    name: "Manage Event Categories",
+    actors: "System Maintainer",
+    description: "Governs event taxonomy by adding, updating, or deactivating categories (Concert, Fanmeet, Birthday Cafe, Cup Sleeve Event).",
+    preconditions: "Maintainer is in admin portal.",
+    postconditions: "`event_categories` table updated.",
+    priority: "Medium",
+    frequency: "Low",
+    normalCourse: [
+      { actor: "Maintainer navigates to '/admin/categories'.", system: "Renders active categories with badge color tokens and event counts." },
+      { actor: "Maintainer adds new category Name, Slug, and Color, then clicks 'Save'.", system: "Validates unique slug, inserts record into `event_categories`, and refreshes directory." }
+    ],
+    alternatives: "2a. Edit Category: Updates badge color or description across existing events.",
+    exceptions: "E1: Duplicate slug. Rejects with error.",
+    includes: "Not Applicable",
+    notes: "Used globally across event filtering and badges."
+  },
+  {
+    id: "UC034",
+    name: "Manage Venues Database",
+    actors: "System Maintainer",
+    description: "Maintains master venue directory with standardized names, addresses, state/city tags, capacity figures, and transit guidance (nearest LRT/MRT).",
+    preconditions: "Maintainer is in admin portal.",
+    postconditions: "`venues` table updated with standardized venue data.",
     priority: "High",
     frequency: "Low",
     normalCourse: [
-      { actor: "Administrator clicks 'Delete' for violating user.", system: "System executes DELETE on 'users', cascades to bookmarks and chat messages, logs action, and reloads page." }
+      { actor: "Maintainer navigates to '/admin/venues'.", system: "Displays table of Malaysian venues (Axiata Arena, Zepp KL, Mega Star Arena, Sunway Pyramid)." },
+      { actor: "Maintainer updates transit instructions (e.g. adding LRT Sri Petaling line info) and saves.", system: "Persists updates into `venues` table." }
     ],
     alternatives: "Not Applicable",
-    exceptions: "E1: Administrator attempts to delete primary root admin account (prevented by system).",
-    includes: "UC40: View Registered Users List",
-    notes: "Protects platform integrity."
+    exceptions: "E1: Venue name conflict. Prompts merge or edit.",
+    includes: "Not Applicable",
+    notes: "Powers Event Radar and transit navigation."
+  },
+  {
+    id: "UC035",
+    name: "Manage Artists & Member Roster",
+    actors: "System Maintainer",
+    description: "Manages normalized artist catalog and individual idol member records, ensuring accurate agency details, group types, and debut history.",
+    preconditions: "Maintainer is in admin portal.",
+    postconditions: "`artists` and `members` tables updated.",
+    priority: "High",
+    frequency: "Low",
+    normalCourse: [
+      { actor: "Maintainer navigates to '/admin/artists'.", system: "Displays list of cataloged K-Pop artists with affiliated member counts." },
+      { actor: "Maintainer selects artist (e.g. 'BOYNEXTDOOR'), updates member roster biodata, and clicks 'Save'.", system: "Updates `artists` table and executes relational updates into `members` table." }
+    ],
+    alternatives: "2a. Add New Artist: Creates new artist profile with official banner and agency.",
+    exceptions: "E1: Missing name. Prompts required field.",
+    includes: "Not Applicable",
+    notes: "Normalized schema eliminates comma-delimited strings."
+  },
+  {
+    id: "UC036",
+    name: "Audit Scam Reports",
+    actors: "System Maintainer",
+    description: "Investigates community scam reports, reviews reported event evidence, and executes administrative overrides (unpublishing events or suspending accounts).",
+    preconditions: "Maintainer is in admin portal.",
+    postconditions: "Report status updated ('RESOLVED' / 'DISMISSED') and event/account sanctions applied.",
+    priority: "High",
+    frequency: "Regular",
+    normalCourse: [
+      { actor: "Maintainer navigates to '/admin/reports'.", system: "Queries `reports` where `status = 'PENDING'` joined with events and users." },
+      { actor: "Maintainer reviews evidence and selects 'Take Down Event'.", system: "Sets `events.status = 'CANCELLED'`, updates `reports.status = 'RESOLVED'`, and logs in `activity_logs`." }
+    ],
+    alternatives: "2a. False Alarm: Maintainer marks report as 'DISMISSED' with explanatory note.",
+    exceptions: "Not Applicable",
+    includes: "Not Applicable",
+    notes: "Protects community from secondary ticketing scams."
   },
 
-  // MODULE 7: ADDITIONAL / MINOR FEATURES (USER ENHANCEMENTS)
+  // ==========================================
+  // MODULE 5: AUTONOMOUS VERIFICATION ENGINE
+  // ==========================================
   {
-    id: "UC42",
-    name: "View Interactive Google Map & Directions in Browser",
-    actors: "Guest, Registered Fan",
-    description: "Users explore an embedded Google Maps iframe inside the event summary sidebar and launch 1-click turn-by-turn navigation for the concert venue.",
-    preconditions: "1. User is on event details page.\n2. Event has venue and city attributes.",
-    postconditions: "Interactive map rendered in browser; external navigation link provided.",
-    priority: "Medium",
-    frequency: "High",
+    id: "AV01",
+    name: "Audit Whitelisted Ticketing Domain",
+    actors: "Autonomous Verification Engine",
+    description: "Inspects submitted ticketing URL against verified whitelist of authorized Malaysian ticketing distributors (BookMyShow, GoLive Asia, Ticket2U, BigTix).",
+    preconditions: "Organizer submits or edits event listing.",
+    postconditions: "Ticketing whitelist score computed (Passed: 10 pts, Failed: 0 pts).",
+    priority: "High",
+    frequency: "Every submission/edit",
     normalCourse: [
-      { actor: "User scrolls to 'Venue & Location' card in event summary sidebar.", system: "System renders embedded Google Maps iframe displaying Zepp KL/Axiata Arena location coordinates." },
-      { actor: "User clicks 'Directions' or 'Open Google Maps'.", system: "System launches Google Maps in full-screen mode with turn-by-turn routing." }
+      { actor: "Engine parses domain hostname from submitted ticket_url.", system: "Compares hostname against verified ticketing provider registry." },
+      { actor: "Engine confirms partner match.", system: "Awards 10 points and sets official_ticketing_channel = true." }
     ],
-    alternatives: "Not Applicable",
-    exceptions: "E1: User is offline.",
-    includes: "UC11: View Event Details & Embedded Venue",
-    notes: "Zero external API key dependencies."
+    alternatives: "1a. Free Event: Bypasses ticketing domain penalty.",
+    exceptions: "E1: Malformed URL syntax. Marks check as failed.",
+    includes: "Not Applicable",
+    notes: "Hard gate against secondary scam ticketing sites."
   },
   {
-    id: "UC43",
-    name: "View Real-Time Event Countdown Timer",
-    actors: "Guest, Registered Fan",
-    description: "Users view a live ticking countdown timer calculating remaining Days, Hours, Minutes, and Seconds until concert start time.",
-    preconditions: "1. Event status is 'UPCOMING'.",
-    postconditions: "Live clock updates every 1,000 milliseconds.",
-    priority: "Medium",
-    frequency: "High",
+    id: "AV02",
+    name: "Resolve Evidence URL & Readability",
+    actors: "Autonomous Verification Engine",
+    description: "Executes real-time HTTP fetch to verify that organizer evidence announcement URL is reachable, returns HTTP 200 OK, and contains readable text.",
+    preconditions: "Organizer provides evidence URL.",
+    postconditions: "URL reachability verified (12 pts) and readability evaluated (up to 18 pts).",
+    priority: "High",
+    frequency: "Every submission/edit",
     normalCourse: [
-      { actor: "User opens event details page.", system: "System calculates target timestamp difference and displays live counting clock." }
+      { actor: "Engine dispatches HTTP GET request with 5000ms timeout.", system: "Verifies HTTP 200 OK status code." },
+      { actor: "Engine measures readable text byte length.", system: "If text > 200 characters, awards readability points; if < 100 characters, flags as JS shell warning." }
     ],
-    alternatives: "1a. Event date/time reached -> Clock displays 'Event Started / Live!'.",
-    exceptions: "Not Applicable",
-    includes: "UC11: View Event Details & Embedded Venue",
-    notes: "Renders in hero banner with pulsing stopwatch badge."
+    alternatives: "1a. HTTP 404 / 500 / Timeout: Awards 0 points and flags hard gate failure.",
+    exceptions: "E1: SSL error. Marks link as unverified.",
+    includes: "Not Applicable",
+    notes: "Ensures evidence is real and verifiable."
   },
   {
-    id: "UC44",
-    name: "Share Event via Multi-Channel Social Modal",
-    actors: "Guest, Registered Fan",
-    description: "Users share event details to WhatsApp, X (Twitter), Telegram, Facebook, or copy a direct link to their clipboard.",
-    preconditions: "1. User is on event details page.",
-    postconditions: "Share sheet or social share URL launched.",
-    priority: "Medium",
-    frequency: "High",
+    id: "AV03",
+    name: "Verify Date & Time Validity",
+    actors: "Autonomous Verification Engine",
+    description: "Verifies event start date and end date are structurally valid, chronological, and scheduled in the future.",
+    preconditions: "Event submission contains date values.",
+    postconditions: "Date validity check recorded (Passed: 6 pts, Failed: 0 pts).",
+    priority: "High",
+    frequency: "Every submission/edit",
     normalCourse: [
-      { actor: "User clicks 'Share' button on action bar.", system: "System detects device type; on desktop, opens share modal with WhatsApp, X, Telegram, Facebook, and Copy Link." },
-      { actor: "User clicks 'Copy' or selects a social network.", system: "System copies URL to clipboard with toast notification or opens target social sharing page." }
+      { actor: "Engine parses start_date and end_date against ISO 8601 format.", system: "Verifies start_date >= CURRENT_DATE." },
+      { actor: "Engine confirms chronological consistency.", system: "Awards 6 points upon successful validation." }
     ],
-    alternatives: "1a. On mobile devices -> System invokes native navigator.share() interface.",
-    exceptions: "Not Applicable",
-    includes: "UC11: View Event Details & Embedded Venue",
-    notes: "Promotes event virality among fan networks."
+    alternatives: "1a. Past Date: Flags as expired and withholds points.",
+    exceptions: "E1: Unparseable date string. Rejects submission with validation error.",
+    includes: "Not Applicable",
+    notes: "Enforces temporal consistency across platform."
   },
   {
-    id: "UC45",
-    name: "Manage Concert Day Survival Checklist",
-    actors: "Guest, Registered Fan",
-    description: "Users interact with a 7-item concert survival checklist (NRIC, E-Ticket, Lightstick, Batteries, Power Bank, Compact Bag, Transit Route) with a live progress bar.",
-    preconditions: "1. User is on event details page.",
-    postconditions: "Checklist state saved automatically to browser localStorage.",
-    priority: "Medium",
-    frequency: "High",
+    id: "AV04",
+    name: "Check Duplicate Event Listings",
+    actors: "Autonomous Verification Engine",
+    description: "Scans active event catalog to identify potential duplicate listings based on fuzzy matching of artist, venue, and show date.",
+    preconditions: "New listing is submitted.",
+    postconditions: "Duplicate gate evaluated (No duplicates: Passed, Duplicate found: Hard Gate Failure).",
+    priority: "High",
+    frequency: "Every submission",
     normalCourse: [
-      { actor: "User checks off prepared items on checklist.", system: "System updates visual progress bar percentage (e.g. 5/7 Prepared - 71%) and persists checked IDs in localStorage." }
+      { actor: "Engine queries active events sharing the same start_date.", system: "Computes Levenshtein distance on title, artist, and venue." },
+      { actor: "Engine confirms similarity score < 60%.", system: "Marks check as Passed." }
     ],
-    alternatives: "Not Applicable",
+    alternatives: "1a. Similarity > 85% and venue matches: Flags as Duplicate Listing and blocks autonomous publishing.",
     exceptions: "Not Applicable",
-    includes: "UC11: View Event Details & Embedded Venue",
-    notes: "Data persists across browser refreshes without database calls."
+    includes: "Not Applicable",
+    notes: "Eliminates multiple clutter submissions for the same concert."
   },
   {
-    id: "UC46",
-    name: "Add Event to Google Calendar",
-    actors: "Guest, Registered Fan",
-    description: "Users synchronize the concert schedule with their personal Google Calendar via a 1-click action link.",
-    preconditions: "1. User is on event details page.",
-    postconditions: "Google Calendar event editor opened in new tab with pre-filled event details.",
-    priority: "Medium",
-    frequency: "Regular",
+    id: "AV05",
+    name: "Multimodal OCR Vision Extraction",
+    actors: "Autonomous Verification Engine, OpenRouter Gemini 4 Argon",
+    description: "Calls OpenRouter Gemini 4 Argon (google/gemini-4-argon) with official tour poster to extract structured concert metadata (title, artist, venue, date).",
+    preconditions: "Valid poster image URL provided.",
+    postconditions: "Structured JSON metadata extracted and used to populate/verify listing fields.",
+    priority: "High",
+    frequency: "Upon poster upload or AI extract request",
     normalCourse: [
-      { actor: "User clicks 'Add to Calendar' button on action bar.", system: "System dynamically constructs calendar.google.com URL with event title, ISO dates, venue, and description, opening it in a new browser tab." }
+      { actor: "Engine sends POST to OpenRouter API (model: 'google/gemini-4-argon', poster URL).", system: "Parses structured JSON response (artist, tour title, venue, date, city)." },
+      { actor: "Engine compares extracted values with input fields.", system: "Calculates poster match fidelity and pre-fills form fields for organizer review." }
     ],
-    alternatives: "Not Applicable",
-    exceptions: "Not Applicable",
-    includes: "UC11: View Event Details & Embedded Venue",
-    notes: "Client-side date formatting requiring zero backend storage."
+    alternatives: "1a. Rate limit / Outage: Fails over to Google Gemma 2 or fallback regex OCR service.",
+    exceptions: "E1: Image inaccessible. Reports download error.",
+    includes: "Not Applicable",
+    notes: "Powered by user's OpenRouter Gemini 4 Argon endpoint."
   },
   {
-    id: "UC47",
-    name: "Copy Event Verification Reference Code",
-    actors: "Guest, Registered Fan",
-    description: "Users copy the unique event tracking reference code (e.g. KS-2026-TXT001) for official tracking or inquiry.",
-    preconditions: "1. Event has an issued tracking code.",
-    postconditions: "Code copied to clipboard; floating toast alert displayed.",
-    priority: "Low",
-    frequency: "Regular",
+    id: "AV06",
+    name: "Cross-Model AI Consensus Audit",
+    actors: "Autonomous Verification Engine, Gemini 4 Argon, Gemma, Local Heuristics",
+    description: "Synthesizes verification judgments across OpenRouter Gemini 4 Argon, local heuristic rule engines, and web matchers to produce an indisputable consensus score.",
+    preconditions: "Evidence URL and listing metadata compiled.",
+    postconditions: "AI Consensus check evaluated (Passed: 22 pts, Failed: 0 pts); diagnostic telemetry recorded.",
+    priority: "High",
+    frequency: "Every submission",
     normalCourse: [
-      { actor: "User clicks 'Copy' button on the Verification & Reference Card.", system: "System writes tracking code to clipboard and displays animated floating toast alert: 'Reference code KS-2026-TXT001 copied!'." }
+      { actor: "Engine evaluates evidence page content using primary AI model (google/gemini-4-argon).", system: "Computes local token match score across Title (30%), Artist (30%), Venue (20%), City (20%)." },
+      { actor: "Engine aggregates votes across models.", system: "If consensus reached, awards 22 points, sets ai_consensus='PASSED', and stores telemetry in verification_details JSON." }
     ],
-    alternatives: "Not Applicable",
-    exceptions: "Not Applicable",
-    includes: "UC11: View Event Details & Embedded Venue",
-    notes: "Reinforces transparency and anti-scam verification."
+    alternatives: "1a. Cloud Model Offline: Uses local fallback token matching; awards partial credit if match >= 80%.",
+    exceptions: "E1: API quota exhausted. Logs error and serves local explanation in breakdown modal.",
+    includes: "Not Applicable",
+    notes: "Eliminates single-model hallucination or bias."
   }
 ];
 
 async function generateSRS() {
-  console.log("Generating Complete SRS Document with Full Use Case Tables...");
+  console.log("Generating Complete Redesigned Academic SRS Document (.docx)...");
 
   const allChildren = [
-    createTitle("K-Sync Malaysia: Software Requirements Specification (SRS)"),
+    // COVER / TITLE
+    createTitle("K-Sync Malaysia: Complete Software Requirements Specification (SRS)"),
     new Paragraph({
       children: [
         new TextRun({
-          text: "Chapter 3: Complete Use Case Specifications, CRUD Matrices, and Detailed Normal/Alternative Courses of Events",
+          text: "Final Year Project (FYP) — Chapter 3: System Use Case Specifications (All 42 Use Cases)",
           bold: true,
           color: COLOR_ACCENT,
-          size: 22
+          size: 24
         })
       ],
       alignment: AlignmentType.CENTER,
       spacing: { after: 300 }
     }),
 
-    createP("This document provides the exhaustive, formal Software Requirements Specification (SRS) for K-Sync Malaysia. Every functional interaction across all 3 actors (Guest, Registered Fan, System Administrator) is modeled into individual, uncombined Use Case tables with explicit Normal Courses of Events (Actor vs System), Alternative Courses, Exceptions, Preconditions, Postconditions, Priority, and Frequency of Use."),
+    createCallout(
+      "Supervisor Directives & Architectural Model Conformance:",
+      "This document formalizes the complete technical specification for K-Sync Malaysia, strictly conforming to the supervisor's core directives: (1) Zero manual admin event approval queues via the Autonomous Verification Engine, (2) No anonymous guest event submissions, (3) Pure business use cases with technical Login/Logout excluded, (4) Explicit modeling of interactive outbound buttons (Ticket Link, Map, Share, Socials, Calendar Export), and (5) Anti-scalper discussion immutability (zero editing allowed to prevent ticket scalping fraud)."
+    ),
 
-    createH1("1. Summary of System Use Cases"),
-    createP(`Total System Use Cases: ${allUseCases.length} Comprehensive Specifications`),
-    createBullet("Module 1: Authentication & User Profile Management (UC01 – UC06)"),
-    createBullet("Module 2: Event Discovery & Information (UC07 – UC12)"),
-    createBullet("Module 3: Public Event Submission & Status Tracking (UC13 – UC15)"),
-    createBullet("Module 4: Fan Community, Live Chat & Bookmarks (UC16 – UC23)"),
-    createBullet("Module 5: Administrator Review, Verification & Moderation (UC24 – UC30)"),
-    createBullet("Module 6: Administrator Catalog & System Entity CRUD (UC31 – UC41)"),
-    createBullet("Module 7: Additional / Minor User Experience Enhancements (UC42 – UC47)"),
+    new Paragraph({ spacing: { after: 200 } }),
+
+    createH1("1. System Overview & Actor Catalog"),
+    createP(
+      "K-Sync Malaysia operates across four defined Human Actors and one Autonomous Application Engine:"
+    ),
+    createBullet("Guest (Unauthenticated Public Visitor): Public discovery, directory search, radar precinct clustering, idol profiles, and outbound handshakes."),
+    createBullet("Fan (Authenticated Member): Personalized 'My K-Sync' command center, wishlist, crowdsourced reliability upvoting, immutable 1-level discussions, and notifications."),
+    createBullet("Organizer / Submitter (Authenticated Event Host): Event publishing with OpenRouter Gemini 4 Argon Vision OCR, 14-point verification breakdowns, and logistical broadcasts."),
+    createBullet("System Maintainer (Platform Administrator): Master taxonomies (Venues, Artists, Categories), scam report audits, and platform overrides."),
+    createBullet("Autonomous Verification Engine (Application Engine): Whitelist domain checks, URL reachability tests, date validity, duplicate detection, multimodal OCR vision, and AI consensus scoring."),
+
+    new Paragraph({ spacing: { after: 200 } }),
+    createH1("2. Use Case Distribution Across Modules (42 Total)"),
+    createBullet("Module 1: Public Discovery & Outbound Experience (UC001 – UC014: 14 Use Cases)"),
+    createBullet("Module 2: Personal Management & Community Validation (UC015 – UC025: 11 Use Cases)"),
+    createBullet("Module 3: Event Publishing & Verification (UC026 – UC031: 6 Use Cases)"),
+    createBullet("Module 4: Platform Governance & Stewardship (UC032 – UC036: 5 Use Cases)"),
+    createBullet("Module 5: Autonomous Verification Engine (AV01 – AV06: 6 Use Cases)"),
 
     new Paragraph({ spacing: { after: 300 } }),
-    createH1("2. Detailed Use Case Specifications (Formal Tables)")
+    createH1("3. Detailed Use Case Specifications (Formal Tables)")
   ];
 
   // Append every use case table

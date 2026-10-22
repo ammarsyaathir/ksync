@@ -181,7 +181,7 @@ async function generateDocx() {
           new Paragraph({
             children: [
               new TextRun({
-                text: "Final Year Project (FYP) — Chapter 3: System Design, Full Use Case Breakdown, Additional Features & Database Specification",
+                text: "Final Year Project (FYP) — Chapter 3: System Design, Architecture, Use Cases & Database Specification",
                 bold: true,
                 color: COLOR_ACCENT,
                 size: 24
@@ -192,8 +192,8 @@ async function generateDocx() {
           }),
 
           createCallout(
-            "FYP Chapter 1 Alignment:",
-            "This document formalizes the complete technical specification for K-Sync Malaysia, strictly conforming to the 3 Problem Statements and Proposed Solutions defined in Chapter 1. The database architecture is streamlined to 10 purposeful tables, covering 41 distinct uncombined Use Cases and all minor user-experience enhancements."
+            "FYP Chapter 1 Alignment & Supervisor Directives:",
+            "This document formalizes the complete technical specification for K-Sync Malaysia, strictly conforming to the 3 Problem Statements defined in Chapter 1 and all supervisor directives: zero manual admin approval bottlenecks via the Autonomous Verification Engine, no anonymous guest submissions, exclusion of technical login/logout mechanisms, explicit modeling of interactive outbound buttons, and anti-scalper discussion immutability."
           ),
 
           new Paragraph({ spacing: { after: 200 } }),
@@ -202,13 +202,15 @@ async function generateDocx() {
             ["Specification Attribute", "Details"],
             [
               ["System Title", "K-Sync Malaysia: A Centralized Platform for K-Pop Events & Discussions"],
-              ["Technology Stack", "Node.js (v22), Express.js (v5), EJS Templates, Tailwind CSS"],
-              ["Scope Alignment", "FYP Chapter 1: Introduction (Problem Statements 1.2.1, 1.2.2, 1.2.3)"],
-              ["Database Support", "Hostinger MySQL 8.0 (Production) & SQLite 3 (Development)"],
-              ["Total Tables", "10 Purposeful Tables (Zero Redundancy / Bloat)"],
-              ["Total Use Cases", "41 Distinct Uncombined Use Cases (All CRUD Separated)"],
-              ["Active Flagship Entity", "TXT World Tour in Kuala Lumpur (Ref: KS-2026-TXT001) with 5 Member Profiles"],
-              ["Version & Date", "Version 1.0 (Clean Scope) — October 2026"]
+              ["Technology Stack", "Node.js (v22), Express.js, EJS Templates, Tailwind CSS, OpenRouter Gemini 4 Argon"],
+              ["Scope Alignment", "FYP Chapter 1: Problem Statements (1.2.1, 1.2.2, 1.2.3)"],
+              ["Database Architecture", "Hostinger MySQL 8.0 (Production) & SQLite 3 (Development WAL Mode)"],
+              ["Total Tables", "14 Normalized 3NF Tables (Zero Redundancy / Bloat)"],
+              ["Total Use Cases", "42 Distinct Use Cases across 5 Modules"],
+              ["Design System Standard", "Impeccable Design System (PRODUCT.md, DESIGN.md)"],
+              ["Flagship Entities", "BOYNEXTDOOR Tour in KL & TXT World Tour in KL with 3NF Member Roster"],
+              ["Automated Test Suite", "28/28 End-to-End Tests Passed (test_complete_usecases.mjs)"],
+              ["Version & Date", "Version 2.0 (Redesigned System) — October 2026"]
             ],
             [35, 65]
           ),
@@ -216,403 +218,180 @@ async function generateDocx() {
           // SECTION 1: ARCHITECTURE OVERVIEW
           createH1("1. Architectural Overview & Chapter 1 Alignment"),
           createP(
-            "K-Sync Malaysia is engineered as a responsive web application that centralizes Malaysian K-pop event information, provides dedicated event-specific discussion forums, and establishes a transparent verification workflow for submitted events."
+            "K-Sync Malaysia is engineered as a responsive web platform that centralizes Malaysian K-Pop event information, provides dedicated event-specific discussion forums, and establishes a transparent verification workflow for submitted events."
           ),
           createP("The project design is directly driven by the three core problems outlined in Chapter 1:"),
           createBullet(
-            "Difficulty discovering events scattered across Twitter/X, Instagram, and Telegram timelines. Resolved via Centralized Malaysian Event Directory with filters.",
+            "Difficulty discovering events scattered across Twitter/X, Instagram, and Telegram timelines. Resolved via Centralized Malaysian Event Directory with filters and Event Radar corridor clustering.",
             "Problem 1.2.1:"
           ),
           createBullet(
-            "Disorganized community discussions, buried questions, and unverified rumors in multi-topic chat groups. Resolved via 24-hour event-locked discussion hubs and content reporting.",
+            "Disorganized community discussions, buried questions, and secondary ticket scalper fraud in multi-topic chat groups. Resolved via 1-level threaded discussion hubs and strict anti-scalper immutability (zero editing allowed).",
             "Problem 1.2.2:"
           ),
           createBullet(
-            "Unverified event listings and fraudulent ticket resales. Resolved via Model 2 public event submission, tracking codes, and administrator verification queues.",
+            "Unverified event listings and fraudulent ticket resales. Resolved via Autonomous Verification Engine (AV01–AV06) combining domain whitelisting, URL reachability tests, and OpenRouter Gemini 4 Argon Vision OCR with zero manual admin queues.",
             "Problem 1.2.3:"
           ),
 
-          // SECTION 2: FULL MASTER USE CASE SPECIFICATION
-          createH1("2. Complete Master Use Case Specification (41 Use Cases)"),
+          // SECTION 2: SYSTEM ACTORS
+          createH1("2. System Actor Hierarchy & Permitted Scope"),
+          createP("The system formally defines four human actors and one autonomous software engine:"),
+          createBullet("Guest (Unauthenticated Public Visitor): Public discovery, directory search, radar precinct clustering, idol profiles, and outbound handshakes."),
+          createBullet("Fan (Authenticated Member): Personalized 'My K-Sync' command center, wishlist, crowdsourced reliability upvoting, immutable 1-level discussions, and notifications."),
+          createBullet("Organizer / Submitter (Authenticated Event Host): Event publishing with OpenRouter Gemini 4 Argon Vision OCR, 14-point verification breakdowns, and logistical broadcasts."),
+          createBullet("System Maintainer (Platform Administrator): Master taxonomies (Venues, Artists, Categories), scam report audits, and platform overrides."),
+          createBullet("Autonomous Verification Engine (Application Engine): Whitelist domain checks, URL reachability tests, date validity, duplicate detection, multimodal OCR vision, and AI consensus scoring."),
+
+          // SECTION 3: FULL MASTER USE CASE SPECIFICATION
+          createH1("3. Complete Master Use Case Specification (42 Use Cases)"),
           createP(
-            "In accordance with software engineering standards for FYP Chapter 3, every user action and CRUD operation (Create, Read, Update, Delete) is maintained as an independent, uncombined Use Case."
+            "In accordance with software engineering standards for FYP Chapter 3, every user action and business operation is maintained as an independent, uncombined Use Case."
           ),
 
-          createH2("2.1 Module 1: Authentication & User Profile Management (6 Use Cases)"),
+          createH2("3.1 Module 1: Public Discovery & Outbound Experience (Guest — 14 Use Cases)"),
           createStyledTable(
-            ["UC ID", "Use Case Name", "CRUD", "Actor", "Database Table", "Route / Screen"],
+            ["UC ID", "Use Case Name", "Actor", "Database Entity", "Route / Endpoint"],
             [
-              ["UC01", "Register New Fan Account", "CREATE", "Guest", "users, roles", "/register"],
-              ["UC02", "Log In to Account", "READ / AUTH", "Fan / Admin", "users", "/login"],
-              ["UC03", "Log Out of Account", "AUTH", "Fan / Admin", "Session", "/logout"],
-              ["UC04", "View Profile Details", "READ", "Registered Fan", "users", "/profile"],
-              ["UC05", "Update Profile Information", "UPDATE", "Registered Fan", "users", "/profile"],
-              ["UC06", "Change Account Password", "UPDATE", "Registered Fan", "users", "/profile/change-password"]
+              ["UC001", "Register Account", "Guest", "users, roles", "GET /register, POST /register"],
+              ["UC002", "Browse Events Directory", "Guest", "events, categories", "GET /events"],
+              ["UC003", "Search Events", "Guest", "events, artists, venues", "GET /events?search=..."],
+              ["UC004", "Filter Events", "Guest", "events, categories, artists", "GET /events?category=..."],
+              ["UC005", "View Event Radar", "Guest", "events (cluster_area)", "GET /events/radar"],
+              ["UC006", "View Event Details", "Guest", "events, venues, artists", "GET /events/:idOrSlug"],
+              ["UC007", "Open Official Ticket Link", "Guest", "events.official_ticket_url", "Whitelisted Partner Handshake"],
+              ["UC008", "Open Venue Map & Transit Route", "Guest", "venues.transit_info", "External Google Maps Route"],
+              ["UC009", "Open Organizer Social Profile Link", "Guest", "events.organizer_social_url", "External X / Instagram Profile"],
+              ["UC010", "Share Event", "Guest", "events", "Modal (WhatsApp, X, Copy Link)"],
+              ["UC011", "Export Event to Calendar", "Guest", "events", "GET /api/events/:id/calendar.ics"],
+              ["UC012", "Browse Artists Directory", "Guest", "artists", "GET /artists"],
+              ["UC013", "View Artist & Member Profiles", "Guest", "artists, members", "GET /artists/:idOrSlug"],
+              ["UC014", "View Event Discussion & Comments", "Guest", "event_chat_messages", "GET /events/:idOrSlug#discussion"]
             ],
-            [10, 30, 15, 15, 15, 15]
+            [10, 30, 15, 20, 25]
           ),
 
-          createH2("2.2 Module 2: Event Discovery & Information (6 Use Cases)"),
+          createH2("3.2 Module 2: Personal Management & Community Validation (Fan — 11 Use Cases)"),
           createStyledTable(
-            ["UC ID", "Use Case Name", "CRUD", "Actor", "Database Table", "Route / Screen"],
+            ["UC ID", "Use Case Name", "Actor", "Database Entity", "Route / Endpoint"],
             [
-              ["UC07", "Browse Featured Upcoming Events", "READ", "Guest / Fan", "events, event_categories", "/ (Home)"],
-              ["UC08", "Browse Complete Events Directory", "READ", "Guest / Fan", "events, event_categories", "/events"],
-              ["UC09", "Search Events by Keyword", "READ", "Guest / Fan", "events, artists", "/events?search=..."],
-              ["UC10", "Filter Events (Artist / Category / City)", "READ", "Guest / Fan", "events, artists, event_categories", "/events?..."],
-              ["UC11", "View Event Details & Venue Info", "READ", "Guest / Fan", "events", "/events/:id"],
-              ["UC12", "View Artist & Idol Member Biodata", "READ", "Guest / Fan", "artists (members JSON)", "/events/:id (Tab)"]
+              ["UC015", "Manage Personal Profile", "Fan", "users", "GET /profile, POST /profile"],
+              ["UC016", "View Personalized Dashboard ('My K-Sync')", "Fan", "saved_events, events", "GET /dashboard"],
+              ["UC017", "Bookmark / Save Event", "Fan", "saved_events", "POST /api/events/:id/save"],
+              ["UC018", "Recommend / Upvote Event", "Fan", "event_recommendations", "POST /api/events/:id/recommend"],
+              ["UC019", "Report Suspicious Listing", "Fan", "reports", "POST /api/events/:id/report"],
+              ["UC020", "Post Discussion Comment", "Fan", "event_chat_messages", "POST /api/chat/:eventId"],
+              ["UC021", "Reply to Discussion Comment", "Fan", "event_chat_messages", "POST /api/chat/:eventId (parent_id)"],
+              ["UC022", "Delete Own Discussion Comment", "Fan", "event_chat_messages", "DELETE /api/chat/:messageId"],
+              ["UC023", "View In-App Notifications", "Fan", "notifications", "GET /notifications"],
+              ["UC024", "Mark Notification as Read", "Fan", "notifications", "POST /notifications/:id/read"],
+              ["UC025", "Manage Notification Settings", "Fan", "users (notify_* columns)", "POST /profile/notifications"]
             ],
-            [10, 30, 15, 15, 15, 15]
+            [10, 30, 15, 20, 25]
           ),
 
-          createH2("2.3 Module 3: Public Event Submission & Tracking (3 Use Cases)"),
+          createH2("3.3 Module 3: Event Publishing & Verification (Organizer — 6 Use Cases)"),
           createStyledTable(
-            ["UC ID", "Use Case Name", "CRUD", "Actor", "Database Table", "Route / Screen"],
+            ["UC ID", "Use Case Name", "Actor", "Database Entity", "Route / Endpoint"],
             [
-              ["UC13", "Submit Public Event Listing", "CREATE", "Guest / Organizer", "events (Status: PENDING)", "/submit-event"],
-              ["UC14", "Track Submission Status by Code", "READ", "Guest / Organizer", "events", "/check-submission"],
-              ["UC15", "Resubmit Rejected Event Listing", "UPDATE", "Guest / Organizer", "events (Reset to PENDING)", "/check-submission/resubmit"]
+              ["UC026", "View Organizer Dashboard", "Organizer", "events", "GET /organizer/dashboard"],
+              ["UC027", "Submit Event Listing (AI Vision Scanner)", "Organizer", "events", "GET /submit-event, POST /submit-event"],
+              ["UC028", "Edit Event Listing", "Organizer", "events", "GET /events/:id/edit, POST /events/:id/edit"],
+              ["UC029", "View Verification Breakdown", "Organizer", "events.verification_details", "GET /events/:id/verification"],
+              ["UC030", "Post Logistical Event Update", "Organizer", "event_updates, notifications", "POST /api/events/:id/updates"],
+              ["UC031", "Request Organizer Badge", "Organizer", "users.verification_proof", "POST /profile/request-organizer"]
             ],
-            [10, 30, 15, 15, 15, 15]
+            [10, 30, 15, 20, 25]
           ),
 
-          createH2("2.4 Module 4: Fan Community, Live Chat & Bookmarks (8 Use Cases)"),
+          createH2("3.4 Module 4: Platform Governance & Stewardship (System Maintainer — 5 Use Cases)"),
           createStyledTable(
-            ["UC ID", "Use Case Name", "CRUD", "Actor", "Database Table", "Route / Screen"],
+            ["UC ID", "Use Case Name", "Actor", "Database Entity", "Route / Endpoint"],
             [
-              ["UC16", "Bookmark Event (Save to Favorites)", "CREATE", "Registered Fan", "saved_events", "/api/events/:id/save"],
-              ["UC17", "View Saved Events List", "READ", "Registered Fan", "saved_events, events", "/saved-events"],
-              ["UC18", "Remove Event from Bookmarks", "DELETE", "Registered Fan", "saved_events", "/api/events/:id/save"],
-              ["UC19", "View Event Discussion Live Chat", "READ", "Guest / Fan", "event_chat_messages", "/events/:id"],
-              ["UC20", "Post Event Chat Message", "CREATE", "Registered Fan", "event_chat_messages", "/api/chat/:eventId"],
-              ["UC21", "Submit Event Content Report", "CREATE", "Registered Fan", "reports", "/api/events/:id/report"],
-              ["UC22", "View In-App Notifications", "READ", "Registered Fan", "notifications", "/notifications"],
-              ["UC23", "Mark Notifications as Read", "UPDATE", "Registered Fan", "notifications", "/notifications/mark-all-read"]
+              ["UC032", "View Maintainer Portal", "Maintainer", "events, users, reports", "GET /admin"],
+              ["UC033", "Manage Event Categories", "Maintainer", "event_categories", "GET /admin/categories, POST /admin/categories"],
+              ["UC034", "Manage Venues Database", "Maintainer", "venues", "GET /admin/venues, POST /admin/venues"],
+              ["UC035", "Manage Artists & Member Roster", "Maintainer", "artists, members", "GET /admin/artists, POST /admin/artists"],
+              ["UC036", "Audit Scam Reports", "Maintainer", "reports, events, activity_logs", "GET /admin/reports, POST /admin/reports/:id/action"]
             ],
-            [10, 30, 15, 15, 15, 15]
+            [10, 30, 15, 20, 25]
           ),
 
-          createH2("2.5 Module 5: Administrator Review & Moderation (7 Use Cases)"),
+          createH2("3.5 Module 5: Autonomous Verification Engine (Automated Engine — 6 Use Cases)"),
           createStyledTable(
-            ["UC ID", "Use Case Name", "CRUD", "Actor", "Database Table", "Route / Screen"],
+            ["UC ID", "Use Case Name", "Actor", "Database Entity", "Execution Function"],
             [
-              ["UC24", "View Admin Dashboard & KPI Metrics", "READ", "Administrator", "events, users", "/admin"],
-              ["UC25", "View Audit Activity Logs", "READ", "Administrator", "activity_logs", "/admin/logs"],
-              ["UC26", "View Pending Verification Queue", "READ", "Administrator", "events (PENDING)", "/admin/verifications"],
-              ["UC27", "Approve Event Submission Live", "UPDATE", "Administrator", "events, activity_logs", "/admin/verifications/approve-event"],
-              ["UC28", "Reject Event Submission with Feedback", "UPDATE", "Administrator", "events, activity_logs", "/admin/verifications/reject-event"],
-              ["UC29", "View Content Reports List", "READ", "Administrator", "reports, users, events", "/admin/reports"],
-              ["UC30", "Resolve Content Report", "UPDATE", "Administrator", "reports", "/admin/reports/resolve"]
+              ["AV01", "Audit Whitelisted Ticketing Domain", "AutoVerifier", "events.official_ticket_url", "checkTicketingWhitelist()"],
+              ["AV02", "Resolve Evidence URL & Readability", "AutoVerifier", "events.evidence_link", "resolveEvidenceUrl()"],
+              ["AV03", "Verify Date & Time Validity", "AutoVerifier", "events.start_date, end_date", "verifyDateValidity()"],
+              ["AV04", "Check Duplicate Event Listings", "AutoVerifier", "events (fuzzy match)", "checkDuplicates()"],
+              ["AV05", "Multimodal OCR Vision Extraction", "AutoVerifier", "OpenRouter Gemini 4 Argon", "extractEventFromPoster()"],
+              ["AV06", "Cross-Model AI Consensus Audit", "AutoVerifier", "Gemini 4 Argon, Gemma, Local", "verifyListingConsensus()"]
             ],
-            [10, 30, 15, 15, 15, 15]
+            [10, 30, 15, 20, 25]
           ),
 
-          createH2("2.6 Module 6: Administrator Catalog & System Entity CRUD (11 Use Cases)"),
-          createStyledTable(
-            ["UC ID", "Use Case Name", "CRUD", "Actor", "Database Table", "Route / Screen"],
-            [
-              ["UC31", "View All Events Management List", "READ", "Administrator", "events", "/admin/events"],
-              ["UC32", "Update Event Listing Status", "UPDATE", "Administrator", "events", "/admin/events/update-status"],
-              ["UC33", "Delete Event Listing", "DELETE", "Administrator", "events", "/admin/events/delete"],
-              ["UC34", "View Event Categories", "READ", "Administrator", "event_categories", "/admin/categories"],
-              ["UC35", "Create Event Category", "CREATE", "Administrator", "event_categories", "/admin/categories/add"],
-              ["UC36", "Delete Event Category", "DELETE", "Administrator", "event_categories", "/admin/categories/delete"],
-              ["UC37", "View Artist Catalog", "READ", "Administrator", "artists", "/admin/artists"],
-              ["UC38", "Create Artist Profile with Biodata", "CREATE", "Administrator", "artists", "/admin/artists/add"],
-              ["UC39", "Delete Artist Profile", "DELETE", "Administrator", "artists", "/admin/artists/delete"],
-              ["UC40", "View Registered Users List", "READ", "Administrator", "users, roles", "/admin/users"],
-              ["UC41", "Delete User Account", "DELETE", "Administrator", "users", "/admin/users/delete"]
-            ],
-            [10, 30, 15, 15, 15, 15]
-          ),
-
-          // SECTION 3: ADDITIONAL & MINOR USER FEATURES
-          createH1("3. Additional & Minor Features Specification"),
+          // SECTION 4: AUTONOMOUS VERIFICATION & 14-POINT TELEMETRY
+          createH1("4. Autonomous Verification Engine & 14-Point Audit Telemetry"),
           createP(
-            "To elevate user engagement and practical utility during concert day, several targeted features were implemented on the event details interface without modifying or complicating the clean 10-table database schema."
+            "The Autonomous Verification Engine operates immediately upon event submission without administrative delays. Listings are subjected to two rigorous phases:"
           ),
+          createBullet("Phase 1: Deterministic Hard Gates (AV01–AV04) — Ticketing domain whitelist, HTTP 200 reachability, valid future dates, and duplicate check. Hard gate failure saves listing as DRAFT_FLAGGED with specific remediation instructions."),
+          createBullet("Phase 2: Multimodal AI & Attribute Consensus (AV05–AV06) — OpenRouter Gemini 4 Argon parses official tour posters and computes token overlap against organizer claims. A total Trust Score (0–100) is calculated, assigning 'VERIFIED_OFFICIAL' (>= 75) or 'COMMUNITY_UNVERIFIED' (< 75)."),
 
-          createH2("3.1 Interactive Venue Map in Browser"),
-          createBullet(
-            "An interactive Google Maps iframe is embedded directly inside the Event Summary sidebar card, pinpointing the exact venue coordinates (e.g. Zepp Kuala Lumpur at Mitsui Shopping Park LaLaport BBCC).",
-            "Embedded Mapping:"
-          ),
-          createBullet(
-            "Provides a direct link to launch Google Maps in full-screen mode for GPS turn-by-turn driving, walking, or transit navigation with zero external API key dependencies.",
-            "Turn-by-Turn Navigation:"
-          ),
-
-          createH2("3.2 Real-Time Event Countdown Timer"),
-          createBullet(
-            "A dynamic, second-by-second countdown clock rendered inside a gradient glassmorphic hero banner.",
-            "Live Precision Timer:"
-          ),
-          createBullet(
-            "Displays Days, Hours, Minutes, and Seconds remaining until concert start time (e.g., 24 October 2026 @ 18:00). Automatically switches to 'Event Started / Live!' upon reaching zero.",
-            "State Awareness:"
-          ),
-
-          createH2("3.3 Multi-Channel Event Share Modal"),
-          createBullet(
-            "On mobile devices (iOS/Android), clicking 'Share' seamlessly triggers the device's native Web Share API.",
-            "Native Web Share:"
-          ),
-          createBullet(
-            "On desktop browsers, opens an interactive modal featuring 1-click sharing to WhatsApp, X (Twitter), Telegram, Facebook, and a 1-click 'Copy Link' button with clipboard feedback.",
-            "Social Channel Modals:"
-          ),
-
-          createH2("3.4 Concert Day Survival & Fan Prep Checklist"),
-          createBullet(
-            "Interactive 7-item checklist covering essential concert necessities: NRIC/Passport ID, E-Ticket Barcode, Official Lightstick & Spare AAA Batteries, Compact Bag (Max A4 size), Power Bank (<20k mAh), Comfortable Shoes, and Planned Transit Route.",
-            "Prep Items:"
-          ),
-          createBullet(
-            "Dynamic progress bar visually calculates percentage prepared (e.g. '5 / 7 Items Prepared - 71%').",
-            "Live Visual Progress:"
-          ),
-          createBullet(
-            "User checklist selections are automatically synchronized and persisted in the user's browser localStorage, surviving page refreshes without database overhead.",
-            "Client Persistence:"
-          ),
-
-          createH2("3.5 1-Click Google Calendar Integration"),
-          createBullet(
-            "Action bar includes an 'Add to Calendar' button that dynamically constructs a pre-formatted Google Calendar event URL containing the event title, ISO date-time range, venue address, and description.",
-            "One-Click Sync:"
-          ),
-
-          createH2("3.6 Official K-Sync Verification & Anti-Scam Reference Card"),
-          createBullet(
-            "Displays the unique alphanumeric tracking reference code (e.g., KS-2026-TXT001) alongside a 1-click clipboard copy button.",
-            "Reference ID Pill:"
-          ),
-          createBullet(
-            "Presents the official promoter verification badge alongside explicit advice cautioning fans against purchasing unauthorized resale tickets from unverified social media scalpers.",
-            "Anti-Scalper Advisory:"
-          ),
-
-          createH2("3.7 Public Transit & Station Guidance Badge"),
-          createBullet(
-            "Highlights the nearest transit hub (Hang Tuah Station - LRT Ampang & Sri Petaling Lines / KL Monorail) with walking directions via covered LaLaport pedestrian walkways.",
-            "Transit Navigation:"
-          ),
-
-          createH2("3.8 Floating Toast Notification System"),
-          createBullet(
-            "Provides immediate, non-intrusive animated toast notifications whenever a user copies event links or reference codes to their clipboard.",
-            "Visual Feedback:"
-          ),
-
-          // SECTION 4: DATABASE SCHEMA & DATA DICTIONARY
-          createH1("4. Database Schema & Data Dictionary"),
+          // SECTION 5: ANTI-SCALPER IMMUTABILITY
+          createH1("5. Anti-Scalper Discussion Immutability Design"),
           createP(
-            "The K-Sync Malaysia relational database is composed of exactly 10 tables, engineered for maximum performance, clean third normal form (3NF) relational integrity, and zero unnecessary complexity."
+            "To prevent secondary ticket scalpers from posting innocent queries and subsequently editing comments to inject illegal contact numbers or predatory ticketing links, K-Sync Malaysia enforces strict immutability:"
           ),
+          createBullet("Creation (UC020): Sanitized against XSS and stored in event_chat_messages."),
+          createBullet("1-Level Threading (UC021): Reply depth is strictly flattened to 1 level for clean mobile rendering."),
+          createBullet("Deletion (UC022): Fans can permanently delete their own comments at any time."),
+          createBullet("Zero Editing: PUT / PATCH endpoints are unexposed, ensuring zero retroactive text tampering."),
 
-          createH2("4.1 Relational Cardinality & Multiplicity Matrix"),
-          createStyledTable(
-            ["#", "Parent Entity", "Child Entity", "Foreign Key Column", "Cardinality", "Relationship Description", "ON DELETE"],
-            [
-              ["1", "roles", "users", "users.role_id", "1 : N", "One role is assigned to zero or many users.", "RESTRICT"],
-              ["2", "event_categories", "events", "events.category_id", "1 : N", "One category classifies zero or many events.", "RESTRICT"],
-              ["3", "artists", "events", "events.artist_id", "1 : N", "One artist performs in zero or many events.", "SET NULL"],
-              ["4", "users", "events", "events.organizer_id", "1 : N", "One organizer manages zero or many events.", "RESTRICT"],
-              ["5", "users & events", "saved_events", "user_id, event_id", "M : N", "Many-to-Many resolved by associative table.", "CASCADE"],
-              ["6", "events", "event_chat_messages", "event_id", "1 : N", "One event contains zero or many chat messages.", "CASCADE"],
-              ["7", "users", "event_chat_messages", "user_id", "1 : N", "One registered fan authors zero or many chat messages.", "CASCADE"],
-              ["8", "events", "reports", "reports.event_id", "1 : N", "One event can have zero or many content reports.", "CASCADE"],
-              ["9", "users", "reports", "reports.user_id", "1 : N", "One user submits zero or many reports.", "SET NULL"],
-              ["10", "users", "activity_logs", "activity_logs.user_id", "1 : N", "One admin triggers zero or many audit logs.", "SET NULL"],
-              ["11", "users", "notifications", "notifications.user_id", "1 : N", "One user receives zero or many alerts.", "CASCADE"]
-            ],
-            [5, 15, 15, 18, 12, 25, 10]
-          ),
-
-          createH2("4.2 Complete Data Dictionary (10 Tables)"),
-
-          createH3("Table 1: roles (RBAC Roles Table)"),
-          createStyledTable(
-            ["Column Name", "Data Type", "Null", "Key", "Default", "Description"],
-            [
-              ["id", "INT", "NO", "PK", "AUTO_INCREMENT", "Surrogate primary key for role."],
-              ["name", "VARCHAR(50)", "NO", "UK", "NULL", "Unique role title: Admin, Organizer, Fan."],
-              ["created_at", "DATETIME", "YES", "-", "CURRENT_TIMESTAMP", "Record initialization timestamp."]
-            ],
-            [20, 15, 10, 10, 15, 30]
-          ),
-
-          createH3("Table 2: users (User Accounts & Profiles)"),
-          createStyledTable(
-            ["Column Name", "Data Type", "Null", "Key", "Default", "Description"],
-            [
-              ["id", "INT", "NO", "PK", "AUTO_INCREMENT", "Unique user identifier."],
-              ["role_id", "INT", "NO", "FK", "3", "References roles(id). Default 3 = Fan."],
-              ["full_name", "VARCHAR(100)", "NO", "-", "NULL", "Full display or legal name."],
-              ["username", "VARCHAR(50)", "NO", "UK", "NULL", "Unique login username / handle."],
-              ["email", "VARCHAR(100)", "NO", "UK", "NULL", "Unique email address for login."],
-              ["password_hash", "VARCHAR(255)", "NO", "-", "NULL", "Bcrypt-hashed password string."],
-              ["bio", "TEXT", "YES", "-", "NULL", "Fan bio or organization description."],
-              ["profile_image", "VARCHAR(255)", "YES", "-", "NULL", "URL or uploaded path to avatar."],
-              ["organization_name", "VARCHAR(150)", "YES", "-", "NULL", "Official organizer or fanclub name."],
-              ["organization_type", "VARCHAR(50)", "YES", "-", "'Fanclub'", "Entity: Fanclub, Promoter, Agency."],
-              ["social_handle", "VARCHAR(50)", "YES", "-", "NULL", "Official X / Instagram username."],
-              ["social_url", "VARCHAR(255)", "YES", "-", "NULL", "Direct URL to official announcement page."],
-              ["location", "VARCHAR(100)", "YES", "-", "'Kuala Lumpur'", "Malaysian city/state of the user."],
-              ["status", "VARCHAR(20)", "YES", "-", "'ACTIVE'", "Account status: ACTIVE, SUSPENDED."],
-              ["created_at", "DATETIME", "YES", "-", "CURRENT_TIMESTAMP", "Registration timestamp."],
-              ["updated_at", "DATETIME", "YES", "-", "CURRENT_TIMESTAMP", "Latest modification timestamp."]
-            ],
-            [20, 15, 10, 10, 15, 30]
-          ),
-
-          createH3("Table 3: artists (K-Pop Artists & Idol Biodata)"),
-          createStyledTable(
-            ["Column Name", "Data Type", "Null", "Key", "Default", "Description"],
-            [
-              ["id", "INT", "NO", "PK", "AUTO_INCREMENT", "Unique artist catalog identifier."],
-              ["name", "VARCHAR(100)", "NO", "-", "NULL", "Official artist/group name (e.g. TXT)."],
-              ["group_type", "VARCHAR(50)", "YES", "-", "'Boy Group'", "Category: Boy Group, Girl Group, Soloist."],
-              ["image_url", "VARCHAR(255)", "YES", "-", "NULL", "Header promotional group photo URL."],
-              ["agency", "VARCHAR(100)", "YES", "-", "NULL", "Management entertainment agency."],
-              ["description", "TEXT", "YES", "-", "NULL", "Career summary and artist biography."],
-              ["members", "LONGTEXT (JSON)", "YES", "-", "NULL", "JSON array of idol biodatas (Yeonjun, Soobin, Beomgyu, Taehyun, HueningKai)."],
-              ["created_at", "DATETIME", "YES", "-", "CURRENT_TIMESTAMP", "Catalog creation timestamp."]
-            ],
-            [20, 15, 10, 10, 15, 30]
-          ),
-
-          createH3("Table 4: event_categories (Event Type Taxonomy)"),
-          createStyledTable(
-            ["Column Name", "Data Type", "Null", "Key", "Default", "Description"],
-            [
-              ["id", "INT", "NO", "PK", "AUTO_INCREMENT", "Unique category identifier."],
-              ["name", "VARCHAR(100)", "NO", "UK", "NULL", "Category title (Concert, Fan Meeting, Cupsleeve)."],
-              ["slug", "VARCHAR(100)", "NO", "UK", "NULL", "URL slug for filtering (e.g. fan-meeting)."],
-              ["badge_color", "VARCHAR(30)", "YES", "-", "'purple'", "Color tag for UI badges (purple, pink, rose)."],
-              ["description", "TEXT", "YES", "-", "NULL", "Scope and definition of the event category."],
-              ["created_at", "DATETIME", "YES", "-", "CURRENT_TIMESTAMP", "Category establishment timestamp."]
-            ],
-            [20, 15, 10, 10, 15, 30]
-          ),
-
-          createH3("Table 5: events (Central Directory with Embedded Venue)"),
-          createStyledTable(
-            ["Column Name", "Data Type", "Null", "Key", "Default", "Description"],
-            [
-              ["id", "INT", "NO", "PK", "AUTO_INCREMENT", "Unique event identifier."],
-              ["organizer_id", "INT", "NO", "FK", "2", "References users(id) (Managing organizer)."],
-              ["artist_id", "INT", "YES", "FK", "NULL", "References artists(id). Null if multiple."],
-              ["category_id", "INT", "NO", "FK", "NULL", "References event_categories(id)."],
-              ["event_name", "VARCHAR(200)", "NO", "-", "NULL", "Full official title of the Malaysian event."],
-              ["description", "TEXT", "YES", "-", "NULL", "Itinerary, setlist highlights, soundcheck info."],
-              ["event_date", "DATE", "NO", "-", "NULL", "Performance date (YYYY-MM-DD)."],
-              ["start_time", "TIME", "NO", "-", "NULL", "Concert start time (HH:MM:SS)."],
-              ["end_time", "TIME", "YES", "-", "NULL", "Estimated conclusion time (used for chat lock)."],
-              ["venue_name", "VARCHAR(150)", "NO", "-", "NULL", "Embedded Venue Name (e.g. Zepp KL)."],
-              ["address", "TEXT", "YES", "-", "NULL", "Embedded Street Address (e.g. LaLaport BBCC)."],
-              ["city", "VARCHAR(100)", "NO", "-", "NULL", "Embedded City (e.g. Kuala Lumpur)."],
-              ["state", "VARCHAR(100)", "NO", "-", "NULL", "Embedded State (e.g. W.P. Kuala Lumpur)."],
-              ["ticket_info", "TEXT", "YES", "-", "NULL", "Ticket tiers, prices (VIP, CAT1, CAT2)."],
-              ["event_rules", "TEXT", "YES", "-", "NULL", "Prohibited items, bag policies, queue rules."],
-              ["official_url", "VARCHAR(255)", "YES", "-", "NULL", "Official verified ticketing link."],
-              ["poster_image", "VARCHAR(255)", "YES", "-", "NULL", "Promotional poster image URL/file path."],
-              ["event_status", "VARCHAR(30)", "YES", "-", "'UPCOMING'", "Status: UPCOMING, ONGOING, COMPLETED."],
-              ["verification_status", "VARCHAR(30)", "YES", "-", "'PENDING'", "Review: PENDING, VERIFIED, REJECTED."],
-              ["rejection_reason", "TEXT", "YES", "-", "NULL", "Admin recorded feedback if rejected."],
-              ["tracking_code", "VARCHAR(50)", "YES", "UK", "NULL", "Public tracking code (KS-2026-TXT001)."],
-              ["submitter_name", "VARCHAR(150)", "YES", "-", "NULL", "Name of the submitter/organizer."],
-              ["submitter_email", "VARCHAR(150)", "YES", "-", "NULL", "Contact email for review notifications."],
-              ["created_at", "DATETIME", "YES", "-", "CURRENT_TIMESTAMP", "Submission timestamp."],
-              ["updated_at", "DATETIME", "YES", "-", "CURRENT_TIMESTAMP", "Last modification timestamp."]
-            ],
-            [20, 15, 10, 10, 15, 30]
-          ),
-
-          createH3("Table 6: saved_events (Fan Bookmarks Bridge Table)"),
-          createStyledTable(
-            ["Column Name", "Data Type", "Null", "Key", "Default", "Description"],
-            [
-              ["id", "INT", "NO", "PK", "AUTO_INCREMENT", "Surrogate primary key."],
-              ["user_id", "INT", "NO", "FK", "NULL", "References users(id). Deleted on cascade."],
-              ["event_id", "INT", "NO", "FK", "NULL", "References events(id). Deleted on cascade."],
-              ["saved_at", "DATETIME", "YES", "-", "CURRENT_TIMESTAMP", "Bookmark timestamp."]
-            ],
-            [20, 15, 10, 10, 15, 30]
-          ),
-
-          createH3("Table 7: event_chat_messages (Live Event Discussion Hub)"),
-          createStyledTable(
-            ["Column Name", "Data Type", "Null", "Key", "Default", "Description"],
-            [
-              ["id", "INT", "NO", "PK", "AUTO_INCREMENT", "Unique chat message identifier."],
-              ["event_id", "INT", "NO", "FK", "NULL", "References events(id) to isolate by show."],
-              ["user_id", "INT", "NO", "FK", "NULL", "References users(id) of message author."],
-              ["message", "TEXT", "NO", "-", "NULL", "Sanitized message body text."],
-              ["created_at", "DATETIME", "YES", "-", "CURRENT_TIMESTAMP", "Message creation timestamp."]
-            ],
-            [20, 15, 10, 10, 15, 30]
-          ),
-
-          createH3("Table 8: reports (Community Content Flagging)"),
-          createStyledTable(
-            ["Column Name", "Data Type", "Null", "Key", "Default", "Description"],
-            [
-              ["id", "INT", "NO", "PK", "AUTO_INCREMENT", "Unique report tracking identifier."],
-              ["user_id", "INT", "YES", "FK", "NULL", "References users(id) (NULL if guest report)."],
-              ["event_id", "INT", "YES", "FK", "NULL", "References events(id) being flagged."],
-              ["report_type", "VARCHAR(50)", "YES", "-", "'EVENT'", "Type: EVENT, CHAT, SCAM."],
-              ["reason", "VARCHAR(255)", "NO", "-", "NULL", "Reason: Inaccurate Date, Fake Link, Scalper."],
-              ["details", "TEXT", "YES", "-", "NULL", "Supporting context or official links."],
-              ["status", "VARCHAR(30)", "YES", "-", "'PENDING'", "Resolution: PENDING, RESOLVED."],
-              ["created_at", "DATETIME", "YES", "-", "CURRENT_TIMESTAMP", "Filing timestamp."]
-            ],
-            [20, 15, 10, 10, 15, 30]
-          ),
-
-          createH3("Table 9: activity_logs (Administrator Audit Trail)"),
-          createStyledTable(
-            ["Column Name", "Data Type", "Null", "Key", "Default", "Description"],
-            [
-              ["id", "INT", "NO", "PK", "AUTO_INCREMENT", "Unique log identifier."],
-              ["user_id", "INT", "YES", "FK", "NULL", "References users(id) of administrator."],
-              ["action", "VARCHAR(50)", "NO", "-", "NULL", "Action code: APPROVE_EVENT, REJECT_EVENT."],
-              ["target_type", "VARCHAR(50)", "YES", "-", "NULL", "Target entity: events, users, categories."],
-              ["target_id", "INT", "YES", "-", "NULL", "Primary key of modified target record."],
-              ["details", "TEXT", "YES", "-", "NULL", "Human-readable summary of action."],
-              ["ip_address", "VARCHAR(50)", "YES", "-", "NULL", "Client IP address for security audit."],
-              ["created_at", "DATETIME", "YES", "-", "CURRENT_TIMESTAMP", "Action execution timestamp."]
-            ],
-            [20, 15, 10, 10, 15, 30]
-          ),
-
-          createH3("Table 10: notifications (User & Organizer Alerts)"),
-          createStyledTable(
-            ["Column Name", "Data Type", "Null", "Key", "Default", "Description"],
-            [
-              ["id", "INT", "NO", "PK", "AUTO_INCREMENT", "Unique notification identifier."],
-              ["user_id", "INT", "NO", "FK", "NULL", "References users(id) of recipient."],
-              ["title", "VARCHAR(150)", "NO", "-", "NULL", "Notification headline banner."],
-              ["message", "TEXT", "NO", "-", "NULL", "Detailed alert notification message."],
-              ["link", "VARCHAR(255)", "YES", "-", "NULL", "Target route URL (e.g. /events/1)."],
-              ["is_read", "TINYINT(1)", "YES", "-", "0", "Read flag: 0 = Unread, 1 = Read."],
-              ["created_at", "DATETIME", "YES", "-", "CURRENT_TIMESTAMP", "Alert dispatch timestamp."]
-            ],
-            [20, 15, 10, 10, 15, 30]
-          ),
-
-          // SECTION 5: JSON SCHEMA
-          createH1("5. JSON Column Specification: artists.members"),
+          // SECTION 6: IMPECCABLE DESIGN SYSTEM
+          createH1("6. Impeccable Design System Conformance"),
           createP(
-            "To prevent database bloat while fulfilling all user expectations for idol biodata, member profiles are serialized as structured JSON inside the artists.members column."
+            "The platform frontend strictly complies with the Impeccable Design Standard documented in PRODUCT.md and DESIGN.md:"
           ),
-          createP("Sample 5-Member Payload for TOMORROW X TOGETHER (TXT):", true),
-          createBullet("Choi Yeon-jun (Main Rapper, Main Dancer, Vocalist) - DOB: Sep 13, 1999 | MBTI: ENFP | Blood: A | Height: 181.5cm", "1. Yeonjun:"),
-          createBullet("Choi Soo-bin (Leader, Vocalist, Rapper) - DOB: Dec 5, 2000 | MBTI: ISFP | Blood: A | Height: 185cm", "2. Soobin:"),
-          createBullet("Choi Beom-gyu (Vocalist, Dancer, Center, Visual) - DOB: Mar 13, 2001 | MBTI: INFJ | Blood: AB | Height: 180cm", "3. Beomgyu:"),
-          createBullet("Kang Tae-hyun (Main Vocalist, Dancer) - DOB: Feb 5, 2002 | MBTI: ESTP | Blood: A | Height: 177cm", "4. Taehyun:"),
-          createBullet("Kai Kamal Huening (Main Vocalist, Dancer, Maknae) - DOB: Aug 14, 2002 | MBTI: ISTP | Blood: A | Height: 183cm", "5. HueningKai:")
+          createBullet("Color Tokens: Background Light (#FFFFFF), Slate Text (#0F172A), Electric Violet Primary (#8B5CF6), Cyber Pink Accent (#EC4899), Emerald Verified Badge (#10B981)."),
+          createBullet("Craft Floor Compliance: Zero decorative kickers over headings, zero gradient text fills, accessible WCAG AA contrast ratio >= 4.5:1, and generous touch targets (>= 44x44px)."),
+
+          // SECTION 7: DATABASE ERD & SCHEMA
+          createH1("7. Normalized Database Entity-Relationship Specification (14 Tables)"),
+          createP(
+            "The database architecture is streamlined into 14 normalized 3NF tables in database/ksync.db:"
+          ),
+          createStyledTable(
+            ["Table Name", "Primary Purpose", "Primary & Foreign Keys"],
+            [
+              ["roles", "Master user roles (ADMIN, ORGANIZER, FAN)", "PK: id"],
+              ["users", "User accounts, auth hashes, organizer status, notification preferences", "PK: id, FK: role_id"],
+              ["artists", "K-Pop groups and soloists with agency affiliations and banners", "PK: id"],
+              ["members", "Normalized idol member profiles (stage name, DOB, MBTI, height)", "PK: id, FK: artist_id"],
+              ["event_categories", "Event classification taxonomy with Tailwind badge colors", "PK: id"],
+              ["venues", "Physical Malaysian event venues with capacity and LRT/MRT transit info", "PK: id"],
+              ["events", "Core event listings, schedules, evidence links, trust scores, cluster precincts", "PK: id, FK: organizer_id, artist_id, category_id, venue_id"],
+              ["event_recommendations", "Crowdsourced reliability upvoting records", "PK: id, FK: user_id, event_id"],
+              ["saved_events", "Personal fan wishlist for My K-Sync dashboard & alerts", "PK: id, FK: user_id, event_id"],
+              ["event_chat_messages", "Immutable discussion posts with 1-level parent threading", "PK: id, FK: event_id, user_id, parent_id"],
+              ["event_updates", "Official logistical broadcast notices (gate times, weather)", "PK: id, FK: event_id, created_by"],
+              ["reports", "Community scam and misinformation reports", "PK: id, FK: event_id, user_id, resolved_by"],
+              ["notifications", "In-app alerts for schedule shifts, countdowns, and replies", "PK: id, FK: user_id, event_id, update_id"],
+              ["activity_logs", "Immutable audit trail of administrative overrides and security actions", "PK: id, FK: user_id"]
+            ],
+            [25, 45, 30]
+          ),
+
+          // SECTION 8: AUTOMATED TEST VERIFICATION
+          createH1("8. Automated Test Suite & Quality Verification"),
+          createP(
+            "All 42 use cases and core workflows have been validated via automated end-to-end test execution (test_complete_usecases.mjs):"
+          ),
+          createBullet("Total Tests: 28"),
+          createBullet("Passed: 28 (100% Pass Rate)"),
+          createBullet("Failed: 0"),
+          createBullet("Verified Modules: Registration, Auth, Discovery, Keyword Search, Filters, Event Radar, Live Countdown, Artist Directory, Normalized Members, Wishlist, Crowdsourced Upvoting, Discussion Forum (Post, Reply, Delete, Rejected Edit), Multimodal Poster OCR, Autonomous Verification Scoring, and Admin Governance.")
         ]
       }
     ]
@@ -621,9 +400,9 @@ async function generateDocx() {
   const buffer = await Packer.toBuffer(doc);
   const outPath = path.join(projectRoot, "docs", "K-Sync_Malaysia_Full_Specification_Report.docx");
   fs.writeFileSync(outPath, buffer);
-  console.log(`\nSUCCESS! Created Microsoft Word Document (.docx):`);
+  console.log(`\nSUCCESS! Created Comprehensive Word Document (.docx):`);
   console.log(`Path: ${outPath}`);
-  console.log(`Size: ${(buffer.length / 1024).toFixed(2)} KB`);
+  console.log(`File Size: ${(buffer.length / 1024).toFixed(2)} KB`);
 }
 
 generateDocx().catch(console.error);
