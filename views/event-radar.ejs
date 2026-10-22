@@ -367,6 +367,10 @@
                                 <span>Open Full Dossier</span>
                                 <i class="fas fa-arrow-right text-[10px]"></i>
                             </a>
+                            <a id="hud-link-3d" href="/venues/seating-3d" class="px-3.5 py-2.5 rounded-xl text-xs font-bold bg-pink-950/70 hover:bg-pink-900/80 text-pink-300 border border-pink-500/40 press-tactile text-center transition-all flex items-center justify-center gap-1.5" title="View 3D Stadium & Seating Sightlines">
+                                <i class="fas fa-cube text-pink-400"></i>
+                                <span class="hidden sm:inline">3D Arena</span>
+                            </a>
                             <a id="hud-link-ticket" href="#" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 press-tactile text-center transition-all flex items-center justify-center gap-1.5">
                                 <span>Tickets</span>
                                 <i class="fas fa-arrow-up-right-from-square text-[10px]"></i>
@@ -1129,6 +1133,10 @@
 
         // Action links
         document.getElementById('hud-link-dossier').href = `/events/${ev.slug}`;
+        const arena3dBtn = document.getElementById('hud-link-3d');
+        if (arena3dBtn) {
+            arena3dBtn.href = `/venues/seating-3d?event=${ev.id}`;
+        }
         const ticketBtn = document.getElementById('hud-link-ticket');
         if (ev.ticketUrl) {
             ticketBtn.href = ev.ticketUrl;
