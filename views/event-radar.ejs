@@ -1,4 +1,4 @@
-<%- include('partials/header', { title: '4D Geospatial Event Radar & Transit Matrix | K-Sync Malaysia' }) %>
+<%- include('partials/header', { title: '360° Concert Sonar & Temporal Radar | K-Sync Malaysia' }) %>
 
 <%
     const PRECINCT_METADATA = {
@@ -11,7 +11,7 @@
             venues: 'Axiata Arena, Bukit Jalil National Stadium, Unifi Arena',
             coords: [3.0583, 101.6917],
             capacity: '16,000 - 87,000',
-            tips: 'Park-and-ride at LRT stations (Awan Besar / Sri Petaling) is highly recommended on massive concert nights.'
+            tips: 'Park-and-ride at LRT stations (Awan Besar / Sri Petaling) is highly recommended on massive concert nights. Rapid KL frequently extends operations to 12:30 AM.'
         },
         'BBCC & Downtown KL': {
             transit: 'Hang Tuah Station (LRT Ampang Line / KL Monorail) & Merdeka MRT',
@@ -70,7 +70,22 @@
         }
     };
 
-    // Serialize events with coordinates for 4D Map Radar
+    function resolveFandomColor(artistName) {
+        const name = (artistName || '').toLowerCase();
+        if (name.includes('seventeen')) return { primary: '#F7CAC9', secondary: '#92A8D1', name: 'Rose Quartz & Serenity', quadrant: 'bg', label: 'CARAT Beacon' };
+        if (name.includes('twice')) return { primary: '#FF5FA2', secondary: '#FFA400', name: 'Apricot & Neon Magenta', quadrant: 'gg', label: 'ONCE Beacon' };
+        if (name.includes('stray kids')) return { primary: '#E11D48', secondary: '#0F172A', name: 'Compass Crimson', quadrant: 'bg', label: 'STAY Beacon' };
+        if (name.includes('aespa')) return { primary: '#A855F7', secondary: '#38BDF8', name: 'Aurora Ultraviolet', quadrant: 'gg', label: 'MY Beacon' };
+        if (name.includes('ive')) return { primary: '#EC4899', secondary: '#F43F5E', name: 'Prism Magenta', quadrant: 'gg', label: 'DIVE Beacon' };
+        if (name.includes('day6')) return { primary: '#0284C7', secondary: '#38BDF8', name: 'EveryDAY Sky', quadrant: 'band', label: 'My Day Beacon' };
+        if (name.includes('enhypen')) return { primary: '#F97316', secondary: '#EA580C', name: 'Vampire Amber', quadrant: 'bg', label: 'ENGENE Beacon' };
+        if (name.includes('txt') || name.includes('tomorrow')) return { primary: '#06B6D4', secondary: '#3B82F6', name: 'Star Cyan', quadrant: 'bg', label: 'MOA Beacon' };
+        if (name.includes('taeyeon') || name.includes('iu') || name.includes('baekhyun')) return { primary: '#F472B6', secondary: '#C084FC', name: 'Vocalist Aura', quadrant: 'solo', label: 'Soloist Beacon' };
+        if (name.includes('band') || name.includes('wave') || name.includes('fest')) return { primary: '#10B981', secondary: '#06B6D4', name: 'Live Band Green', quadrant: 'band', label: 'Band Beacon' };
+        return { primary: '#EC4899', secondary: '#06B6D4', name: 'Cyber Stage Neon', quadrant: 'bg', label: 'Live Echo' };
+    }
+
+    // Serialize events for the 360° Acoustic Sonar Scope
     const mappedEventsData = events.map(e => {
         let coords = [3.1408, 101.7088]; // default KL
         const vName = (e.venue_name || '').toLowerCase();
@@ -84,132 +99,247 @@
         else if (vName.includes('austin') || vName.includes('johor')) coords = [1.5542, 103.7766];
         else if (PRECINCT_METADATA[aName]) coords = PRECINCT_METADATA[aName].coords;
 
+        const fandom = resolveFandomColor(e.artist_name);
+        const eventDate = e.event_date instanceof Date ? e.event_date : new Date(e.event_date || Date.now());
+        const daysAway = Math.max(0, Math.round((eventDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+
         return {
             id: e.id,
             title: e.event_name,
             artist: e.artist_name || 'K-Pop Artist',
             venue: e.venue_name || e.venue_display || 'Malaysian Venue',
-            date: e.event_date instanceof Date ? e.event_date.toISOString().split('T')[0] : String(e.event_date || ''),
+            date: eventDate.toISOString().split('T')[0],
             time: e.start_time || '8:00 PM',
             poster: e.poster_image || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800',
             area: e.cluster_area || 'Kuala Lumpur Metro Hub',
             ticketUrl: e.official_ticket_url || '',
             status: e.verification_status || 'VERIFIED',
-            coords: coords
+            coords: coords,
+            fandom: fandom,
+            daysAway: daysAway,
+            slug: helpers.slugify(e.event_name) || e.id
         };
     });
 %>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-    <!-- Header Stage Header (Impeccable: No kickers, bold display voice) -->
+    <!-- Header Stage Header (Impeccable: Bold display voice, no generic kickers) -->
     <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-200/80 pb-6">
         <div>
             <div class="flex items-center space-x-2.5 mb-2">
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-slate-900 text-white shadow-xs">
                     <span class="w-2 h-2 rounded-full bg-pink-500 animate-pulse"></span>
-                    4D GEOSPATIAL INTELLIGENCE
+                    360° ACOUSTIC CONCERT SONAR
                 </span>
                 <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-pink-100 text-pink-700 border border-pink-200/80">
-                    Live Telemetry
+                    Temporal Signal Matrix
                 </span>
             </div>
             <h1 class="text-3xl sm:text-5xl font-black text-slate-900 tracking-[-0.035em] leading-tight">
                 K-Pop Event Radar
             </h1>
             <p class="text-slate-600 text-sm sm:text-base mt-2 max-w-2xl font-medium leading-relaxed">
-                Interactive geospatial mapping and 4D temporal transit analysis across Malaysian concert precincts. Explore venue corridors, crowd convergence warnings, and transit routing.
+                Autonomous concert sonar tracking Malaysian tour stops across time horizons, lightstick frequencies, and Klang Valley metro corridors.
             </p>
         </div>
 
         <div class="flex items-center gap-2.5 shrink-0">
             <span class="px-4 py-2.5 rounded-2xl text-xs font-black bg-slate-900 text-white shadow-sm flex items-center gap-2">
                 <i class="fas fa-satellite-dish text-pink-400 animate-spin" style="animation-duration: 8s;"></i>
-                <span><%= events.length %> Active Stage Nodes</span>
+                <span><%= events.length %> Active Stage Echoes</span>
             </span>
         </div>
     </div>
 
-    <!-- Triple View Mode Switcher -->
-    <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-xs border border-slate-200 mb-8 space-y-4">
+    <!-- Quad-View Navigation Dock -->
+    <div class="bg-white rounded-3xl p-3 sm:p-4 shadow-xs border border-slate-200 mb-8">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <!-- View Selector Buttons -->
-            <div class="inline-flex rounded-2xl bg-slate-100 p-1.5 border border-slate-200/80 shrink-0">
-                <button type="button" id="tab-map-btn" onclick="switchRadarMode('map')"
+            <!-- View Selector Tabs -->
+            <div class="inline-flex rounded-2xl bg-slate-100 p-1.5 border border-slate-200/80 shrink-0 overflow-x-auto max-w-full">
+                <button type="button" id="tab-sonar-btn" onclick="switchRadarMode('sonar')"
                         class="px-4 sm:px-5 py-2.5 rounded-xl text-xs font-black transition-all press-tactile bg-slate-900 text-white shadow-xs flex items-center gap-2 cursor-pointer">
-                    <i class="fas fa-earth-asia text-cyan-400"></i>
-                    <span>4D Map Radar & Sweep</span>
+                    <i class="fas fa-radar text-pink-400"></i>
+                    <span>360° Concert Sonar</span>
                 </button>
-                <button type="button" id="tab-precinct-btn" onclick="switchRadarMode('precinct')"
+                <button type="button" id="tab-transit-btn" onclick="switchRadarMode('transit')"
                         class="px-4 sm:px-5 py-2.5 rounded-xl text-xs font-bold transition-all press-tactile text-slate-600 hover:text-slate-900 flex items-center gap-2 cursor-pointer">
-                    <i class="fas fa-landmark text-pink-500"></i>
-                    <span>Precinct Corridors (<%= Object.keys(areaClusters).length %>)</span>
+                    <i class="fas fa-train-subway text-emerald-500"></i>
+                    <span>Transit Corridor Schematic</span>
                 </button>
                 <button type="button" id="tab-weekend-btn" onclick="switchRadarMode('weekend')"
                         class="px-4 sm:px-5 py-2.5 rounded-xl text-xs font-bold transition-all press-tactile text-slate-600 hover:text-slate-900 flex items-center gap-2 cursor-pointer">
                     <i class="fas fa-calendar-week text-purple-500"></i>
-                    <span>Weekend Cohorts (<%= weekendClusters.length %>)</span>
+                    <span>Weekend Clash Matrix (<%= weekendClusters.length %>)</span>
+                </button>
+                <button type="button" id="tab-precinct-btn" onclick="switchRadarMode('precinct')"
+                        class="px-4 sm:px-5 py-2.5 rounded-xl text-xs font-bold transition-all press-tactile text-slate-600 hover:text-slate-900 flex items-center gap-2 cursor-pointer">
+                    <i class="fas fa-landmark text-amber-500"></i>
+                    <span>Precinct Dossiers (<%= Object.keys(areaClusters).length %>)</span>
                 </button>
             </div>
 
-            <!-- Quick Telemetry Indicator -->
-            <div class="flex items-center gap-3 text-xs text-slate-500 font-semibold">
-                <span class="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-                    <i class="fas fa-train text-emerald-600"></i> LRT Sri Petaling & Monorail Linked
+            <!-- Telemetry Indicator -->
+            <div class="flex items-center gap-2 text-xs text-slate-500 font-semibold px-2">
+                <span class="flex items-center gap-1.5 text-pink-700 bg-pink-50 px-3 py-1 rounded-full border border-pink-200">
+                    <span class="w-1.5 h-1.5 rounded-full bg-pink-500 animate-ping"></span>
+                    Lightstick Beacon Sync Active
                 </span>
-                <span class="hidden sm:inline-block text-slate-400">·</span>
-                <span class="hidden sm:inline-block">60fps Hardware Accelerated</span>
             </div>
         </div>
     </div>
 
     <!-- ========================================================================= -->
-    <!-- VIEW 1: 4D GEOSPATIAL MAP RADAR & TEMPORAL ANALYSIS ENGINE -->
+    <!-- VIEW 1: 360° CONCERT SONAR SCOPE & TARGET ACQUISITION CONSOLE (PRIMARY)   -->
     <!-- ========================================================================= -->
-    <div id="view-map" class="space-y-6">
-        <!-- 4D Control Deck (Time Scrubber + Temporal Controls) -->
-        <div class="bg-slate-900 text-white rounded-3xl p-5 sm:p-6 shadow-xl border border-slate-800 space-y-5">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
-                <div class="space-y-1">
+    <div id="view-sonar" class="space-y-6">
+        <!-- Command Console Container -->
+        <div class="bg-slate-950 rounded-3xl border border-slate-800 p-5 sm:p-7 shadow-2xl relative overflow-hidden text-white">
+            <!-- Background Cyber Grid Mesh -->
+            <div class="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none"></div>
+
+            <!-- Top Telemetry Ribbon -->
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-5 mb-6">
+                <div class="space-y-1 font-mono text-[11px]">
                     <div class="flex items-center gap-2">
-                        <span class="px-2 py-0.5 rounded text-[10px] font-black bg-cyan-500 text-slate-950 uppercase tracking-widest">
-                            Dimension 4: Time (t)
+                        <span class="px-2 py-0.5 rounded bg-pink-500/20 text-pink-400 border border-pink-500/40 font-bold uppercase tracking-widest text-[10px]">
+                            SONAR AZIMUTH SCANNER
                         </span>
-                        <span class="text-xs text-slate-400 font-mono">TEMPORAL SCRUBBER ACTIVE</span>
+                        <span class="text-slate-400">GROUND ZERO: KLANG VALLEY [3.1390° N, 101.6869° E]</span>
                     </div>
-                    <h2 class="text-lg sm:text-xl font-black text-white tracking-tight flex items-center gap-2">
-                        <i class="fas fa-clock-rotate-left text-pink-400"></i>
-                        <span>Showtime Timeline Continuum</span>
-                    </h2>
+                    <div class="text-xs text-slate-300 font-sans font-bold flex items-center gap-2">
+                        <span>Range Horizons: Today (Center) · 7D (Inner) · 30D · 90D · Season 2026/27</span>
+                    </div>
                 </div>
 
-                <!-- Play/Pause 4D Sweep Button -->
-                <div class="flex items-center gap-2">
-                    <button type="button" id="play-sweep-btn" onclick="toggleTemporalSweep()" 
-                            class="px-4 py-2 rounded-xl text-xs font-black bg-pink-600 hover:bg-pink-500 text-white press-tactile shadow-xs flex items-center gap-2 cursor-pointer">
-                        <i class="fas fa-play text-xs" id="play-icon"></i>
-                        <span id="play-text">Play 4D Temporal Sweep</span>
-                    </button>
-                    <button type="button" onclick="resetTemporalFilter()" 
-                            class="px-3 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 press-tactile border border-slate-700" title="Reset Timeline Filter">
-                        <i class="fas fa-rotate-left"></i>
+                <!-- Sonar Control Docks -->
+                <div class="flex items-center gap-2 shrink-0">
+                    <!-- Sweep Speed Selector -->
+                    <div class="inline-flex rounded-xl bg-slate-900 border border-slate-800 p-1 text-[11px] font-mono">
+                        <button type="button" id="btn-speed-1" onclick="setSweepSpeed(1)" class="px-2.5 py-1 rounded-lg bg-pink-600 text-white font-bold cursor-pointer">1x Scan</button>
+                        <button type="button" id="btn-speed-2" onclick="setSweepSpeed(2)" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white cursor-pointer">2x Rapid</button>
+                        <button type="button" id="btn-speed-0" onclick="setSweepSpeed(0)" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white cursor-pointer">Freeze</button>
+                    </div>
+
+                    <!-- Audio Ping Toggle -->
+                    <button type="button" id="btn-audio-ping" onclick="toggleAudioPing()" 
+                            class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white text-xs font-mono font-bold flex items-center gap-1.5 cursor-pointer transition-all"
+                            title="Toggle Acoustic Sonar Beep Sound">
+                        <i class="fas fa-volume-xmark text-slate-400" id="audio-icon"></i>
+                        <span id="audio-label">Muted</span>
                     </button>
                 </div>
             </div>
 
-            <!-- 4D Interactive Timeline Slider -->
-            <div class="space-y-3">
-                <div class="flex items-center justify-between text-xs font-bold">
+            <!-- Sonar Stage: Two-Column Interactive Layout -->
+            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <!-- Left/Center: 360° Circular Sonar Canvas -->
+                <div class="lg:col-span-7 flex flex-col items-center justify-center">
+                    <div class="relative w-full max-w-[520px] aspect-square flex items-center justify-center">
+                        <!-- Canvas Element -->
+                        <canvas id="sonar-canvas" class="w-full h-full cursor-crosshair rounded-full shadow-[0_0_50px_rgba(236,72,153,0.15)]"></canvas>
+
+                        <!-- Quadrant Overlay Badges (Absolute around canvas) -->
+                        <div class="absolute top-2 left-2 text-[10px] font-mono text-cyan-400/80 bg-slate-950/80 px-2 py-0.5 rounded border border-cyan-500/20 pointer-events-none">
+                            NW · BOY GROUPS
+                        </div>
+                        <div class="absolute top-2 right-2 text-[10px] font-mono text-pink-400/80 bg-slate-950/80 px-2 py-0.5 rounded border border-pink-500/20 pointer-events-none">
+                            NE · GIRL GROUPS
+                        </div>
+                        <div class="absolute bottom-2 left-2 text-[10px] font-mono text-emerald-400/80 bg-slate-950/80 px-2 py-0.5 rounded border border-emerald-500/20 pointer-events-none">
+                            SW · K-BANDS & FESTS
+                        </div>
+                        <div class="absolute bottom-2 right-2 text-[10px] font-mono text-purple-400/80 bg-slate-950/80 px-2 py-0.5 rounded border border-purple-500/20 pointer-events-none">
+                            SE · SOLOISTS & VOCALS
+                        </div>
+                    </div>
+
+                    <!-- Canvas Telemetry Helper -->
+                    <div class="mt-4 text-center text-xs text-slate-400 font-mono">
+                        <span class="text-pink-400 font-bold"><i class="fas fa-hand-pointer me-1"></i> CLICK ANY ECHO BEACON</span> TO LOCK CONCERT DOSSIER
+                    </div>
+                </div>
+
+                <!-- Right Column: Real-Time Target Acquisition HUD -->
+                <div class="lg:col-span-5">
+                    <div id="target-hud-container" class="bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800 p-5 space-y-4 shadow-xl">
+                        <!-- Target Lock Status Header -->
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                <span id="hud-status" class="text-xs font-mono font-bold text-emerald-400 tracking-wider">TARGET ACQUIRED · #01</span>
+                            </div>
+                            <span id="hud-dday" class="px-2.5 py-0.5 rounded-full text-xs font-black bg-pink-500 text-white font-mono">D-DAY</span>
+                        </div>
+
+                        <!-- Artist & Tour Dossier Info -->
+                        <div class="flex gap-4 items-start">
+                            <img id="hud-poster" src="" alt="Poster" class="w-20 h-28 object-cover rounded-xl border border-slate-700 shrink-0 bg-slate-950">
+                            <div class="space-y-1.5 flex-grow">
+                                <div id="hud-artist" class="text-xs font-bold text-pink-400 uppercase tracking-wider flex items-center gap-1.5">Artist</div>
+                                <h3 id="hud-title" class="text-base font-black text-white leading-tight line-clamp-2">Concert Title</h3>
+                                <p id="hud-venue" class="text-xs text-slate-300 flex items-center gap-1">
+                                    <i class="fas fa-location-dot text-slate-400"></i>
+                                    <span>Venue</span>
+                                </p>
+                                <p id="hud-date" class="text-xs text-slate-400 font-mono">Date</p>
+                            </div>
+                        </div>
+
+                        <!-- Fandom Lightstick Hue Beacon -->
+                        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800/80 flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <span id="hud-lightstick-swatch" class="w-4 h-4 rounded-full border border-white/20 shadow-xs"></span>
+                                <div class="text-xs">
+                                    <div class="text-slate-400 text-[10px] uppercase font-mono">Fandom Lightstick Hue</div>
+                                    <div id="hud-lightstick-name" class="font-bold text-white">Lightstick Colors</div>
+                                </div>
+                            </div>
+                            <span id="hud-verified" class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-950 text-emerald-400 border border-emerald-800/80">
+                                98% VERIFIED
+                            </span>
+                        </div>
+
+                        <!-- Transit Quick Advisory -->
+                        <div class="p-3 rounded-xl bg-slate-950/60 border border-slate-800/60 text-xs space-y-1">
+                            <div class="text-slate-400 font-mono text-[10px] flex items-center gap-1">
+                                <i class="fas fa-train text-emerald-400"></i>
+                                <span>RAPID KL TRANSIT INTEL</span>
+                            </div>
+                            <p id="hud-transit-tip" class="text-slate-300 text-[11px] leading-relaxed">
+                                Direct connection via LRT Sri Petaling Line.
+                            </p>
+                        </div>
+
+                        <!-- Direct Action Buttons -->
+                        <div class="pt-2 flex flex-col sm:flex-row gap-2">
+                            <a id="hud-link-dossier" href="#" class="flex-1 px-4 py-2.5 rounded-xl text-xs font-black bg-pink-600 hover:bg-pink-500 text-white press-tactile text-center transition-all shadow-xs flex items-center justify-center gap-1.5">
+                                <span>Open Full Dossier</span>
+                                <i class="fas fa-arrow-right text-[10px]"></i>
+                            </a>
+                            <a id="hud-link-ticket" href="#" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 press-tactile text-center transition-all flex items-center justify-center gap-1.5">
+                                <span>Tickets</span>
+                                <i class="fas fa-arrow-up-right-from-square text-[10px]"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Temporal Range Filter Slider -->
+            <div class="relative z-10 mt-8 pt-6 border-t border-slate-800/80 space-y-3">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono">
                     <span class="text-slate-400 flex items-center gap-1.5">
-                        <i class="fas fa-calendar-day text-pink-400"></i> Filter Scope:
-                        <span id="slider-label" class="text-white font-mono text-sm px-2 py-0.5 rounded bg-slate-800 border border-slate-700">All 2026/2027 Concert Season</span>
+                        <i class="fas fa-sliders text-pink-400"></i>
+                        <span>TIME HORIZON FILTER:</span>
+                        <span id="slider-label" class="text-white font-bold px-2 py-0.5 rounded bg-slate-900 border border-slate-800">All 2026/2027 Concert Season</span>
                     </span>
-                    <span id="active-marker-count" class="text-emerald-400 font-mono text-xs">
-                        <%= events.length %> Venues Illuminated
+                    <span id="active-marker-count" class="text-pink-400 font-bold">
+                        <%= events.length %> Echoes Detected
                     </span>
                 </div>
                 <input type="range" id="time-scrubber" min="0" max="4" step="1" value="4" 
                        oninput="handleTimeScrubberChange(this.value)"
-                       class="w-full h-2.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-pink-500 focus:outline-none">
+                       class="w-full h-2.5 bg-slate-900 rounded-lg appearance-none cursor-pointer accent-pink-500 focus:outline-none border border-slate-800">
                 <div class="flex justify-between text-[11px] text-slate-400 font-mono pt-1">
                     <span>Now / 48H</span>
                     <span>This Weekend</span>
@@ -219,92 +349,212 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- 4D Fandom Collision & Transit Congestion Matrix Alert -->
-        <div class="bg-gradient-to-r from-amber-500/10 via-pink-500/10 to-purple-500/10 rounded-3xl p-5 border border-amber-300/40 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex items-start gap-3.5">
-                <div class="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center shrink-0 text-base font-black shadow-xs">
-                    <i class="fas fa-triangle-exclamation"></i>
-                </div>
-                <div>
-                    <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-                        <span>4D Fandom Collision & Transit Load Warning</span>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-200 text-amber-900 uppercase">Automated Alert</span>
-                    </h3>
-                    <p class="text-xs text-slate-600 mt-1 leading-relaxed font-medium">
-                        High weekend density detected in <strong class="text-slate-900">Bukit Jalil Hub</strong> and <strong class="text-slate-900">BBCC / Zepp KL</strong>. Peak LRT Sri Petaling Line passenger volume estimated at <span class="font-mono font-bold text-pink-600">30,000+ Fans</span>. Pre-purchasing Touch 'n Go reload credits is strongly recommended.
-                    </p>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-2 shrink-0">
-                <a href="#precinct-bukit-jalil-hub" onclick="switchRadarMode('precinct')" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 press-tactile shadow-xs flex items-center gap-1.5">
+    <!-- ========================================================================= -->
+    <!-- VIEW 2: KLANG VALLEY TRANSIT CORRIDOR SCHEMATIC (TRANSIT RADAR)          -->
+    <!-- ========================================================================= -->
+    <div id="view-transit" class="space-y-6 hidden">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-8">
+            <div>
+                <h2 class="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
                     <i class="fas fa-train-subway text-emerald-600"></i>
-                    <span>Inspect Transit Corridor</span>
-                </a>
-            </div>
-        </div>
-
-        <!-- Interactive Map Canvas Container -->
-        <div class="relative bg-slate-950 rounded-3xl border border-slate-800 overflow-hidden shadow-2xl" style="height: 580px;">
-            <!-- Leaflet Map Mount Point (CARTO Basemaps Engine) -->
-            <div id="radar-leaflet-map" class="w-full h-full z-10"></div>
-
-            <!-- Map Style Toggle (CARTO Dark vs CARTO Voyager) -->
-            <div class="absolute bottom-4 left-4 z-20 flex items-center bg-slate-950/90 backdrop-blur-md rounded-2xl p-1 border border-slate-700/80 shadow-xl gap-1">
-                <button type="button" id="btn-engine-radar" onclick="switchMapEngine('radar')"
-                        class="px-3 py-1.5 rounded-xl text-xs font-black bg-pink-600 text-white flex items-center gap-1.5 press-tactile transition-all cursor-pointer shadow-xs">
-                    <i class="fas fa-satellite-dish text-white text-[11px]"></i>
-                    <span>CARTO Dark</span>
-                </button>
-                <button type="button" id="btn-engine-voyager" onclick="switchMapEngine('voyager')"
-                        class="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white flex items-center gap-1.5 press-tactile transition-all cursor-pointer">
-                    <i class="fas fa-map text-emerald-400 text-[11px]"></i>
-                    <span>CARTO Voyager</span>
-                </button>
+                    <span>Klang Valley Concert Metro Corridors</span>
+                </h2>
+                <p class="text-slate-600 text-sm mt-1">
+                    Schematic public transit pathways linking Kuala Lumpur's primary K-Pop arenas to Rapid KL rail interchanges.
+                </p>
             </div>
 
-            <!-- Radar Telemetry Scope HUD Overlay -->
-            <div class="absolute top-4 left-4 z-20 pointer-events-none hidden sm:block">
-                <div class="bg-slate-950/85 backdrop-blur-md rounded-2xl p-3 border border-slate-800/80 text-white font-mono text-[11px] space-y-1 shadow-lg">
-                    <div class="text-pink-400 font-bold flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-pink-500 animate-ping"></span>
-                        KLANG VALLEY RADAR BEACON
+            <!-- Corridor 1: LRT Sri Petaling Line (Bukit Jalil Mega Hub) -->
+            <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-xl bg-red-600 text-white font-black text-xs flex items-center justify-center shadow-xs">PH</span>
+                        <div>
+                            <h3 class="text-base font-extrabold text-slate-900">LRT Sri Petaling Line · Bukit Jalil Mega Hub</h3>
+                            <p class="text-xs text-slate-500">Serves Axiata Arena (16,000) & National Stadium Bukit Jalil (87,000)</p>
+                        </div>
                     </div>
-                    <div class="text-slate-400">LAT: 3.1390° N · LNG: 101.6869° E</div>
-                    <div class="text-slate-400">RANGE: 75 KM METRO CORRIDOR</div>
-                    <div class="text-emerald-400 font-bold">STATUS: CARTO RADAR ACTIVE</div>
+                    <span class="px-3 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        Rapid KL Service Extensions Active
+                    </span>
+                </div>
+
+                <!-- Schematic Metro Line Diagram -->
+                <div class="py-4 overflow-x-auto">
+                    <div class="flex items-center min-w-[620px] justify-between relative px-4">
+                        <!-- Horizontal Connecting Track -->
+                        <div class="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-2 bg-red-600 rounded-full z-0"></div>
+
+                        <!-- Station 1 -->
+                        <div class="relative z-10 flex flex-col items-center">
+                            <span class="w-6 h-6 rounded-full bg-white border-4 border-red-600 shadow-xs"></span>
+                            <span class="text-xs font-bold text-slate-700 mt-2">Plaza Rakyat</span>
+                            <span class="text-[10px] text-slate-400 font-mono">Interchange</span>
+                        </div>
+
+                        <!-- Station 2 -->
+                        <div class="relative z-10 flex flex-col items-center">
+                            <span class="w-6 h-6 rounded-full bg-white border-4 border-red-600 shadow-xs"></span>
+                            <span class="text-xs font-bold text-slate-700 mt-2">Hang Tuah</span>
+                            <span class="text-[10px] text-slate-400 font-mono">Monorail Link</span>
+                        </div>
+
+                        <!-- Station 3 -->
+                        <div class="relative z-10 flex flex-col items-center">
+                            <span class="w-6 h-6 rounded-full bg-white border-4 border-red-600 shadow-xs"></span>
+                            <span class="text-xs font-bold text-slate-700 mt-2">Chan Sow Lin</span>
+                            <span class="text-[10px] text-slate-400 font-mono">MRT Putrajaya</span>
+                        </div>
+
+                        <!-- Station 4 -->
+                        <div class="relative z-10 flex flex-col items-center">
+                            <span class="w-6 h-6 rounded-full bg-white border-4 border-red-600 shadow-xs"></span>
+                            <span class="text-xs font-bold text-slate-700 mt-2">Bandar Tasik Selatan</span>
+                            <span class="text-[10px] text-slate-400 font-mono">TBS / ERL</span>
+                        </div>
+
+                        <!-- Destination Station -->
+                        <div class="relative z-10 flex flex-col items-center">
+                            <span class="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center font-bold text-xs ring-4 ring-red-200 shadow-md">
+                                <i class="fas fa-star text-[10px]"></i>
+                            </span>
+                            <span class="text-xs font-black text-red-700 mt-2">Bukit Jalil (PH5)</span>
+                            <span class="text-[10px] font-bold text-slate-900 bg-red-100 px-1.5 py-0.2 rounded mt-0.5">Axiata Arena</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-3.5 border border-slate-200 text-xs text-slate-600 flex items-start gap-2.5">
+                    <i class="fas fa-info-circle text-red-600 mt-0.5"></i>
+                    <span><strong>Pedestrian Pathway:</strong> Direct 5-minute elevated covered walkway connects Bukit Jalil Station platform directly to Gate A & B of Axiata Arena and Gate Plaza of National Stadium.</span>
                 </div>
             </div>
 
-            <!-- Radar Control Overlay (Zoom Presets) -->
-            <div class="absolute top-4 right-4 z-20 flex flex-col gap-2">
-                <button type="button" onclick="focusRadarCoordinate(3.0583, 101.6917, 13)" 
-                        class="px-3 py-1.5 rounded-xl bg-slate-900/90 backdrop-blur-md hover:bg-slate-800 text-white text-[11px] font-bold border border-slate-700 press-tactile shadow-md flex items-center gap-1.5 cursor-pointer">
-                    <i class="fas fa-bullseye text-pink-400"></i>
-                    <span>Bukit Jalil</span>
-                </button>
-                <button type="button" onclick="focusRadarCoordinate(3.1408, 101.7088, 14)" 
-                        class="px-3 py-1.5 rounded-xl bg-slate-900/90 backdrop-blur-md hover:bg-slate-800 text-white text-[11px] font-bold border border-slate-700 press-tactile shadow-md flex items-center gap-1.5 cursor-pointer">
-                    <i class="fas fa-bullseye text-purple-400"></i>
-                    <span>BBCC / Zepp</span>
-                </button>
-                <button type="button" onclick="focusRadarCoordinate(5.3283, 100.2825, 12)" 
-                        class="px-3 py-1.5 rounded-xl bg-slate-900/90 backdrop-blur-md hover:bg-slate-800 text-white text-[11px] font-bold border border-slate-700 press-tactile shadow-md flex items-center gap-1.5 cursor-pointer">
-                    <i class="fas fa-bullseye text-cyan-400"></i>
-                    <span>Penang SPICE</span>
-                </button>
-                <button type="button" onclick="resetRadarView()" 
-                        class="px-3 py-1.5 rounded-xl bg-slate-900/90 backdrop-blur-md hover:bg-slate-800 text-white text-[11px] font-bold border border-slate-700 press-tactile shadow-md flex items-center gap-1.5 cursor-pointer">
-                    <i class="fas fa-expand text-slate-400"></i>
-                    <span>All Malaysia</span>
-                </button>
+            <!-- Corridor 2: Monorail & MRT Kajang (Zepp KL & Mega Star Arena Hub) -->
+            <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-xl bg-purple-600 text-white font-black text-xs flex items-center justify-center shadow-xs">MR</span>
+                        <div>
+                            <h3 class="text-base font-extrabold text-slate-900">KL Monorail & MRT Kajang · BBCC Downtown Hub</h3>
+                            <p class="text-xs text-slate-500">Serves Zepp Kuala Lumpur (2,500) & Mega Star Arena (5,000)</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-black bg-purple-100 text-purple-800 border border-purple-200">
+                        Undercover Mall Access
+                    </span>
+                </div>
+
+                <!-- Schematic Metro Line Diagram -->
+                <div class="py-4 overflow-x-auto">
+                    <div class="flex items-center min-w-[540px] justify-between relative px-4">
+                        <div class="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-2 bg-purple-600 rounded-full z-0"></div>
+
+                        <div class="relative z-10 flex flex-col items-center">
+                            <span class="w-6 h-6 rounded-full bg-white border-4 border-purple-600 shadow-xs"></span>
+                            <span class="text-xs font-bold text-slate-700 mt-2">KL Sentral</span>
+                            <span class="text-[10px] text-slate-400 font-mono">Main Hub</span>
+                        </div>
+
+                        <div class="relative z-10 flex flex-col items-center">
+                            <span class="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs ring-4 ring-purple-200 shadow-md">
+                                <i class="fas fa-star text-[10px]"></i>
+                            </span>
+                            <span class="text-xs font-black text-purple-700 mt-2">Hang Tuah (MR4)</span>
+                            <span class="text-[10px] font-bold text-slate-900 bg-purple-100 px-1.5 py-0.2 rounded mt-0.5">Zepp KL</span>
+                        </div>
+
+                        <div class="relative z-10 flex flex-col items-center">
+                            <span class="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-xs ring-4 ring-purple-200 shadow-md">
+                                <i class="fas fa-star text-[10px]"></i>
+                            </span>
+                            <span class="text-xs font-black text-purple-700 mt-2">Bukit Bintang (MR6)</span>
+                            <span class="text-[10px] font-bold text-slate-900 bg-purple-100 px-1.5 py-0.2 rounded mt-0.5">Mega Star Arena</span>
+                        </div>
+
+                        <div class="relative z-10 flex flex-col items-center">
+                            <span class="w-6 h-6 rounded-full bg-white border-4 border-purple-600 shadow-xs"></span>
+                            <span class="text-xs font-bold text-slate-700 mt-2">TRX (Tun Razak)</span>
+                            <span class="text-[10px] text-slate-400 font-mono">MRT Interchange</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl p-3.5 border border-slate-200 text-xs text-slate-600 flex items-start gap-2.5">
+                    <i class="fas fa-info-circle text-purple-600 mt-0.5"></i>
+                    <span><strong>Undercover Access:</strong> Hang Tuah LRT/Monorail exit leads seamlessly through Mitsui LaLaport BBCC into Zepp KL lobby. Bukit Bintang station connects right into Sungei Wang Plaza for Mega Star Arena.</span>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- ========================================================================= -->
-    <!-- VIEW 2: GEOGRAPHIC PRECINCT CORRIDORS VIEW -->
+    <!-- VIEW 3: SAME-WEEKEND TIMELINE CLASH & DROP MATRIX                         -->
+    <!-- ========================================================================= -->
+    <div id="view-weekend" class="space-y-8 hidden">
+        <% if (weekendClusters.length === 0) { %>
+            <div class="bg-white rounded-3xl p-10 text-center border border-slate-200">
+                <i class="fas fa-calendar-xmark text-4xl text-slate-300 mb-3"></i>
+                <h3 class="text-base font-bold text-slate-800">No Upcoming Weekend Clusters</h3>
+                <p class="text-xs text-slate-500 mt-1">Check individual tour announcements in the directory.</p>
+            </div>
+        <% } else { %>
+            <% weekendClusters.forEach(function(cluster) { %>
+                <div class="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
+                    <div class="bg-gradient-to-r from-purple-950 via-slate-900 to-slate-900 text-white p-5 sm:p-6 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-purple-500 text-white flex items-center justify-center font-bold text-base shadow-xs">
+                                <i class="fas fa-calendar-week"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-black text-white tracking-tight"><%= cluster.label %></h3>
+                                <p class="text-xs text-purple-300 font-medium">
+                                    <%= cluster.events.length %> Shows occurring in the same weekend
+                                </p>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-black bg-purple-500 text-white">
+                            Weekend Cohort
+                        </span>
+                    </div>
+
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <% cluster.events.forEach(function(event) { %>
+                            <% const eventSlug = helpers.slugify(event.event_name) || event.id; %>
+                            <div class="bg-slate-50 rounded-2xl border border-slate-200 p-4 flex flex-col justify-between hover-lift transition-all">
+                                <div>
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-pink-100 text-pink-700">
+                                        <%= event.cluster_area || 'KL Metro' %>
+                                    </span>
+                                    <h4 class="text-sm font-bold text-slate-900 mt-2 line-clamp-1"><%= event.event_name %></h4>
+                                    <p class="text-xs text-slate-500 mt-0.5"><%= event.artist_name %> · <%= event.venue_display || event.venue_name %></p>
+                                    <div class="text-xs font-mono font-bold text-slate-700 mt-2">
+                                        <i class="fas fa-calendar-day text-pink-500 me-1"></i> <%= helpers.formatDate(event.event_date) %>
+                                    </div>
+                                </div>
+                                <div class="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between">
+                                    <a href="/events/<%= eventSlug %>" class="text-xs font-bold text-slate-900 hover:text-pink-600 flex items-center gap-1">
+                                        <span>Details</span>
+                                        <i class="fas fa-arrow-right text-[10px]"></i>
+                                    </a>
+                                    <% if (event.official_ticket_url) { %>
+                                        <a href="<%= event.official_ticket_url %>" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-pink-600">
+                                            Tickets <i class="fas fa-arrow-up-right-from-square text-[9px]"></i>
+                                        </a>
+                                    <% } %>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+            <% }); %>
+        <% } %>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 4: PRECINCT DOSSIERS VIEW                                            -->
     <!-- ========================================================================= -->
     <div id="view-precinct" class="space-y-10 hidden">
         <!-- Filter Pills by Cluster Area -->
@@ -441,317 +691,471 @@
             </div>
         <% }); %>
     </div>
-
-    <!-- ========================================================================= -->
-    <!-- VIEW 3: SAME-WEEKEND TIMELINE COHORTS VIEW -->
-    <!-- ========================================================================= -->
-    <div id="view-weekend" class="space-y-8 hidden">
-        <% if (weekendClusters.length === 0) { %>
-            <div class="bg-white rounded-3xl p-10 text-center border border-slate-200">
-                <i class="fas fa-calendar-xmark text-4xl text-slate-300 mb-3"></i>
-                <h3 class="text-base font-bold text-slate-800">No Upcoming Weekend Clusters</h3>
-                <p class="text-xs text-slate-500 mt-1">Check the list directory for individual weekday events.</p>
-            </div>
-        <% } else { %>
-            <% weekendClusters.forEach(function(cluster) { %>
-                <div class="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
-                    <div class="bg-gradient-to-r from-purple-950 via-slate-900 to-slate-900 text-white p-5 sm:p-6 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-purple-500 text-white flex items-center justify-center font-bold text-base shadow-xs">
-                                <i class="fas fa-calendar-week"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-lg font-black text-white tracking-tight"><%= cluster.label %></h3>
-                                <p class="text-xs text-purple-300 font-medium">
-                                    <%= cluster.events.length %> Shows occurring on the same weekend
-                                </p>
-                            </div>
-                        </div>
-                        <span class="px-3 py-1 rounded-full text-xs font-black bg-purple-500 text-white">
-                            Weekend Cohort
-                        </span>
-                    </div>
-
-                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <% cluster.events.forEach(function(event) { %>
-                            <% const eventSlug = helpers.slugify(event.event_name) || event.id; %>
-                            <div class="bg-slate-50 rounded-2xl border border-slate-200 p-4 flex flex-col justify-between hover-lift transition-all">
-                                <div>
-                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-pink-100 text-pink-700">
-                                        <%= event.cluster_area || 'KL Metro' %>
-                                    </span>
-                                    <h4 class="text-sm font-bold text-slate-900 mt-2 line-clamp-1"><%= event.event_name %></h4>
-                                    <p class="text-xs text-slate-500 mt-0.5"><%= event.artist_name %> · <%= event.venue_display || event.venue_name %></p>
-                                    <div class="text-xs font-mono font-bold text-slate-700 mt-2">
-                                        <i class="fas fa-calendar-day text-pink-500 me-1"></i> <%= helpers.formatDate(event.event_date) %>
-                                    </div>
-                                </div>
-                                <div class="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between">
-                                    <a href="/events/<%= eventSlug %>" class="text-xs font-bold text-slate-900 hover:text-pink-600 flex items-center gap-1">
-                                        <span>Details</span>
-                                        <i class="fas fa-arrow-right text-[10px]"></i>
-                                    </a>
-                                    <% if (event.official_ticket_url) { %>
-                                        <a href="<%= event.official_ticket_url %>" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-pink-600">
-                                            Tickets <i class="fas fa-arrow-up-right-from-square text-[9px]"></i>
-                                        </a>
-                                    <% } %>
-                                </div>
-                            </div>
-                        <% }); %>
-                    </div>
-                </div>
-            <% }); %>
-        <% } %>
-    </div>
 </div>
 
-<!-- Raw Injected Event Data for 4D Map Engine -->
-<script id="radar-events-json" type="application/json">
+<!-- Raw Injected Event Data for Sonar Engine -->
+<script id="sonar-events-json" type="application/json">
     <%- JSON.stringify(mappedEventsData) %>
 </script>
 
-<!-- 4D Geospatial Radar Engine Logic -->
+<!-- ========================================================================= -->
+<!-- 360° ACOUSTIC CONCERT SONAR ENGINE CLIENT SCRIPT                          -->
+<!-- ========================================================================= -->
 <script>
-    let currentMapEngine = 'radar';
-    let map = null;
-    let markersLayer = null;
-    let cartoTileLayer = null;
     let rawEvents = [];
     let currentFilteredEvents = [];
-    let sweepInterval = null;
-    let isSweeping = false;
-    const cartoKey = "<%= typeof cartoApiKey !== 'undefined' ? cartoApiKey : 'cb1_4rvy_1_933f092a5de2104f28a689ca' %>";
+    let selectedEventId = null;
+    let sweepAngle = 0; // In radians
+    let sweepSpeedMultiplier = 1; // 1 = 1x, 2 = 2x, 0 = freeze
+    let audioPingEnabled = false;
+    let audioCtx = null;
+    let hoveredEvent = null;
 
     document.addEventListener('DOMContentLoaded', () => {
         try {
-            const rawDataEl = document.getElementById('radar-events-json');
+            const rawDataEl = document.getElementById('sonar-events-json');
             if (rawDataEl) {
                 rawEvents = JSON.parse(rawDataEl.textContent || '[]');
                 currentFilteredEvents = rawEvents;
             }
         } catch (e) {
-            console.error('Failed to parse radar events:', e);
+            console.error('Failed to parse sonar events:', e);
         }
 
-        initLeafletMap();
+        // Initialize Sonar Canvas Engine
+        initSonarCanvas();
+
+        // Lock onto first event by default
+        if (rawEvents.length > 0) {
+            selectEvent(rawEvents[0].id);
+        }
     });
 
-    function initLeafletMap() {
-        const mapContainer = document.getElementById('radar-leaflet-map');
-        if (!mapContainer || map) return;
+    // Web Audio Synthesizer for Sonar Ping
+    function playAcousticPing(freq = 880) {
+        if (!audioPingEnabled) return;
+        try {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
 
-        // Initialize Leaflet Map centered on Klang Valley
-        map = L.map('radar-leaflet-map', {
-            center: [3.1390, 101.6869],
-            zoom: 11,
-            zoomControl: false,
-            attributionControl: false
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(freq * 0.5, audioCtx.currentTime + 0.18);
+
+            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.22);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.25);
+        } catch (err) {
+            // Audio not allowed or error
+        }
+    }
+
+    function toggleAudioPing() {
+        audioPingEnabled = !audioPingEnabled;
+        const icon = document.getElementById('audio-icon');
+        const label = document.getElementById('audio-label');
+        if (audioPingEnabled) {
+            icon.className = 'fas fa-volume-high text-pink-400';
+            label.textContent = 'Audio Active';
+            playAcousticPing(920);
+        } else {
+            icon.className = 'fas fa-volume-xmark text-slate-400';
+            label.textContent = 'Muted';
+        }
+    }
+
+    function setSweepSpeed(multiplier) {
+        sweepSpeedMultiplier = multiplier;
+        const b1 = document.getElementById('btn-speed-1');
+        const b2 = document.getElementById('btn-speed-2');
+        const b0 = document.getElementById('btn-speed-0');
+        
+        [b1, b2, b0].forEach(b => b.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white cursor-pointer');
+        if (multiplier === 1) b1.className = 'px-2.5 py-1 rounded-lg bg-pink-600 text-white font-bold cursor-pointer';
+        else if (multiplier === 2) b2.className = 'px-2.5 py-1 rounded-lg bg-pink-600 text-white font-bold cursor-pointer';
+        else b0.className = 'px-2.5 py-1 rounded-lg bg-slate-700 text-white font-bold cursor-pointer';
+    }
+
+    // -------------------------------------------------------------------------
+    // Sonar Canvas Renderer
+    // -------------------------------------------------------------------------
+    function initSonarCanvas() {
+        const canvas = document.getElementById('sonar-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            const rect = canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Mouse move and click handling
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            const center = rect.width / 2;
+            const R = center - 24;
+
+            hoveredEvent = null;
+            currentFilteredEvents.forEach(ev => {
+                const pt = getEventPoint(ev, center, R);
+                const dx = mouseX - pt.x;
+                const dy = mouseY - pt.y;
+                if (Math.hypot(dx, dy) < 16) {
+                    hoveredEvent = ev;
+                }
+            });
+            canvas.style.cursor = hoveredEvent ? 'pointer' : 'crosshair';
         });
 
-        // Add CARTO Basemaps tile layer authenticated with user CARTO API Key
-        cartoTileLayer = L.tileLayer(`https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png?key=${cartoKey}`, {
-            maxZoom: 19,
-            subdomains: 'abcd',
-            attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
-        }).addTo(map);
+        canvas.addEventListener('click', (e) => {
+            if (hoveredEvent) {
+                selectEvent(hoveredEvent.id);
+                playAcousticPing(1040);
+            }
+        });
 
-        L.control.zoom({ position: 'bottomright' }).addTo(map);
+        // Main Animation Loop
+        let lastTime = performance.now();
+        function draw(time) {
+            const dt = (time - lastTime) / 1000;
+            lastTime = time;
 
-        markersLayer = L.layerGroup().addTo(map);
+            if (sweepSpeedMultiplier > 0) {
+                sweepAngle += (0.8 * sweepSpeedMultiplier) * dt;
+                if (sweepAngle > Math.PI * 2) sweepAngle -= Math.PI * 2;
+            }
 
-        // Plot initial events
-        renderEventMarkers(rawEvents);
-    }
+            const rect = canvas.getBoundingClientRect();
+            const width = rect.width;
+            const height = rect.height;
+            const center = width / 2;
+            const R = center - 24;
 
-    function switchMapEngine(style) {
-        currentMapEngine = style;
-        const btnRadar = document.getElementById('btn-engine-radar');
-        const btnVoyager = document.getElementById('btn-engine-voyager');
+            ctx.clearRect(0, 0, width, height);
 
-        const activeClass = 'px-3 py-1.5 rounded-xl text-xs font-black text-white flex items-center gap-1.5 press-tactile transition-all cursor-pointer shadow-xs';
-        const inactiveClass = 'px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white flex items-center gap-1.5 press-tactile transition-all cursor-pointer';
+            // 1. Draw Outer Bezel
+            ctx.beginPath();
+            ctx.arc(center, center, R, 0, Math.PI * 2);
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 2;
+            ctx.stroke();
 
-        const tileStyle = style === 'voyager' ? 'voyager' : 'dark_all';
-        if (cartoTileLayer) {
-            cartoTileLayer.setUrl(`https://{s}.basemaps.cartocdn.com/rastertiles/${tileStyle}/{z}/{x}/{y}{r}.png?key=${cartoKey}`);
-        }
+            // 2. Draw Degree Markings
+            for (let deg = 0; deg < 360; deg += 30) {
+                const rad = (deg * Math.PI) / 180;
+                const isMajor = deg % 90 === 0;
+                const tickLen = isMajor ? 10 : 5;
+                const x1 = center + (R - tickLen) * Math.cos(rad);
+                const y1 = center + (R - tickLen) * Math.sin(rad);
+                const x2 = center + R * Math.cos(rad);
+                const y2 = center + R * Math.sin(rad);
 
-        if (btnRadar) btnRadar.className = style === 'radar' ? `${activeClass} bg-pink-600` : inactiveClass;
-        if (btnVoyager) btnVoyager.className = style === 'voyager' ? `${activeClass} bg-emerald-600` : inactiveClass;
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.strokeStyle = isMajor ? '#ec4899' : '#475569';
+                ctx.lineWidth = isMajor ? 2 : 1;
+                ctx.stroke();
+            }
 
-        if (map) map.invalidateSize();
-    }
+            // 3. Draw Concentric Range Rings (Temporal Scope)
+            const ringRatios = [0.25, 0.50, 0.75, 1.0];
+            const ringLabels = ['< 7D', '< 30D', '< 90D', 'SEASON'];
+            ringRatios.forEach((ratio, idx) => {
+                const r = R * ratio;
+                ctx.beginPath();
+                ctx.arc(center, center, r, 0, Math.PI * 2);
+                ctx.strokeStyle = idx === 0 ? 'rgba(236,72,153,0.35)' : 'rgba(51,65,85,0.45)';
+                ctx.setLineDash([4, 4]);
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                ctx.setLineDash([]);
 
-    function renderEventMarkers(eventsList) {
-        if (!markersLayer) return;
-        markersLayer.clearLayers();
-
-        const countEl = document.getElementById('active-marker-count');
-        if (countEl) countEl.textContent = `${eventsList.length} Venues Illuminated`;
-
-        eventsList.forEach(e => {
-            const [lat, lng] = e.coords;
-
-            // Custom Glowing HTML Icon
-            const customIcon = L.divIcon({
-                className: 'custom-radar-pin',
-                html: `
-                    <div class="relative cursor-pointer group" style="transform: translate(-50%, -50%);">
-                        <div class="w-8 h-8 rounded-2xl bg-slate-900 border-2 border-pink-500 shadow-stage-glow flex items-center justify-center text-white text-xs font-bold transition-transform group-hover:scale-125">
-                            <i class="fas fa-bolt text-pink-400 text-[11px]"></i>
-                        </div>
-                        <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-pink-500 rounded-full animate-ping"></div>
-                    </div>
-                `,
-                iconSize: [32, 32],
-                iconAnchor: [16, 16]
+                // Ring Label
+                ctx.fillStyle = '#64748b';
+                ctx.font = '10px ui-monospace, monospace';
+                ctx.fillText(ringLabels[idx], center + 4, center - r + 12);
             });
 
-            const marker = L.marker([lat, lng], { icon: customIcon }).addTo(markersLayer);
+            // 4. Draw Azimuth Crosshairs
+            ctx.beginPath();
+            ctx.moveTo(center - R, center);
+            ctx.lineTo(center + R, center);
+            ctx.moveTo(center, center - R);
+            ctx.lineTo(center, center + R);
+            ctx.strokeStyle = 'rgba(71,85,105,0.35)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
 
-            // Popover Card (Origin-Aware styling)
-            const popupHtml = `
-                <div class="p-4 space-y-3 bg-slate-950 text-white min-w-[240px] max-w-[280px]">
-                    <div class="flex items-center justify-between gap-2 border-b border-slate-800 pb-2">
-                        <span class="px-2 py-0.5 rounded text-[10px] font-black bg-pink-600 text-white uppercase">${e.area}</span>
-                        <span class="text-[10px] font-mono text-slate-400">${e.date}</span>
-                    </div>
-                    <div>
-                        <div class="text-[11px] font-bold text-pink-400">${e.artist}</div>
-                        <div class="text-sm font-black text-white leading-tight mt-0.5">${e.title}</div>
-                        <div class="text-xs text-slate-300 mt-1 flex items-center gap-1">
-                            <i class="fas fa-map-pin text-slate-400"></i> ${e.venue}
-                        </div>
-                    </div>
-                    <div class="pt-2 border-t border-slate-800 flex items-center justify-between">
-                        <a href="/events/${e.id}" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-slate-950 hover:bg-slate-200 transition-colors">
-                            View Details
-                        </a>
-                        ${e.ticketUrl ? `
-                            <a href="${e.ticketUrl}" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-pink-400 hover:text-pink-300">
-                                Tickets <i class="fas fa-external-link text-[10px]"></i>
-                            </a>
-                        ` : ''}
-                    </div>
-                </div>
-            `;
+            // 5. Draw 360° Rotating Sweep Beam with Gradient Tail
+            const sweepGradient = ctx.createConicGradient(sweepAngle, center, center);
+            sweepGradient.addColorStop(0, 'rgba(236, 72, 153, 0.45)');
+            sweepGradient.addColorStop(0.12, 'rgba(236, 72, 153, 0.08)');
+            sweepGradient.addColorStop(0.25, 'rgba(236, 72, 153, 0.0)');
+            sweepGradient.addColorStop(1, 'rgba(236, 72, 153, 0.0)');
 
-            marker.bindPopup(popupHtml);
-        });
+            ctx.beginPath();
+            ctx.arc(center, center, R, 0, Math.PI * 2);
+            ctx.fillStyle = sweepGradient;
+            ctx.fill();
+
+            // Sweep Leading Line
+            ctx.beginPath();
+            ctx.moveTo(center, center);
+            ctx.lineTo(center + R * Math.cos(sweepAngle), center + R * Math.sin(sweepAngle));
+            ctx.strokeStyle = '#f472b6';
+            ctx.lineWidth = 2;
+            ctx.shadowColor = '#ec4899';
+            ctx.shadowBlur = 8;
+            ctx.stroke();
+            ctx.shadowBlur = 0; // Reset
+
+            // Center Ground Zero Beacon
+            ctx.beginPath();
+            ctx.arc(center, center, 4, 0, Math.PI * 2);
+            ctx.fillStyle = '#f43f5e';
+            ctx.fill();
+
+            // 6. Draw Event Blip Echoes
+            currentFilteredEvents.forEach(ev => {
+                const pt = getEventPoint(ev, center, R);
+                const isSelected = ev.id === selectedEventId;
+                const isHovered = hoveredEvent && ev.id === hoveredEvent.id;
+                const primaryColor = ev.fandom.primary || '#ec4899';
+
+                // Distance angle from sweep line
+                const ptAngle = Math.atan2(pt.y - center, pt.x - center);
+                let diffAngle = sweepAngle - ptAngle;
+                while (diffAngle < 0) diffAngle += Math.PI * 2;
+                while (diffAngle > Math.PI * 2) diffAngle -= Math.PI * 2;
+
+                const isJustSwept = diffAngle < 0.25;
+
+                // Ping Ripple effect if just swept
+                if (isJustSwept) {
+                    ctx.beginPath();
+                    ctx.arc(pt.x, pt.y, 14, 0, Math.PI * 2);
+                    ctx.strokeStyle = primaryColor;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+
+                // Selected Reticle Brackets [ + ]
+                if (isSelected || isHovered) {
+                    const reticleSize = 16;
+                    ctx.strokeStyle = isSelected ? '#38bdf8' : '#f472b6';
+                    ctx.lineWidth = 1.8;
+
+                    // Corner brackets
+                    ctx.beginPath();
+                    ctx.moveTo(pt.x - reticleSize, pt.y - 6);
+                    ctx.lineTo(pt.x - reticleSize, pt.y - reticleSize);
+                    ctx.lineTo(pt.x - 6, pt.y - reticleSize);
+
+                    ctx.moveTo(pt.x + 6, pt.y - reticleSize);
+                    ctx.lineTo(pt.x + reticleSize, pt.y - reticleSize);
+                    ctx.lineTo(pt.x + reticleSize, pt.y - 6);
+
+                    ctx.moveTo(pt.x + reticleSize, pt.y + 6);
+                    ctx.lineTo(pt.x + reticleSize, pt.y + reticleSize);
+                    ctx.lineTo(pt.x + 6, pt.y + reticleSize);
+
+                    ctx.moveTo(pt.x - 6, pt.y + reticleSize);
+                    ctx.lineTo(pt.x - reticleSize, pt.y + reticleSize);
+                    ctx.lineTo(pt.x - reticleSize, pt.y + 6);
+                    ctx.stroke();
+                }
+
+                // Core Beacon Dot
+                ctx.beginPath();
+                ctx.arc(pt.x, pt.y, isSelected ? 6 : 4.5, 0, Math.PI * 2);
+                ctx.fillStyle = primaryColor;
+                ctx.shadowColor = primaryColor;
+                ctx.shadowBlur = 10;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // Artist Label Callout
+                ctx.fillStyle = isSelected ? '#ffffff' : '#cbd5e1';
+                ctx.font = isSelected ? 'bold 11px ui-sans-serif, sans-serif' : '10px ui-sans-serif, sans-serif';
+                ctx.fillText(ev.artist, pt.x + 10, pt.y + 3);
+            });
+
+            requestAnimationFrame(draw);
+        }
+
+        requestAnimationFrame(draw);
     }
 
-    // 4D Temporal Scrubber Logic
-    function handleTimeScrubberChange(val) {
+    // Mathematical coordinate projection: Days Away -> Radius, Category -> Quadrant Angle
+    function getEventPoint(ev, center, R) {
+        // Distance mapping (closer = sooner!)
+        const days = ev.daysAway;
+        let normR = 0.85;
+        if (days <= 7) normR = 0.15 + (days / 7) * 0.15; // 0.15 to 0.30
+        else if (days <= 30) normR = 0.30 + ((days - 7) / 23) * 0.25; // 0.30 to 0.55
+        else if (days <= 90) normR = 0.55 + ((days - 30) / 60) * 0.25; // 0.55 to 0.80
+        else normR = 0.80 + Math.min(0.18, ((days - 90) / 180) * 0.18); // 0.80 to 0.98
+
+        // Azimuth Angle by Quadrant
+        // NW: Boy Groups (180° to 270°)
+        // NE: Girl Groups (270° to 360°)
+        // SE: Soloists (0° to 90°)
+        // SW: Bands & Fests (90° to 180°)
+        let baseAngle = 225; // default NW
+        const q = ev.fandom.quadrant;
+        if (q === 'bg') baseAngle = 225;
+        else if (q === 'gg') baseAngle = 315;
+        else if (q === 'solo') baseAngle = 45;
+        else if (q === 'band') baseAngle = 135;
+
+        // Spread events in same quadrant based on ID hash
+        const angleSpread = ((ev.id * 37) % 50) - 25;
+        const finalAngleRad = ((baseAngle + angleSpread) * Math.PI) / 180;
+
+        const x = center + (R * normR) * Math.cos(finalAngleRad);
+        const y = center + (R * normR) * Math.sin(finalAngleRad);
+
+        return { x, y };
+    }
+
+    // -------------------------------------------------------------------------
+    // Target Lock HUD Controller
+    // -------------------------------------------------------------------------
+    function selectEvent(eventId) {
+        selectedEventId = eventId;
+        const ev = rawEvents.find(e => e.id === eventId);
+        if (!ev) return;
+
+        // Update HUD card elements
+        document.getElementById('hud-status').textContent = `TARGET LOCKED · #${String(ev.id).padStart(2, '0')}`;
+        document.getElementById('hud-dday').textContent = ev.daysAway === 0 ? 'D-DAY TODAY' : `D-${ev.daysAway} DAYS`;
+        document.getElementById('hud-poster').src = ev.poster;
+        document.getElementById('hud-poster').onerror = function() {
+            this.src = 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800';
+        };
+        document.getElementById('hud-artist').textContent = ev.artist;
+        document.getElementById('hud-title').textContent = ev.title;
+        document.getElementById('hud-venue').innerHTML = `<i class="fas fa-location-dot text-pink-400 me-1"></i> ${ev.venue} (${ev.area})`;
+        document.getElementById('hud-date').textContent = `${ev.date} · ${ev.time}`;
+
+        // Lightstick
+        document.getElementById('hud-lightstick-swatch').style.background = ev.fandom.primary;
+        document.getElementById('hud-lightstick-swatch').style.boxShadow = `0 0 10px ${ev.fandom.primary}`;
+        document.getElementById('hud-lightstick-name').textContent = ev.fandom.name;
+
+        // Transit advice
+        const precinctMeta = {
+            'Bukit Jalil': 'LRT Sri Petaling Line (Bukit Jalil PH5). 5-min covered walkway directly into Axiata Arena.',
+            'BBCC': 'Direct undercover connection from Hang Tuah station (LRT/Monorail) via LaLaport into Zepp KL floor.',
+            'Mega Star': 'Inside Sungei Wang Plaza Level 4. Direct walkway from MRT Bukit Bintang.',
+            'Sunway': 'BRT Sunway Line direct to Sunway Pyramid & Surf Beach.',
+            'Penang': 'Setia SPICE Arena. Direct Rapid Penang bus & Bayan Lepas highway access.'
+        };
+        let tip = 'Public transit or ride-hailing dropoff available at main gate.';
+        for (const [key, t] of Object.entries(precinctMeta)) {
+            if ((ev.venue + ' ' + ev.area).includes(key)) {
+                tip = t;
+                break;
+            }
+        }
+        document.getElementById('hud-transit-tip').textContent = tip;
+
+        // Action links
+        document.getElementById('hud-link-dossier').href = `/events/${ev.slug}`;
+        const ticketBtn = document.getElementById('hud-link-ticket');
+        if (ev.ticketUrl) {
+            ticketBtn.href = ev.ticketUrl;
+            ticketBtn.style.display = 'inline-flex';
+        } else {
+            ticketBtn.style.display = 'none';
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Temporal Continuum Filter Scrubber
+    // -------------------------------------------------------------------------
+    function handleTimeScrubberChange(value) {
+        const val = Number(value);
         const sliderLabel = document.getElementById('slider-label');
-        const now = new Date();
-        const valueNum = Number(val);
+        const countBadge = document.getElementById('active-marker-count');
 
         let filtered = rawEvents;
-
-        if (valueNum === 0) {
-            sliderLabel.textContent = "Now / Next 48 Hours";
-            const threshold = new Date(now.getTime() + 48 * 3600 * 1000);
-            filtered = rawEvents.filter(e => new Date(e.date) <= threshold);
-        } else if (valueNum === 1) {
-            sliderLabel.textContent = "This Weekend Cohort";
-            const threshold = new Date(now.getTime() + 7 * 24 * 3600 * 1000);
-            filtered = rawEvents.filter(e => new Date(e.date) <= threshold);
-        } else if (valueNum === 2) {
+        if (val === 0) {
+            sliderLabel.textContent = "Now / Next 48 Hours Scope";
+            filtered = rawEvents.filter(e => e.daysAway <= 2);
+        } else if (val === 1) {
+            sliderLabel.textContent = "This Weekend Scope (< 7 Days)";
+            filtered = rawEvents.filter(e => e.daysAway <= 7);
+        } else if (val === 2) {
             sliderLabel.textContent = "Next 30 Days Scope";
-            const threshold = new Date(now.getTime() + 30 * 24 * 3600 * 1000);
-            filtered = rawEvents.filter(e => new Date(e.date) <= threshold);
-        } else if (valueNum === 3) {
+            filtered = rawEvents.filter(e => e.daysAway <= 30);
+        } else if (val === 3) {
             sliderLabel.textContent = "Next 90 Days Scope";
-            const threshold = new Date(now.getTime() + 90 * 24 * 3600 * 1000);
-            filtered = rawEvents.filter(e => new Date(e.date) <= threshold);
+            filtered = rawEvents.filter(e => e.daysAway <= 90);
         } else {
             sliderLabel.textContent = "All 2026/2027 Concert Season";
             filtered = rawEvents;
         }
 
         currentFilteredEvents = filtered;
-        renderEventMarkers(filtered);
-    }
+        countBadge.textContent = `${filtered.length} Echoes Detected`;
 
-    // 4D Temporal Sweep Simulation
-    function toggleTemporalSweep() {
-        const btn = document.getElementById('play-sweep-btn');
-        const icon = document.getElementById('play-icon');
-        const text = document.getElementById('play-text');
-        const slider = document.getElementById('time-scrubber');
-
-        if (isSweeping) {
-            clearInterval(sweepInterval);
-            isSweeping = false;
-            icon.className = 'fas fa-play text-xs';
-            text.textContent = 'Play 4D Temporal Sweep';
-        } else {
-            isSweeping = true;
-            icon.className = 'fas fa-pause text-xs';
-            text.textContent = 'Pause Temporal Sweep';
-
-            let cur = 0;
-            slider.value = cur;
-            handleTimeScrubberChange(cur);
-
-            sweepInterval = setInterval(() => {
-                cur++;
-                if (cur > 4) cur = 0;
-                slider.value = cur;
-                handleTimeScrubberChange(cur);
-            }, 1800);
+        if (filtered.length > 0 && !filtered.some(e => e.id === selectedEventId)) {
+            selectEvent(filtered[0].id);
         }
     }
 
-    function resetTemporalFilter() {
-        if (isSweeping) toggleTemporalSweep();
-        const slider = document.getElementById('time-scrubber');
-        slider.value = 4;
-        handleTimeScrubberChange(4);
-    }
-
-    function focusRadarCoordinate(lat, lng, zoom) {
-        if (map) {
-            map.flyTo([lat, lng], zoom, { duration: 1.2, easeLinearity: 0.25 });
-        }
-    }
-
-    function resetRadarView() {
-        if (map) {
-            map.flyTo([3.1390, 101.6869], 10, { duration: 1.2 });
-        }
-    }
-
-    // Mode Switcher between Map, Precincts, and Weekend tabs
+    // -------------------------------------------------------------------------
+    // Radar Mode Navigation Switcher
+    // -------------------------------------------------------------------------
     function switchRadarMode(mode) {
-        const viewMap = document.getElementById('view-map');
-        const viewPrecinct = document.getElementById('view-precinct');
-        const viewWeekend = document.getElementById('view-weekend');
+        const vSonar = document.getElementById('view-sonar');
+        const vTransit = document.getElementById('view-transit');
+        const vWeekend = document.getElementById('view-weekend');
+        const vPrecinct = document.getElementById('view-precinct');
 
-        const btnMap = document.getElementById('tab-map-btn');
-        const btnPrecinct = document.getElementById('tab-precinct-btn');
-        const btnWeekend = document.getElementById('tab-weekend-btn');
+        const bSonar = document.getElementById('tab-sonar-btn');
+        const bTransit = document.getElementById('tab-transit-btn');
+        const bWeekend = document.getElementById('tab-weekend-btn');
+        const bPrecinct = document.getElementById('tab-precinct-btn');
 
-        // Hide all
-        viewMap.classList.add('hidden');
-        viewPrecinct.classList.add('hidden');
-        viewWeekend.classList.add('hidden');
+        // Hide all views
+        [vSonar, vTransit, vWeekend, vPrecinct].forEach(v => v.classList.add('hidden'));
 
-        btnMap.className = 'px-4 sm:px-5 py-2.5 rounded-xl text-xs font-bold transition-all press-tactile text-slate-600 hover:text-slate-900 flex items-center gap-2 cursor-pointer';
-        btnPrecinct.className = 'px-4 sm:px-5 py-2.5 rounded-xl text-xs font-bold transition-all press-tactile text-slate-600 hover:text-slate-900 flex items-center gap-2 cursor-pointer';
-        btnWeekend.className = 'px-4 sm:px-5 py-2.5 rounded-xl text-xs font-bold transition-all press-tactile text-slate-600 hover:text-slate-900 flex items-center gap-2 cursor-pointer';
+        // Reset button states
+        const inactive = 'px-4 sm:px-5 py-2.5 rounded-xl text-xs font-bold transition-all press-tactile text-slate-600 hover:text-slate-900 flex items-center gap-2 cursor-pointer';
+        const active = 'px-4 sm:px-5 py-2.5 rounded-xl text-xs font-black transition-all press-tactile bg-slate-900 text-white shadow-xs flex items-center gap-2 cursor-pointer';
 
-        if (mode === 'map') {
-            viewMap.classList.remove('hidden');
-            btnMap.className = 'px-4 sm:px-5 py-2.5 rounded-xl text-xs font-black transition-all press-tactile bg-slate-900 text-white shadow-xs flex items-center gap-2 cursor-pointer';
-            if (map) map.invalidateSize();
-        } else if (mode === 'precinct') {
-            viewPrecinct.classList.remove('hidden');
-            btnPrecinct.className = 'px-4 sm:px-5 py-2.5 rounded-xl text-xs font-black transition-all press-tactile bg-slate-900 text-white shadow-xs flex items-center gap-2 cursor-pointer';
+        [bSonar, bTransit, bWeekend, bPrecinct].forEach(b => b.className = inactive);
+
+        if (mode === 'sonar') {
+            vSonar.classList.remove('hidden');
+            bSonar.className = active;
+        } else if (mode === 'transit') {
+            vTransit.classList.remove('hidden');
+            bTransit.className = active;
         } else if (mode === 'weekend') {
-            viewWeekend.classList.remove('hidden');
-            btnWeekend.className = 'px-4 sm:px-5 py-2.5 rounded-xl text-xs font-black transition-all press-tactile bg-slate-900 text-white shadow-xs flex items-center gap-2 cursor-pointer';
+            vWeekend.classList.remove('hidden');
+            bWeekend.className = active;
+        } else if (mode === 'precinct') {
+            vPrecinct.classList.remove('hidden');
+            bPrecinct.className = active;
         }
     }
 </script>
