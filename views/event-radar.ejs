@@ -247,12 +247,10 @@
 
         <!-- Interactive Map Canvas Container -->
         <div class="relative bg-slate-950 rounded-3xl border border-slate-800 overflow-hidden shadow-2xl" style="height: 580px;">
-            <!-- Leaflet Map Mount Point -->
+            <!-- Leaflet Map Mount Point (CARTO Basemaps Engine) -->
             <div id="radar-leaflet-map" class="w-full h-full z-10"></div>
-            <!-- Google Maps Mount Point -->
-            <div id="radar-google-map" class="w-full h-full z-10 hidden"></div>
 
-            <!-- Map Engine Toggle (CARTO Dark vs CARTO Voyager vs Google Maps Live) -->
+            <!-- Map Style Toggle (CARTO Dark vs CARTO Voyager) -->
             <div class="absolute bottom-4 left-4 z-20 flex items-center bg-slate-950/90 backdrop-blur-md rounded-2xl p-1 border border-slate-700/80 shadow-xl gap-1">
                 <button type="button" id="btn-engine-radar" onclick="switchMapEngine('radar')"
                         class="px-3 py-1.5 rounded-xl text-xs font-black bg-pink-600 text-white flex items-center gap-1.5 press-tactile transition-all cursor-pointer shadow-xs">
@@ -263,11 +261,6 @@
                         class="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white flex items-center gap-1.5 press-tactile transition-all cursor-pointer">
                     <i class="fas fa-map text-emerald-400 text-[11px]"></i>
                     <span>CARTO Voyager</span>
-                </button>
-                <button type="button" id="btn-engine-google" onclick="switchMapEngine('google')"
-                        class="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white flex items-center gap-1.5 press-tactile transition-all cursor-pointer">
-                    <i class="fab fa-google text-blue-400 text-[11px]"></i>
-                    <span>Google Maps</span>
                 </button>
             </div>
 
@@ -280,7 +273,7 @@
                     </div>
                     <div class="text-slate-400">LAT: 3.1390° N · LNG: 101.6869° E</div>
                     <div class="text-slate-400">RANGE: 75 KM METRO CORRIDOR</div>
-                    <div class="text-emerald-400 font-bold">STATUS: DUAL ENGINE SYNCED</div>
+                    <div class="text-emerald-400 font-bold">STATUS: CARTO RADAR ACTIVE</div>
                 </div>
             </div>
 
@@ -524,9 +517,6 @@
     let map = null;
     let markersLayer = null;
     let cartoTileLayer = null;
-    let gRadarMap = null;
-    let gRadarMarkers = [];
-    let gInfoWindow = null;
     let rawEvents = [];
     let currentFilteredEvents = [];
     let sweepInterval = null;
@@ -574,150 +564,23 @@
         renderEventMarkers(rawEvents);
     }
 
-    function switchMapEngine(engine) {
-        currentMapEngine = engine;
-        const leafletContainer = document.getElementById('radar-leaflet-map');
-        const googleContainer = document.getElementById('radar-google-map');
+    function switchMapEngine(style) {
+        currentMapEngine = style;
         const btnRadar = document.getElementById('btn-engine-radar');
         const btnVoyager = document.getElementById('btn-engine-voyager');
-        const btnGoogle = document.getElementById('btn-engine-google');
 
         const activeClass = 'px-3 py-1.5 rounded-xl text-xs font-black text-white flex items-center gap-1.5 press-tactile transition-all cursor-pointer shadow-xs';
         const inactiveClass = 'px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white flex items-center gap-1.5 press-tactile transition-all cursor-pointer';
 
-        if (engine === 'radar' || engine === 'voyager') {
-            leafletContainer.classList.remove('hidden');
-            googleContainer.classList.add('hidden');
-
-            const tileStyle = engine === 'radar' ? 'dark_all' : 'voyager';
-            if (cartoTileLayer) {
-                cartoTileLayer.setUrl(`https://{s}.basemaps.cartocdn.com/rastertiles/${tileStyle}/{z}/{x}/{y}{r}.png?key=${cartoKey}`);
-            }
-
-            if (btnRadar) btnRadar.className = engine === 'radar' ? `${activeClass} bg-pink-600` : inactiveClass;
-            if (btnVoyager) btnVoyager.className = engine === 'voyager' ? `${activeClass} bg-emerald-600` : inactiveClass;
-            if (btnGoogle) btnGoogle.className = inactiveClass;
-
-            if (map) map.invalidateSize();
-        } else {
-            leafletContainer.classList.add('hidden');
-            googleContainer.classList.remove('hidden');
-
-            if (btnGoogle) btnGoogle.className = `${activeClass} bg-blue-600`;
-            if (btnRadar) btnRadar.className = inactiveClass;
-            if (btnVoyager) btnVoyager.className = inactiveClass;
-
-            if (!gRadarMap) {
-                initGoogleRadarMap();
-            } else if (typeof google !== 'undefined' && google.maps && google.maps.event) {
-                google.maps.event.trigger(gRadarMap, 'resize');
-                gRadarMap.setCenter({ lat: 3.1390, lng: 101.6869 });
-            }
+        const tileStyle = style === 'voyager' ? 'voyager' : 'dark_all';
+        if (cartoTileLayer) {
+            cartoTileLayer.setUrl(`https://{s}.basemaps.cartocdn.com/rastertiles/${tileStyle}/{z}/{x}/{y}{r}.png?key=${cartoKey}`);
         }
-    }
 
-    window.gm_authFailure = function() {
-        console.warn('Google Maps authentication failure (BillingNotEnabled or RefererNotAllowed). Auto-switching to CARTO Dark.');
-        switchMapEngine('radar');
-    };
+        if (btnRadar) btnRadar.className = style === 'radar' ? `${activeClass} bg-pink-600` : inactiveClass;
+        if (btnVoyager) btnVoyager.className = style === 'voyager' ? `${activeClass} bg-emerald-600` : inactiveClass;
 
-    function initGoogleRadarMap() {
-        const mapContainer = document.getElementById('radar-google-map');
-        if (!mapContainer || gRadarMap) return;
-        if (typeof google === 'undefined' || !google.maps || !google.maps.Map) return;
-
-        // Watch for Google's internal error box and switch back to CARTO immediately
-        const observer = new MutationObserver(() => {
-            if (mapContainer.innerText.includes('Oops! Something went wrong') || mapContainer.querySelector('gmp-internal-request-error-text')) {
-                observer.disconnect();
-                console.warn('Google Maps key unbilled or restricted. Defaulting to CARTO.');
-                switchMapEngine('radar');
-            }
-        });
-        observer.observe(mapContainer, { childList: true, subtree: true, characterData: true });
-
-        try {
-            gRadarMap = new google.maps.Map(mapContainer, {
-                center: { lat: 3.1390, lng: 101.6869 },
-                zoom: 11,
-                mapTypeControl: true,
-                mapTypeControlOptions: {
-                    style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-                    position: google.maps.ControlPosition.TOP_RIGHT
-                },
-                streetViewControl: false,
-                fullscreenControl: true,
-                zoomControl: true,
-                styles: [
-                    { elementType: "geometry", stylers: [{ color: "#1d2c4d" }] },
-                    { elementType: "labels.text.fill", stylers: [{ color: "#8ec3b9" }] },
-                    { elementType: "labels.text.stroke", stylers: [{ color: "#1a3646" }] },
-                    { featureType: "administrative.country", elementType: "geometry.stroke", stylers: [{ color: "#4b6878" }] },
-                    { featureType: "road", elementType: "geometry", stylers: [{ color: "#304a7d" }] },
-                    { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#253b65" }] },
-                    { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#98a5be" }] },
-                    { featureType: "transit", elementType: "geometry", stylers: [{ color: "#2f3948" }] },
-                    { featureType: "transit.station", elementType: "labels.text.fill", stylers: [{ color: "#d59563" }] },
-                    { featureType: "water", elementType: "geometry", stylers: [{ color: "#17263c" }] }
-                ]
-            });
-
-            gInfoWindow = new google.maps.InfoWindow();
-
-            renderGoogleEventMarkers(currentFilteredEvents.length > 0 ? currentFilteredEvents : rawEvents);
-        } catch (err) {
-            console.error('Failed to initialize Google Maps Radar:', err);
-        }
-    }
-
-    function renderGoogleEventMarkers(eventsList) {
-        if (!gRadarMap || typeof google === 'undefined' || !google.maps) return;
-
-        // Clear existing markers
-        gRadarMarkers.forEach(m => m.setMap(null));
-        gRadarMarkers = [];
-
-        eventsList.forEach(e => {
-            const [lat, lng] = e.coords;
-            const marker = new google.maps.Marker({
-                position: { lat, lng },
-                map: gRadarMap,
-                title: `${e.artist} - ${e.title}`,
-                icon: {
-                    path: google.maps.SymbolPath.CIRCLE,
-                    scale: 9,
-                    fillColor: '#ec4899',
-                    fillOpacity: 1,
-                    strokeWeight: 2.5,
-                    strokeColor: '#ffffff'
-                }
-            });
-
-            const contentString = `
-                <div style="padding: 6px; font-family: ui-sans-serif, system-ui, sans-serif; color: #0f172a; min-width: 200px; max-width: 260px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <span style="background: #db2777; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 800; text-transform: uppercase;">${e.area}</span>
-                        <span style="font-size: 10px; color: #64748b; font-family: monospace;">${e.date}</span>
-                    </div>
-                    <div style="font-size: 11px; font-weight: bold; color: #db2777;">${e.artist}</div>
-                    <div style="font-size: 13px; font-weight: 900; color: #0f172a; margin: 2px 0 6px 0; line-height: 1.2;">${e.title}</div>
-                    <div style="font-size: 11px; color: #475569; margin-bottom: 8px;">📍 ${e.venue}</div>
-                    <div style="border-top: 1px solid #e2e8f0; padding-top: 6px; display: flex; justify-content: space-between; align-items: center;">
-                        <a href="/events/${e.id}" style="display: inline-block; padding: 4px 10px; background: #0f172a; color: white; border-radius: 6px; font-size: 11px; font-weight: bold; text-decoration: none;">View Details</a>
-                        ${e.ticketUrl ? `<a href="${e.ticketUrl}" target="_blank" rel="noopener noreferrer" style="font-size: 11px; font-weight: bold; color: #db2777; text-decoration: none;">Tickets ↗</a>` : ''}
-                    </div>
-                </div>
-            `;
-
-            marker.addListener('click', () => {
-                if (gInfoWindow) {
-                    gInfoWindow.setContent(contentString);
-                    gInfoWindow.open(gRadarMap, marker);
-                }
-            });
-
-            gRadarMarkers.push(marker);
-        });
+        if (map) map.invalidateSize();
     }
 
     function renderEventMarkers(eventsList) {
@@ -809,7 +672,6 @@
 
         currentFilteredEvents = filtered;
         renderEventMarkers(filtered);
-        renderGoogleEventMarkers(filtered);
     }
 
     // 4D Temporal Sweep Simulation
@@ -850,20 +712,14 @@
     }
 
     function focusRadarCoordinate(lat, lng, zoom) {
-        if (currentMapEngine === 'radar' && map) {
+        if (map) {
             map.flyTo([lat, lng], zoom, { duration: 1.2, easeLinearity: 0.25 });
-        } else if (currentMapEngine === 'google' && gRadarMap) {
-            gRadarMap.panTo({ lat, lng });
-            gRadarMap.setZoom(zoom);
         }
     }
 
     function resetRadarView() {
-        if (currentMapEngine === 'radar' && map) {
+        if (map) {
             map.flyTo([3.1390, 101.6869], 10, { duration: 1.2 });
-        } else if (currentMapEngine === 'google' && gRadarMap) {
-            gRadarMap.panTo({ lat: 3.1390, lng: 101.6869 });
-            gRadarMap.setZoom(11);
         }
     }
 
@@ -889,8 +745,7 @@
         if (mode === 'map') {
             viewMap.classList.remove('hidden');
             btnMap.className = 'px-4 sm:px-5 py-2.5 rounded-xl text-xs font-black transition-all press-tactile bg-slate-900 text-white shadow-xs flex items-center gap-2 cursor-pointer';
-            if (currentMapEngine === 'radar' && map) map.invalidateSize();
-            if (currentMapEngine === 'google' && gRadarMap && typeof google !== 'undefined') google.maps.event.trigger(gRadarMap, 'resize');
+            if (map) map.invalidateSize();
         } else if (mode === 'precinct') {
             viewPrecinct.classList.remove('hidden');
             btnPrecinct.className = 'px-4 sm:px-5 py-2.5 rounded-xl text-xs font-black transition-all press-tactile bg-slate-900 text-white shadow-xs flex items-center gap-2 cursor-pointer';
@@ -900,8 +755,5 @@
         }
     }
 </script>
-
-<!-- Official Google Maps JavaScript API with Key -->
-<script src="https://maps.googleapis.com/maps/api/js?key=<%= typeof googleMapsApiKey !== 'undefined' ? googleMapsApiKey : 'AIzaSyAI6j0xuTti4MvqbpHWhSb1O4TFiEYrjFc' %>&callback=initGoogleRadarMap" async defer onerror="console.warn('Google Maps failed to load')"></script>
 
 <%- include('partials/footer') %>
