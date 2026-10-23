@@ -1,4 +1,4 @@
-<%- include('../partials/header', { title: 'Organizer Event Dashboard | K-Sync Malaysia' }) %>
+<%- include('../partials/header', { title: 'Organizer Portal | K-Sync Malaysia' }) %>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <!-- Top Header Banner -->
@@ -6,7 +6,7 @@
         <div>
             <div class="flex items-center gap-2 mb-2">
                 <span class="px-3 py-1 rounded-full text-xs font-bold bg-pink-500/20 text-pink-300 border border-pink-500/30 uppercase tracking-wider flex items-center gap-1.5">
-                    <i class="fas fa-building-user"></i> Organizer Workspace
+                    <i class="fas fa-building-user"></i> Organizer Portal
                 </span>
                 <% if (organizer.is_verified_organizer === 1) { %>
                     <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
@@ -29,8 +29,8 @@
         </div>
     </div>
 
-    <!-- 4 Metrics Counter Cards -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <!-- 4 Metrics Counter Cards: Responsive Mobile Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
             <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl shrink-0">
                 <i class="fas fa-calendar-days"></i>

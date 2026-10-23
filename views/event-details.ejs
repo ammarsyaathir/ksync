@@ -221,23 +221,7 @@
                         <span>Export Calendar</span>
                     </button>
 
-                    <% if (isFanOrGuest) { %>
-                        <!-- 3D Stadium & Seating POV Sightlines (Fans & Guests only) -->
-                        <a href="/venues/seating-3d?event=<%= event.id %>&venue=<%= event.venue_id || 1 %>" 
-                           class="px-4 py-2.5 rounded-xl border border-pink-200 bg-pink-50 hover:bg-pink-100 text-pink-700 font-extrabold text-xs flex items-center shadow-xs cursor-pointer press-tactile transition-all"
-                           title="Explore 3D Stadium & Seat Sightlines in WebGL">
-                            <i class="fas fa-cube me-1.5 text-pink-600"></i>
-                            <span>3D Arena POV</span>
-                        </a>
 
-                        <!-- UC: Stamp to Concert Passport (Fans & Guests only) -->
-                        <a href="/passport?event_id=<%= event.id %>" 
-                           class="px-4 py-2.5 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-800 font-extrabold text-xs flex items-center shadow-xs cursor-pointer press-tactile transition-all"
-                           title="Claim digital stamp to your K-Sync Passport">
-                            <i class="fas fa-passport me-1.5 text-amber-600"></i>
-                            <span>Stamp Passport</span>
-                        </a>
-                    <% } %>
 
                     <% if (isOrganizer || isAdmin) { %>
                         <% if (isAdmin || (userObj && userObj.id === event.organizer_id)) { %>

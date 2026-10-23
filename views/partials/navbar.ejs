@@ -44,10 +44,10 @@
                 </a>
 
                 <% if (userRole === 'organizer') { %>
-                    <!-- Organizer-Only Controls: No 4D / 3D / Passport -->
+                    <!-- Organizer-Only Controls: Simple & Streamlined -->
                     <a href="/organizer/dashboard" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer <%= path.startsWith('/organizer') ? 'bg-emerald-700 text-white shadow-xs' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200' %>">
                         <i class="fas fa-gauge text-xs text-emerald-500"></i>
-                        <span>Organizer Hub</span>
+                        <span>Organizer Portal</span>
                     </a>
                     <a href="/submit-event" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer bg-slate-900 hover:bg-slate-800 text-white shadow-xs">
                         <i class="fas fa-wand-magic-sparkles text-xs text-pink-400"></i>
@@ -58,7 +58,7 @@
                         <span>Org Profile</span>
                     </a>
                 <% } else if (userRole === 'admin') { %>
-                    <!-- Admin-Only Controls: No 4D / 3D / Passport -->
+                    <!-- Admin-Only Controls: Streamlined Oversight -->
                     <a href="/admin" class="px-3.5 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 press-tactile cursor-pointer <%= path === '/admin' ? 'bg-purple-900 text-white shadow-xs' : 'bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200' %>">
                         <i class="fas fa-shield-halved text-xs text-purple-400"></i>
                         <span>Maintainer</span>
@@ -80,25 +80,17 @@
                         <span>Artists</span>
                     </a>
                 <% } else { %>
-                    <!-- Fan / Public Fan Discovery: 4D Radar, 3D Arena, Artists, Passport -->
+                    <!-- Fan / Public Fan Discovery: 360 Radar, Artists, Host Event -->
                     <a href="/events/radar" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer <%= path === '/events/radar' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100/80' %>">
                         <span class="relative flex h-2 w-2">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-pink-500"></span>
                         </span>
-                        <span>4D Radar</span>
-                    </a>
-                    <a href="/venues/seating-3d" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer <%= path.startsWith('/venues/seating-3d') ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100/80' %>" title="3D Stadium & Arena Seating Sightlines">
-                        <i class="fas fa-cube text-xs text-pink-500"></i>
-                        <span>3D Arena</span>
+                        <span>360° Radar</span>
                     </a>
                     <a href="/artists" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer <%= path.startsWith('/artists') ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100/80' %>">
                         <i class="fas fa-users text-xs text-purple-500"></i>
                         <span>Artists</span>
-                    </a>
-                    <a href="/passport" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer <%= path.startsWith('/passport') ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:bg-slate-100/80' %>" title="Digital K-Pop Concert Passport & Fandom Badges">
-                        <i class="fas fa-passport text-xs text-amber-500"></i>
-                        <span>Passport</span>
                     </a>
                     <a href="/submit-event" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer bg-slate-900 hover:bg-slate-800 text-white shadow-xs">
                         <i class="fas fa-plus text-xs text-pink-400"></i>
@@ -147,7 +139,7 @@
                             <% if (userRole === 'organizer') { %>
                                 <a href="/organizer/dashboard" class="flex items-center px-4 py-2 text-xs font-bold text-emerald-800 hover:bg-emerald-50">
                                     <i class="fas fa-gauge w-5 text-emerald-600"></i>
-                                    <span>Organizer Hub</span>
+                                    <span>Organizer Portal</span>
                                 </a>
                                 <a href="/submit-event" class="flex items-center px-4 py-2 text-xs font-bold text-slate-800 hover:bg-slate-50">
                                     <i class="fas fa-plus w-5 text-pink-500"></i>
@@ -175,12 +167,8 @@
                                     <i class="fas fa-user-circle w-5 text-pink-500"></i>
                                     <span>My Profile</span>
                                 </a>
-                                <a href="/passport" class="flex items-center px-4 py-2 text-xs font-bold text-amber-600 hover:bg-amber-50">
-                                    <i class="fas fa-passport w-5 text-amber-500"></i>
-                                    <span>Concert Passport & Badges</span>
-                                </a>
                                 <a href="/saved-events" class="flex items-center px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50">
-                                    <i class="fas fa-heart w-5 text-slate-400"></i>
+                                    <i class="fas fa-heart w-5 text-rose-500"></i>
                                     <span>Saved Wishlist</span>
                                 </a>
                             <% } %>
@@ -249,7 +237,7 @@
             </a>
             <a href="/organizer/dashboard" class="flex flex-col items-center py-1 rounded-xl press-tactile <%= path.startsWith('/organizer') ? 'text-emerald-700 font-extrabold' : 'text-slate-500 font-medium' %>">
                 <i class="fas fa-gauge text-base mb-0.5"></i>
-                <span class="text-[10px] tracking-tight">Org Hub</span>
+                <span class="text-[10px] tracking-tight">Portal</span>
             </a>
             <a href="/submit-event" class="flex flex-col items-center py-1 rounded-xl press-tactile <%= path === '/submit-event' ? 'text-emerald-700 font-extrabold' : 'text-slate-500 font-medium' %>">
                 <i class="fas fa-plus text-base mb-0.5"></i>
@@ -278,7 +266,7 @@
                 <span class="text-[10px] tracking-tight">Profile</span>
             </a>
         <% } else { %>
-            <!-- Fan / Public Mobile Dock -->
+            <!-- Fan / Public Mobile Dock: Clean & Streamlined -->
             <a href="/events" class="flex flex-col items-center py-1 rounded-xl press-tactile <%= path === '/events' ? 'text-pink-600 font-extrabold' : 'text-slate-500 font-medium' %>">
                 <i class="fas fa-compass text-base mb-0.5"></i>
                 <span class="text-[10px] tracking-tight">Events</span>
@@ -288,11 +276,11 @@
                     <i class="fas fa-radar text-base mb-0.5"></i>
                     <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-pink-500 animate-pulse"></span>
                 </div>
-                <span class="text-[10px] tracking-tight">4D Radar</span>
+                <span class="text-[10px] tracking-tight">Radar</span>
             </a>
-            <a href="/passport" class="flex flex-col items-center py-1 rounded-xl press-tactile <%= path.startsWith('/passport') ? 'text-pink-600 font-extrabold' : 'text-slate-500 font-medium' %>">
-                <i class="fas fa-passport text-base mb-0.5 text-amber-500"></i>
-                <span class="text-[10px] tracking-tight">Passport</span>
+            <a href="/saved-events" class="flex flex-col items-center py-1 rounded-xl press-tactile <%= path === '/saved-events' ? 'text-pink-600 font-extrabold' : 'text-slate-500 font-medium' %>">
+                <i class="fas fa-heart text-base mb-0.5 text-rose-500"></i>
+                <span class="text-[10px] tracking-tight">Wishlist</span>
             </a>
             <% if (user) { %>
                 <a href="/profile" class="flex flex-col items-center py-1 rounded-xl press-tactile <%= path.startsWith('/profile') ? 'text-pink-600 font-extrabold' : 'text-slate-500 font-medium' %>">

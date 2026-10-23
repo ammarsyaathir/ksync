@@ -264,92 +264,10 @@ router.get('/events/radar', async (req, res) => {
   }
 });
 
-// GET /venues/seating-3d - Interactive 3D Stadium & Seating Sightline POV Simulator (Option 1)
-router.get('/venues/seating-3d', async (req, res) => {
-  try {
-    const venueId = req.query.venue ? Number(req.query.venue) : 1; // Default: Axiata Arena (id 1)
-    const eventId = req.query.event ? Number(req.query.event) : null;
-
-    // Hardcoded production fallback venues (guarantees zero crash if MySQL venues table is unmigrated)
-    const DEFAULT_VENUES = [
-      { id: 1, name: 'Axiata Arena Bukit Jalil', city: 'Kuala Lumpur', state: 'W.P. Kuala Lumpur', capacity: 16000 },
-      { id: 2, name: 'National Stadium Bukit Jalil', city: 'Kuala Lumpur', state: 'W.P. Kuala Lumpur', capacity: 87000 },
-      { id: 3, name: 'Zepp Kuala Lumpur', city: 'Kuala Lumpur', state: 'W.P. Kuala Lumpur', capacity: 2500 },
-      { id: 4, name: 'Idea Live KL (Mega Star Arena)', city: 'Kuala Lumpur', state: 'W.P. Kuala Lumpur', capacity: 5000 }
-    ];
-
-    let venues = [];
-    try {
-      venues = await db.query(`
-        SELECT * FROM venues 
-        WHERE capacity IS NOT NULL AND capacity >= 1000 
-        ORDER BY capacity DESC
-      `);
-    } catch (e) {
-      // Table 'venues' might not exist in remote MySQL
-    }
-
-    if (!venues || venues.length === 0) {
-      venues = DEFAULT_VENUES;
-    }
-
-    // Selected venue
-    let selectedVenue = venues.find(v => v.id === venueId);
-    if (!selectedVenue) {
-      selectedVenue = venues[0] || DEFAULT_VENUES[0];
-    }
-
-    // Fetch upcoming verified concerts for the concert selector
-    let upcomingEvents = [];
-    try {
-      upcomingEvents = await db.query(`
-        SELECT e.id, e.event_name, e.event_date, e.venue_name, e.ticket_info, e.official_ticket_url,
-               a.name as artist_name, a.image_url as artist_image
-        FROM events e
-        LEFT JOIN artists a ON e.artist_id = a.id
-        WHERE e.verification_status = 'VERIFIED'
-        ORDER BY e.event_date ASC
-        LIMIT 12
-      `);
-    } catch (e) {}
-
-    // Selected event if provided, else pick top concert
-    let selectedEvent = null;
-    if (eventId) {
-      selectedEvent = upcomingEvents.find(e => e.id === eventId);
-      if (!selectedEvent) {
-        try {
-          selectedEvent = await db.getOne(`
-            SELECT e.*, a.name as artist_name, a.image_url as artist_image
-            FROM events e
-            LEFT JOIN artists a ON e.artist_id = a.id
-            WHERE e.id = ?
-          `, [eventId]);
-        } catch (e) {}
-      }
-    }
-    if (!selectedEvent && upcomingEvents.length > 0) {
-      selectedEvent = upcomingEvents[0];
-    }
-
-    res.render('seating-3d', {
-      venues,
-      selectedVenue,
-      upcomingEvents,
-      selectedEvent,
-      activePath: '/venues/seating-3d',
-      title: `${selectedVenue.name} - 3D Stadium & Seating POV Simulator | K-Sync Malaysia`,
-      helpers
-    });
-  } catch (err) {
-    console.error('3D Seating Simulator error:', err);
-    res.status(500).send('Error loading 3D Stadium Simulator');
-  }
+// 3D Stadium Seating removed per design simplification - Redirect to 360 Event Radar
+router.get(['/venues/seating-3d', '/events/seating-3d', '/stadium-3d'], (req, res) => {
+  res.redirect('/events/radar');
 });
-
-// Aliases for convenient discovery
-router.get('/events/seating-3d', (req, res) => res.redirect('/venues/seating-3d' + (req.url.includes('?') ? req.url.substring(req.url.indexOf('?')) : '')));
-router.get('/stadium-3d', (req, res) => res.redirect('/venues/seating-3d'));
 
 // GET /events/:idOrSlug - Event Details by ID or Name Slug
 router.get('/events/:idOrSlug', async (req, res) => {

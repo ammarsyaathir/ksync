@@ -40,11 +40,10 @@ async function runTests() {
   assert(res.status === 200 && radarHtml.includes('K-Pop Event Radar') && radarHtml.includes('Bukit Jalil Hub'), 
     'UC005: Event Radar (/events/radar returns HTTP 200 with Bukit Jalil & Area Clusters)');
 
-  // Option 1: 3D Stadium & Seating POV Simulator
-  res = await fetch(`${BASE_URL}/venues/seating-3d`);
-  const seating3dHtml = await res.text();
-  assert(res.status === 200 && seating3dHtml.includes('3D ARENA POV ENGINE') && seating3dHtml.includes('Axiata Arena'), 
-    'Option 1: 3D Stadium & Seating POV Simulator (/venues/seating-3d returns HTTP 200 with WebGL Three.js & Raycasting)');
+  // 3D Stadium & Seating POV Simulator (Removed as per user requirement, redirects to Radar)
+  res = await fetch(`${BASE_URL}/venues/seating-3d`, { redirect: 'manual' });
+  assert([301, 302].includes(res.status) && res.headers.get('location') === '/events/radar', 
+    '3D Stadium removed: /venues/seating-3d safely 302 redirects to /events/radar');
 
   // UC006, UC007, UC008, UC009, UC010, UC011, UC014: Event Details, Outbound links, Discussions
   const eventRow = await db.getOne("SELECT id, event_name FROM events WHERE verification_status = 'VERIFIED' LIMIT 1");

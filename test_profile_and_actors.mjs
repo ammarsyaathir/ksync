@@ -56,7 +56,7 @@ async function runTests() {
 
     assert(fanGetRes.status === 200, 'GET /profile as Fan returns HTTP 200');
     assert(fanHtml.includes('Fan Profile'), 'Header displays "Fan Profile"');
-    assert(fanHtml.includes('Concert Passport & Badges'), 'Fan profile displays Concert Passport link');
+    assert(fanHtml.includes('360° Radar'), 'Fan profile displays 360° Radar link');
     assert(fanHtml.includes('Saved Wishlist'), 'Fan profile displays Saved Wishlist link');
     assert(!fanHtml.includes('Maintainer Hub'), 'Fan profile does NOT leak Admin Maintainer Hub');
     assert(fanHtml.includes('Favorite K-Pop Bias / Interests'), 'Fan profile displays bias/interests field');
@@ -96,7 +96,7 @@ async function runTests() {
 
     assert(orgGetRes.status === 200, 'GET /profile as Organizer returns HTTP 200');
     assert(orgHtml.includes('Organization Profile'), 'Header displays "Organization Profile"');
-    assert(orgHtml.includes('Organizer Hub'), 'Organizer profile displays Organizer Hub link');
+    assert(orgHtml.includes('Organizer Portal'), 'Organizer profile displays Organizer Portal link');
     assert(orgHtml.includes('Publish Concert / Event'), 'Organizer profile displays Publish Concert link');
     assert(orgHtml.includes('Organization Credentials & Official Channels'), 'Organizer profile displays Organization Credentials form');
 
