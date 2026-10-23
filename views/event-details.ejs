@@ -1,4 +1,4 @@
-<%- include('partials/header', { title: event.event_name + ' | Concert Dossier & Live Intel | K-Sync Malaysia' }) %>
+<%- include('partials/header', { title: event.event_name + ' | Concert Details | K-Sync Malaysia' }) %>
 
 <% 
     const calcStatus = helpers.getCalculatedEventStatus(event);
@@ -331,7 +331,7 @@
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100">
                     <h2 class="text-xl font-black text-slate-900 flex items-center gap-2.5">
                         <i class="fas fa-circle-info text-pink-600"></i>
-                        <span>Concert Overview & Dossier</span>
+                        <span>Event Overview & Information</span>
                     </h2>
                     <span class="px-3 py-1 rounded-full text-[11px] font-bold bg-violet-50 text-violet-700 border border-violet-200">
                         Official Release
@@ -370,42 +370,6 @@
                     <% } %>
                 </div>
             <% } %>
-
-            <!-- Fan Inclusivity & Accessibility Facilities -->
-            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-4">
-                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                    <h3 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2.5">
-                        <i class="fas fa-universal-access text-pink-600"></i>
-                        <span>Accessibility & Fan Facilities</span>
-                    </h3>
-                    <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-pink-50 text-pink-700 border border-pink-200">
-                        Inclusivity Verified
-                    </span>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-xs">
-                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-3">
-                        <i class="fas fa-wheelchair text-violet-600 text-lg shrink-0 mt-0.5"></i>
-                        <div>
-                            <strong class="text-slate-900 block font-bold mb-1">OKU / Wheelchair Access</strong>
-                            <p class="text-slate-600 leading-relaxed">Dedicated barrier-free ramps, accessible lifts, and reserved viewing zones for wheelchair users.</p>
-                        </div>
-                    </div>
-                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-3">
-                        <i class="fas fa-bolt-lightning text-amber-500 text-lg shrink-0 mt-0.5"></i>
-                        <div>
-                            <strong class="text-slate-900 block font-bold mb-1">Sensory & Strobe Warning</strong>
-                            <p class="text-slate-600 leading-relaxed">Stage performance features sudden pyrotechnics, heavy sub-bass, and high-intensity strobe lighting.</p>
-                        </div>
-                    </div>
-                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-3">
-                        <i class="fas fa-kit-medical text-rose-500 text-lg shrink-0 mt-0.5"></i>
-                        <div>
-                            <strong class="text-slate-900 block font-bold mb-1">First Aid & Paramedics</strong>
-                            <p class="text-slate-600 leading-relaxed">On-site paramedic triage booth and priority seating support for expectant mothers.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <!-- Official Event Posters & Visual Gallery -->
             <div class="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/90 shadow-sm space-y-5">
@@ -959,56 +923,13 @@
                 </div>
 
                 <!-- Anti-Fraud Trust Check -->
-                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 space-y-2 text-[11px] text-slate-600">
-                    <div class="font-bold text-slate-800 text-xs flex items-center gap-1.5">
-                        <i class="fas fa-robot text-violet-600"></i>
-                        <span>Autonomous Dual-AI Verification Audit</span>
+                <div class="bg-emerald-50 rounded-2xl p-3.5 border border-emerald-200/80 flex items-center gap-2.5 text-xs text-emerald-900">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm shrink-0">
+                        <i class="fas fa-circle-check"></i>
                     </div>
-                    <div class="flex items-start gap-1.5">
-                        <i class="fas fa-check text-emerald-500 text-[10px] mt-0.5"></i>
-                        <span>Ensemble verified: <strong class="text-slate-800">Vision OCR + Semantic Auditor Consensus</strong></span>
-                    </div>
-                    <div class="flex items-start gap-1.5">
-                        <i class="fas fa-check text-emerald-500 text-[10px] mt-0.5"></i>
-                        <span>Official source gateway: <strong class="text-slate-800"><%= ticketSec.domain %></strong></span>
-                    </div>
-                    <div class="flex items-start gap-1.5">
-                        <i class="fas fa-shield text-violet-500 text-[10px] mt-0.5"></i>
-                        <span>Backed by 4-layer verified community anti-scalper reporting</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Official K-Sync Verification Card & Reference Code -->
-            <div class="bg-gradient-to-br from-slate-950 via-slate-900 to-violet-950 rounded-3xl p-6 text-white shadow-xl space-y-4 border border-white/10">
-                <div class="flex items-center justify-between">
-                    <div class="w-10 h-10 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center text-lg shadow-xs">
-                        <i class="fas fa-shield-check"></i>
-                    </div>
-                    <span class="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                        <i class="fas fa-circle-check me-1"></i> Verified Record
-                    </span>
-                </div>
-                <div>
-                    <h3 class="font-black text-sm text-white">Event Reference Tracking ID</h3>
-                    <p class="text-[11px] text-slate-300 mt-0.5">Use this immutable code to track verified concert schedule changes.</p>
-                </div>
-                <div class="flex items-center justify-between bg-white/10 rounded-xl p-3 border border-white/10 font-mono text-xs">
-                    <span class="text-pink-300 font-bold tracking-wider"><%= event.tracking_code || 'KS-2026-MY001' %></span>
-                    <button onclick="copyRefCode('<%= event.tracking_code || 'KS-2026-MY001' %>')" 
-                            class="text-[11px] text-slate-300 hover:text-white font-sans font-bold flex items-center gap-1 cursor-pointer transition-colors press-tactile">
-                        <i class="far fa-copy text-xs"></i>
-                        <span>Copy</span>
-                    </button>
-                </div>
-                <div class="text-[11px] text-slate-300/90 leading-relaxed pt-1 border-t border-white/10 space-y-1">
-                    <div class="flex items-start gap-1.5">
-                        <i class="fas fa-check text-pink-400 text-[10px] mt-0.5"></i>
-                        <span>Direct synchronization with official promoter calendar</span>
-                    </div>
-                    <div class="flex items-start gap-1.5">
-                        <i class="fas fa-ban text-rose-400 text-[10px] mt-0.5"></i>
-                        <span>Never buy from unauthorized secondary scalpers</span>
+                    <div class="min-w-0">
+                        <div class="font-bold text-slate-900">Verified Event Listing</div>
+                        <div class="text-[11px] text-slate-500 truncate">Official Source: <%= ticketSec.domain %></div>
                     </div>
                 </div>
             </div>
@@ -1047,7 +968,7 @@
         <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
             <h3 class="text-lg font-black text-slate-900 flex items-center gap-2.5">
                 <i class="fas fa-share-nodes text-pink-600"></i>
-                <span>Share Concert Dossier</span>
+                <span>Share Event</span>
             </h3>
             <button onclick="closeShareModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-xs cursor-pointer transition-colors press-tactile">
                 <i class="fas fa-xmark"></i>
