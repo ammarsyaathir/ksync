@@ -1,0 +1,183 @@
+<%- include('../partials/header', { title: 'Event Verification Policy | K-Sync Malaysia' }) %>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 min-w-0 max-w-full">
+    <!-- Breadcrumb & Top Badge -->
+    <div class="mb-8">
+        <a href="/" class="inline-flex items-center text-xs font-bold text-slate-500 hover:text-pink-600 mb-3 transition-colors">
+            <i class="fas fa-arrow-left me-1.5"></i> Back to K-Sync Malaysia
+        </a>
+        <div class="flex items-center gap-2 mb-2">
+            <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-purple-100 text-purple-700 uppercase tracking-wider">
+                <i class="fas fa-microchip me-1"></i> Autonomous AI Verification Standard
+            </span>
+            <span class="text-xs text-slate-400">Effective Date: October 2026</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+            K-Sync Event Verification Policy
+        </h1>
+        <p class="text-slate-600 text-sm sm:text-base mt-2 leading-relaxed">
+            K-Sync Malaysia operates on a 100% autonomous, zero-human-bottleneck verification pipeline. This document details how event trust is evaluated, our 4-pillar multi-model consensus system, and category-specific standards.
+        </p>
+    </div>
+
+    <!-- Main Content Articles -->
+    <div class="space-y-8 text-slate-700 text-sm sm:text-base leading-relaxed">
+        
+        <!-- Section 1: The Zero Admin Queue Guarantee -->
+        <section class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center font-black text-base shrink-0">
+                    1
+                </div>
+                <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">
+                    The Zero Admin Queue Guarantee
+                </h2>
+            </div>
+            <p>
+                Traditional event portals suffer from multi-day manual approval queues, causing fans to miss flash ticket sales, presale windows, or weekend cafe gatherings.
+            </p>
+            <div class="p-4 rounded-2xl bg-pink-50/70 border border-pink-200/60 text-xs sm:text-sm text-pink-900 space-y-2">
+                <div class="font-bold text-pink-950 flex items-center gap-1.5">
+                    <i class="fas fa-bolt text-pink-600"></i> Autonomous Trust Architecture:
+                </div>
+                <p class="text-pink-900/90">
+                    In K-Sync Malaysia, human administrators <strong>do not manually approve or reject events</strong>. Event evaluation occurs instantly (within seconds) upon submission using an autonomous pipeline combining deterministic rule-checking, promoter domain authority scoring, and Google Gemini Multimodal Vision & Semantic Auditing.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 2: The 4 Evaluation Pillars -->
+        <section class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center font-black text-base shrink-0">
+                    2
+                </div>
+                <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">
+                    The 4 Evaluation Pillars
+                </h2>
+            </div>
+            <p>
+                Every submitted event undergoes rigorous algorithmic cross-examination across four distinct safety dimensions:
+            </p>
+            
+            <div class="space-y-3 pt-2">
+                <!-- Pillar 1 -->
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <div class="flex items-center justify-between mb-1">
+                        <h4 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center text-xs">1</span>
+                            Deterministic Rules & Chronology
+                        </h4>
+                        <span class="text-xs font-bold text-purple-600">Sanity Filter</span>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Ensures all mandatory fields are populated, the event date is set in the future, timing is valid, and verifies there is no active duplicate listing for the same artist at the same venue on the same date.
+                    </p>
+                </div>
+
+                <!-- Pillar 2 -->
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <div class="flex items-center justify-between mb-1">
+                        <h4 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-pink-100 text-pink-700 flex items-center justify-center text-xs">2</span>
+                            Source & Domain Authority Whitelist
+                        </h4>
+                        <span class="text-xs font-bold text-pink-600">Promoter & Ticketing Link</span>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Evaluates the official reference URL against our Malaysian promoter registry (Live Nation MY, Star Planet, iMe Malaysia, BookMyShow, GoLive Asia, Ticket2U) and verified fanclub social domains (X/Twitter, Instagram, Telegram channels).
+                    </p>
+                </div>
+
+                <!-- Pillar 3 -->
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <div class="flex items-center justify-between mb-1">
+                        <h4 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs">3</span>
+                            Multimodal Vision & Poster OCR
+                        </h4>
+                        <span class="text-xs font-bold text-indigo-600">Google Gemini Flash</span>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Scans the uploaded promotional poster using optical character recognition (OCR) and visual scene understanding. Matches the extracted visual concert title, dates, and venue name against the form submission to prevent misleading thumbnails.
+                    </p>
+                </div>
+
+                <!-- Pillar 4 -->
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <div class="flex items-center justify-between mb-1">
+                        <h4 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs">4</span>
+                            Semantic Auditor & Anti-Scalper Checks
+                        </h4>
+                        <span class="text-xs font-bold text-emerald-600">Scam & Fair Pricing</span>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Performs geographic sanity checks (valid Malaysian cities and venues), flags suspicious ticketing links, and detects non-profit violations (e.g. charging high entry tickets for free cafe events).
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Event Tiers & Requirements -->
+        <section class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black text-base shrink-0">
+                    3
+                </div>
+                <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">
+                    Category-Specific Verification Criteria
+                </h2>
+            </div>
+            <div class="space-y-3 text-xs sm:text-sm">
+                <div class="border-b border-slate-100 pb-3">
+                    <h4 class="font-bold text-slate-900">Arena & Stadium Concerts</h4>
+                    <p class="text-slate-600 text-xs mt-0.5">Must be held at recognized Malaysian arenas (Axiata, Stadium Bukit Jalil, Zepp KL, Mega Star Arena) and supply official promoter announcements and authorized ticketing platform URLs.</p>
+                </div>
+                <div class="border-b border-slate-100 pb-3">
+                    <h4 class="font-bold text-slate-900">Cupsleeve & Birthday Cafes</h4>
+                    <p class="text-slate-600 text-xs mt-0.5">Must specify an active physical cafe name in Malaysia, dates, and tier breakdown. Fanclubs without an official domain may verify via social media post links (X/Instagram/Telegram).</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-900">Random Play Dance (RPD) & Pop-Ups</h4>
+                    <p class="text-slate-600 text-xs mt-0.5">Must take place at public venues or malls with open access, with free admission for public participants.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: What Happens When Verification Fails? -->
+        <section class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-black text-base shrink-0">
+                    4
+                </div>
+                <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">
+                    Handling Verification Discrepancies
+                </h2>
+            </div>
+            <p>
+                If an event does not reach the automated trust threshold (80%+ composite score):
+            </p>
+            <ul class="list-disc list-inside space-y-2 text-slate-600 text-xs sm:text-sm pl-2">
+                <li><strong class="text-slate-900">Immediate Transparent Feedback:</strong> The organizer receives an instant diagnostic report outlining the exact failed checks (e.g. mismatched dates on poster vs form, broken link).</li>
+                <li><strong class="text-slate-900">Self-Correction & Instant Re-verification:</strong> Organizers can edit the event listing and click "Re-verify Event" for an immediate re-evaluation with zero wait time.</li>
+                <li><strong class="text-slate-900">Scam Flagging:</strong> If an event contains malicious links, confirmed fake posters, or phishing attempts, the listing is automatically hidden from public radar and logged in security audits.</li>
+            </ul>
+        </section>
+    </div>
+
+    <!-- Contact & Feedback Box -->
+    <div class="mt-12 p-6 rounded-3xl bg-slate-900 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+            <h4 class="font-extrabold text-base">Ready to list your Malaysian K-Pop event?</h4>
+            <p class="text-xs text-slate-300 mt-0.5">Get verified in seconds with our AI Poster Scanner.</p>
+        </div>
+        <div class="flex gap-2">
+            <a href="/submit-event" class="px-5 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-bold text-xs transition-all">
+                Publish Event
+            </a>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

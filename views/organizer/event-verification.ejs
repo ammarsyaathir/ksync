@@ -1,6 +1,6 @@
-<%- include('../partials/header', { title: 'Dual-AI Verification Telemetry | ' + event.event_name }) %>
+<%- include('../partials/header', { title: 'Event Trust & Safety Check | ' + event.event_name }) %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 min-w-0 max-w-full">
     <!-- Top Breadcrumb -->
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -8,10 +8,10 @@
                 <i class="fas fa-arrow-left me-1.5"></i> Back to Organizer Portal
             </a>
             <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                Dual-AI Verification Telemetry
+                Event Trust & Safety Check
             </h1>
-            <p class="text-xs text-slate-500 mt-0.5">
-                Detailed audit trail and multi-model consensus report for <strong class="text-slate-800"><%= event.event_name %></strong>.
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
+                Automated safety and trust check summary for <strong class="text-slate-800"><%= event.event_name %></strong>.
             </p>
         </div>
 
@@ -21,7 +21,7 @@
             </a>
             <form action="/organizer/events/<%= event.id %>/reverify" method="POST">
                 <button type="submit" class="px-5 py-2 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white text-xs font-extrabold shadow transition-all flex items-center gap-1.5 cursor-pointer">
-                    <i class="fas fa-rotate"></i> Re-run Evaluation
+                    <i class="fas fa-rotate"></i> Re-verify Event
                 </button>
             </form>
         </div>
@@ -33,15 +33,15 @@
             <div class="space-y-2 max-w-xl">
                 <div class="flex items-center gap-2">
                     <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-pink-500/20 text-pink-300 border border-pink-500/30 uppercase tracking-wider">
-                        Autonomous Multi-Model Consensus
+                        Instant AI Safety Check
                     </span>
                     <%- helpers.getVerificationBadge(event.verification_status) %>
                 </div>
                 <h2 class="text-xl sm:text-2xl font-black">
                     <%= vResult.decisionSummary %>
                 </h2>
-                <p class="text-xs text-slate-300 leading-relaxed">
-                    Evaluated by K-Sync's autonomous verification pipeline comprising deterministic field rules, promoter domain whitelisting, Google Gemini 3.5 Flash Vision OCR, and Gemini 3.5 Flash Semantic Auditing.
+                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                    Verified automatically by K-Sync's AI trust system. We cross-check your event details, official links, poster image, and venue to ensure fans get accurate, scam-free information with zero waiting queues.
                 </p>
             </div>
 
@@ -50,7 +50,7 @@
                 <div class="text-4xl font-black <%= vResult.compositeScore >= 80 ? 'text-emerald-400' : (vResult.compositeScore >= 50 ? 'text-amber-400' : 'text-rose-400') %>">
                     <%= vResult.compositeScore %>%
                 </div>
-                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">Composite Score</div>
+                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">Trust Score</div>
                 <div class="text-[10px] text-pink-300 font-semibold mt-0.5"><%= vResult.details.dualAIConsensus.consensusState %></div>
             </div>
         </div>
@@ -66,8 +66,8 @@
                         <i class="fas fa-list-check"></i>
                     </div>
                     <div>
-                        <h4 class="text-sm font-bold text-slate-900">1. Deterministic Rule Sanity</h4>
-                        <span class="text-[10px] text-slate-400">Field completeness & date chronology</span>
+                        <h4 class="text-sm font-bold text-slate-900">1. Event Details Check</h4>
+                        <span class="text-[10px] text-slate-400">Date validity, timing & duplicate check</span>
                     </div>
                 </div>
                 <span class="text-xs font-black text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">
@@ -101,8 +101,8 @@
                         <i class="fas fa-globe"></i>
                     </div>
                     <div>
-                        <h4 class="text-sm font-bold text-slate-900">2. External Source Whitelist</h4>
-                        <span class="text-[10px] text-slate-400">Promoter & ticketing verification</span>
+                        <h4 class="text-sm font-bold text-slate-900">2. Official Link & Source Check</h4>
+                        <span class="text-[10px] text-slate-400">Promoter, ticketing & fanclub links</span>
                     </div>
                 </div>
                 <span class="text-xs font-black text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">
@@ -112,12 +112,12 @@
 
             <div class="text-xs space-y-2 text-slate-600">
                 <div class="flex items-center justify-between">
-                    <span>Domain Authority Tier:</span>
+                    <span>Source Authority Level:</span>
                     <strong class="text-slate-900 font-bold">Tier <%= vResult.details.sourceCheck.domainTier %></strong>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span>Crawler Accessibility:</span>
-                    <strong class="text-slate-900 font-bold"><%= vResult.details.sourceCheck.accessible ? 'Accessible' : 'Protected / Neutral' %></strong>
+                    <span>Link Status:</span>
+                    <strong class="text-slate-900 font-bold"><%= vResult.details.sourceCheck.accessible ? 'Reachable & Active' : 'Protected / Neutral' %></strong>
                 </div>
                 <div class="truncate text-[11px] text-slate-500 pt-1 border-t border-slate-100">
                     <span class="font-bold text-slate-700">Link:</span> <%= event.official_url || 'None provided' %>
@@ -133,8 +133,8 @@
                         <i class="fas fa-eye"></i>
                     </div>
                     <div>
-                        <h4 class="text-sm font-bold text-slate-900">3. AI Model 1: Multimodal Vision</h4>
-                        <span class="text-[10px] text-slate-400">Poster graphics & OCR extraction</span>
+                        <h4 class="text-sm font-bold text-slate-900">3. Poster & Image Check</h4>
+                        <span class="text-[10px] text-slate-400">AI reads poster text to confirm details</span>
                     </div>
                 </div>
                 <span class="text-xs font-black text-pink-600 bg-pink-50 px-2.5 py-0.5 rounded-full">
@@ -144,7 +144,7 @@
 
             <div class="text-xs space-y-2 text-slate-600">
                 <div class="flex items-center justify-between">
-                    <span>Visual Date Match:</span>
+                    <span>Poster Date Match:</span>
                     <strong class="text-slate-900 font-bold"><%= vResult.details.dualAIConsensus.model1_vision.extracted.date_match ? 'Matched' : 'Mismatch' %></strong>
                 </div>
                 <div class="flex items-center justify-between">
@@ -152,7 +152,7 @@
                     <strong class="text-slate-900 font-bold"><%= vResult.details.dualAIConsensus.model1_vision.extracted.venue_match ? 'Matched' : 'Unconfirmed' %></strong>
                 </div>
                 <div class="text-[11px] text-slate-500 pt-1 border-t border-slate-100">
-                    <span class="font-bold text-slate-700">Extracted Title:</span> <%= vResult.details.dualAIConsensus.model1_vision.extracted.extracted_title || event.event_name %>
+                    <span class="font-bold text-slate-700">Detected Title:</span> <%= vResult.details.dualAIConsensus.model1_vision.extracted.extracted_title || event.event_name %>
                 </div>
             </div>
         </div>
@@ -165,8 +165,8 @@
                         <i class="fas fa-shield-halved"></i>
                     </div>
                     <div>
-                        <h4 class="text-sm font-bold text-slate-900">4. AI Model 2: Semantic Auditor</h4>
-                        <span class="text-[10px] text-slate-400">Geographic & scam risk anomaly check</span>
+                        <h4 class="text-sm font-bold text-slate-900">4. Scam & Safety Analysis</h4>
+                        <span class="text-[10px] text-slate-400">Location, pricing & scalper risk checks</span>
                     </div>
                 </div>
                 <span class="text-xs font-black text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-full">
@@ -176,18 +176,18 @@
 
             <div class="text-xs space-y-2 text-slate-600">
                 <div class="flex items-center justify-between">
-                    <span>Geographic Sanity:</span>
+                    <span>Location Validity:</span>
                     <strong class="text-emerald-600 font-bold">Confirmed (<%= event.city %>)</strong>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span>Phishing / Scalper Risk:</span>
+                    <span>Scam / Scalper Risk:</span>
                     <strong class="font-bold <%= vResult.details.dualAIConsensus.model2_semantic.scamRisk === 'LOW' ? 'text-emerald-600' : 'text-rose-600' %>">
                         <%= vResult.details.dualAIConsensus.model2_semantic.scamRisk %>
                     </strong>
                 </div>
                 <div class="flex items-center justify-between pt-1 border-t border-slate-100">
-                    <span>Cross-Model Agreement:</span>
-                    <strong class="text-purple-600 font-bold"><%= vResult.details.dualAIConsensus.isConsensusReached ? 'Consensus Achieved' : 'Diverged' %></strong>
+                    <span>AI Model Agreement:</span>
+                    <strong class="text-purple-600 font-bold"><%= vResult.details.dualAIConsensus.isConsensusReached ? 'Both Models Agree' : 'Review Note' %></strong>
                 </div>
             </div>
         </div>
@@ -205,16 +205,16 @@
         <div class="border-b border-slate-100 pb-5">
             <div class="flex items-center gap-2 mb-1.5">
                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-50 text-indigo-700 uppercase tracking-wider">
-                    Deep Audit Telemetry
+                    Safety Breakdown
                 </span>
-                <span class="text-xs text-slate-400">Attribute Cross-Examination</span>
+                <span class="text-xs text-slate-400">Attribute Verification</span>
             </div>
             <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
-                What the verifier compared
+                How your event was verified
             </h3>
             <p class="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
-                <strong>Score <%= comp.score %>/100</strong> · <span class="<%= comp.failedChecksCount > 0 ? 'text-rose-600 font-bold' : 'text-emerald-600 font-bold' %>"><%= comp.failedChecksCount %> check(s) failed</span>. 
-                <span class="text-slate-500">Hard gates: evidence URL, reachable page, no duplicate, and at least one content match (official page, AI confirmation, or an independent search result). Other failures only reduce the score.</span>
+                <strong>Score <%= comp.score %>/100</strong> · <span class="<%= comp.failedChecksCount > 0 ? 'text-rose-600 font-bold' : 'text-emerald-600 font-bold' %>"><%= comp.failedChecksCount %> check(s) flagged</span>. 
+                <span class="text-slate-500">Essential requirements: valid links, real venue, future date, no duplicate events, and confirmed artist or community details.</span>
             </p>
         </div>
 

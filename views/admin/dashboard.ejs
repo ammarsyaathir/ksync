@@ -18,13 +18,11 @@
             <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Platform overview, verification queue, content moderation & security audit trail.</p>
         </div>
         <div class="flex items-center space-x-2 self-start md:self-auto shrink-0 flex-wrap gap-2">
-            <% if (pendingSubmissionsCount > 0) { %>
-                <a href="/admin/verifications" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs shadow-md shadow-amber-500/20 flex items-center transition-all cursor-pointer">
-                    <i class="fas fa-bell me-2 animate-bounce"></i> <%= pendingSubmissionsCount %> Pending Review
-                </a>
-            <% } %>
-            <a href="/submit-event" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all flex items-center cursor-pointer">
-                <i class="fas fa-plus me-1.5 text-pink-400"></i> New Event
+            <a href="/admin/reports" class="px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
+                <i class="fas fa-shield-virus text-rose-500"></i> Scam Reports Audit
+            </a>
+            <a href="/admin/venues" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
+                <i class="fas fa-landmark text-pink-400"></i> Manage Venues
             </a>
         </div>
     </div>
@@ -46,16 +44,16 @@
             <div class="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-1 truncate">Concerts & Fan Meetings</div>
         </div>
 
-        <div class="p-4 sm:p-5 rounded-3xl bg-white border border-amber-200/80 shadow-xs relative overflow-hidden group hover:shadow-md transition-all">
-            <div class="absolute -right-3 -top-3 w-16 sm:w-20 h-16 sm:h-20 bg-amber-500/10 rounded-full blur-xl group-hover:bg-amber-500/20 transition-all"></div>
+        <div class="p-4 sm:p-5 rounded-3xl bg-white border border-emerald-200/80 shadow-xs relative overflow-hidden group hover:shadow-md transition-all">
+            <div class="absolute -right-3 -top-3 w-16 sm:w-20 h-16 sm:h-20 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition-all"></div>
             <div class="flex items-center justify-between mb-2 sm:mb-3">
-                <span class="text-[10px] sm:text-xs font-bold text-amber-700 uppercase tracking-wider">Pending Review</span>
-                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xs sm:text-sm font-black border border-amber-100">
-                    <i class="fas fa-clock"></i>
+                <span class="text-[10px] sm:text-xs font-bold text-emerald-700 uppercase tracking-wider">Dual-AI Verified</span>
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs sm:text-sm font-black border border-emerald-100">
+                    <i class="fas fa-circle-check"></i>
                 </div>
             </div>
-            <div class="text-2xl sm:text-3xl font-black text-slate-900"><%= pendingSubmissionsCount %></div>
-            <div class="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-1 truncate">Awaiting approval</div>
+            <div class="text-2xl sm:text-3xl font-black text-slate-900"><%= typeof verifiedEvents !== 'undefined' ? verifiedEvents : (totalEvents - pendingSubmissionsCount) %></div>
+            <div class="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-1 truncate">Autonomous Zero-Admin Pass</div>
         </div>
 
         <div class="p-4 sm:p-5 rounded-3xl bg-white border border-purple-200/80 shadow-xs relative overflow-hidden group hover:shadow-md transition-all">

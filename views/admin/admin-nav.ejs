@@ -3,7 +3,7 @@
   const pendingVerifs = (typeof adminPendingVerifications !== 'undefined') ? adminPendingVerifications : (typeof pendingCount !== 'undefined' ? pendingCount : 0);
   const pendingReps = (typeof adminPendingReports !== 'undefined') ? adminPendingReports : 0;
 %>
-<div class="sticky top-16 z-30 bg-white/95 backdrop-blur-md rounded-2xl p-1.5 sm:p-2 border border-slate-200/90 shadow-xs mb-8 transition-all">
+<div class="sticky top-16 z-30 bg-white/95 backdrop-blur-md rounded-2xl p-1.5 sm:p-2 border border-slate-200/90 shadow-xs mb-8 transition-all min-w-0 max-w-full">
     <div class="flex items-center justify-between gap-2">
         <!-- Horizontal Scrollable Tabs -->
         <nav class="flex items-center space-x-1 sm:space-x-1.5 overflow-x-auto text-xs font-bold scrollbar-none py-0.5 w-full -webkit-overflow-scrolling-touch" aria-label="Admin Navigation">
@@ -13,16 +13,6 @@
                 <span>Dashboard</span>
             </a>
 
-            <a href="/admin/verifications" 
-               class="px-3 sm:px-3.5 py-2 rounded-xl transition-all flex items-center space-x-1.5 shrink-0 relative <%= activePath === '/admin/verifications' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80' %>">
-                <i class="fas fa-check-double text-[11px] <%= activePath === '/admin/verifications' ? 'text-pink-400' : 'text-slate-400' %>"></i>
-                <span>Verifications</span>
-                <% if (pendingVerifs > 0) { %>
-                    <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-500 text-slate-950 font-black animate-pulse shadow-xs">
-                        <%= pendingVerifs %>
-                    </span>
-                <% } %>
-            </a>
 
             <a href="/admin/events" 
                class="px-3 sm:px-3.5 py-2 rounded-xl transition-all flex items-center space-x-1.5 shrink-0 <%= activePath === '/admin/events' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80' %>">

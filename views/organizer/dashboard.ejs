@@ -1,6 +1,6 @@
 <%- include('../partials/header', { title: 'Organizer Portal | K-Sync Malaysia' }) %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 min-w-0 max-w-full">
     <!-- Top Header Banner -->
     <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div>
@@ -167,7 +167,7 @@
 
                                         <div>
                                             <a href="/organizer/events/<%= event.id %>/verification" class="text-[10px] font-bold text-pink-600 hover:underline flex items-center gap-1">
-                                                <i class="fas fa-robot text-purple-500"></i> AI Breakdown &rarr;
+                                                <i class="fas fa-shield-check text-purple-500"></i> Safety Report &rarr;
                                             </a>
                                         </div>
                                     </div>
@@ -235,7 +235,7 @@
 
                             <div class="flex items-center gap-1.5">
                                 <a href="/organizer/events/<%= event.id %>/verification" class="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 font-bold text-[11px] hover:bg-purple-100 flex items-center gap-1">
-                                    <i class="fas fa-robot text-purple-500"></i> AI Breakdown
+                                    <i class="fas fa-shield-check text-purple-500"></i> Safety Report
                                 </a>
                                 <a href="/organizer/events/<%= event.id %>/edit" class="p-1.5 rounded-lg bg-pink-50 text-pink-700" title="Edit">
                                     <i class="fas fa-pen-to-square text-xs"></i>

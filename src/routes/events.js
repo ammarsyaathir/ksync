@@ -539,4 +539,19 @@ router.get('/events/:idOrSlug/calendar.ics', async (req, res) => {
   }
 });
 
+// ==========================================
+// LEGAL & POLICY DOCUMENTATION ROUTES
+// ==========================================
+router.get('/community-guidelines', (req, res) => {
+  res.render('legal/community-guidelines', { path: '/community-guidelines' });
+});
+
+router.get('/event-verification-policy', (req, res) => {
+  res.render('legal/event-verification-policy', { path: '/event-verification-policy' });
+});
+
+router.get('/privacy-policy', (req, res) => {
+  res.render('legal/privacy-policy', { path: '/privacy-policy' });
+});
+
 export default router;

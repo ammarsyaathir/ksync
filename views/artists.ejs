@@ -23,17 +23,17 @@
     </div>
 
     <!-- Filter & Search Controls Bar -->
-    <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-200/90 mb-8">
-        <form action="/artists" method="GET" class="flex flex-col md:flex-row gap-3 items-center justify-between">
+    <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border border-slate-200/90 mb-8 min-w-0 max-w-full overflow-hidden">
+        <form action="/artists" method="GET" class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between min-w-0 max-w-full">
             <!-- Search Text -->
-            <div class="relative w-full md:w-96">
+            <div class="relative w-full md:w-80 min-w-0">
                 <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                 <input type="text" name="search" value="<%= searchKeyword || '' %>" placeholder="Search artist name, agency, or fandom..." 
                        class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all">
             </div>
 
-            <!-- Group Type Filter Pills -->
-            <div class="flex items-center space-x-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 scrollbar-none">
+            <!-- Group Type Filter Pills (Horizontal Scroll Container with strict min-w-0) -->
+            <div class="flex items-center space-x-2 overflow-x-auto w-full min-w-0 pb-1.5 md:pb-0 scrollbar-none">
                 <a href="/artists<%= searchKeyword ? '?search=' + encodeURIComponent(searchKeyword) : '' %>" 
                    class="px-4 py-2 rounded-xl text-xs font-bold shrink-0 transition-all press-tactile <%= !selectedType ? 'bg-slate-950 text-white shadow-sm' : 'bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100' %>">
                     All Categories
@@ -47,13 +47,13 @@
                 <% }); %>
             </div>
 
-            <div class="flex items-center space-x-2 w-full md:w-auto justify-end">
+            <div class="flex items-center space-x-2 w-full md:w-auto justify-end shrink-0">
                 <% if (selectedType || searchKeyword) { %>
                     <a href="/artists" class="px-3.5 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 border border-rose-200 transition-colors press-tactile">
                         Reset
                     </a>
                 <% } %>
-                <button type="submit" class="px-5 py-2.5 bg-slate-950 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm press-tactile">
+                <button type="submit" class="w-full sm:w-auto px-5 py-2.5 bg-slate-950 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm press-tactile text-center">
                     Search
                 </button>
             </div>
@@ -73,10 +73,10 @@
             </a>
         </div>
     <% } else { %>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 min-w-0 max-w-full">
             <% artists.forEach(function(artist) { %>
                 <% const artistSlug = helpers.slugify(artist.name) || artist.id; %>
-                <div class="bg-white rounded-3xl border border-slate-200/90 overflow-hidden flex flex-col shadow-sm hover:shadow-xl hover:border-violet-300 transition-all duration-300 group">
+                <div class="bg-white rounded-3xl border border-slate-200/90 overflow-hidden flex flex-col shadow-sm hover:shadow-xl hover:border-violet-300 transition-all duration-300 group min-w-0">
                     <!-- Image Card Header -->
                     <div class="relative h-52 overflow-hidden bg-slate-950">
                         <img src="<%= artist.image_url || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop' %>" 

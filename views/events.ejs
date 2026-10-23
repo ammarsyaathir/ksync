@@ -34,7 +34,7 @@
     </div>
 
     <!-- Quick Artist Filter Strip -->
-    <div class="mb-6">
+    <div class="mb-6 min-w-0 max-w-full">
         <div class="flex items-center justify-between mb-2.5">
             <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Quick Filter by Artist:</span>
             <% if (selectedArtist || selectedCategory || searchKeyword || selectedLocation) { %>
@@ -44,7 +44,7 @@
                 </a>
             <% } %>
         </div>
-        <div class="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-none">
+        <div class="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-none min-w-0 max-w-full">
             <a href="/events" class="px-4 py-1.5 rounded-full text-xs font-bold shrink-0 transition-all press-tactile <%= !selectedArtist ? 'bg-slate-900 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50' %>">
                 All Artists
             </a>
@@ -60,7 +60,7 @@
     </div>
 
     <!-- Filter & Search Controls Bar -->
-    <div class="bg-white rounded-3xl p-5 shadow-xs border border-slate-200 mb-8">
+    <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-xs border border-slate-200 mb-8 min-w-0 max-w-full">
         <form action="/events" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             <!-- Search Text Input -->
             <div class="relative lg:col-span-2">
@@ -112,14 +112,14 @@
             </a>
         </div>
     <% } else { %>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 min-w-0 max-w-full">
             <% events.forEach(function(event) { %>
                 <% 
                     const calcStatus = helpers.getCalculatedEventStatus(event);
                     const isSaved = (savedEventIds || []).includes(event.id);
                     const eventSlug = helpers.slugify(event.event_name) || event.id;
                 %>
-                <article class="bg-white rounded-3xl border border-slate-200/90 overflow-hidden flex flex-col group hover-lift transition-all shadow-xs">
+                <article class="bg-white rounded-3xl border border-slate-200/90 overflow-hidden flex flex-col group hover-lift transition-all shadow-xs min-w-0">
                     <!-- Poster Banner -->
                     <div class="relative h-52 overflow-hidden bg-slate-900">
                         <img src="<%= event.poster_image %>" alt="<%= event.event_name %>" 
