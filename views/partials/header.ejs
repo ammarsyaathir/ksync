@@ -83,8 +83,10 @@
             --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
         }
 
-        /* 1. Mobile-Native Platform Fixes */
-        html {
+        /* 1. Mobile-Native Platform Fixes: Strict zero-overflow */
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
             scroll-behavior: smooth;
         }
@@ -210,6 +212,6 @@
         }
     </style>
 </head>
-<body class="flex flex-col min-h-screen text-slate-800 antialiased selection:bg-pink-500 selection:text-white pb-20 md:pb-0">
+<body class="flex flex-col min-h-screen text-slate-800 antialiased selection:bg-pink-500 selection:text-white">
 <%- include('./navbar') %>
 <%- include('./flash') %>

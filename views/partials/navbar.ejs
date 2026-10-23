@@ -189,8 +189,8 @@
                 <% } %>
             </div>
 
-            <!-- Mobile Top Notification or Auth Icon -->
-            <div class="flex md:hidden items-center space-x-2">
+            <!-- Mobile Right Controls: Notification & Hamburger Toggle Button -->
+            <div class="flex md:hidden items-center space-x-1.5">
                 <% if (user) { %>
                     <a href="/notifications" class="relative p-2 text-slate-600 hover:bg-slate-100 rounded-xl" title="Notifications">
                         <i class="fas fa-bell"></i>
@@ -200,99 +200,174 @@
                             </span>
                         <% } %>
                     </a>
-                    <a href="/profile" class="p-1">
-                        <% if (user.profile_image) { %>
-                            <img src="<%= user.profile_image %>" alt="<%= user.full_name %>" class="w-7 h-7 rounded-lg object-cover">
-                        <% } else { %>
-                            <div class="w-7 h-7 rounded-lg bg-slate-900 text-white font-bold text-xs flex items-center justify-center">
-                                <%= userInit %>
-                            </div>
-                        <% } %>
-                    </a>
-                <% } else { %>
-                    <a href="/login" class="text-xs font-bold text-slate-900 px-3 py-1.5 rounded-lg border border-slate-200 bg-white">
+                <% } %>
+                <button id="mobile-menu-toggle" type="button" 
+                        class="p-2 text-slate-700 hover:text-slate-900 rounded-xl hover:bg-slate-100 transition-colors focus:outline-none press-tactile cursor-pointer" 
+                        aria-label="Toggle navigation menu" aria-expanded="false">
+                    <i id="mobile-menu-icon" class="fas fa-bars text-lg text-slate-800"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Hamburger Menu Dropdown (Accordion Drawer) -->
+    <div id="mobile-menu-dropdown" class="hidden md:hidden border-t border-slate-200/90 bg-white/98 backdrop-blur-xl px-4 py-4 space-y-1 shadow-2xl transition-all">
+        <% if (userRole === 'organizer') { %>
+            <!-- Organizer Mobile Links -->
+            <div class="pb-2 mb-2 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <div class="text-[10px] font-black uppercase tracking-wider text-emerald-700">Organizer Mode</div>
+                    <div class="text-xs font-bold text-slate-900 truncate"><%= user ? (user.organization_name || user.full_name) : 'Organizer' %></div>
+                </div>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">HOST</span>
+            </div>
+            <a href="/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path === '/' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
+                <i class="fas fa-house w-4 text-slate-400"></i>
+                <span>Home</span>
+            </a>
+            <a href="/events" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path === '/events' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
+                <i class="fas fa-compass w-4 text-slate-400"></i>
+                <span>Events Directory</span>
+            </a>
+            <a href="/organizer/dashboard" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path.startsWith('/organizer') ? 'bg-emerald-700 text-white' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100' %>">
+                <i class="fas fa-gauge w-4 text-emerald-600"></i>
+                <span>Organizer Portal</span>
+            </a>
+            <a href="/submit-event" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-white">
+                <i class="fas fa-plus w-4 text-pink-400"></i>
+                <span>Publish Concert / Event</span>
+            </a>
+            <a href="/profile" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path.startsWith('/profile') ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
+                <i class="fas fa-building w-4 text-slate-400"></i>
+                <span>Organization Profile</span>
+            </a>
+        <% } else if (userRole === 'admin') { %>
+            <!-- Admin Mobile Links -->
+            <div class="pb-2 mb-2 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <div class="text-[10px] font-black uppercase tracking-wider text-purple-700">Maintainer Mode</div>
+                    <div class="text-xs font-bold text-slate-900 truncate">@<%= user ? user.username : 'admin' %></div>
+                </div>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800 border border-purple-200">MAINTAINER</span>
+            </div>
+            <a href="/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path === '/' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
+                <i class="fas fa-house w-4 text-slate-400"></i>
+                <span>Home</span>
+            </a>
+            <a href="/events" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path === '/events' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
+                <i class="fas fa-compass w-4 text-slate-400"></i>
+                <span>Events Directory</span>
+            </a>
+            <a href="/admin" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path === '/admin' ? 'bg-purple-900 text-white' : 'bg-purple-50 text-purple-800 hover:bg-purple-100' %>">
+                <i class="fas fa-shield-halved w-4 text-purple-500"></i>
+                <span>Maintainer Hub</span>
+            </a>
+            <a href="/admin/events" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path.startsWith('/admin/events') ? 'bg-purple-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
+                <i class="fas fa-list-check w-4 text-purple-500"></i>
+                <span>Event Audit</span>
+            </a>
+            <a href="/admin/reports" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path.startsWith('/admin/reports') ? 'bg-rose-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
+                <i class="fas fa-shield-virus w-4 text-rose-500"></i>
+                <span>Scam Reports</span>
+            </a>
+            <a href="/profile" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path.startsWith('/profile') ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
+                <i class="fas fa-user-shield w-4 text-slate-400"></i>
+                <span>Admin Profile</span>
+            </a>
+        <% } else { %>
+            <!-- Fan & Guest Mobile Links -->
+            <a href="/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path === '/' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
+                <i class="fas fa-house w-4 text-slate-400"></i>
+                <span>Home</span>
+            </a>
+            <a href="/events" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path === '/events' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
+                <i class="fas fa-compass w-4 text-slate-400"></i>
+                <span>Events Directory</span>
+            </a>
+            <a href="/events/radar" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path === '/events/radar' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
+                <i class="fas fa-radar w-4 text-pink-500"></i>
+                <span>360° Radar</span>
+            </a>
+            <a href="/artists" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path.startsWith('/artists') ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
+                <i class="fas fa-users w-4 text-purple-500"></i>
+                <span>Artists & Groups</span>
+            </a>
+            <% if (user) { %>
+                <a href="/saved-events" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path === '/saved-events' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
+                    <i class="fas fa-heart w-4 text-rose-500"></i>
+                    <span>Saved Wishlist</span>
+                </a>
+                <a href="/profile" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path.startsWith('/profile') ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
+                    <i class="fas fa-user-circle w-4 text-pink-500"></i>
+                    <span>My Profile</span>
+                </a>
+            <% } %>
+            <a href="/submit-event" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-white">
+                <i class="fas fa-plus w-4 text-pink-400"></i>
+                <span>Host Event</span>
+            </a>
+        <% } %>
+
+        <!-- Mobile Auth Tray -->
+        <div class="pt-3 mt-2 border-t border-slate-100">
+            <% if (user) { %>
+                <a href="/logout" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50">
+                    <i class="fas fa-arrow-right-from-bracket w-4 text-rose-500"></i>
+                    <span>Log Out</span>
+                </a>
+            <% } else { %>
+                <div class="grid grid-cols-2 gap-2 pt-1">
+                    <a href="/login" class="text-center py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 hover:bg-slate-50">
                         Log In
                     </a>
-                <% } %>
-            </div>
+                    <a href="/register" class="text-center py-2.5 rounded-xl bg-slate-900 text-xs font-bold text-white hover:bg-slate-800 shadow-xs">
+                        Join K-Sync
+                    </a>
+                </div>
+            <% } %>
         </div>
     </div>
 </header>
 
-<!-- Mobile-Native Bottom Floating Thumb Dock (Emil Kowalski /mobile-native) -->
-<nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-slate-200/90 shadow-lg px-2 py-2" 
-     style="padding-bottom: max(0.5rem, env(safe-area-inset-bottom));" 
-     aria-label="Mobile Navigation Dock">
-    <div class="grid grid-cols-5 gap-1 items-center max-w-md mx-auto text-center">
-        <!-- Home -->
-        <a href="/" class="flex flex-col items-center py-1 rounded-xl press-tactile <%= path === '/' ? 'text-pink-600 font-extrabold' : 'text-slate-500 font-medium' %>">
-            <i class="fas fa-house text-base mb-0.5"></i>
-            <span class="text-[10px] tracking-tight">Home</span>
-        </a>
-        <% if (userRole === 'organizer') { %>
-            <!-- Organizer Mobile Dock: No 4D / 3D / Passport -->
-            <a href="/events" class="flex flex-col items-center py-1 rounded-xl press-tactile <%= path === '/events' ? 'text-emerald-700 font-extrabold' : 'text-slate-500 font-medium' %>">
-                <i class="fas fa-compass text-base mb-0.5"></i>
-                <span class="text-[10px] tracking-tight">Events</span>
-            </a>
-            <a href="/organizer/dashboard" class="flex flex-col items-center py-1 rounded-xl press-tactile <%= path.startsWith('/organizer') ? 'text-emerald-700 font-extrabold' : 'text-slate-500 font-medium' %>">
-                <i class="fas fa-gauge text-base mb-0.5"></i>
-                <span class="text-[10px] tracking-tight">Portal</span>
-            </a>
-            <a href="/submit-event" class="flex flex-col items-center py-1 rounded-xl press-tactile <%= path === '/submit-event' ? 'text-emerald-700 font-extrabold' : 'text-slate-500 font-medium' %>">
-                <i class="fas fa-plus text-base mb-0.5"></i>
-                <span class="text-[10px] tracking-tight">Publish</span>
-            </a>
-            <a href="/profile" class="flex flex-col items-center py-1 rounded-xl press-tactile <%= path.startsWith('/profile') ? 'text-emerald-700 font-extrabold' : 'text-slate-500 font-medium' %>">
-                <i class="fas fa-building text-base mb-0.5"></i>
-                <span class="text-[10px] tracking-tight">Profile</span>
-            </a>
-        <% } else if (userRole === 'admin') { %>
-            <!-- Admin Mobile Dock: No 4D / 3D / Passport -->
-            <a href="/admin" class="flex flex-col items-center py-1 rounded-xl press-tactile <%= path === '/admin' ? 'text-purple-700 font-extrabold' : 'text-slate-500 font-medium' %>">
-                <i class="fas fa-shield-halved text-base mb-0.5"></i>
-                <span class="text-[10px] tracking-tight">Admin</span>
-            </a>
-            <a href="/admin/events" class="flex flex-col items-center py-1 rounded-xl press-tactile <%= path.startsWith('/admin/events') ? 'text-purple-700 font-extrabold' : 'text-slate-500 font-medium' %>">
-                <i class="fas fa-list-check text-base mb-0.5"></i>
-                <span class="text-[10px] tracking-tight">Audit</span>
-            </a>
-            <a href="/admin/reports" class="flex flex-col items-center py-1 rounded-xl press-tactile <%= path.startsWith('/admin/reports') ? 'text-rose-600 font-extrabold' : 'text-slate-500 font-medium' %>">
-                <i class="fas fa-shield-virus text-base mb-0.5"></i>
-                <span class="text-[10px] tracking-tight">Reports</span>
-            </a>
-            <a href="/profile" class="flex flex-col items-center py-1 rounded-xl press-tactile <%= path.startsWith('/profile') ? 'text-purple-700 font-extrabold' : 'text-slate-500 font-medium' %>">
-                <i class="fas fa-user-shield text-base mb-0.5"></i>
-                <span class="text-[10px] tracking-tight">Profile</span>
-            </a>
-        <% } else { %>
-            <!-- Fan / Public Mobile Dock: Clean & Streamlined -->
-            <a href="/events" class="flex flex-col items-center py-1 rounded-xl press-tactile <%= path === '/events' ? 'text-pink-600 font-extrabold' : 'text-slate-500 font-medium' %>">
-                <i class="fas fa-compass text-base mb-0.5"></i>
-                <span class="text-[10px] tracking-tight">Events</span>
-            </a>
-            <a href="/events/radar" class="flex flex-col items-center py-1 rounded-xl press-tactile relative <%= path === '/events/radar' ? 'text-pink-600 font-extrabold' : 'text-slate-500 font-medium' %>">
-                <div class="relative">
-                    <i class="fas fa-radar text-base mb-0.5"></i>
-                    <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-pink-500 animate-pulse"></span>
-                </div>
-                <span class="text-[10px] tracking-tight">Radar</span>
-            </a>
-            <a href="/saved-events" class="flex flex-col items-center py-1 rounded-xl press-tactile <%= path === '/saved-events' ? 'text-pink-600 font-extrabold' : 'text-slate-500 font-medium' %>">
-                <i class="fas fa-heart text-base mb-0.5 text-rose-500"></i>
-                <span class="text-[10px] tracking-tight">Wishlist</span>
-            </a>
-            <% if (user) { %>
-                <a href="/profile" class="flex flex-col items-center py-1 rounded-xl press-tactile <%= path.startsWith('/profile') ? 'text-pink-600 font-extrabold' : 'text-slate-500 font-medium' %>">
-                    <i class="fas fa-user-circle text-base mb-0.5"></i>
-                    <span class="text-[10px] tracking-tight">Profile</span>
-                </a>
-            <% } else { %>
-                <a href="/register" class="flex flex-col items-center py-1 rounded-xl press-tactile text-slate-900 font-bold">
-                    <i class="fas fa-sparkles text-base mb-0.5 text-pink-500"></i>
-                    <span class="text-[10px] tracking-tight">Join</span>
-                </a>
-            <% } %>
-        <% } %>
-    </div>
-</nav>
+<!-- Mobile Hamburger Toggle Script -->
+<script>
+    (function() {
+        const toggleBtn = document.getElementById('mobile-menu-toggle');
+        const menuDropdown = document.getElementById('mobile-menu-dropdown');
+        const icon = document.getElementById('mobile-menu-icon');
+
+        if (toggleBtn && menuDropdown) {
+            toggleBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isOpen = !menuDropdown.classList.contains('hidden');
+                if (isOpen) {
+                    menuDropdown.classList.add('hidden');
+                    toggleBtn.setAttribute('aria-expanded', 'false');
+                    if (icon) icon.className = 'fas fa-bars text-lg text-slate-800';
+                } else {
+                    menuDropdown.classList.remove('hidden');
+                    toggleBtn.setAttribute('aria-expanded', 'true');
+                    if (icon) icon.className = 'fas fa-xmark text-lg text-slate-800';
+                }
+            });
+
+            // Close menu when tapping outside
+            document.addEventListener('click', function(e) {
+                if (!menuDropdown.contains(e.target) && !toggleBtn.contains(e.target)) {
+                    menuDropdown.classList.add('hidden');
+                    toggleBtn.setAttribute('aria-expanded', 'false');
+                    if (icon) icon.className = 'fas fa-bars text-lg text-slate-800';
+                }
+            });
+
+            // Close on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && !menuDropdown.classList.contains('hidden')) {
+                    menuDropdown.classList.add('hidden');
+                    toggleBtn.setAttribute('aria-expanded', 'false');
+                    if (icon) icon.className = 'fas fa-bars text-lg text-slate-800';
+                }
+            });
+        }
+    })();
+</script>

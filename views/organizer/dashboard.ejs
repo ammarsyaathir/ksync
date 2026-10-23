@@ -98,7 +98,8 @@
                 </a>
             </div>
         <% } else { %>
-            <div class="overflow-x-auto">
+            <!-- Desktop Table View -->
+            <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
@@ -192,6 +193,60 @@
                         <% }); %>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Mobile Event Cards View (100% Fluid & Zero Horizontal Overflow) -->
+            <div class="block md:hidden divide-y divide-slate-100">
+                <% events.forEach(event => { %>
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-start gap-3">
+                            <img src="<%= event.poster_image %>" alt="<%= event.event_name %>" class="w-16 h-20 object-cover rounded-xl border border-slate-200 shrink-0">
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-1.5 flex-wrap mb-1">
+                                    <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">
+                                        <%= event.category_name || 'Event' %>
+                                    </span>
+                                    <%- helpers.getVerificationBadge(event.verification_status) %>
+                                </div>
+                                <h4 class="font-extrabold text-sm text-slate-900 leading-snug line-clamp-2">
+                                    <%= event.event_name %>
+                                </h4>
+                                <div class="text-[11px] text-pink-600 font-bold truncate mt-0.5">
+                                    <i class="fas fa-microphone-lines text-xs me-1"></i> <%= event.artist_name || 'Multiple Artists' %>
+                                </div>
+                                <div class="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
+                                    <i class="fas fa-calendar-day text-slate-400"></i> <%= helpers.formatDate(event.event_date) %>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mobile Controls & Actions Row -->
+                        <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
+                            <form action="/organizer/events/<%= event.id %>/status" method="POST" class="inline-block">
+                                <select name="event_status" onchange="this.form.submit()" 
+                                        class="text-[11px] font-bold rounded-lg px-2 py-1 border border-slate-200 bg-white shadow-xs focus:outline-none">
+                                    <option value="UPCOMING" <%= event.event_status === 'UPCOMING' ? 'selected' : '' %>>Upcoming</option>
+                                    <option value="ONGOING" <%= event.event_status === 'ONGOING' ? 'selected' : '' %>>Ongoing</option>
+                                    <option value="COMPLETED" <%= event.event_status === 'COMPLETED' ? 'selected' : '' %>>Completed</option>
+                                    <option value="POSTPONED" <%= event.event_status === 'POSTPONED' ? 'selected' : '' %>>Postponed</option>
+                                    <option value="CANCELLED" <%= event.event_status === 'CANCELLED' ? 'selected' : '' %>>Cancelled</option>
+                                </select>
+                            </form>
+
+                            <div class="flex items-center gap-1.5">
+                                <a href="/organizer/events/<%= event.id %>/verification" class="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 font-bold text-[11px] hover:bg-purple-100 flex items-center gap-1">
+                                    <i class="fas fa-robot text-purple-500"></i> AI Breakdown
+                                </a>
+                                <a href="/organizer/events/<%= event.id %>/edit" class="p-1.5 rounded-lg bg-pink-50 text-pink-700" title="Edit">
+                                    <i class="fas fa-pen-to-square text-xs"></i>
+                                </a>
+                                <button data-event-id="<%= event.id %>" data-event-title="<%= event.event_name %>" onclick="confirmDelete(this.dataset.eventId, this.dataset.eventTitle)" class="p-1.5 rounded-lg bg-rose-50 text-rose-600" title="Delete">
+                                    <i class="fas fa-trash-can text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
             </div>
         <% } %>
     </div>
