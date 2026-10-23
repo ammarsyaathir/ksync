@@ -1,21 +1,47 @@
 <%- include('partials/header', { title: 'My Profile | K-Sync Malaysia' }) %>
 
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    <div class="mb-8 border-b border-slate-200 pb-6 flex items-center justify-between">
-        <div>
-            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Account Profile</h1>
-            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Manage your personal fan identity, notifications, and security.</p>
-        </div>
-        <div>
-            <span class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white">
-                <%= currentUser.role_name %>
-            </span>
-        </div>
     <% 
-        const role = (currentUser && (currentUser.role || currentUser.role_name)) ? String(currentUser.role || currentUser.role_name).toUpperCase() : '';
+        const role = (currentUser && (currentUser.role || currentUser.role_name)) ? String(currentUser.role || currentUser.role_name).toUpperCase() : 'FAN';
         const isOrganizer = role === 'ORGANIZER';
         const isAdmin = role === 'ADMIN';
+        const isFan = !isOrganizer && !isAdmin;
     %>
+    <!-- Header Block with Role Identification -->
+    <div class="mb-8 border-b border-slate-200 pb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">
+                <% if (isOrganizer) { %>
+                    Organization Profile
+                <% } else if (isAdmin) { %>
+                    Administrator Profile
+                <% } else { %>
+                    Fan Profile
+                <% } %>
+            </h1>
+            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">
+                <% if (isOrganizer) { %>
+                    Manage your event organization credentials, verified social channels, and security.
+                <% } else if (isAdmin) { %>
+                    Maintain platform security, scam reports oversight, and administrative credentials.
+                <% } else { %>
+                    Manage your personal fan identity, concert preferences, notifications, and security.
+                <% } %>
+            </p>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="px-3.5 py-1.5 rounded-full text-xs font-bold <%= isOrganizer ? 'bg-emerald-700 text-white' : (isAdmin ? 'bg-purple-800 text-white' : 'bg-slate-900 text-white') %>">
+                <i class="fas <%= isOrganizer ? 'fa-building' : (isAdmin ? 'fa-user-shield' : 'fa-heart') %> me-1.5"></i>
+                <%= role %>
+            </span>
+            <% if (isOrganizer && currentUser && currentUser.is_verified_organizer === 1) { %>
+                <span class="px-3 py-1 rounded-full text-xs font-black bg-emerald-50 text-emerald-700 border border-emerald-300">
+                    <i class="fas fa-certificate text-emerald-500 me-1"></i> Verified
+                </span>
+            <% } %>
+        </div>
+    </div>
+
     <!-- Actor-Tailored Sub-Nav Pills -->
     <div class="flex flex-wrap items-center gap-2 mb-8">
         <% if (isOrganizer) { %>
@@ -26,7 +52,7 @@
                 <i class="fas fa-gauge me-1.5 text-emerald-600"></i> Organizer Hub
             </a>
             <a href="/submit-event" class="px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition-all">
-                <i class="fas fa-plus me-1.5 text-pink-500"></i> Publish Concert
+                <i class="fas fa-plus me-1.5 text-pink-500"></i> Publish Concert / Event
             </a>
         <% } else if (isAdmin) { %>
             <a href="/profile" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-white shadow-xs">
@@ -55,17 +81,26 @@
         <!-- Left Col: Profile Card Preview -->
         <div class="space-y-6">
             <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm text-center">
-                <div class="w-24 h-24 rounded-2xl mx-auto mb-4 overflow-hidden border-2 border-pink-200 bg-pink-50 flex items-center justify-center text-3xl font-extrabold text-pink-600 shadow-sm">
-                    <% if (currentUser.profile_image) { %>
+                <div class="w-24 h-24 rounded-2xl mx-auto mb-4 overflow-hidden border-2 <%= isOrganizer ? 'border-emerald-200 bg-emerald-50 text-emerald-600' : (isAdmin ? 'border-purple-200 bg-purple-50 text-purple-600' : 'border-pink-200 bg-pink-50 text-pink-600') %> flex items-center justify-center text-3xl font-extrabold shadow-sm">
+                    <% if (currentUser && currentUser.profile_image) { %>
                         <img src="<%= currentUser.profile_image %>" alt="" class="w-full h-full object-cover">
                     <% } else { %>
-                        <%= currentUser.full_name.charAt(0).toUpperCase() %>
+                        <%= ((currentUser && (currentUser.full_name || currentUser.username)) ? (currentUser.full_name || currentUser.username) : 'K').charAt(0).toUpperCase() %>
                     <% } %>
                 </div>
-                <h2 class="text-lg font-bold text-slate-900"><%= currentUser.full_name %></h2>
-                <div class="text-xs text-slate-400 font-mono">@<%= currentUser.username %></div>
+                <h2 class="text-lg font-bold text-slate-900"><%= (currentUser && (currentUser.full_name || currentUser.username)) || 'K-Sync Member' %></h2>
+                <div class="text-xs text-slate-400 font-mono">@<%= (currentUser && currentUser.username) || 'user' %></div>
 
-                <% if (currentUser.organization_name) { %>
+                <% if (isOrganizer) { %>
+                    <div class="mt-3 p-3 bg-emerald-50/70 rounded-2xl border border-emerald-100">
+                        <div class="text-[10px] uppercase font-black text-emerald-800 tracking-wider">Official Organization</div>
+                        <div class="font-extrabold text-sm text-slate-900 mt-0.5"><%= (currentUser && currentUser.organization_name) || 'Organization Name Not Set' %></div>
+                        <div class="text-xs text-slate-500 font-medium"><%= (currentUser && currentUser.organization_type) || 'Fanclub / Promoter' %></div>
+                        <div class="mt-2">
+                            <%- helpers.getOrganizerBadge(currentUser) %>
+                        </div>
+                    </div>
+                <% } else if (currentUser && currentUser.organization_name) { %>
                     <div class="mt-2">
                         <div class="font-bold text-xs text-slate-900"><%= currentUser.organization_name %></div>
                         <div class="mt-1">
@@ -74,10 +109,10 @@
                     </div>
                 <% } %>
 
-                <% if (currentUser.social_handle) { %>
+                <% if (currentUser && currentUser.social_handle) { %>
                     <% const cleanH = currentUser.social_handle.replace(/^@/, ''); %>
                     <div class="mt-2">
-                        <a href="<%= currentUser.social_url || ('https://x.com/' + cleanH) %>" target="_blank" rel="noopener noreferrer" 
+                        <a href="<%= (currentUser && currentUser.social_url) || ('https://x.com/' + cleanH) %>" target="_blank" rel="noopener noreferrer" 
                            class="inline-flex items-center text-xs text-pink-600 font-bold hover:underline bg-pink-50 px-2.5 py-1 rounded-full border border-pink-100">
                             <i class="fab fa-x-twitter me-1"></i> <%= currentUser.social_handle %>
                             <i class="fas fa-arrow-up-right-from-square text-[9px] ms-1 text-pink-400"></i>
@@ -86,15 +121,55 @@
                 <% } %>
 
                 <div class="mt-3 text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100 italic">
-                    "<%= currentUser.bio || 'K-Pop fan in Malaysia!' %>"
+                    "<%= (currentUser && currentUser.bio) || (isOrganizer ? 'Official K-Pop event organizer in Malaysia.' : 'K-Pop fan in Malaysia!') %>"
                 </div>
 
                 <div class="mt-4 pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-600 text-left">
-                    <div><span class="font-bold text-slate-700">Email:</span> <%= currentUser.email %></div>
-                    <div><span class="font-bold text-slate-700">Location:</span> <%= currentUser.location || 'Kuala Lumpur' %></div>
-                    <div><span class="font-bold text-slate-700">Role Status:</span> Verified Member</div>
+                    <div><span class="font-bold text-slate-700">Email:</span> <%= (currentUser && currentUser.email) || 'N/A' %></div>
+                    <div><span class="font-bold text-slate-700">Location:</span> <%= (currentUser && currentUser.location) || 'Kuala Lumpur, Malaysia' %></div>
+                    <% if (isFan && currentUser && currentUser.buddy_preference) { %>
+                        <div><span class="font-bold text-slate-700">Interests:</span> <%= currentUser.buddy_preference %></div>
+                    <% } %>
+                    <div><span class="font-bold text-slate-700">Account Role:</span> <span class="capitalize font-semibold text-slate-800"><%= role.toLowerCase() %></span></div>
                 </div>
             </div>
+
+            <!-- Fan quick action: Passport summary if Fan -->
+            <% if (isFan) { %>
+                <div class="bg-gradient-to-br from-amber-500/10 via-pink-500/10 to-purple-500/10 rounded-3xl p-5 border border-amber-200/60 shadow-xs">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-black text-amber-900 uppercase tracking-wider flex items-center">
+                            <i class="fas fa-passport text-amber-600 me-1.5"></i> Concert Passport
+                        </span>
+                        <span class="text-[11px] font-bold text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-full">Malaysia</span>
+                    </div>
+                    <p class="text-xs text-slate-600 mb-4">Earn stamps and badges for attending K-Pop concerts and events in Malaysia.</p>
+                    <a href="/passport" class="block w-full text-center py-2 px-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-xs transition-colors">
+                        View Digital Passport & Badges
+                    </a>
+                </div>
+            <% } %>
+
+            <!-- Organizer quick action: Go to Hub if Organizer -->
+            <% if (isOrganizer) { %>
+                <div class="bg-gradient-to-br from-emerald-500/10 via-teal-500/10 to-slate-900/5 rounded-3xl p-5 border border-emerald-200/60 shadow-xs">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-black text-emerald-900 uppercase tracking-wider flex items-center">
+                            <i class="fas fa-gauge text-emerald-600 me-1.5"></i> Organizer Hub
+                        </span>
+                        <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full">Portal</span>
+                    </div>
+                    <p class="text-xs text-slate-600 mb-4">Manage your submitted concerts, cupsleeve gatherings, and venue logistics.</p>
+                    <div class="space-y-2">
+                        <a href="/organizer/dashboard" class="block w-full text-center py-2 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs transition-colors">
+                            Manage My Events
+                        </a>
+                        <a href="/submit-event" class="block w-full text-center py-2 px-3 rounded-xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs border border-slate-200 shadow-xs transition-colors">
+                            <i class="fas fa-plus text-pink-500 me-1"></i> Submit New Event
+                        </a>
+                    </div>
+                </div>
+            <% } %>
         </div>
 
         <!-- Right 2 Cols: Edit Forms -->
@@ -102,97 +177,161 @@
             <!-- Edit Profile Details -->
             <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
                 <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center">
-                    <i class="fas fa-user-pen text-pink-600 me-2"></i> Edit Profile Information
+                    <i class="fas fa-user-pen text-pink-600 me-2"></i> 
+                    <%= isOrganizer ? 'Edit Organization Details' : (isAdmin ? 'Edit Administrator Details' : 'Edit Profile Information') %>
                 </h3>
                 <form action="/profile" method="POST" class="space-y-4">
+                    <!-- Read-only Account Identity Credentials -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Username (Login ID)</label>
+                            <input type="text" value="<%= (currentUser && currentUser.username) || '' %>" disabled 
+                                   class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-500 cursor-not-allowed">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Registered Email</label>
+                            <input type="email" value="<%= (currentUser && currentUser.email) || '' %>" disabled 
+                                   class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-500 cursor-not-allowed">
+                        </div>
+                    </div>
+
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
-                        <input type="text" name="full_name" value="<%= currentUser.full_name %>" required 
-                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">
+                            <%= isOrganizer ? 'Official Contact / Representative Name' : 'Full Name / Display Name' %>
+                        </label>
+                        <input type="text" name="full_name" value="<%= (currentUser && currentUser.full_name) || '' %>" required 
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:bg-white focus:border-pink-500 focus:outline-none transition-all">
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">City / Region in Malaysia</label>
-                            <input type="text" name="location" value="<%= currentUser.location || 'Kuala Lumpur' %>"
-                                   placeholder="e.g. Subang Jaya, Penang, JB"
-                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900">
+                            <input type="text" name="location" value="<%= (currentUser && currentUser.location) || 'Kuala Lumpur' %>"
+                                   placeholder="e.g. Subang Jaya, Penang, Johor Bahru"
+                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:bg-white focus:border-pink-500 focus:outline-none transition-all">
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Favorite K-Pop Bias / Interests</label>
-                            <input type="text" name="buddy_preference" value="<%= currentUser.buddy_preference || '' %>"
-                                   placeholder="e.g. SEVENTEEN, TWICE, NewJeans, VIP Standing"
-                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900">
-                        </div>
+                        <% if (isFan) { %>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Favorite K-Pop Bias / Interests</label>
+                                <input type="text" name="buddy_preference" value="<%= (currentUser && currentUser.buddy_preference) || '' %>"
+                                       placeholder="e.g. SEVENTEEN, TWICE, NewJeans, VIP Standing"
+                                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:bg-white focus:border-pink-500 focus:outline-none transition-all">
+                            </div>
+                        <% } else { %>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Account Role</label>
+                                <input type="text" value="<%= role %>" disabled
+                                       class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-500 cursor-not-allowed">
+                            </div>
+                        <% } %>
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Avatar / Profile Picture URL</label>
-                        <input type="url" name="profile_image" value="<%= currentUser.profile_image || '' %>"
+                        <input type="url" name="profile_image" value="<%= (currentUser && currentUser.profile_image) || '' %>"
                                placeholder="https://..."
-                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900">
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:bg-white focus:border-pink-500 focus:outline-none transition-all">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Bio & Favorite Groups</label>
-                        <textarea name="bio" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-900"><%= currentUser.bio || '' %></textarea>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">
+                            <%= isOrganizer ? 'Organization Bio / Mission' : 'Bio & Favorite Groups' %>
+                        </label>
+                        <textarea name="bio" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-900 focus:bg-white focus:border-pink-500 focus:outline-none transition-all" placeholder="<%= isOrganizer ? 'Describe your fanclub union or event promoter organization...' : 'Share your K-pop journey, favorite groups, and fandoms!' %>"><%= (currentUser && currentUser.bio) || '' %></textarea>
                     </div>
 
                     <!-- Organizer / Fanclub Official Presence Section -->
-                    <div class="pt-4 border-t border-slate-100 space-y-4">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h4 class="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center">
-                                    <i class="fas fa-certificate text-pink-600 me-1.5"></i> Fanclub & Organizer Official Presence
-                                </h4>
-                                <p class="text-[11px] text-slate-500 mt-0.5">Where your fans can verify your authentic social media handles & official website.</p>
+                    <% if (isOrganizer) { %>
+                        <div class="pt-5 border-t border-slate-200 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center">
+                                        <i class="fas fa-certificate text-emerald-600 me-1.5"></i> Organization Credentials & Official Channels
+                                    </h4>
+                                    <p class="text-[11px] text-slate-500 mt-0.5">Where attendees verify your authentic organization and social channels.</p>
+                                </div>
+                                <div>
+                                    <%- helpers.getOrganizerBadge(currentUser) %>
+                                </div>
                             </div>
-                            <div>
-                                <%- helpers.getOrganizerBadge(currentUser) %>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Official Organization / Fanclub Name</label>
+                                    <input type="text" name="organization_name" value="<%= (currentUser && currentUser.organization_name) || '' %>"
+                                           placeholder="e.g. TXT Malaysia Fanbase / Live Nation MY"
+                                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:bg-white focus:border-pink-500 focus:outline-none transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Organization Type</label>
+                                    <select name="organization_type" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-medium focus:bg-white focus:border-pink-500 focus:outline-none transition-all">
+                                        <option value="Fanclub" <%= (currentUser && currentUser.organization_type === 'Fanclub') ? 'selected' : '' %>>Fanclub / Fanbase Union</option>
+                                        <option value="Promoter" <%= (currentUser && currentUser.organization_type === 'Promoter') ? 'selected' : '' %>>Concert / Tour Promoter</option>
+                                        <option value="Student Society" <%= (currentUser && currentUser.organization_type === 'Student Society') ? 'selected' : '' %>>University / Student Society</option>
+                                        <option value="Dance Crew" <%= (currentUser && currentUser.organization_type === 'Dance Crew') ? 'selected' : '' %>>Dance Cover Crew</option>
+                                        <option value="Independent Organizer" <%= (currentUser && currentUser.organization_type === 'Independent Organizer') ? 'selected' : '' %>>Independent Organizer</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">
+                                        <i class="fab fa-x-twitter text-slate-900 me-1"></i> Official Twitter / X Handle
+                                    </label>
+                                    <input type="text" name="social_handle" value="<%= (currentUser && currentUser.social_handle) || '' %>"
+                                           placeholder="e.g. @TXT_MY or @Starline_Events"
+                                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:bg-white focus:border-pink-500 focus:outline-none transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">
+                                        <i class="fas fa-link text-pink-600 me-1"></i> Official Website / Telegram / Carrd
+                                    </label>
+                                    <input type="url" name="social_url" value="<%= (currentUser && currentUser.social_url) || '' %>"
+                                           placeholder="https://t.me/txtmalaysia or https://carrd.co"
+                                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:bg-white focus:border-pink-500 focus:outline-none transition-all">
+                                </div>
                             </div>
                         </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Organization / Fanclub Name</label>
-                                <input type="text" name="organization_name" value="<%= currentUser.organization_name || '' %>"
-                                       placeholder="e.g. CARAT Malaysia Fan Union"
-                                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Organization Type</label>
-                                <select name="organization_type" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 font-medium">
-                                    <option value="Fanclub" <%= currentUser.organization_type === 'Fanclub' ? 'selected' : '' %>>Fanclub / Fanbase</option>
-                                    <option value="Promoter" <%= currentUser.organization_type === 'Promoter' ? 'selected' : '' %>>Concert / Tour Promoter</option>
-                                    <option value="Student Society" <%= currentUser.organization_type === 'Student Society' ? 'selected' : '' %>>University / Student Society</option>
-                                    <option value="Dance Crew" <%= currentUser.organization_type === 'Dance Crew' ? 'selected' : '' %>>Dance Cover Crew</option>
-                                    <option value="Independent Organizer" <%= currentUser.organization_type === 'Independent Organizer' ? 'selected' : '' %>>Independent Organizer</option>
-                                </select>
-                            </div>
+                    <% } else if (isFan) { %>
+                        <!-- Optional Fanclub Info for Fans who host community cupsleeves -->
+                        <div class="pt-4 border-t border-slate-100">
+                            <details class="group">
+                                <summary class="flex items-center justify-between cursor-pointer list-none text-xs font-bold text-slate-700 hover:text-pink-600">
+                                    <span class="flex items-center gap-1.5">
+                                        <i class="fas fa-users-viewfinder text-pink-500"></i> Are you hosting a Fanclub Cupsleeve or Fan Gathering?
+                                    </span>
+                                    <span class="text-[10px] text-slate-400 font-normal group-open:rotate-180 transition-transform">▼</span>
+                                </summary>
+                                <div class="mt-4 space-y-4 bg-slate-50/70 p-4 rounded-2xl border border-slate-100">
+                                    <p class="text-[11px] text-slate-500">If you represent a fanclub or manage cupsleeve events, enter your fanbase handle here:</p>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-[11px] font-bold text-slate-700 mb-1">Fanclub / Base Name</label>
+                                            <input type="text" name="organization_name" value="<%= (currentUser && currentUser.organization_name) || '' %>"
+                                                   placeholder="e.g. Carat MY Project"
+                                                   class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[11px] font-bold text-slate-700 mb-1">Fanbase Social Handle</label>
+                                            <input type="text" name="social_handle" value="<%= (currentUser && currentUser.social_handle) || '' %>"
+                                                   placeholder="@Carat_MY"
+                                                   class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Official Telegram / Linktree</label>
+                                        <input type="url" name="social_url" value="<%= (currentUser && currentUser.social_url) || '' %>"
+                                               placeholder="https://t.me/... or https://linktr.ee/..."
+                                               class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900">
+                                    </div>
+                                </div>
+                            </details>
                         </div>
+                    <% } %>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">
-                                    <i class="fab fa-x-twitter text-slate-900 me-1"></i> Official Twitter / IG Handle
-                                </label>
-                                <input type="text" name="social_handle" value="<%= currentUser.social_handle || '' %>"
-                                       placeholder="e.g. @Carat_MY or @Starline_Events"
-                                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">
-                                    <i class="fas fa-link text-pink-600 me-1"></i> Official Website / Linktree / Carrd
-                                </label>
-                                <input type="url" name="social_url" value="<%= currentUser.social_url || '' %>"
-                                       placeholder="https://caratmalaysia.carrd.co"
-                                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900">
-                            </div>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow">
-                        Save Profile & Official Links
+                    <button type="submit" class="px-6 py-2.5 rounded-xl <%= isOrganizer ? 'bg-emerald-700 hover:bg-emerald-800' : 'bg-slate-900 hover:bg-slate-800' %> text-white text-xs font-bold shadow transition-colors cursor-pointer">
+                        <i class="fas fa-check me-1.5"></i> <%= isOrganizer ? 'Save Organization Profile' : 'Save Profile Changes' %>
                     </button>
                 </form>
             </div>
@@ -206,22 +345,22 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Current Password</label>
                         <input type="password" name="current_password" required placeholder="••••••••"
-                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs">
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:bg-white focus:border-purple-500 focus:outline-none transition-all">
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">New Password</label>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">New Password (min 6 characters)</label>
                             <input type="password" name="new_password" required minlength="6" placeholder="••••••••"
-                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs">
+                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:bg-white focus:border-purple-500 focus:outline-none transition-all">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Confirm New Password</label>
                             <input type="password" name="confirm_password" required minlength="6" placeholder="••••••••"
-                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs">
+                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:bg-white focus:border-purple-500 focus:outline-none transition-all">
                         </div>
                     </div>
-                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-purple-900 hover:bg-purple-800 text-white text-xs font-bold shadow">
-                        Update Password
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-purple-900 hover:bg-purple-800 text-white text-xs font-bold shadow transition-colors cursor-pointer">
+                        <i class="fas fa-key me-1.5"></i> Update Password
                     </button>
                 </form>
             </div>
@@ -240,7 +379,7 @@
                             <div class="text-[11px] text-slate-500 mt-0.5">Receive immediate notifications if a saved concert or fan meeting date, venue, or status changes.</div>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer shrink-0">
-                            <input type="checkbox" name="notify_event_updates" value="1" <%= (currentUser.notify_event_updates !== 0) ? 'checked' : '' %> class="sr-only peer">
+                            <input type="checkbox" name="notify_event_updates" value="1" <%= (!currentUser || currentUser.notify_event_updates !== 0) ? 'checked' : '' %> class="sr-only peer">
                             <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-pink-600"></div>
                         </label>
                     </div>
@@ -251,7 +390,7 @@
                             <div class="text-[11px] text-slate-500 mt-0.5">Automated 7-day, 1-day, and 2-hour countdown reminders before showtime.</div>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer shrink-0">
-                            <input type="checkbox" name="notify_countdown_reminders" value="1" <%= (currentUser.notify_countdown_reminders !== 0) ? 'checked' : '' %> class="sr-only peer">
+                            <input type="checkbox" name="notify_countdown_reminders" value="1" <%= (!currentUser || currentUser.notify_countdown_reminders !== 0) ? 'checked' : '' %> class="sr-only peer">
                             <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-pink-600"></div>
                         </label>
                     </div>
@@ -262,13 +401,13 @@
                             <div class="text-[11px] text-slate-500 mt-0.5">Notify you when another fan or organizer replies to your logistical questions.</div>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer shrink-0">
-                            <input type="checkbox" name="notify_discussion_replies" value="1" <%= (currentUser.notify_discussion_replies !== 0) ? 'checked' : '' %> class="sr-only peer">
+                            <input type="checkbox" name="notify_discussion_replies" value="1" <%= (!currentUser || currentUser.notify_discussion_replies !== 0) ? 'checked' : '' %> class="sr-only peer">
                             <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-pink-600"></div>
                         </label>
                     </div>
 
                     <button type="submit" class="px-6 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold shadow-md shadow-pink-500/20 cursor-pointer">
-                        Save Notification Preferences
+                        <i class="fas fa-check me-1.5"></i> Save Notification Preferences
                     </button>
                 </form>
             </div>

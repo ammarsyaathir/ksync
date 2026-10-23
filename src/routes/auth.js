@@ -902,6 +902,16 @@ router.post('/profile', requireAuth, async (req, res) => {
   const userId = req.session.userId;
 
   try {
+    const currentUser = await db.getOne("SELECT * FROM users WHERE id = ?", [userId]);
+    if (!currentUser) {
+      req.session.flash = { error: 'User account not found.' };
+      return res.redirect('/profile');
+    }
+
+    const trimmedFullName = (typeof full_name === 'string' && full_name.trim().length > 0)
+      ? full_name.trim()
+      : (currentUser.full_name || currentUser.username || 'K-Sync User');
+
     await db.execute(
       `UPDATE users SET 
         full_name = ?, 
@@ -916,20 +926,20 @@ router.post('/profile', requireAuth, async (req, res) => {
         updated_at = CURRENT_TIMESTAMP 
       WHERE id = ?`,
       [
-        full_name.trim(), 
-        location ? location.trim() : '', 
-        buddy_preference ? buddy_preference.trim() : '', 
-        profile_image ? profile_image.trim() : null, 
-        bio ? bio.trim() : '',
-        organization_name ? organization_name.trim() : null,
-        organization_type ? organization_type.trim() : 'Fanclub',
-        social_handle ? social_handle.trim() : null,
-        social_url ? social_url.trim() : null,
+        trimmedFullName, 
+        location !== undefined ? (typeof location === 'string' ? location.trim() : '') : (currentUser.location || ''), 
+        buddy_preference !== undefined ? (typeof buddy_preference === 'string' ? buddy_preference.trim() : '') : (currentUser.buddy_preference || ''), 
+        profile_image !== undefined ? ((typeof profile_image === 'string' && profile_image.trim()) ? profile_image.trim() : null) : currentUser.profile_image, 
+        bio !== undefined ? (typeof bio === 'string' ? bio.trim() : '') : (currentUser.bio || ''),
+        organization_name !== undefined ? ((typeof organization_name === 'string' && organization_name.trim()) ? organization_name.trim() : null) : currentUser.organization_name,
+        organization_type !== undefined ? ((typeof organization_type === 'string' && organization_type.trim()) ? organization_type.trim() : 'Fanclub') : (currentUser.organization_type || 'Fanclub'),
+        social_handle !== undefined ? ((typeof social_handle === 'string' && social_handle.trim()) ? social_handle.trim() : null) : currentUser.social_handle,
+        social_url !== undefined ? ((typeof social_url === 'string' && social_url.trim()) ? social_url.trim() : null) : currentUser.social_url,
         userId
       ]
     );
 
-    req.session.flash = { success: 'Profile & Social Media links updated successfully!' };
+    req.session.flash = { success: 'Profile details updated successfully!' };
     res.redirect('/profile');
   } catch (err) {
     console.error('Profile update error:', err);
@@ -942,6 +952,21 @@ router.post('/profile', requireAuth, async (req, res) => {
 router.post('/profile/change-password', requireAuth, async (req, res) => {
   const { current_password, new_password, confirm_password } = req.body;
   const userId = req.session.userId;
+
+  if (!current_password) {
+    req.session.flash = { error: 'Please enter your current password.' };
+    return res.redirect('/profile');
+  }
+
+  if (!new_password || !confirm_password) {
+    req.session.flash = { error: 'Please provide both new password and confirmation.' };
+    return res.redirect('/profile');
+  }
+
+  if (new_password.length < 6) {
+    req.session.flash = { error: 'New password must be at least 6 characters long.' };
+    return res.redirect('/profile');
+  }
 
   if (new_password !== confirm_password) {
     req.session.flash = { error: 'New passwords do not match.' };
