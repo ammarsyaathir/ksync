@@ -31,14 +31,22 @@ const TRUSTED_SOURCE_DOMAINS = {
     'ygfamily.com',
     'ibighit.com'
   ],
-  // Recognized community and social platforms (Tier 2: Medium Confidence)
+  // Recognized community, fandom and social platforms (Tier 2: Community Confidence)
   tier2: [
     'instagram.com',
     'x.com',
     'twitter.com',
     'facebook.com',
     'threads.net',
-    'tiktok.com'
+    'tiktok.com',
+    't.me',
+    'telegram.me',
+    'telegram.org',
+    'forms.gle',
+    'docs.google.com',
+    'linktr.ee',
+    'carrd.co',
+    'beacons.ai'
   ]
 };
 
@@ -260,7 +268,13 @@ export async function crossCheckOfficialSource(sourceUrl, eventData) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 3500);
 
-    const res = await fetch(sourceUrl, {
+    // If Telegram link, convert to web preview endpoint (e.g. t.me/mymoatxt -> t.me/s/mymoatxt)
+    let fetchUrl = sourceUrl;
+    if ((hostname === 't.me' || hostname === 'telegram.me') && parsedUrl.pathname && !parsedUrl.pathname.startsWith('/s/')) {
+      fetchUrl = `https://t.me/s${parsedUrl.pathname}`;
+    }
+
+    const res = await fetch(fetchUrl, {
       method: 'GET',
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 KSyncBot/1.0',
@@ -924,10 +938,12 @@ export async function executeAutomatedVerification(eventData, currentEventId = n
     ...aiSemanticResult.auditIssues
   ];
 
-  // 6. Decision Matrix & Status Resolution
+  // 6. Decision Matrix & Status Resolution (Zero Admin Required)
   let verificationStatus = 'PENDING';
   let trustLevel = 'PENDING';
   let decisionSummary = '';
+
+  const isTelegramSource = Boolean(sourceUrl && (sourceUrl.includes('t.me') || sourceUrl.includes('telegram')));
 
   if (duplicateResult.isDuplicate) {
     verificationStatus = 'FLAGGED';
@@ -936,14 +952,38 @@ export async function executeAutomatedVerification(eventData, currentEventId = n
     decisionSummary = topCollision 
       ? `Flagged: Potential duplicate of Event #${topCollision.eventId} (${topCollision.eventName}).`
       : 'Flagged for potential duplicate collision with existing verified event.';
-  } else if (allDiscrepancies.length > 0 && (aiVisionResult.discrepancies.length > 0 || aiSemanticResult.scamRisk === 'HIGH')) {
+  } else if (aiSemanticResult.scamRisk === 'HIGH') {
+    verificationStatus = 'FLAGGED';
+    trustLevel = 'FLAGGED';
+    decisionSummary = 'High scam/fraud risk detected in ticketing details or payment terms.';
+  } else if (isCupsleeveOrCommunity || eventData.organizer_type === 'Fanclub') {
+    // Autonomous Fanclub & Cupsleeve Trust Engine (No admin queues needed!)
+    if (compositeScore >= 70) {
+      verificationStatus = 'VERIFIED';
+      trustLevel = 'COMMUNITY';
+      if (isTelegramSource) {
+        decisionSummary = `Autonomous Fanclub Engine: Verified via Telegram Channel (@${eventData.organizer_name || 'Fanclub'}) & Physical Venue Sanity (${compositeScore}% trust, 0 Admin Queues).`;
+      } else {
+        decisionSummary = `Autonomous Fanclub Engine: Verified Community Cupsleeve & Physical Cafe Venue (${compositeScore}% trust, 0 Admin Queues).`;
+      }
+    } else if (compositeScore >= 50) {
+      verificationStatus = 'PENDING';
+      trustLevel = 'PENDING';
+      decisionSummary = 'Requires additional evidence: valid Telegram channel or cafe announcement link.';
+    } else {
+      verificationStatus = 'FLAGGED';
+      trustLevel = 'FLAGGED';
+      decisionSummary = 'Failed baseline fanclub validation rules or suspicious ticketing model.';
+    }
+  } else if (allDiscrepancies.length > 0 && aiVisionResult.discrepancies.length > 0) {
     verificationStatus = 'FLAGGED';
     trustLevel = 'FLAGGED';
     decisionSummary = 'Discrepancy detected between uploaded poster and submitted event dates/venues.';
   } else if (compositeScore >= 80 && dualAIConsensus.isConsensusReached) {
+    // Autonomous Commercial Promoter Whitelist Engine
     verificationStatus = 'VERIFIED';
-    trustLevel = isCupsleeveOrCommunity ? 'COMMUNITY' : 'OFFICIAL';
-    decisionSummary = `Autonomous Dual-AI Consensus passed with ${compositeScore}% confidence.`;
+    trustLevel = 'OFFICIAL';
+    decisionSummary = `Autonomous Promoter Whitelist & Dual-AI Consensus passed with ${compositeScore}% confidence (0 Admin Queues).`;
   } else if (compositeScore >= 50) {
     verificationStatus = 'PENDING';
     trustLevel = 'PENDING';
@@ -1000,7 +1040,9 @@ export async function executeAutomatedVerification(eventData, currentEventId = n
       status: isOfficialChannel ? 'Passed' : 'Failed',
       points: isOfficialChannel ? 10 : 0,
       maxPoints: 10,
-      details: isOfficialChannel ? `Recognized promoter channel (Tier ${sourceResult.domainTier}).` : 'Unrecognized or non-whitelisted ticketing domain.'
+      details: isOfficialChannel 
+        ? (sourceResult.domainTier === 1 ? 'Recognized promoter channel (Tier 1).' : 'Recognized fandom channel / Telegram / social platform (Tier 2).') 
+        : 'Unrecognized or non-whitelisted ticketing domain.'
     },
     {
       name: 'Evidence link resolves',

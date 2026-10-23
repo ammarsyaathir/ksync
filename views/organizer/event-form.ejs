@@ -68,6 +68,9 @@
                     <button type="button" onclick="fillSampleData('cupsleeve')" class="px-3 py-2 rounded-xl bg-white border border-slate-200 hover:border-pink-300 text-slate-700 hover:text-pink-600 font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer">
                         <i class="fas fa-coffee text-amber-500"></i> Cupsleeve
                     </button>
+                    <button type="button" onclick="fillSampleData('txt_cupsleeve')" class="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 text-white font-extrabold text-xs shadow-md shadow-teal-500/20 transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                        <i class="fab fa-telegram-plane text-cyan-200"></i> ✨ TXT Cupsleeve (Telegram)
+                    </button>
                     <button type="button" onclick="toggleAiExtractor()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-md shadow-violet-500/20 transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer">
                         <i class="fas fa-brain text-yellow-300"></i> ✨ AI Scan (Gemini 4 Argon)
                     </button>
@@ -415,6 +418,23 @@ const SAMPLE_PRESETS = {
         ticket_info: 'Free admission with any beverage order from the cafe counter (RM 15 - RM 22). Tier packs given with each drink purchase while stocks last.',
         event_rules: '- Photocard trading allowed in designated outdoor seating.\n- Please keep the cafe clean and orderly.\n- 1 tier pack per beverage transaction.',
         official_url: 'https://twitter.com/mycarat_community/status/1789001122334455',
+        poster_url: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&auto=format&fit=crop'
+    },
+    txt_cupsleeve: {
+        event_name: 'TXT 6th Anniversary Cupsleeve & MOA Gathering KL',
+        artist_id: '6', // TOMORROW X TOGETHER (TXT)
+        category_id: '3', // Cupsleeve Event
+        description: "Join Malaysian MOAs for TOMORROW X TOGETHER's 6th Debut Anniversary Cupsleeve Celebration! Featuring exclusive anniversary cupsleeves designed by MY MOA Union, free holographic photocard tier packs, lucky draw merchandise giveaways, and TXT playlist listening party. Organized with full love by Malaysian MOAs.",
+        event_date: '2027-03-04',
+        start_time: '11:00',
+        end_time: '18:00',
+        venue_name: 'VCR Cafe Bangsar',
+        city: 'Kuala Lumpur',
+        state: 'Wilayah Persekutuan Kuala Lumpur',
+        address: '2, Jalan Telawi 3, Bangsar Baru, 59100 Kuala Lumpur',
+        ticket_info: 'Free admission with any cafe beverage order (RM 12 - RM 18). Free TXT anniversary cupsleeve & photocard set included with drink receipt. Tier packs while stocks last.',
+        event_rules: '- Photocard trading allowed in designated outdoor cafe area.\n- 1 tier pack per beverage transaction.\n- Please keep the cafe clean and support our host venue by purchasing drinks.',
+        official_url: 'https://t.me/mymoatxt',
         poster_url: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&auto=format&fit=crop'
     }
 };

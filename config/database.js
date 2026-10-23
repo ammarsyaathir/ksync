@@ -92,6 +92,20 @@ if (isUsingMySQL) {
             FOREIGN KEY (\`event_id\`) REFERENCES \`events\`(\`id\`) ON DELETE CASCADE
           ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         `);
+
+        // 4. Ensure email_otp_verifications table exists in MySQL
+        await mysqlPool.query(`
+          CREATE TABLE IF NOT EXISTS \`email_otp_verifications\` (
+            \`id\` INT AUTO_INCREMENT PRIMARY KEY,
+            \`email\` VARCHAR(255) NOT NULL,
+            \`otp_code\` VARCHAR(10) NOT NULL,
+            \`purpose\` VARCHAR(50) DEFAULT 'REGISTRATION',
+            \`expires_at\` DATETIME NOT NULL,
+            \`is_used\` TINYINT(1) DEFAULT 0,
+            \`created_at\` DATETIME DEFAULT CURRENT_TIMESTAMP,
+            INDEX \`idx_email_otp\` (\`email\`, \`otp_code\`)
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+        `);
       } catch (migErr) {
         console.warn("MySQL auto-migration check note:", migErr.message);
       }

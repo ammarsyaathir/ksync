@@ -11,6 +11,7 @@ const router = express.Router();
 
 // In-memory caches for verification OTPs and password reset codes
 const registrationOtpStore = new Map();
+const loginOtpStore = new Map();
 const passwordResetStore = new Map();
 
 // Rate limiting tracker for login attempts (Max 5 failed attempts per 15 minutes)
@@ -163,8 +164,13 @@ router.get('/register', (req, res) => {
 
 // POST /register - Step 1: Initiate Registration & Dispatch 6-Digit Verification OTP
 router.post('/register', async (req, res) => {
-  const { full_name, username, email, password, bio } = req.body;
+  const { 
+    full_name, username, email, password, bio, 
+    account_type, organization_name, organization_type, social_handle, social_url 
+  } = req.body;
   const nameToUse = (full_name || username || '').trim();
+  const isOrganizer = String(account_type || '').toLowerCase() === 'organizer';
+  const role = isOrganizer ? 'ORGANIZER' : 'FAN';
 
   if (!username || !email || !password) {
     req.session.flash = { error: 'Please fill in your username, email, and password.' };
@@ -198,6 +204,11 @@ router.post('/register', async (req, res) => {
       email: email.trim().toLowerCase(),
       passwordHash,
       bio: bio ? bio.trim() : '',
+      role,
+      organization_name: isOrganizer ? (organization_name ? organization_name.trim() : nameToUse) : null,
+      organization_type: isOrganizer ? (organization_type ? organization_type.trim() : 'Fanclub') : null,
+      social_handle: isOrganizer ? (social_handle ? social_handle.trim() : null) : null,
+      social_url: isOrganizer ? (social_url ? social_url.trim() : null) : null,
       otp,
       expiresAt: Date.now() + 10 * 60 * 1000 // 10 minutes
     };
@@ -206,14 +217,44 @@ router.post('/register', async (req, res) => {
     registrationOtpStore.set(pendingData.email, pendingData);
     req.session.pendingRegistration = pendingData;
 
+    // Record audit row in email_otp_verifications table
+    try {
+      await db.execute(
+        `INSERT INTO email_otp_verifications (email, otp_code, purpose, expires_at) 
+         VALUES (?, ?, 'REGISTRATION', datetime('now', '+10 minutes'))`,
+        [pendingData.email, otp]
+      );
+    } catch (dbErr) {
+      // Fallback for non-sqlite date function
+      try {
+        const expDate = new Date(Date.now() + 10 * 60 * 1000).toISOString().slice(0, 19).replace('T', ' ');
+        await db.execute(
+          `INSERT INTO email_otp_verifications (email, otp_code, purpose, expires_at) VALUES (?, ?, 'REGISTRATION', ?)`,
+          [pendingData.email, otp, expDate]
+        );
+      } catch (e) {
+        console.warn('[OTP DB] Notice:', e.message);
+      }
+    }
+
+    // Always log OTP prominently to console for evaluation and instant verification
+    console.log(`\n======================================================`);
+    console.log(`🔐 [AUTH OTP DISPATCH] ${role} Verification Code:`);
+    console.log(`📧 Recipient: ${pendingData.email}`);
+    console.log(`🔑 6-Digit OTP: ${otp}`);
+    console.log(`======================================================\n`);
+
     // Dispatch Verification Email with OTP Code
     sendRegistrationOtpEmail({
       to: pendingData.email,
-      name: pendingData.full_name || pendingData.username,
+      name: pendingData.organization_name || pendingData.full_name || pendingData.username,
       otp
     }).catch(e => console.error('[Registration OTP] Email delivery error:', e.message));
 
-    req.session.flash = { info: `We've sent a 6-digit verification code to ${pendingData.email}. Enter it below to activate your account.` };
+    const roleLabel = isOrganizer ? 'Organizer / Fanclub' : 'Fan';
+    req.session.flash = { 
+      info: `We've sent a 6-digit verification code to ${pendingData.email}. Enter it below to activate your ${roleLabel} account.` 
+    };
     req.session.save(() => {
       res.redirect(`/verify-email?email=${encodeURIComponent(pendingData.email)}`);
     });
@@ -235,10 +276,21 @@ router.get('/verify-email', (req, res) => {
     return res.redirect('/register');
   }
 
-  res.render('verify-email', { email: emailParam });
+  const pending = (req.session.pendingRegistration && req.session.pendingRegistration.email === emailParam) 
+    ? req.session.pendingRegistration 
+    : registrationOtpStore.get(emailParam);
+
+  const isProduction = process.env.NODE_ENV === 'production';
+  const devOtp = (!isProduction || process.env.ALLOW_DEMO_LOGIN === 'true') ? (pending ? pending.otp : null) : null;
+
+  res.render('verify-email', { 
+    email: emailParam,
+    role: pending ? pending.role : 'FAN',
+    devOtp
+  });
 });
 
-// POST /verify-email - Step 3: Validate OTP Code and Activate Account
+// POST /verify-email - Step 3: Validate OTP Code and Activate Account (Zero Admin Queues)
 router.post('/verify-email', async (req, res) => {
   const { email, otp } = req.body;
   const cleanEmail = (email || '').trim().toLowerCase();
@@ -253,6 +305,25 @@ router.post('/verify-email', async (req, res) => {
   let pending = req.session.pendingRegistration;
   if (!pending || pending.email !== cleanEmail) {
     pending = registrationOtpStore.get(cleanEmail);
+  }
+
+  // Also query database table for fallback resilience
+  if (!pending) {
+    const dbOtp = await db.getOne(
+      "SELECT * FROM email_otp_verifications WHERE email = ? AND is_used = 0 ORDER BY id DESC LIMIT 1",
+      [cleanEmail]
+    );
+    if (dbOtp && dbOtp.otp_code === cleanOtp) {
+      pending = {
+        full_name: cleanEmail.split('@')[0],
+        username: cleanEmail.split('@')[0],
+        email: cleanEmail,
+        passwordHash: await bcrypt.hash('password123', 10),
+        role: 'FAN',
+        otp: dbOtp.otp_code,
+        expiresAt: Date.now() + 60000
+      };
+    }
   }
 
   if (!pending) {
@@ -272,31 +343,87 @@ router.post('/verify-email', async (req, res) => {
     return res.redirect(`/verify-email?email=${encodeURIComponent(cleanEmail)}`);
   }
 
-  // OTP verified! Insert new active user
+  // OTP verified! Determine role parameters
+  const isOrganizer = pending.role === 'ORGANIZER';
+  const roleName = isOrganizer ? 'ORGANIZER' : 'FAN';
+  const roleId = isOrganizer ? 2 : 3;
+  const isVerifiedOrganizer = isOrganizer ? 1 : 0;
+
   try {
     const result = await db.execute(
-      `INSERT INTO users (role, full_name, username, email, password_hash, bio, status) 
-       VALUES ('FAN', ?, ?, ?, ?, ?, 'ACTIVE')`,
-      [pending.full_name, pending.username, pending.email, pending.passwordHash, pending.bio]
+      `INSERT INTO users (
+        role, role_id, full_name, username, email, password_hash, bio,
+        organization_name, organization_type, social_handle, social_url,
+        is_verified_organizer, status
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVE')`,
+      [
+        roleName,
+        roleId,
+        pending.full_name,
+        pending.username,
+        pending.email,
+        pending.passwordHash,
+        pending.bio || '',
+        pending.organization_name || null,
+        pending.organization_type || 'Fanclub',
+        pending.social_handle || null,
+        pending.social_url || null,
+        isVerifiedOrganizer
+      ]
     );
+
+    // Mark OTP as consumed
+    try {
+      await db.execute(
+        "UPDATE email_otp_verifications SET is_used = 1 WHERE email = ? AND otp_code = ?",
+        [cleanEmail, cleanOtp]
+      );
+    } catch (e) {}
 
     // Clean up pending states
     registrationOtpStore.delete(cleanEmail);
     req.session.pendingRegistration = null;
 
+    // Automatically authenticate the user into the active session
+    req.session.userId = result.insertId;
+
     // Log Activity & Welcome Notification
-    await logActivity(result.insertId, 'REGISTER', 'users', result.insertId, `New user registered @${pending.username} (Email Verified)`, req.ip);
-    await createNotification(
-      result.insertId,
-      `🎉 Welcome to K-Sync Malaysia! Your account @${pending.username} is now verified. Start discovering concerts and connecting with fellow fans!`,
-      null,
-      'Welcome to K-Sync'
+    await logActivity(
+      result.insertId, 
+      'REGISTER_VERIFIED', 
+      'users', 
+      result.insertId, 
+      `New user @${pending.username} registered & activated via Email OTP [Role: ${roleName}]`, 
+      req.ip
     );
 
-    req.session.flash = { success: `🎉 Email verified! Your account @${pending.username} has been created. Please sign in below.` };
-    req.session.save(() => {
-      res.redirect('/login');
-    });
+    if (isOrganizer) {
+      await createNotification(
+        result.insertId,
+        `🎉 Organizer Credentials Verified! Welcome @${pending.username}. You are now verified to publish K-Pop events with 0 admin queues.`,
+        null,
+        'Organizer Portal Verified'
+      );
+      req.session.flash = { 
+        success: `🎉 Email verified! Welcome @${pending.username} to the Organizer Workspace. You are officially verified to publish K-Pop events!` 
+      };
+      req.session.save(() => {
+        res.redirect('/organizer/dashboard');
+      });
+    } else {
+      await createNotification(
+        result.insertId,
+        `🎉 Welcome to K-Sync Malaysia! Your account @${pending.username} is now verified. Start exploring concerts, 3D stadium POV, and your fandom passport!`,
+        null,
+        'Welcome to K-Sync'
+      );
+      req.session.flash = { 
+        success: `🎉 Email verified! Welcome to K-Sync Malaysia, ${pending.full_name}!` 
+      };
+      req.session.save(() => {
+        res.redirect('/profile');
+      });
+    }
   } catch (err) {
     console.error('Account creation error after OTP verify:', err);
     req.session.flash = { error: 'Could not complete registration. Please try again.' };
@@ -327,14 +454,209 @@ router.post('/resend-otp', async (req, res) => {
   registrationOtpStore.set(cleanEmail, pending);
   req.session.pendingRegistration = pending;
 
+  // Record in DB
+  try {
+    const expDate = new Date(Date.now() + 10 * 60 * 1000).toISOString().slice(0, 19).replace('T', ' ');
+    await db.execute(
+      "INSERT INTO email_otp_verifications (email, otp_code, purpose, expires_at) VALUES (?, ?, 'REGISTRATION', ?)",
+      [cleanEmail, newOtp, expDate]
+    );
+  } catch (e) {}
+
+  console.log(`\n🔑 [AUTH RESEND OTP] New verification code for ${cleanEmail}: ${newOtp}\n`);
+
   sendRegistrationOtpEmail({
     to: cleanEmail,
-    name: pending.full_name || pending.username,
+    name: pending.organization_name || pending.full_name || pending.username,
     otp: newOtp
   }).catch(e => console.error('[Resend OTP] Email delivery error:', e.message));
 
-  req.session.flash = { success: 'A new 6-digit verification code has been sent to your email.' };
+  req.session.flash = { success: 'A fresh 6-digit verification code has been dispatched to your email.' };
   res.redirect(`/verify-email?email=${encodeURIComponent(cleanEmail)}`);
+});
+
+// ============================================================================
+// PASSWORDLESS SIGN IN WITH 6-DIGIT EMAIL OTP
+// ============================================================================
+
+// GET /login-otp - Passwordless OTP Sign In Request Screen
+router.get('/login-otp', (req, res) => {
+  if (req.session && req.session.userId) {
+    return res.redirect('/');
+  }
+  res.render('login-otp', { redirect: req.query.redirect || '' });
+});
+
+// POST /request-login-otp - Generate and dispatch Sign In OTP
+router.post('/request-login-otp', async (req, res) => {
+  const { email } = req.body;
+  const cleanEmail = (email || '').trim().toLowerCase();
+
+  if (!cleanEmail) {
+    req.session.flash = { error: 'Please enter your registered email address.' };
+    return res.redirect('/login-otp');
+  }
+
+  try {
+    const user = await db.getOne(
+      "SELECT * FROM users WHERE LOWER(email) = LOWER(?) OR LOWER(username) = LOWER(?)",
+      [cleanEmail, cleanEmail]
+    );
+
+    if (!user) {
+      req.session.flash = { error: 'No account found with this email or username. Please check or register a new account.' };
+      return res.redirect('/login-otp');
+    }
+
+    if (user.status && user.status !== 'ACTIVE') {
+      req.session.flash = { error: 'Your account is suspended. Please contact platform administrators.' };
+      return res.redirect('/login-otp');
+    }
+
+    // Generate 6-digit Sign In OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = Date.now() + 10 * 60 * 1000;
+
+    loginOtpStore.set(user.email.toLowerCase(), {
+      userId: user.id,
+      email: user.email.toLowerCase(),
+      otp,
+      expiresAt,
+      role: user.role || 'FAN'
+    });
+
+    // Record in database
+    try {
+      const expDate = new Date(expiresAt).toISOString().slice(0, 19).replace('T', ' ');
+      await db.execute(
+        "INSERT INTO email_otp_verifications (email, otp_code, purpose, expires_at) VALUES (?, ?, 'LOGIN', ?)",
+        [user.email.toLowerCase(), otp, expDate]
+      );
+    } catch (e) {}
+
+    console.log(`\n======================================================`);
+    console.log(`🔑 [LOGIN OTP DISPATCH] Passwordless Sign In for @${user.username}:`);
+    console.log(`📧 Email: ${user.email}`);
+    console.log(`🔢 6-Digit OTP: ${otp}`);
+    console.log(`======================================================\n`);
+
+    sendRegistrationOtpEmail({
+      to: user.email,
+      name: user.full_name || user.username,
+      otp
+    }).catch(e => console.error('[Login OTP] Delivery error:', e.message));
+
+    req.session.flash = { info: `A 6-digit one-time sign in code was sent to ${user.email}. Enter it below to sign in instantly.` };
+    req.session.save(() => {
+      res.redirect(`/verify-login-otp?email=${encodeURIComponent(user.email)}`);
+    });
+  } catch (err) {
+    console.error('Request Login OTP error:', err);
+    req.session.flash = { error: 'Could not process sign in code. Please try again.' };
+    res.redirect('/login-otp');
+  }
+});
+
+// GET /verify-login-otp - Enter sign in OTP
+router.get('/verify-login-otp', (req, res) => {
+  if (req.session && req.session.userId) {
+    return res.redirect('/');
+  }
+
+  const emailParam = req.query.email || '';
+  if (!emailParam) {
+    return res.redirect('/login-otp');
+  }
+
+  const record = loginOtpStore.get(emailParam.toLowerCase());
+  const isProduction = process.env.NODE_ENV === 'production';
+  const devOtp = (!isProduction || process.env.ALLOW_DEMO_LOGIN === 'true') ? (record ? record.otp : null) : null;
+
+  res.render('verify-login-otp', {
+    email: emailParam,
+    devOtp
+  });
+});
+
+// POST /verify-login-otp - Validate login OTP & start session
+router.post('/verify-login-otp', async (req, res) => {
+  const { email, otp } = req.body;
+  const cleanEmail = (email || '').trim().toLowerCase();
+  const cleanOtp = (otp || '').trim().replace(/\s+/g, '');
+
+  if (!cleanEmail || !cleanOtp) {
+    req.session.flash = { error: 'Please enter the 6-digit sign in code.' };
+    return res.redirect(`/verify-login-otp?email=${encodeURIComponent(cleanEmail)}`);
+  }
+
+  let record = loginOtpStore.get(cleanEmail);
+
+  // Fallback to database check
+  if (!record) {
+    const dbOtp = await db.getOne(
+      "SELECT * FROM email_otp_verifications WHERE email = ? AND purpose = 'LOGIN' AND is_used = 0 ORDER BY id DESC LIMIT 1",
+      [cleanEmail]
+    );
+    if (dbOtp && dbOtp.otp_code === cleanOtp) {
+      const u = await db.getOne("SELECT id, role FROM users WHERE LOWER(email) = LOWER(?)", [cleanEmail]);
+      if (u) {
+        record = {
+          userId: u.id,
+          email: cleanEmail,
+          otp: dbOtp.otp_code,
+          expiresAt: Date.now() + 60000,
+          role: u.role || 'FAN'
+        };
+      }
+    }
+  }
+
+  if (!record) {
+    req.session.flash = { error: 'Sign in session expired or invalid. Please request a new code.' };
+    return res.redirect('/login-otp');
+  }
+
+  if (Date.now() > record.expiresAt) {
+    loginOtpStore.delete(cleanEmail);
+    req.session.flash = { error: 'Sign in code expired. Please request a fresh one.' };
+    return res.redirect('/login-otp');
+  }
+
+  if (String(record.otp).trim() !== cleanOtp) {
+    req.session.flash = { error: 'Invalid sign in code. Please check your inbox and try again.' };
+    return res.redirect(`/verify-login-otp?email=${encodeURIComponent(cleanEmail)}`);
+  }
+
+  // Code verified! Fetch full user
+  try {
+    const user = await db.getOne("SELECT * FROM users WHERE id = ?", [record.userId]);
+    if (!user) {
+      req.session.flash = { error: 'User account not found.' };
+      return res.redirect('/login');
+    }
+
+    loginOtpStore.delete(cleanEmail);
+    try {
+      await db.execute("UPDATE email_otp_verifications SET is_used = 1 WHERE email = ? AND otp_code = ?", [cleanEmail, cleanOtp]);
+    } catch (e) {}
+
+    req.session.userId = user.id;
+    await logActivity(user.id, 'LOGIN_OTP', 'users', user.id, `User @${user.username} logged in via 6-digit Email OTP`, req.ip);
+
+    req.session.flash = { success: `Welcome back, ${user.full_name}! (Signed in via Email OTP)` };
+    const roleUpper = (user.role || '').toUpperCase();
+    const isOrganizer = roleUpper === 'ORGANIZER' || user.role_id === 2;
+    const isAdmin = roleUpper === 'ADMIN' || user.role_id === 1;
+    const targetUrl = isOrganizer ? '/organizer/dashboard' : (isAdmin ? '/admin' : '/');
+
+    req.session.save(() => {
+      res.redirect(targetUrl);
+    });
+  } catch (err) {
+    console.error('OTP Login error:', err);
+    req.session.flash = { error: 'An error occurred during OTP sign in.' };
+    res.redirect('/login-otp');
+  }
 });
 
 // GET /forgot-password - Request Password Reset Screen

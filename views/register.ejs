@@ -11,6 +11,66 @@
         </div>
 
         <form action="/register" method="POST" class="space-y-4">
+            <!-- Account Type Selector -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1.5">I am registering as:</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <label class="flex items-center gap-2.5 p-3 rounded-xl border border-pink-300 bg-pink-50/50 cursor-pointer transition-all hover:bg-pink-100/40">
+                        <input type="radio" name="account_type" value="fan" checked onchange="toggleAccountType(this.value)" class="text-pink-600 focus:ring-pink-500 w-4 h-4">
+                        <div>
+                            <div class="text-xs font-extrabold text-slate-900">💖 K-Pop Fan</div>
+                            <div class="text-[10px] text-slate-500">Events, radar & passport</div>
+                        </div>
+                    </label>
+                    <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 bg-white cursor-pointer transition-all hover:bg-slate-50">
+                        <input type="radio" name="account_type" value="organizer" onchange="toggleAccountType(this.value)" class="text-purple-600 focus:ring-purple-500 w-4 h-4">
+                        <div>
+                            <div class="text-xs font-extrabold text-slate-900">🏢 Fanclub / Host</div>
+                            <div class="text-[10px] text-slate-500">Publish cupsleeves & shows</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Organizer / Fanclub Dedicated Fields (Dynamic Drawer) -->
+            <div id="organizer-fields" class="hidden p-4 rounded-2xl bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 space-y-3">
+                <div class="flex items-center gap-2 text-xs font-extrabold text-purple-900">
+                    <i class="fas fa-shield-alt text-purple-600"></i>
+                    <span>Organizer & Fanclub Credentials</span>
+                </div>
+                <p class="text-[11px] text-purple-700 leading-relaxed">
+                    Verify via 6-digit email OTP for autonomous trust validation. Zero human admin queues needed!
+                </p>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Fanclub / Organization Name</label>
+                    <input type="text" name="organization_name" placeholder="e.g. MY MOA Union (TXT Fanclub Malaysia)"
+                           class="w-full bg-white border border-purple-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Organization Type</label>
+                        <select name="organization_type" class="w-full bg-white border border-purple-200 rounded-xl px-2.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                            <option value="Fanclub" selected>Fandom Fanclub / Community</option>
+                            <option value="Promoter">Commercial Concert Promoter</option>
+                            <option value="Independent">Student / Independent Host</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-700 mb-1">Telegram / Social Handle</label>
+                        <input type="text" name="social_handle" placeholder="e.g. @mymoatxt"
+                               class="w-full bg-white border border-purple-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Official Telegram Channel / Link</label>
+                    <input type="url" name="social_url" placeholder="e.g. https://t.me/mymoatxt"
+                           class="w-full bg-white border border-purple-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                </div>
+            </div>
+
             <div>
                 <label class="block text-xs font-bold text-slate-700 mb-1">Full Name</label>
                 <input type="text" name="full_name" required placeholder="e.g. Aiman Danial"
@@ -21,16 +81,16 @@
                 <label class="block text-xs font-bold text-slate-700 mb-1">Username</label>
                 <div class="relative">
                     <i class="fas fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" name="username" required placeholder="e.g. aiman_carat"
+                    <input type="text" name="username" required placeholder="e.g. aiman_carat or mymoa_host"
                            class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-300">
                 </div>
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Email Address</label>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Email Address (For Instant OTP Verification)</label>
                 <div class="relative">
                     <i class="fas fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="email" name="email" required placeholder="e.g. fan@ksync.my"
+                    <input type="email" name="email" required placeholder="e.g. organizer@ksync.my"
                            class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-300">
                 </div>
             </div>
@@ -48,17 +108,18 @@
                 </div>
             </div>
 
-            <div>
+            <div id="fan-fandom-box">
                 <label class="block text-xs font-bold text-slate-700 mb-1">Favorite K-Pop Group / Fandom (Optional)</label>
                 <div class="relative">
                     <i class="fas fa-heart absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" name="bio" placeholder="e.g. SEVENTEEN Carat / TWICE ONCE"
+                    <input type="text" name="bio" placeholder="e.g. TOMORROW X TOGETHER MOA / SEVENTEEN Carat"
                            class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-300">
                 </div>
             </div>
 
-            <button type="submit" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-extrabold shadow transition-all cursor-pointer">
-                Create Account &rarr;
+            <button type="submit" id="btn-submit-register" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-extrabold shadow transition-all cursor-pointer flex items-center justify-center gap-2">
+                <span>Continue & Send 6-Digit Email OTP</span>
+                <i class="fas fa-arrow-right text-[11px]"></i>
             </button>
         </form>
 
@@ -83,6 +144,22 @@
 </div>
 
 <script>
+    function toggleAccountType(type) {
+        const orgFields = document.getElementById('organizer-fields');
+        const fanBox = document.getElementById('fan-fandom-box');
+        const submitBtn = document.getElementById('btn-submit-register');
+
+        if (type === 'organizer') {
+            if (orgFields) orgFields.classList.remove('hidden');
+            if (fanBox) fanBox.classList.add('hidden');
+            if (submitBtn) submitBtn.innerHTML = '<span>Verify Organizer via 6-Digit Email OTP &rarr;</span>';
+        } else {
+            if (orgFields) orgFields.classList.add('hidden');
+            if (fanBox) fanBox.classList.remove('hidden');
+            if (submitBtn) submitBtn.innerHTML = '<span>Continue & Send 6-Digit Email OTP &rarr;</span>';
+        }
+    }
+
     function togglePasswordVisibility(inputId, iconId) {
         const input = document.getElementById(inputId);
         const icon = document.getElementById(iconId);

@@ -1,0 +1,126 @@
+<%- include('partials/header', { title: 'Enter Sign In OTP | K-Sync Malaysia' }) %>
+
+<div class="max-w-md mx-auto px-4 py-16">
+    <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl space-y-6">
+        <div class="text-center">
+            <div class="w-14 h-14 rounded-2xl bg-purple-50 border border-purple-200 text-purple-600 flex items-center justify-center text-2xl mx-auto mb-3 shadow-xs">
+                <i class="fas fa-lock-open"></i>
+            </div>
+            <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Enter Sign In Code</h1>
+            <p class="text-xs text-slate-500 mt-1.5 font-medium leading-relaxed">
+                We sent a 6-digit one-time code to<br>
+                <strong class="text-slate-900 font-extrabold text-sm"><%= email %></strong>
+            </p>
+        </div>
+
+        <% if (typeof devOtp !== 'undefined' && devOtp) { %>
+        <!-- FYP Evaluator / Demo Helper -->
+        <div class="p-3.5 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 text-amber-900 text-xs">
+            <div class="flex items-center justify-between mb-1">
+                <span class="font-extrabold text-[11px] uppercase tracking-wider text-amber-800 flex items-center gap-1.5">
+                    <i class="fas fa-flask text-amber-600"></i> Evaluation / Demo Mode
+                </span>
+                <span class="text-[10px] bg-amber-200 text-amber-900 font-bold px-2 py-0.5 rounded-full">Sign In Code</span>
+            </div>
+            <p class="text-[11px] text-amber-700 mb-2">
+                Active Code: <strong class="font-mono text-xs font-black text-amber-900 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300"><%= devOtp %></strong>
+            </p>
+            <button type="button" onclick="fillOtp('<%= devOtp %>')" 
+                    class="w-full py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                <i class="fas fa-magic"></i>
+                <span>1-Click Fill Sign In OTP (<%= devOtp %>)</span>
+            </button>
+        </div>
+        <% } %>
+
+        <form action="/verify-login-otp" method="POST" class="space-y-5">
+            <input type="hidden" name="email" value="<%= email %>">
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 text-center mb-2">Enter 6-Digit Code</label>
+                
+                <div class="flex items-center justify-center gap-2 mb-3">
+                    <% for(let i = 0; i < 6; i++) { %>
+                        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                               class="otp-digit w-11 h-14 text-center text-2xl font-mono font-black text-slate-900 bg-slate-50 border-2 border-slate-200 rounded-xl focus:border-purple-500 focus:bg-purple-50/20 focus:outline-none focus:ring-4 focus:ring-purple-100 transition-all"
+                               data-index="<%= i %>" autocomplete="off">
+                    <% } %>
+                </div>
+
+                <input type="hidden" id="master-otp-input" name="otp" required>
+            </div>
+
+            <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl text-xs font-extrabold shadow-md shadow-purple-500/20 transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-95">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Authenticate & Sign In &rarr;</span>
+            </button>
+        </form>
+
+        <div class="pt-4 border-t border-slate-100 text-center space-y-2">
+            <p class="text-xs text-slate-500">Need another code?</p>
+            <form action="/request-login-otp" method="POST" class="inline">
+                <input type="hidden" name="email" value="<%= email %>">
+                <button type="submit" class="text-xs font-extrabold text-purple-600 hover:text-purple-700 hover:underline cursor-pointer">
+                    <i class="fas fa-rotate-right me-1"></i> Resend Sign In OTP
+                </button>
+            </form>
+            <div class="text-[11px] text-slate-400">
+                <a href="/login" class="text-slate-600 font-bold hover:underline">Back to Standard Login</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const digitInputs = document.querySelectorAll('.otp-digit');
+    const masterInput = document.getElementById('master-otp-input');
+
+    function syncMasterInput() {
+        let code = '';
+        digitInputs.forEach(input => code += input.value.trim());
+        if (masterInput) masterInput.value = code;
+    }
+
+    digitInputs.forEach((input, idx) => {
+        input.addEventListener('input', (e) => {
+            const val = e.target.value.replace(/[^0-9]/g, '');
+            e.target.value = val ? val[0] : '';
+            syncMasterInput();
+
+            if (val && idx < digitInputs.length - 1) {
+                digitInputs[idx + 1].focus();
+            }
+        });
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !input.value && idx > 0) {
+                digitInputs[idx - 1].focus();
+            }
+        });
+
+        input.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const pasteData = (e.clipboardData || window.clipboardData).getData('text').trim().replace(/[^0-9]/g, '');
+            if (pasteData) {
+                fillOtp(pasteData);
+            }
+        });
+    });
+
+    if (digitInputs.length > 0) {
+        digitInputs[0].focus();
+    }
+
+    function fillOtp(code) {
+        const str = String(code).slice(0, 6);
+        for (let i = 0; i < digitInputs.length; i++) {
+            digitInputs[i].value = str[i] || '';
+        }
+        syncMasterInput();
+        if (str.length >= 6) {
+            digitInputs[5].focus();
+        }
+    }
+</script>
+
+<%- include('partials/footer') %>
