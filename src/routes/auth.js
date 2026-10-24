@@ -24,7 +24,7 @@ router.get('/login', (req, res) => {
   if (req.session && req.session.userId) {
     return res.redirect('/');
   }
-  res.render('login', { redirect: req.query.redirect || '' });
+  res.render('login', { redirect: req.query.redirect || '', initialMode: 'login' });
 });
 
 // POST /login
@@ -159,7 +159,7 @@ router.get('/register', (req, res) => {
   if (req.session && req.session.userId) {
     return res.redirect('/');
   }
-  res.render('register');
+  res.render('register', { redirect: req.query.redirect || '', initialMode: 'register' });
 });
 
 // POST /register - Step 1: Initiate Registration & Dispatch 6-Digit Verification OTP
