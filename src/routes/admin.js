@@ -374,24 +374,78 @@ router.post('/admin/categories/delete', async (req, res) => {
 // GET /admin/artists
 router.get('/admin/artists', async (req, res) => {
   try {
-    const artists = await db.query("SELECT * FROM artists ORDER BY name ASC");
+    const artists = await db.query(`
+      SELECT a.*, 
+             (SELECT COUNT(*) FROM members WHERE artist_id = a.id) as member_count 
+      FROM artists a 
+      ORDER BY a.name ASC
+    `);
     res.render('admin/artists', { artists, helpers });
   } catch (err) {
+    console.error('Admin artists list error:', err);
     res.status(500).send('Error loading artists');
   }
 });
 
 // POST /admin/artists/add
 router.post('/admin/artists/add', async (req, res) => {
-  const { name, group_type, agency, image_url } = req.body;
+  const { name, slug, group_type, agency, debut_year, fandom_name, image_url, header_image, description } = req.body;
   try {
-    const cleanName = name.trim();
-    const slug = helpers.slugify(cleanName);
-    await db.execute("INSERT INTO artists (name, slug, group_type, agency, image_url) VALUES (?, ?, ?, ?, ?)", [cleanName, slug, group_type, agency ? agency.trim() : null, image_url ? image_url.trim() : null]);
-    req.session.flash = { success: 'Artist added!' };
+    const cleanName = (name || '').trim();
+    if (!cleanName) {
+      req.session.flash = { error: 'Artist name is required.' };
+      return res.redirect('/admin/artists');
+    }
+    const finalSlug = (slug || helpers.slugify(cleanName)).trim().toLowerCase();
+    await db.execute(
+      "INSERT INTO artists (name, slug, group_type, agency, debut_year, fandom_name, image_url, header_image, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      [
+        cleanName,
+        finalSlug,
+        group_type || 'Boy Group',
+        agency ? agency.trim() : null,
+        debut_year ? Number(debut_year) : null,
+        fandom_name ? fandom_name.trim() : null,
+        image_url ? image_url.trim() : null,
+        header_image ? header_image.trim() : null,
+        description ? description.trim() : null
+      ]
+    );
+    req.session.flash = { success: `Artist '${cleanName}' created successfully!` };
     res.redirect('/admin/artists');
   } catch (err) {
-    req.session.flash = { error: 'Failed to add artist.' };
+    console.error('Add artist error:', err);
+    req.session.flash = { error: `Failed to add artist: ${err.message}` };
+    res.redirect('/admin/artists');
+  }
+});
+
+// POST /admin/artists/edit
+router.post('/admin/artists/edit', async (req, res) => {
+  const { id, name, slug, group_type, agency, debut_year, fandom_name, image_url, header_image, description } = req.body;
+  try {
+    const cleanName = (name || '').trim();
+    const finalSlug = (slug || helpers.slugify(cleanName)).trim().toLowerCase();
+    await db.execute(
+      "UPDATE artists SET name = ?, slug = ?, group_type = ?, agency = ?, debut_year = ?, fandom_name = ?, image_url = ?, header_image = ?, description = ? WHERE id = ?",
+      [
+        cleanName,
+        finalSlug,
+        group_type || 'Boy Group',
+        agency ? agency.trim() : null,
+        debut_year ? Number(debut_year) : null,
+        fandom_name ? fandom_name.trim() : null,
+        image_url ? image_url.trim() : null,
+        header_image ? header_image.trim() : null,
+        description ? description.trim() : null,
+        id
+      ]
+    );
+    req.session.flash = { success: `Artist '${cleanName}' updated successfully!` };
+    res.redirect('/admin/artists');
+  } catch (err) {
+    console.error('Edit artist error:', err);
+    req.session.flash = { error: `Failed to update artist: ${err.message}` };
     res.redirect('/admin/artists');
   }
 });
@@ -400,10 +454,122 @@ router.post('/admin/artists/add', async (req, res) => {
 router.post('/admin/artists/delete', async (req, res) => {
   const { id } = req.body;
   try {
+    await db.execute("DELETE FROM members WHERE artist_id = ?", [id]);
     await db.execute("DELETE FROM artists WHERE id = ?", [id]);
-    req.session.flash = { success: 'Artist deleted.' };
+    req.session.flash = { success: 'Artist and member profiles deleted.' };
     res.redirect('/admin/artists');
   } catch (err) {
+    console.error('Delete artist error:', err);
+    req.session.flash = { error: 'Failed to delete artist.' };
+    res.redirect('/admin/artists');
+  }
+});
+
+// GET /admin/artists/:id/members (API for modal)
+router.get('/admin/artists/:id/members', async (req, res) => {
+  try {
+    const artist = await db.getOne("SELECT * FROM artists WHERE id = ?", [req.params.id]);
+    if (!artist) {
+      return res.status(404).json({ success: false, message: 'Artist not found' });
+    }
+    const members = await db.query(
+      "SELECT * FROM members WHERE artist_id = ? ORDER BY sort_order ASC, stage_name ASC",
+      [req.params.id]
+    );
+    res.json({ success: true, artist, members });
+  } catch (err) {
+    console.error('Get members error:', err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// POST /admin/members/add
+router.post('/admin/members/add', async (req, res) => {
+  const {
+    artist_id, stage_name, birth_name, position, dob,
+    zodiac, height_cm, blood_type, mbti, nationality,
+    debut_year, photo, sort_order
+  } = req.body;
+
+  try {
+    await db.execute(
+      `INSERT INTO members (artist_id, stage_name, birth_name, position, dob, zodiac, height_cm, blood_type, mbti, nationality, debut_year, photo, is_active, sort_order)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)`,
+      [
+        artist_id,
+        (stage_name || '').trim(),
+        birth_name ? birth_name.trim() : null,
+        position ? position.trim() : null,
+        dob || null,
+        zodiac ? zodiac.trim() : null,
+        height_cm ? Number(height_cm) : null,
+        blood_type ? blood_type.trim() : null,
+        mbti ? mbti.trim() : null,
+        nationality ? nationality.trim() : null,
+        debut_year ? Number(debut_year) : null,
+        photo ? photo.trim() : null,
+        sort_order ? Number(sort_order) : 0
+      ]
+    );
+    req.session.flash = { success: `Member '${stage_name}' added successfully!` };
+    res.redirect('/admin/artists');
+  } catch (err) {
+    console.error('Add member error:', err);
+    req.session.flash = { error: `Failed to add member: ${err.message}` };
+    res.redirect('/admin/artists');
+  }
+});
+
+// POST /admin/members/edit
+router.post('/admin/members/edit', async (req, res) => {
+  const {
+    id, stage_name, birth_name, position, dob,
+    zodiac, height_cm, blood_type, mbti, nationality,
+    debut_year, photo, sort_order
+  } = req.body;
+
+  try {
+    await db.execute(
+      `UPDATE members SET 
+         stage_name = ?, birth_name = ?, position = ?, dob = ?,
+         zodiac = ?, height_cm = ?, blood_type = ?, mbti = ?,
+         nationality = ?, debut_year = ?, photo = ?, sort_order = ?
+       WHERE id = ?`,
+      [
+        (stage_name || '').trim(),
+        birth_name ? birth_name.trim() : null,
+        position ? position.trim() : null,
+        dob || null,
+        zodiac ? zodiac.trim() : null,
+        height_cm ? Number(height_cm) : null,
+        blood_type ? blood_type.trim() : null,
+        mbti ? mbti.trim() : null,
+        nationality ? nationality.trim() : null,
+        debut_year ? Number(debut_year) : null,
+        photo ? photo.trim() : null,
+        sort_order ? Number(sort_order) : 0,
+        id
+      ]
+    );
+    req.session.flash = { success: `Member '${stage_name}' updated successfully!` };
+    res.redirect('/admin/artists');
+  } catch (err) {
+    console.error('Edit member error:', err);
+    req.session.flash = { error: `Failed to update member: ${err.message}` };
+    res.redirect('/admin/artists');
+  }
+});
+
+// POST /admin/members/delete
+router.post('/admin/members/delete', async (req, res) => {
+  const { id } = req.body;
+  try {
+    await db.execute("DELETE FROM members WHERE id = ?", [id]);
+    req.session.flash = { success: 'Member removed successfully.' };
+    res.redirect('/admin/artists');
+  } catch (err) {
+    console.error('Delete member error:', err);
+    req.session.flash = { error: 'Failed to delete member.' };
     res.redirect('/admin/artists');
   }
 });
