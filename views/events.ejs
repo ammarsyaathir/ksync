@@ -49,7 +49,7 @@
                 All Artists
             </a>
             <% all_artists.forEach(function(art) { %>
-                <a href="/events?artist=<%= art.id %>" class="px-3.5 py-1.5 rounded-full text-xs font-bold shrink-0 flex items-center space-x-1.5 transition-all press-tactile <%= selectedArtist == art.id ? 'bg-pink-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50' %>">
+                <a href="/events?artist=<%= art.slug || art.id %>" class="px-3.5 py-1.5 rounded-full text-xs font-bold shrink-0 flex items-center space-x-1.5 transition-all press-tactile <%= (selectedArtist == art.id || selectedArtist == art.slug) ? 'bg-pink-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50' %>">
                     <% if (art.image_url) { %>
                         <img src="<%= art.image_url %>" alt="" class="w-4 h-4 rounded-full object-cover">
                     <% } %>

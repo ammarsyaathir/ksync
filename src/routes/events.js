@@ -59,13 +59,14 @@ router.get('/', async (req, res) => {
 // GET /events - Events Directory & Search
 router.get('/events', async (req, res) => {
   const search = req.query.search ? req.query.search.trim() : '';
-  const artistId = req.query.artist ? Number(req.query.artist) : 0;
+  const artistParam = req.query.artist ? String(req.query.artist).trim() : '';
+  const artistId = /^\d+$/.test(artistParam) ? Number(artistParam) : 0;
   const categorySlug = req.query.category ? req.query.category.trim() : '';
   const location = req.query.location ? req.query.location.trim() : '';
 
   try {
     let sql = `
-      SELECT e.*, a.name as artist_name, c.name as category_name, c.slug as category_slug, e.venue_name as venue_display,
+      SELECT e.*, a.name as artist_name, a.slug as artist_slug, c.name as category_name, c.slug as category_slug, e.venue_name as venue_display,
              u.full_name as organizer_name, u.organization_name, u.organization_type, u.social_handle, u.social_url, u.is_verified_organizer
       FROM events e
       LEFT JOIN artists a ON e.artist_id = a.id
@@ -81,9 +82,14 @@ router.get('/events', async (req, res) => {
       params.push(term, term, term, term);
     }
 
-    if (artistId > 0) {
-      sql += ` AND e.artist_id = ?`;
-      params.push(artistId);
+    if (artistParam) {
+      if (/^\d+$/.test(artistParam)) {
+        sql += ` AND e.artist_id = ?`;
+        params.push(Number(artistParam));
+      } else {
+        sql += ` AND (a.slug = ? OR LOWER(a.name) = LOWER(?))`;
+        params.push(artistParam, artistParam);
+      }
     }
 
     if (categorySlug) {
@@ -115,7 +121,8 @@ router.get('/events', async (req, res) => {
       all_artists,
       all_categories,
       all_locations,
-      selectedArtist: artistId,
+      selectedArtist: artistParam,
+      artistId,
       selectedCategory: categorySlug,
       selectedLocation: location,
       searchKeyword: search,
@@ -276,7 +283,7 @@ router.get('/events/:idOrSlug', async (req, res) => {
   try {
     const baseQuery = `
       SELECT e.*, 
-             a.name as artist_name, a.group_type, a.image_url as artist_image, a.description as artist_description, a.agency as artist_agency, a.members as artist_members,
+             a.name as artist_name, a.slug as artist_slug, a.group_type, a.image_url as artist_image, a.description as artist_description, a.agency as artist_agency, a.members as artist_members,
              c.name as category_name, c.badge_color,
              u.full_name as organizer_name, u.email as organizer_email,
              u.organization_name, u.organization_type, u.social_handle, u.social_url, u.is_verified_organizer

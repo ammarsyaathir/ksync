@@ -65,12 +65,12 @@ async function runTests() {
     'UC012: Browse Artists Directory (/artists returns HTTP 200 with Boy Groups, Girl Groups, Soloists)');
 
   // UC013: View Artist & Member Profiles
-  const artistRow = await db.getOne("SELECT id FROM artists LIMIT 1");
-  const artistId = artistRow ? artistRow.id : 1;
-  res = await fetch(`${BASE_URL}/artists/${artistId}`);
+  const artistRow = await db.getOne("SELECT id, slug FROM artists LIMIT 1");
+  const artistSlug = (artistRow && artistRow.slug) ? artistRow.slug : 'seventeen';
+  res = await fetch(`${BASE_URL}/artists/${artistSlug}`);
   const artistDetailsHtml = await res.text();
   assert(res.status === 200 && (artistDetailsHtml.includes('Members Profile') || artistDetailsHtml.includes('Member')), 
-    `UC013: View Artist & Member Profiles (/artists/${artistId} returns HTTP 200 with Member Biodata & Tour Schedule)`);
+    `UC013: View Artist & Member Profiles (/artists/${artistSlug} returns HTTP 200 with Member Biodata & Tour Schedule)`);
 
   // 2. Test Authenticated Fan Flow
   console.log('\n--- ACTOR: FAN (AUTHENTICATED) ---');

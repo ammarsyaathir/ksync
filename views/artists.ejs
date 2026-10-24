@@ -75,7 +75,7 @@
     <% } else { %>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 min-w-0 max-w-full">
             <% artists.forEach(function(artist) { %>
-                <% const artistSlug = helpers.slugify(artist.name) || artist.id; %>
+                <% const artistSlug = artist.slug || helpers.slugify(artist.name) || artist.id; %>
                 <div class="bg-white rounded-3xl border border-slate-200/90 overflow-hidden flex flex-col shadow-sm hover:shadow-xl hover:border-violet-300 transition-all duration-300 group min-w-0">
                     <!-- Image Card Header (Latest Group / Concert Preview Picture) -->
                     <div class="relative h-52 overflow-hidden bg-slate-950">
@@ -108,7 +108,9 @@
                             <% } %>
                             <div class="min-w-0 flex-grow">
                                 <h3 class="text-lg font-black text-white tracking-tight drop-shadow-sm group-hover:text-pink-300 transition-colors truncate">
-                                    <%= artist.name %>
+                                    <a href="/artists/<%= artistSlug %>" class="hover:underline">
+                                        <%= artist.name %>
+                                    </a>
                                 </h3>
                                 <p class="text-[11px] font-semibold text-slate-300 truncate">
                                     <%= artist.agency || 'Independent' %>
@@ -140,7 +142,7 @@
                             </div>
                         </div>
 
-                        <a href="/artists/<%= artist.id %>-<%= artistSlug %>" 
+                        <a href="/artists/<%= artistSlug %>" 
                            class="w-full py-2.5 rounded-xl bg-slate-950 group-hover:bg-violet-600 text-white text-xs font-bold text-center transition-all flex items-center justify-center gap-1.5 shadow-sm press-tactile">
                             <span>View Artist & Members</span>
                             <i class="fas fa-arrow-right text-[10px]"></i>

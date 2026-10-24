@@ -385,7 +385,9 @@ router.get('/admin/artists', async (req, res) => {
 router.post('/admin/artists/add', async (req, res) => {
   const { name, group_type, agency, image_url } = req.body;
   try {
-    await db.execute("INSERT INTO artists (name, group_type, agency, image_url) VALUES (?, ?, ?, ?)", [name.trim(), group_type, agency ? agency.trim() : null, image_url ? image_url.trim() : null]);
+    const cleanName = name.trim();
+    const slug = helpers.slugify(cleanName);
+    await db.execute("INSERT INTO artists (name, slug, group_type, agency, image_url) VALUES (?, ?, ?, ?, ?)", [cleanName, slug, group_type, agency ? agency.trim() : null, image_url ? image_url.trim() : null]);
     req.session.flash = { success: 'Artist added!' };
     res.redirect('/admin/artists');
   } catch (err) {

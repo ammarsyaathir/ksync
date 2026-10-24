@@ -63,23 +63,40 @@ router.get('/:idOrSlug', async (req, res) => {
   try {
     let artist = null;
 
-    // 1. Direct numeric ID (e.g. /artists/1)
-    if (/^\d+$/.test(param)) {
-      artist = await db.getOne("SELECT * FROM artists WHERE id = ?", [Number(param)]);
+    // 1. Direct match by official slug column
+    artist = await db.getOne("SELECT * FROM artists WHERE LOWER(slug) = LOWER(?)", [param]);
+
+    // 2. Direct numeric ID (e.g. /artists/4) -> 301 Redirect to canonical slug URL
+    if (!artist && /^\d+$/.test(param)) {
+      const numericArtist = await db.getOne("SELECT * FROM artists WHERE id = ?", [Number(param)]);
+      if (numericArtist) {
+        const targetSlug = numericArtist.slug || helpers.slugify(numericArtist.name) || numericArtist.id;
+        return res.redirect(301, `/artists/${targetSlug}`);
+      }
     }
 
-    // 2. Prefixed ID (e.g. /artists/1-seventeen)
+    // 3. Prefixed ID (e.g. /artists/4-enhypen) -> 301 Redirect to canonical slug URL
     if (!artist && /^\d+-/.test(param)) {
       const idPrefix = parseInt(param.split('-')[0], 10);
-      artist = await db.getOne("SELECT * FROM artists WHERE id = ?", [idPrefix]);
+      const prefixedArtist = await db.getOne("SELECT * FROM artists WHERE id = ?", [idPrefix]);
+      if (prefixedArtist) {
+        const targetSlug = prefixedArtist.slug || helpers.slugify(prefixedArtist.name) || prefixedArtist.id;
+        return res.redirect(301, `/artists/${targetSlug}`);
+      }
     }
 
-    // 3. Fallback: match by dynamically slugified artist name
+    // 4. Fallback: match by dynamically slugified artist name
     if (!artist) {
-      const allArtists = await db.query("SELECT id, name FROM artists");
-      const matched = allArtists.find(a => helpers.slugify(a.name) === param.toLowerCase());
+      const allArtists = await db.query("SELECT id, name, slug FROM artists");
+      const matched = allArtists.find(a => 
+        (a.slug && a.slug.toLowerCase() === param.toLowerCase()) || 
+        helpers.slugify(a.name) === param.toLowerCase()
+      );
       if (matched) {
         artist = await db.getOne("SELECT * FROM artists WHERE id = ?", [matched.id]);
+        if (artist && artist.slug && artist.slug.toLowerCase() !== param.toLowerCase()) {
+          return res.redirect(301, `/artists/${artist.slug}`);
+        }
       }
     }
 

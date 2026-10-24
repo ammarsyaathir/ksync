@@ -430,7 +430,9 @@
                         <div>
                             <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2.5">
                                 <i class="fas fa-users-viewfinder text-violet-600"></i>
-                                <span><%= event.artist_name %> Member Profiles & Biodata</span>
+                                <a href="/artists/<%= event.artist_slug || helpers.slugify(event.artist_name) %>" class="hover:text-violet-600 transition-colors">
+                                    <%= event.artist_name %> Member Profiles & Biodata
+                                </a>
                             </h2>
                             <p class="text-xs text-slate-500 mt-1">Official member lineup, positions, and verified profile data.</p>
                         </div>
