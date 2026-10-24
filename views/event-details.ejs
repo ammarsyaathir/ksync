@@ -425,8 +425,8 @@
 
             <!-- Idol Group Members & Lineup Section -->
             <% if (typeof members !== 'undefined' && members && members.length > 0) { 
-                const artistSlugTarget = event.artist_slug || helpers.slugify(event.artist_name || '');
-                const artistProfileUrl = '/artists/' + artistSlugTarget;
+                const artistSlugTarget = event.artist_slug || (event.artist_name ? helpers.slugify(event.artist_name) : '');
+                const artistProfileUrl = artistSlugTarget ? '/artists/' + artistSlugTarget : '/artists';
             %>
                 <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-5">
                     <div class="space-y-3">
@@ -455,24 +455,22 @@
                     <div class="border-t border-slate-100 pt-5">
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                             <% members.forEach(function(member) { %>
-                                <a href="<%= artistProfileUrl %>" 
-                                   class="p-3 rounded-2xl bg-slate-50/80 hover:bg-white border border-slate-200/80 hover:border-violet-300 hover:shadow-md transition-all flex items-center space-x-3.5 group cursor-pointer"
-                                   title="View full profile for <%= member.stage_name %> on artist page">
-                                    <div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-200 shrink-0 border border-slate-200/80">
+                                <div class="p-3 rounded-2xl bg-slate-50/70 border border-slate-200/80 flex items-center space-x-3.5 select-none">
+                                    <div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-200 shrink-0 border border-slate-200/80 shadow-2xs">
                                         <img src="<%= member.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop' %>" 
                                              alt="<%= member.stage_name %>" 
-                                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                             class="w-full h-full object-cover"
                                              onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop'">
                                     </div>
                                     <div class="min-w-0 flex-1">
-                                        <div class="font-bold text-sm text-slate-900 group-hover:text-violet-700 transition-colors truncate">
+                                        <div class="font-bold text-sm text-slate-900 truncate">
                                             <%= member.stage_name %>
                                         </div>
                                         <div class="text-xs text-slate-500 font-medium truncate mt-0.5">
                                             <%= member.position || 'Member' %>
                                         </div>
                                     </div>
-                                </a>
+                                </div>
                             <% }); %>
                         </div>
                     </div>
