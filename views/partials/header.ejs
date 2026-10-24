@@ -70,17 +70,28 @@
         }
     </script>
 
-    <!-- Google Fonts: Outfit (Display) & Inter (UI) -->
+    <!-- Google Fonts: Outfit (Display), Inter & Poppins (UI/UX Pro Max) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Emil Kowalski Design Engineering & Mobile-Native Performance Styles -->
+    <!-- Emil Kowalski & UI/UX Pro Max Design Engineering Styles -->
     <style>
         :root {
             --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
             --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+            --color-primary: #1E1B4B;
+            --color-secondary: #4338CA;
+            --color-accent: #22C55E;
+            --color-destructive: #EF4444;
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
         }
 
         /* 1. Mobile-Native Platform Fixes: Strict zero-overflow */
@@ -92,7 +103,7 @@
         }
 
         body { 
-            font-family: 'Outfit', 'Inter', sans-serif;
+            font-family: 'Outfit', 'Poppins', 'Inter', sans-serif;
             background-color: #f8fafc;
             background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
             background-size: 24px 24px;
@@ -209,6 +220,25 @@
         .leaflet-container {
             font-family: 'Outfit', sans-serif !important;
             border-radius: 1.5rem;
+        }
+
+        /* 7. UI/UX Pro Max Interactive & Accessibility Standards */
+        button, [role="button"], select, a, input[type="submit"], input[type="button"] {
+            cursor: pointer;
+        }
+
+        a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible {
+            outline: 2px solid #8B5CF6 !important;
+            outline-offset: 2px !important;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, ::before, ::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
         }
     </style>
 </head>
