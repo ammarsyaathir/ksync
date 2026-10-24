@@ -423,79 +423,63 @@
                 <% } %>
             </div>
 
-            <!-- Idol Group Members & Biodata Section (from `members` table) -->
-            <% if (typeof members !== 'undefined' && members && members.length > 0) { %>
+            <!-- Idol Group Members & Lineup Section -->
+            <% if (typeof members !== 'undefined' && members && members.length > 0) { 
+                const artistSlugTarget = event.artist_slug || helpers.slugify(event.artist_name || '');
+                const artistProfileUrl = '/artists/' + artistSlugTarget;
+            %>
                 <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm space-y-5">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
-                        <div>
-                            <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2.5">
-                                <i class="fas fa-users-viewfinder text-violet-600"></i>
-                                <a href="/artists/<%= event.artist_slug || helpers.slugify(event.artist_name) %>" class="hover:text-violet-600 transition-colors">
-                                    <%= event.artist_name %> Member Profiles & Biodata
-                                </a>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-xl font-black text-slate-900 flex items-center gap-2.5">
+                                <i class="fas fa-users text-violet-600"></i>
+                                <span><%= event.artist_name %> line-up</span>
                             </h2>
-                            <p class="text-xs text-slate-500 mt-1">Official member lineup, positions, and verified profile data.</p>
+                            <span class="px-3 py-1 rounded-full text-xs font-bold bg-violet-50 text-violet-700 border border-violet-200">
+                                <%= members.length %> Members
+                            </span>
                         </div>
-                        <span class="self-start sm:self-auto px-3.5 py-1 rounded-full text-xs font-bold bg-violet-50 text-violet-700 border border-violet-200">
-                            <%= members.length %> <%= members.length === 1 ? 'Idol' : 'Group Members' %>
-                        </span>
+                        <p class="text-xs text-slate-500 font-medium">
+                            A quick look at who is performing. Full biodata lives on the artist page and is reused across every event.
+                        </p>
+                        <div>
+                            <a href="<%= artistProfileUrl %>" 
+                               class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 hover:border-violet-300 hover:bg-slate-50 text-slate-800 font-bold text-xs shadow-xs transition-all press-tactile cursor-pointer"
+                               title="View full biodata on <%= event.artist_name %> artist page">
+                                <i class="fas fa-id-card text-violet-600"></i>
+                                <span>Full profiles</span>
+                            </a>
+                        </div>
                     </div>
 
-                    <div class="space-y-3.5">
-                        <% members.forEach(function(member) { %>
-                            <div class="bg-slate-50/70 hover:bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 hover:border-violet-300 hover:shadow-md transition-all group">
-                                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                    <div class="flex items-center gap-3.5 sm:gap-4 md:w-72 shrink-0">
-                                        <div class="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl overflow-hidden bg-slate-200 shrink-0 border-2 border-white shadow-sm">
-                                            <img src="<%= member.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop' %>" 
-                                                 alt="<%= member.stage_name %>" 
-                                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                    <div class="border-t border-slate-100 pt-5">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            <% members.forEach(function(member) { %>
+                                <a href="<%= artistProfileUrl %>" 
+                                   class="p-3 rounded-2xl bg-slate-50/80 hover:bg-white border border-slate-200/80 hover:border-violet-300 hover:shadow-md transition-all flex items-center space-x-3.5 group cursor-pointer"
+                                   title="View full profile for <%= member.stage_name %> on artist page">
+                                    <div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-200 shrink-0 border border-slate-200/80">
+                                        <img src="<%= member.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop' %>" 
+                                             alt="<%= member.stage_name %>" 
+                                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                             onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop'">
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <div class="font-bold text-sm text-slate-900 group-hover:text-violet-700 transition-colors truncate">
+                                            <%= member.stage_name %>
                                         </div>
-                                        <div class="min-w-0 flex-1">
-                                            <div class="flex items-center gap-2 mb-0.5">
-                                                <h4 class="text-base font-black text-slate-900 truncate"><%= member.stage_name %></h4>
-                                                <% if (member.mbti) { %>
-                                                    <span class="px-2 py-0.5 rounded text-[10px] font-black bg-pink-100 text-pink-700 uppercase tracking-wider shrink-0">
-                                                        <%= member.mbti %>
-                                                    </span>
-                                                <% } %>
-                                            </div>
-                                            <p class="text-xs text-slate-500 font-medium truncate mb-1"><%= member.birth_name %></p>
-                                            <span class="text-[11px] text-violet-700 font-bold bg-violet-50 rounded-lg px-2.5 py-0.5 inline-block border border-violet-100 truncate max-w-full">
-                                                <%= member.position %>
-                                            </span>
+                                        <div class="text-xs text-slate-500 font-medium truncate mt-0.5">
+                                            <%= member.position || 'Member' %>
                                         </div>
                                     </div>
+                                </a>
+                            <% }); %>
+                        </div>
+                    </div>
 
-                                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-xs text-slate-600 md:border-l md:border-slate-200/80 md:ps-6 pt-3 md:pt-0 border-t border-slate-200/60 md:border-t-0 flex-1">
-                                        <div class="bg-white/90 rounded-xl p-2 border border-slate-100 shadow-2xs">
-                                            <div class="text-[10px] font-bold text-slate-400 uppercase">DOB</div>
-                                            <div class="font-bold text-slate-800 text-[11px] truncate"><%= member.dob || '-' %></div>
-                                        </div>
-                                        <div class="bg-white/90 rounded-xl p-2 border border-slate-100 shadow-2xs">
-                                            <div class="text-[10px] font-bold text-slate-400 uppercase">Zodiac</div>
-                                            <div class="font-bold text-slate-800 text-[11px] truncate"><%= member.zodiac || '-' %></div>
-                                        </div>
-                                        <div class="bg-white/90 rounded-xl p-2 border border-slate-100 shadow-2xs">
-                                            <div class="text-[10px] font-bold text-slate-400 uppercase">Height</div>
-                                            <div class="font-bold text-slate-800 text-[11px] truncate"><%= member.height || '-' %></div>
-                                        </div>
-                                        <div class="bg-white/90 rounded-xl p-2 border border-slate-100 shadow-2xs">
-                                            <div class="text-[10px] font-bold text-slate-400 uppercase">Blood</div>
-                                            <div class="font-bold text-slate-800 text-[11px] truncate"><%= member.blood_type || '-' %></div>
-                                        </div>
-                                        <div class="bg-white/90 rounded-xl p-2 border border-slate-100 shadow-2xs">
-                                            <div class="text-[10px] font-bold text-slate-400 uppercase">Nationality</div>
-                                            <div class="font-bold text-slate-800 text-[11px] truncate"><%= member.nationality || '-' %></div>
-                                        </div>
-                                        <div class="bg-white/90 rounded-xl p-2 border border-slate-100 shadow-2xs">
-                                            <div class="text-[10px] font-bold text-slate-400 uppercase">Active</div>
-                                            <div class="font-bold text-slate-800 text-[11px] truncate"><%= member.years_active || '-' %></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        <% }); %>
+                    <div class="pt-2 text-xs text-slate-500 flex items-center gap-2 font-medium">
+                        <i class="fas fa-shield-halved text-slate-400 shrink-0"></i>
+                        <span>Looking for birth names, heights, MBTI or blood type? <a href="<%= artistProfileUrl %>" class="font-bold text-violet-600 hover:text-violet-700 hover:underline">Open the full <%= event.artist_name %> profile</a>.</span>
                     </div>
                 </div>
             <% } %>
