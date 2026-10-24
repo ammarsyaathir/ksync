@@ -213,7 +213,7 @@
                 <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center">
                     <i class="fas fa-certificate text-pink-600 me-2"></i> Verified Fanclub Badge Management
                 </h2>
-                <p class="text-xs text-slate-500 mt-0.5">Review social handles and grant the [✓ Verified Fanclub] badge to authentic Malaysian fan clubs.</p>
+                <p class="text-xs text-slate-500 mt-0.5">Review social handles and grant the [Verified Fanclub] badge to authentic Malaysian fan clubs.</p>
             </div>
             <span class="px-3.5 py-1 rounded-full text-xs font-bold bg-pink-50 text-pink-700 border border-pink-200 self-start sm:self-auto">
                 <%= organizers.length %> Registered Accounts
@@ -308,8 +308,9 @@
                     <label class="flex items-start gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-emerald-400 bg-slate-50/50 cursor-pointer transition-all">
                         <input type="radio" name="trust_level" id="trust-official" value="OFFICIAL" checked class="mt-0.5 text-emerald-600 focus:ring-emerald-500">
                         <div class="text-xs">
-                            <div class="font-bold text-emerald-800 flex items-center">
-                                <span>👑 Verified – Official Source</span>
+                            <div class="font-bold text-emerald-800 flex items-center gap-1.5">
+                                <i class="fas fa-shield-halved text-emerald-600"></i>
+                                <span>Verified – Official Source</span>
                             </div>
                             <div class="text-[10px] text-slate-500 mt-0.5">Matched with 2+ independent sources (artist agency, promoter, or venue schedule).</div>
                         </div>
@@ -318,8 +319,9 @@
                     <label class="flex items-start gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-purple-400 bg-slate-50/50 cursor-pointer transition-all">
                         <input type="radio" name="trust_level" id="trust-community" value="COMMUNITY" class="mt-0.5 text-purple-600 focus:ring-purple-500">
                         <div class="text-xs">
-                            <div class="font-bold text-purple-800 flex items-center">
-                                <span>🎪 Verified – Community Event</span>
+                            <div class="font-bold text-purple-800 flex items-center gap-1.5">
+                                <i class="fas fa-users text-purple-600"></i>
+                                <span>Verified – Community Event</span>
                             </div>
                             <div class="text-[10px] text-slate-500 mt-0.5">Authentic fanclub-organized gathering, cafe event, or cupsleeve project.</div>
                         </div>
