@@ -129,36 +129,34 @@ if (isUsingMySQL) {
             console.log("✅ Auto-migrated MySQL: Added header_image to artists.");
           }
 
-          // Populate slugs & debut metadata for the 20 artists in MySQL
-          const artistSlugs = [
-            ['seventeen', 2015, 'CARAT', '%SEVENTEEN%'],
-            ['twice', 2015, 'ONCE', '%TWICE%'],
-            ['iu', 2008, 'UAENA', '%IU%'],
-            ['enhypen', 2020, 'ENGENE', '%ENHYPEN%'],
-            ['ive', 2021, 'DIVE', '%IVE%'],
-            ['txt', 2019, 'MOA', '%TXT%'],
-            ['txt', 2019, 'MOA', '%TOMORROW%'],
-            ['stray-kids', 2018, 'STAY', '%Stray Kids%'],
-            ['aespa', 2020, 'MY', '%aespa%'],
-            ['bts', 2013, 'ARMY', '%BTS%'],
-            ['babymonster', 2023, 'MONSTIEZ', '%BABYMONSTER%'],
-            ['wave-to-earth', 2019, 'Plankton', '%wave to earth%'],
-            ['young-k', 2015, 'My Day', '%Young K%'],
-            ['the-rose', 2017, 'Black Rose', '%The Rose%'],
-            ['boynextdoor', 2023, 'ONEDOOR', '%BOYNEXTDOOR%'],
-            ['blackpink', 2016, 'BLINK', '%BLACKPINK%'],
-            ['itzy', 2019, 'MIDZY', '%ITZY%'],
-            ['nct-dream', 2016, 'NCTzen', '%NCT DREAM%'],
-            ['treasure', 2020, 'TREASURE MAKER (TEUME)', '%TREASURE%'],
-            ['taeyeon', 2007, 'SONE', '%TAEYEON%'],
-            ['super-junior', 2005, 'E.L.F', '%SUPER JUNIOR%']
-          ];
-          for (const [slug, debut, fandom, likeName] of artistSlugs) {
+          // 5. Ensure all 20 Official Malaysia Artists exist in MySQL
+          const { OFFICIAL_20_ARTISTS, OFFICIAL_120_MEMBERS } = await import('../database/official_20_artists_data.js');
+          for (const a of OFFICIAL_20_ARTISTS) {
             await mysqlPool.query(
-              "UPDATE `artists` SET `slug` = ?, `debut_year` = ?, `fandom_name` = ? WHERE `name` LIKE ? AND (`slug` IS NULL OR `slug` = '')",
-              [slug, debut, fandom, likeName]
+              `INSERT INTO \`artists\` (\`id\`, \`name\`, \`slug\`, \`group_type\`, \`agency\`, \`debut_year\`, \`fandom_name\`, \`image_url\`, \`header_image\`, \`description\`)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+               ON DUPLICATE KEY UPDATE
+                 \`name\` = VALUES(\`name\`),
+                 \`slug\` = VALUES(\`slug\`),
+                 \`group_type\` = VALUES(\`group_type\`),
+                 \`agency\` = VALUES(\`agency\`),
+                 \`debut_year\` = VALUES(\`debut_year\`),
+                 \`fandom_name\` = VALUES(\`fandom_name\`),
+                 \`image_url\` = VALUES(\`image_url\`),
+                 \`header_image\` = VALUES(\`header_image\`),
+                 \`description\` = VALUES(\`description\`)`,
+              [a.id, a.name, a.slug, a.group_type || 'Boy Group', a.agency, a.debut_year, a.fandom_name, a.image_url, a.header_image || a.image_url, a.description]
             );
           }
+          
+          // Prune any legacy artists not in the 20 official Malaysia roster
+          const validSlugs = OFFICIAL_20_ARTISTS.map(a => a.slug);
+          const validIds = OFFICIAL_20_ARTISTS.map(a => a.id);
+          await mysqlPool.query(
+            `DELETE FROM \`artists\` WHERE \`slug\` NOT IN (?) AND \`id\` NOT IN (?)`,
+            [validSlugs, validIds]
+          );
+          console.log("✅ Auto-migrated MySQL: Synced all 20 Malaysia Artists.");
         } catch (colErr) {
           console.warn("MySQL artists columns check note:", colErr.message);
         }
@@ -188,21 +186,30 @@ if (isUsingMySQL) {
           ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         `);
 
-        // 7. Auto-sync member photos in MySQL if they are http or empty
-        const [memPhotos] = await mysqlPool.query("SELECT COUNT(*) as cnt FROM `members` WHERE `photo` LIKE 'http%' OR `photo` IS NULL");
-        if (memPhotos && memPhotos[0] && memPhotos[0].cnt > 0) {
-          const fs = await import('fs');
-          const migrationSql = fs.readFileSync('database/hostinger_mysql_artists_slug_migration.sql', 'utf8');
-          const statements = migrationSql.split(';').map(s => s.trim()).filter(s => s.length > 5 && !s.startsWith('--'));
-          for (const stmt of statements) {
-            try {
-              await mysqlPool.query(stmt);
-            } catch (e) {
-              // ignore minor warnings
-            }
-          }
-          console.log("✅ Synced member photos in MySQL via migration script.");
+        // 7. Upsert all 120 Members in MySQL with verified local photos
+        const { OFFICIAL_120_MEMBERS } = await import('../database/official_20_artists_data.js');
+        for (const m of OFFICIAL_120_MEMBERS) {
+          await mysqlPool.query(
+            `INSERT INTO \`members\` (\`artist_id\`, \`stage_name\`, \`birth_name\`, \`group_name\`, \`position\`, \`dob\`, \`zodiac\`, \`height_cm\`, \`blood_type\`, \`mbti\`, \`nationality\`, \`debut_year\`, \`photo\`, \`is_active\`, \`sort_order\`)
+             SELECT a.id, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?
+             FROM \`artists\` a WHERE a.slug = ?
+             ON DUPLICATE KEY UPDATE
+               \`birth_name\` = VALUES(\`birth_name\`),
+               \`position\` = VALUES(\`position\`),
+               \`dob\` = VALUES(\`dob\`),
+               \`zodiac\` = VALUES(\`zodiac\`),
+               \`height_cm\` = VALUES(\`height_cm\`),
+               \`blood_type\` = VALUES(\`blood_type\`),
+               \`mbti\` = VALUES(\`mbti\`),
+               \`nationality\` = VALUES(\`nationality\`),
+               \`debut_year\` = VALUES(\`debut_year\`),
+               \`photo\` = VALUES(\`photo\`),
+               \`sort_order\` = VALUES(\`sort_order\`)`,
+            [m.stage_name, m.birth_name, m.group_name, m.position, m.dob, m.zodiac, m.height_cm, m.blood_type, m.mbti, m.nationality, m.debut_year, m.photo, m.sort_order, m.artist_slug]
+          );
         }
+        await mysqlPool.query("DELETE FROM `members` WHERE `artist_id` NOT IN (SELECT `id` FROM `artists`)");
+        console.log("✅ Auto-migrated MySQL: Synced all 120 Members with local photos.");
       } catch (migErr) {
         console.warn("MySQL auto-migration check note:", migErr.message);
       }
