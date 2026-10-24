@@ -1,66 +1,103 @@
-async function verifyAuthPages() {
-  console.log('Testing dedicated two-page setup for /login and /register...');
+async function verifyDoubleSliderAuth() {
+  console.log('Testing Interactive & Responsive Double Slider for /login and /register...\n');
   
-  // 1. Verify /login dedicated page
+  const emojiRegex = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u;
+
+  // 1. Verify /login
+  console.log('--- Step 1: Checking GET /login ---');
   const resLogin = await fetch('http://localhost:9000/login');
   console.log('/login status:', resLogin.status);
   const textLogin = await resLogin.text();
 
-  const emojiRegex = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u;
-  const loginHasEmojis = emojiRegex.test(textLogin);
+  const loginHasSliderCard = textLogin.includes('id="auth-slider-card"');
+  const loginHasRightPanelActive = textLogin.includes('auth-slider-card right-panel-active');
   const loginHasLoginForm = textLogin.includes('id="login-form"');
   const loginHasRegisterForm = textLogin.includes('id="register-form"');
-  const loginLinksToRegister = textLogin.includes('href="/register"');
-  const loginHasNestedScroll = textLogin.includes('overflow-y: auto');
+  const loginHasOverlay = textLogin.includes('class="overlay-slider-container');
+  const loginHasGlassNav = textLogin.includes('glass-nav');
+  const loginHasOverflowAuto = textLogin.includes('overflow-y: auto') || textLogin.includes('overflow-y:scroll');
+  const loginHasEmojis = emojiRegex.test(textLogin);
+  const loginHasFaIcons = textLogin.includes('fa-building-user') && textLogin.includes('fa-heart') && textLogin.includes('fa-crown');
 
-  console.log('/login has login form:', loginHasLoginForm);
-  console.log('/login excludes register form (dedicated page):', !loginHasRegisterForm);
-  console.log('/login links to /register:', loginLinksToRegister);
-  console.log('/login contains emojis:', loginHasEmojis);
-  console.log('/login has nested scrollbar:', loginHasNestedScroll);
+  console.log('Has #auth-slider-card:', loginHasSliderCard);
+  console.log('Is right-panel-active FALSE initially (Sign In mode):', !loginHasRightPanelActive);
+  console.log('Has Sign In form (#login-form):', loginHasLoginForm);
+  console.log('Has Sign Up form (#register-form):', loginHasRegisterForm);
+  console.log('Has Double Slider overlay track:', loginHasOverlay);
+  console.log('Has fixed glass navigation (glass-nav):', loginHasGlassNav);
+  console.log('Inner panel nested scrollbar eliminated (no overflow-y: auto):', !loginHasOverflowAuto);
+  console.log('Zero emojis (uses familiar FontAwesome icons):', !loginHasEmojis);
+  console.log('Has familiar FontAwesome icons:', loginHasFaIcons);
 
-  // 2. Verify /register dedicated page
+  // 2. Verify /register
+  console.log('\n--- Step 2: Checking GET /register ---');
   const resRegister = await fetch('http://localhost:9000/register');
-  console.log('\n/register status:', resRegister.status);
+  console.log('/register status:', resRegister.status);
   const textRegister = await resRegister.text();
 
-  const regHasEmojis = emojiRegex.test(textRegister);
+  const regHasSliderCard = textRegister.includes('id="auth-slider-card"');
+  const regHasRightPanelActive = textRegister.includes('auth-slider-card right-panel-active');
   const regHasRegisterForm = textRegister.includes('id="register-form"');
   const regHasLoginForm = textRegister.includes('id="login-form"');
-  const regLinksToLogin = textRegister.includes('href="/login"');
   const regHasOrgBox = textRegister.includes('id="organizer-fields-box"');
-  const regHasFamiliarIcons = textRegister.includes('fa-building-user') && textRegister.includes('fa-heart');
-  const regHasNestedScroll = textRegister.includes('overflow-y: auto');
+  const regHasOverlay = textRegister.includes('class="overlay-slider-container');
+  const regHasGlassNav = textRegister.includes('glass-nav');
+  const regHasOverflowAuto = textRegister.includes('overflow-y: auto') || textRegister.includes('overflow-y:scroll');
+  const regHasEmojis = emojiRegex.test(textRegister);
+  const regHasFaIcons = textRegister.includes('fa-building-user') && textRegister.includes('fa-heart');
 
-  console.log('/register has register form:', regHasRegisterForm);
-  console.log('/register excludes login form (dedicated page):', !regHasLoginForm);
-  console.log('/register links to /login:', regLinksToLogin);
-  console.log('/register has organizer fields box:', regHasOrgBox);
-  console.log('/register has familiar icons:', regHasFamiliarIcons);
-  console.log('/register contains emojis:', regHasEmojis);
-  console.log('/register has nested scrollbar:', regHasNestedScroll);
+  console.log('Has #auth-slider-card:', regHasSliderCard);
+  console.log('Is right-panel-active TRUE on /register (Sign Up mode):', regHasRightPanelActive);
+  console.log('Has Sign Up form (#register-form):', regHasRegisterForm);
+  console.log('Has Sign In form (#login-form):', regHasLoginForm);
+  console.log('Has organizer fields drawer (#organizer-fields-box):', regHasOrgBox);
+  console.log('Has Double Slider overlay track:', regHasOverlay);
+  console.log('Has fixed glass navigation (glass-nav):', regHasGlassNav);
+  console.log('Inner panel nested scrollbar eliminated (no overflow-y: auto):', !regHasOverflowAuto);
+  console.log('Zero emojis (uses familiar FontAwesome icons):', !regHasEmojis);
+  console.log('Has familiar FontAwesome icons:', regHasFaIcons);
+
+  // 3. Controller functions verification
+  console.log('\n--- Step 3: Checking Double Slider Controller Functions ---');
+  const hasSetAuthMode = textLogin.includes('function setAuthMode(');
+  const hasToggleAccountType = textLogin.includes('function toggleAccountType(');
+  const hasFillCreds = textLogin.includes('function fillCreds(');
+
+  console.log('Includes setAuthMode controller:', hasSetAuthMode);
+  console.log('Includes toggleAccountType controller:', hasToggleAccountType);
+  console.log('Includes 1-click demo fillCreds controller:', hasFillCreds);
 
   const passed = resLogin.status === 200 &&
                  resRegister.status === 200 &&
+                 loginHasSliderCard &&
+                 !loginHasRightPanelActive &&
                  loginHasLoginForm &&
-                 !loginHasRegisterForm &&
-                 loginLinksToRegister &&
+                 loginHasRegisterForm &&
+                 loginHasOverlay &&
+                 loginHasGlassNav &&
+                 !loginHasOverflowAuto &&
                  !loginHasEmojis &&
-                 !loginHasNestedScroll &&
+                 loginHasFaIcons &&
+                 regHasSliderCard &&
+                 regHasRightPanelActive &&
                  regHasRegisterForm &&
-                 !regHasLoginForm &&
-                 regLinksToLogin &&
+                 regHasLoginForm &&
                  regHasOrgBox &&
-                 regHasFamiliarIcons &&
+                 regHasOverlay &&
+                 regHasGlassNav &&
+                 !regHasOverflowAuto &&
                  !regHasEmojis &&
-                 !regHasNestedScroll;
+                 regHasFaIcons &&
+                 hasSetAuthMode &&
+                 hasToggleAccountType &&
+                 hasFillCreds;
 
   if (passed) {
-    console.log('\n✅ ALL TWO-PAGE AUTH CHECKS PASSED: /login and /register are completely separate dedicated pages with zero emojis and no nested scrollbars!');
+    console.log('\n🎉 ALL CHECKS PASSED: Responsive Double Slider successfully unified across /login and /register with zero inner scrollbars and zero emojis!');
   } else {
-    console.error('\n❌ Check failed!');
+    console.error('\n❌ Verification failed!');
     process.exit(1);
   }
 }
 
-verifyAuthPages();
+verifyDoubleSliderAuth();
