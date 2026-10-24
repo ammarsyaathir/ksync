@@ -27,8 +27,6 @@
         </div>
     </div>
 
-    <!-- Admin Nav -->
-    <%- include('./admin-nav', { activePath: '/admin' }) %>
 
     <!-- Metric Stat Cards (2 columns on mobile, 4 on desktop) -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
@@ -81,43 +79,55 @@
         </div>
     </div>
 
-    <!-- Quick Administrative Shortcuts Grid -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3 mb-8">
+    <!-- Quick Administrative Shortcuts Grid (Responsive 2 cols mobile, 4 sm, 8 lg) -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 sm:gap-3 mb-8">
         <a href="/admin/verifications" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-pink-300 hover:shadow-sm transition-all text-center group cursor-pointer">
             <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
                 <i class="fas fa-check-double"></i>
             </div>
-            <div class="text-xs font-bold text-slate-800">Verify Queue</div>
+            <div class="text-[11px] sm:text-xs font-bold text-slate-800 truncate">Verifications</div>
         </a>
         <a href="/admin/events" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-purple-300 hover:shadow-sm transition-all text-center group cursor-pointer">
             <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
                 <i class="fas fa-calendar-days"></i>
             </div>
-            <div class="text-xs font-bold text-slate-800">All Events</div>
+            <div class="text-[11px] sm:text-xs font-bold text-slate-800 truncate">All Events</div>
         </a>
-        <a href="/admin/categories" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-sm transition-all text-center group cursor-pointer">
-            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
-                <i class="fas fa-layer-group"></i>
+        <a href="/admin/reports" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-rose-300 hover:shadow-sm transition-all text-center group cursor-pointer">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
+                <i class="fas fa-shield-virus"></i>
             </div>
-            <div class="text-xs font-bold text-slate-800">Categories</div>
+            <div class="text-[11px] sm:text-xs font-bold text-slate-800 truncate">Scam Reports</div>
         </a>
-        <a href="/admin/artists" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-pink-300 hover:shadow-sm transition-all text-center group cursor-pointer">
-            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
+        <a href="/admin/artists" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-sm transition-all text-center group cursor-pointer">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
                 <i class="fas fa-microphone-lines"></i>
             </div>
-            <div class="text-xs font-bold text-slate-800">Artists</div>
+            <div class="text-[11px] sm:text-xs font-bold text-slate-800 truncate">Artists & Lineup</div>
         </a>
         <a href="/admin/venues" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-emerald-300 hover:shadow-sm transition-all text-center group cursor-pointer">
             <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
                 <i class="fas fa-location-dot"></i>
             </div>
-            <div class="text-xs font-bold text-slate-800">Venues & Transit</div>
+            <div class="text-[11px] sm:text-xs font-bold text-slate-800 truncate">Venues & Transit</div>
+        </a>
+        <a href="/admin/categories" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-pink-300 hover:shadow-sm transition-all text-center group cursor-pointer">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
+                <i class="fas fa-layer-group"></i>
+            </div>
+            <div class="text-[11px] sm:text-xs font-bold text-slate-800 truncate">Categories</div>
+        </a>
+        <a href="/admin/users" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-sm transition-all text-center group cursor-pointer">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
+                <i class="fas fa-users-gear"></i>
+            </div>
+            <div class="text-[11px] sm:text-xs font-bold text-slate-800 truncate">Users & Roles</div>
         </a>
         <a href="/admin/logs" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-amber-300 hover:shadow-sm transition-all text-center group cursor-pointer">
             <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
                 <i class="fas fa-clock-rotate-left"></i>
             </div>
-            <div class="text-xs font-bold text-slate-800">Audit Logs</div>
+            <div class="text-[11px] sm:text-xs font-bold text-slate-800 truncate">Audit Logs</div>
         </a>
     </div>
 
