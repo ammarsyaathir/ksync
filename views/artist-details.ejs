@@ -14,7 +14,7 @@
     <div class="relative bg-slate-950 rounded-3xl overflow-hidden border border-white/10 shadow-2xl mb-10">
         <!-- Ambient Stage Glow Background -->
         <div class="absolute inset-0 z-0">
-            <img src="<%= artist.image_url || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1600&auto=format&fit=crop' %>" 
+            <img src="<%= artist.header_image || artist.image_url || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1600&auto=format&fit=crop' %>" 
                  alt="<%= artist.name %>" 
                  class="w-full h-full object-cover opacity-25 blur-xl scale-110 pointer-events-none"
                  onerror="this.src='https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1600&auto=format&fit=crop'">
@@ -24,12 +24,15 @@
         </div>
 
         <div class="relative z-10 p-6 sm:p-10 flex flex-col md:flex-row items-center md:items-start gap-8">
-            <!-- Artist Portrait Avatar -->
-            <div class="w-40 h-40 sm:w-48 sm:h-48 rounded-2xl overflow-hidden border-2 border-white/20 shadow-2xl shrink-0 bg-slate-900">
-                <img src="<%= artist.image_url || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop' %>" 
-                     alt="<%= artist.name %>" 
+            <!-- Artist Portrait Avatar (Official Profile Picture) -->
+            <div class="w-40 h-40 sm:w-48 sm:h-48 rounded-2xl overflow-hidden border-2 border-white/20 shadow-2xl shrink-0 bg-slate-900 relative group">
+                <img src="<%= artist.image_url || artist.header_image || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop' %>" 
+                     alt="<%= artist.name %> Profile" 
                      class="w-full h-full object-cover"
                      onerror="this.src='https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop'">
+                <div class="absolute bottom-2 right-2 bg-slate-950/80 backdrop-blur-xs px-2 py-0.5 rounded text-[9px] font-bold text-white uppercase tracking-wider border border-white/20">
+                    Official Profile
+                </div>
             </div>
 
             <!-- Artist Meta -->
@@ -84,6 +87,35 @@
             </div>
         </div>
     </div>
+
+    <% if (artist.header_image) { %>
+        <!-- Latest Official Group & Concert Preview Showcase -->
+        <div class="mb-12 rounded-3xl overflow-hidden border border-slate-200/80 bg-slate-950 shadow-xl relative group">
+            <div class="relative h-64 sm:h-80 md:h-[420px] w-full overflow-hidden">
+                <img src="<%= artist.header_image %>" 
+                     alt="<%= artist.name %> Latest Official Group Visual" 
+                     class="w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-700 opacity-95"
+                     onerror="this.parentElement.parentElement.style.display='none'">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
+                
+                <div class="absolute top-4 left-4 z-10">
+                    <span class="px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-white/95 text-slate-950 backdrop-blur-md shadow-md border border-white/60 flex items-center gap-2">
+                        <i class="fas fa-camera text-pink-600"></i> Latest Official Group Visual & Concept
+                    </span>
+                </div>
+                
+                <div class="absolute bottom-5 left-6 right-6 z-10 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3">
+                    <div>
+                        <span class="text-xs font-bold text-pink-400 uppercase tracking-widest block mb-0.5">Official Promotional Preview</span>
+                        <h2 class="text-xl sm:text-3xl font-black text-white tracking-tight drop-shadow-sm"><%= artist.name %></h2>
+                    </div>
+                    <span class="px-3.5 py-1.5 rounded-xl bg-slate-900/80 backdrop-blur-sm text-slate-300 text-xs font-semibold border border-white/10">
+                        <i class="fas fa-circle-check me-1.5 text-emerald-400"></i> Verified Malaysia Tour Performer
+                    </span>
+                </div>
+            </div>
+        </div>
+    <% } %>
 
     <!-- Section 1: Upcoming Malaysia Tour Dates -->
     <div id="tour-schedule" class="mb-14">
