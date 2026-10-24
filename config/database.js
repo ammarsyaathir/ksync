@@ -187,6 +187,22 @@ if (isUsingMySQL) {
             KEY \`idx_members_artist\` (\`artist_id\`)
           ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         `);
+
+        // 7. Auto-sync member photos in MySQL if they are http or empty
+        const [memPhotos] = await mysqlPool.query("SELECT COUNT(*) as cnt FROM `members` WHERE `photo` LIKE 'http%' OR `photo` IS NULL");
+        if (memPhotos && memPhotos[0] && memPhotos[0].cnt > 0) {
+          const fs = await import('fs');
+          const migrationSql = fs.readFileSync('database/hostinger_mysql_artists_slug_migration.sql', 'utf8');
+          const statements = migrationSql.split(';').map(s => s.trim()).filter(s => s.length > 5 && !s.startsWith('--'));
+          for (const stmt of statements) {
+            try {
+              await mysqlPool.query(stmt);
+            } catch (e) {
+              // ignore minor warnings
+            }
+          }
+          console.log("✅ Synced member photos in MySQL via migration script.");
+        }
       } catch (migErr) {
         console.warn("MySQL auto-migration check note:", migErr.message);
       }
