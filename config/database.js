@@ -106,6 +106,87 @@ if (isUsingMySQL) {
             INDEX \`idx_email_otp\` (\`email\`, \`otp_code\`)
           ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         `);
+
+        // 5. Ensure artists table has slug, debut_year, fandom_name, header_image in MySQL
+        try {
+          const [artistCols] = await mysqlPool.query("SHOW COLUMNS FROM `artists`");
+          const existingColNames = (artistCols || []).map(c => c.Field.toLowerCase());
+
+          if (!existingColNames.includes('slug')) {
+            await mysqlPool.query("ALTER TABLE `artists` ADD COLUMN `slug` VARCHAR(100) NULL AFTER `name`");
+            console.log("✅ Auto-migrated MySQL: Added slug to artists.");
+          }
+          if (!existingColNames.includes('debut_year')) {
+            await mysqlPool.query("ALTER TABLE `artists` ADD COLUMN `debut_year` INT NULL");
+            console.log("✅ Auto-migrated MySQL: Added debut_year to artists.");
+          }
+          if (!existingColNames.includes('fandom_name')) {
+            await mysqlPool.query("ALTER TABLE `artists` ADD COLUMN `fandom_name` VARCHAR(100) NULL");
+            console.log("✅ Auto-migrated MySQL: Added fandom_name to artists.");
+          }
+          if (!existingColNames.includes('header_image')) {
+            await mysqlPool.query("ALTER TABLE `artists` ADD COLUMN `header_image` VARCHAR(255) NULL");
+            console.log("✅ Auto-migrated MySQL: Added header_image to artists.");
+          }
+
+          // Populate slugs & debut metadata for the 20 artists in MySQL
+          const artistSlugs = [
+            ['seventeen', 2015, 'CARAT', '%SEVENTEEN%'],
+            ['twice', 2015, 'ONCE', '%TWICE%'],
+            ['iu', 2008, 'UAENA', '%IU%'],
+            ['enhypen', 2020, 'ENGENE', '%ENHYPEN%'],
+            ['ive', 2021, 'DIVE', '%IVE%'],
+            ['txt', 2019, 'MOA', '%TXT%'],
+            ['txt', 2019, 'MOA', '%TOMORROW%'],
+            ['stray-kids', 2018, 'STAY', '%Stray Kids%'],
+            ['aespa', 2020, 'MY', '%aespa%'],
+            ['bts', 2013, 'ARMY', '%BTS%'],
+            ['babymonster', 2023, 'MONSTIEZ', '%BABYMONSTER%'],
+            ['wave-to-earth', 2019, 'Plankton', '%wave to earth%'],
+            ['young-k', 2015, 'My Day', '%Young K%'],
+            ['the-rose', 2017, 'Black Rose', '%The Rose%'],
+            ['boynextdoor', 2023, 'ONEDOOR', '%BOYNEXTDOOR%'],
+            ['blackpink', 2016, 'BLINK', '%BLACKPINK%'],
+            ['itzy', 2019, 'MIDZY', '%ITZY%'],
+            ['nct-dream', 2016, 'NCTzen', '%NCT DREAM%'],
+            ['treasure', 2020, 'TREASURE MAKER (TEUME)', '%TREASURE%'],
+            ['taeyeon', 2007, 'SONE', '%TAEYEON%'],
+            ['super-junior', 2005, 'E.L.F', '%SUPER JUNIOR%']
+          ];
+          for (const [slug, debut, fandom, likeName] of artistSlugs) {
+            await mysqlPool.query(
+              "UPDATE `artists` SET `slug` = ?, `debut_year` = ?, `fandom_name` = ? WHERE `name` LIKE ? AND (`slug` IS NULL OR `slug` = '')",
+              [slug, debut, fandom, likeName]
+            );
+          }
+        } catch (colErr) {
+          console.warn("MySQL artists columns check note:", colErr.message);
+        }
+
+        // 6. Ensure members table exists in MySQL
+        await mysqlPool.query(`
+          CREATE TABLE IF NOT EXISTS \`members\` (
+            \`id\` INT AUTO_INCREMENT PRIMARY KEY,
+            \`artist_id\` INT NOT NULL,
+            \`stage_name\` VARCHAR(100) NOT NULL,
+            \`birth_name\` VARCHAR(150) DEFAULT NULL,
+            \`group_name\` VARCHAR(100) DEFAULT NULL,
+            \`position\` VARCHAR(200) DEFAULT NULL,
+            \`dob\` DATE DEFAULT NULL,
+            \`zodiac\` VARCHAR(20) DEFAULT NULL,
+            \`height_cm\` DECIMAL(5,1) DEFAULT NULL,
+            \`blood_type\` VARCHAR(5) DEFAULT NULL,
+            \`mbti\` VARCHAR(20) DEFAULT NULL,
+            \`nationality\` VARCHAR(50) DEFAULT NULL,
+            \`debut_year\` INT DEFAULT NULL,
+            \`photo\` VARCHAR(255) DEFAULT NULL,
+            \`is_active\` TINYINT(1) NOT NULL DEFAULT 1,
+            \`sort_order\` INT NOT NULL DEFAULT 0,
+            \`created_at\` DATETIME DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE KEY \`uniq_members_artist_stage\` (\`artist_id\`, \`stage_name\`),
+            KEY \`idx_members_artist\` (\`artist_id\`)
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+        `);
       } catch (migErr) {
         console.warn("MySQL auto-migration check note:", migErr.message);
       }

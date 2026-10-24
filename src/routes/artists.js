@@ -63,15 +63,22 @@ router.get('/:idOrSlug', async (req, res) => {
   try {
     let artist = null;
 
-    // 1. Direct match by official slug column
-    artist = await db.getOne("SELECT * FROM artists WHERE LOWER(slug) = LOWER(?)", [param]);
+    // 1. Direct match by official slug column (gracefully ignore if column does not exist yet)
+    try {
+      artist = await db.getOne("SELECT * FROM artists WHERE LOWER(slug) = LOWER(?)", [param]);
+    } catch (e) {
+      // Column 'slug' might not exist yet on remote MySQL
+    }
 
     // 2. Direct numeric ID (e.g. /artists/4) -> 301 Redirect to canonical slug URL
     if (!artist && /^\d+$/.test(param)) {
       const numericArtist = await db.getOne("SELECT * FROM artists WHERE id = ?", [Number(param)]);
       if (numericArtist) {
         const targetSlug = numericArtist.slug || helpers.slugify(numericArtist.name) || numericArtist.id;
-        return res.redirect(301, `/artists/${targetSlug}`);
+        if (targetSlug && targetSlug !== param && numericArtist.slug) {
+          return res.redirect(301, `/artists/${targetSlug}`);
+        }
+        artist = numericArtist;
       }
     }
 
@@ -81,20 +88,28 @@ router.get('/:idOrSlug', async (req, res) => {
       const prefixedArtist = await db.getOne("SELECT * FROM artists WHERE id = ?", [idPrefix]);
       if (prefixedArtist) {
         const targetSlug = prefixedArtist.slug || helpers.slugify(prefixedArtist.name) || prefixedArtist.id;
-        return res.redirect(301, `/artists/${targetSlug}`);
+        if (targetSlug && targetSlug !== param && prefixedArtist.slug) {
+          return res.redirect(301, `/artists/${targetSlug}`);
+        }
+        artist = prefixedArtist;
       }
     }
 
     // 4. Fallback: match by dynamically slugified artist name
     if (!artist) {
-      const allArtists = await db.query("SELECT id, name, slug FROM artists");
-      const matched = allArtists.find(a => 
+      let allArtists = [];
+      try {
+        allArtists = await db.query("SELECT * FROM artists");
+      } catch (e) {
+        allArtists = await db.query("SELECT id, name FROM artists");
+      }
+      const matched = (allArtists || []).find(a => 
         (a.slug && a.slug.toLowerCase() === param.toLowerCase()) || 
         helpers.slugify(a.name) === param.toLowerCase()
       );
       if (matched) {
-        artist = await db.getOne("SELECT * FROM artists WHERE id = ?", [matched.id]);
-        if (artist && artist.slug && artist.slug.toLowerCase() !== param.toLowerCase()) {
+        artist = matched;
+        if (artist.slug && artist.slug.toLowerCase() !== param.toLowerCase()) {
           return res.redirect(301, `/artists/${artist.slug}`);
         }
       }
@@ -109,13 +124,19 @@ router.get('/:idOrSlug', async (req, res) => {
 
     const artistId = artist.id;
 
-    // Fetch members from normalised `members` table
-    const rawMembers = await db.query(
-      "SELECT * FROM members WHERE artist_id = ? ORDER BY sort_order ASC, id ASC",
-      [artistId]
-    );
-
-    let members = rawMembers.map(normaliseMemberRow);
+    // Fetch members from normalised `members` table (safe fallback to legacy artists.members JSON)
+    let members = [];
+    try {
+      const rawMembers = await db.query(
+        "SELECT * FROM members WHERE artist_id = ? ORDER BY sort_order ASC, id ASC",
+        [artistId]
+      );
+      if (rawMembers && rawMembers.length > 0) {
+        members = rawMembers.map(normaliseMemberRow);
+      }
+    } catch (e) {
+      // members table might not exist on older MySQL instances
+    }
 
     // Fallback to legacy JSON on artists.members if members table is empty
     if (members.length === 0 && artist.members) {
@@ -128,15 +149,20 @@ router.get('/:idOrSlug', async (req, res) => {
     }
 
     // Fetch verified events associated with this artist
-    const events = await db.query(`
-      SELECT e.*, c.name as category_name, c.badge_color, e.venue_name as venue_display,
-             u.organization_name, u.organization_type, u.is_verified_organizer
-      FROM events e
-      LEFT JOIN event_categories c ON e.category_id = c.id
-      LEFT JOIN users u ON e.organizer_id = u.id
-      WHERE e.artist_id = ? AND e.verification_status = 'VERIFIED'
-      ORDER BY e.event_date ASC, e.start_time ASC
-    `, [artistId]);
+    let events = [];
+    try {
+      events = await db.query(`
+        SELECT e.*, c.name as category_name, c.badge_color, e.venue_name as venue_display,
+               u.organization_name, u.organization_type, u.is_verified_organizer
+        FROM events e
+        LEFT JOIN event_categories c ON e.category_id = c.id
+        LEFT JOIN users u ON e.organizer_id = u.id
+        WHERE e.artist_id = ? AND e.verification_status = 'VERIFIED'
+        ORDER BY e.event_date ASC
+      `, [artistId]);
+    } catch (e) {
+      console.warn('Events query fallback:', e.message);
+    }
 
     const todayStr = new Date().toISOString().split('T')[0];
     const upcoming_events = [];

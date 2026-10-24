@@ -45,11 +45,14 @@ DROP TABLE IF EXISTS `artists`;
 CREATE TABLE `artists` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `name` VARCHAR(100) NOT NULL,
+  `slug` VARCHAR(100) DEFAULT NULL,
   `korean_name` VARCHAR(100) DEFAULT NULL,
   `group_type` VARCHAR(50) DEFAULT 'Boy Group',
   `agency` VARCHAR(100),
   `debut_year` INT DEFAULT NULL,
+  `fandom_name` VARCHAR(100) DEFAULT NULL,
   `image_url` VARCHAR(255),
+  `header_image` VARCHAR(255),
   `description` TEXT,
   `members` LONGTEXT,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP
