@@ -1,4 +1,4 @@
-<%- include('partials/header', { title: '360° Concert Sonar & Temporal Radar | K-Sync Malaysia' }) %>
+<%- include('partials/header', { title: 'K-Pop Event Radar & Calendar Matrix | K-Sync Malaysia' }) %>
 
 <%
     const PRECINCT_METADATA = {
@@ -11,7 +11,7 @@
             venues: 'Axiata Arena, Bukit Jalil National Stadium, Unifi Arena',
             coords: [3.0583, 101.6917],
             capacity: '16,000 - 87,000',
-            tips: 'Park-and-ride at LRT stations (Awan Besar / Sri Petaling) is highly recommended on massive concert nights. Rapid KL frequently extends operations to 12:30 AM.'
+            tips: 'Park-and-ride at LRT stations (Awan Besar / Sri Petaling) is highly recommended on concert nights. Rapid KL regularly extends operations.'
         },
         'BBCC & Downtown KL': {
             transit: 'Hang Tuah Station (LRT Ampang Line / KL Monorail) & Merdeka MRT',
@@ -51,11 +51,11 @@
             walkTime: 'BRT direct to Sunway Pyramid; Feeder bus to JioSpace PJ',
             icon: 'fa-map-pin',
             color: 'amber',
-            badge: 'Suburban Indie & Gathering Hub',
+            badge: 'Suburban Gathering Hub',
             venues: 'Sunway Pyramid Convention Centre, JioSpace PJ',
             coords: [3.0729, 101.6074],
             capacity: '4,000',
-            tips: 'Great for cupsleeve cafe hops, fanclub exhibition gatherings, and medium-scale showcase tours.'
+            tips: 'Great for cupsleeve cafe hops, fanclub gatherings, and medium-scale showcase tours.'
         },
         'Penang & Northern Region': {
             transit: 'Rapid Penang Bus / Penang Airport Link',
@@ -85,9 +85,9 @@
         return { primary: '#EC4899', secondary: '#06B6D4', name: 'Cyber Stage Neon', quadrant: 'bg', label: 'Live Echo' };
     }
 
-    // Serialize events for the 360° Acoustic Sonar Scope
+    // Prepare events data for interactive radar canvas
     const mappedEventsData = events.map(e => {
-        let coords = [3.1408, 101.7088]; // default KL
+        let coords = [3.1408, 101.7088];
         const vName = (e.venue_name || '').toLowerCase();
         const aName = (e.cluster_area || '');
 
@@ -112,6 +112,7 @@
             time: e.start_time || '8:00 PM',
             poster: e.poster_image || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800',
             area: e.cluster_area || 'Kuala Lumpur Metro Hub',
+            category: e.category_name || 'Concert',
             ticketUrl: e.official_ticket_url || '',
             status: e.verification_status || 'VERIFIED',
             coords: coords,
@@ -123,180 +124,201 @@
 %>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-    <!-- Header Stage Header (Impeccable: Bold display voice, no generic kickers) -->
+    <!-- Header Banner (Consistent with K-Sync Design System) -->
     <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-200/80 pb-6">
         <div>
             <div class="flex items-center space-x-2.5 mb-2">
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-slate-900 text-white shadow-xs">
                     <span class="w-2 h-2 rounded-full bg-pink-500 animate-pulse"></span>
-                    360° ACOUSTIC CONCERT SONAR
+                    EVENT RADAR
                 </span>
                 <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-pink-100 text-pink-700 border border-pink-200/80">
-                    Temporal Signal Matrix
+                    Malaysia Tour Stops
                 </span>
             </div>
-            <h1 class="text-3xl sm:text-5xl font-black text-slate-900 tracking-[-0.035em] leading-tight">
+            <h1 class="text-3xl sm:text-5xl font-black text-slate-900 tracking-[-0.035em] leading-tight font-sans">
                 K-Pop Event Radar
             </h1>
             <p class="text-slate-600 text-sm sm:text-base mt-2 max-w-2xl font-medium leading-relaxed">
-                Autonomous concert sonar tracking Malaysian tour stops across time horizons, lightstick frequencies, and Klang Valley metro corridors.
+                Explore Malaysian concert stops, cupsleeve meetups, and fan tours on the interactive 360° radar and schedule calendar.
             </p>
         </div>
 
         <div class="flex items-center gap-2.5 shrink-0">
-            <span class="px-4 py-2.5 rounded-2xl text-xs font-black bg-slate-900 text-white shadow-sm flex items-center gap-2">
-                <i class="fas fa-satellite-dish text-pink-400 animate-spin" style="animation-duration: 8s;"></i>
-                <span><%= events.length %> Active Stage Echoes</span>
+            <span class="px-4 py-2.5 rounded-2xl text-xs font-black bg-slate-900 text-white shadow-xs flex items-center gap-2">
+                <i class="fas fa-satellite-dish text-pink-400"></i>
+                <span><%= events.length %> Verified Listings</span>
             </span>
         </div>
     </div>
 
-    <!-- Dual-View Navigation Dock (360° Radar & Calendar Matrix Only) -->
-    <div class="bg-white rounded-3xl p-3 sm:p-4 shadow-xs border border-slate-200 mb-8">
+    <!-- Dual Navigation Dock & Time Filter Bar -->
+    <div class="bg-white rounded-3xl p-3 sm:p-4 shadow-xs border border-slate-200 mb-8 space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <!-- View Selector Tabs -->
-            <div class="inline-flex rounded-2xl bg-slate-100 p-1.5 border border-slate-200/80 shrink-0 overflow-x-auto max-w-full">
+            <div class="inline-flex rounded-2xl bg-slate-100 p-1.5 border border-slate-200/80 shrink-0">
                 <button type="button" id="tab-sonar-btn" onclick="switchRadarMode('sonar')"
                         class="px-4 sm:px-6 py-2.5 rounded-xl text-xs font-black transition-all press-tactile bg-slate-900 text-white shadow-xs flex items-center gap-2 cursor-pointer">
                     <i class="fas fa-radar text-pink-400"></i>
-                    <span>360° Concert Radar</span>
+                    <span>360° Event Radar</span>
                 </button>
                 <button type="button" id="tab-weekend-btn" onclick="switchRadarMode('weekend')"
                         class="px-4 sm:px-6 py-2.5 rounded-xl text-xs font-bold transition-all press-tactile text-slate-600 hover:text-slate-900 flex items-center gap-2 cursor-pointer">
-                    <i class="fas fa-calendar-week text-purple-500"></i>
-                    <span>Calendar & Weekend Matrix (<%= weekendClusters.length %>)</span>
+                    <i class="fas fa-calendar-week text-purple-600"></i>
+                    <span>Calendar Matrix (<%= weekendClusters.length %> Weekends)</span>
                 </button>
             </div>
 
-            <!-- Telemetry Indicator -->
-            <div class="flex items-center gap-2 text-xs text-slate-500 font-semibold px-2">
-                <span class="flex items-center gap-1.5 text-pink-700 bg-pink-50 px-3 py-1 rounded-full border border-pink-200">
-                    <span class="w-1.5 h-1.5 rounded-full bg-pink-500 animate-ping"></span>
-                    Live Stage Echoes Synchronized
+            <!-- Precinct Area Highlights -->
+            <div class="flex items-center gap-2 text-xs text-slate-600 font-semibold overflow-x-auto pb-1 sm:pb-0">
+                <span class="text-slate-400 font-bold uppercase text-[10px] tracking-wider shrink-0">Top Hubs:</span>
+                <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-[11px] font-bold shrink-0">
+                    <i class="fas fa-location-dot text-pink-500 me-1"></i>Bukit Jalil Hub
                 </span>
+                <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-[11px] font-bold shrink-0">
+                    <i class="fas fa-building text-purple-500 me-1"></i>BBCC & Zepp KL
+                </span>
+            </div>
+        </div>
+
+        <!-- Quick Time Filter Strip -->
+        <div class="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5 overflow-x-auto py-1 scrollbar-none">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider me-1 text-[11px]">Filter by Horizon:</span>
+                <button type="button" onclick="setTimeFilter(4)" id="filter-btn-4" class="time-filter-btn px-3 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white shadow-xs transition-all cursor-pointer">
+                    All Shows (<%= events.length %>)
+                </button>
+                <button type="button" onclick="setTimeFilter(1)" id="filter-btn-1" class="time-filter-btn px-3 py-1.5 rounded-full text-xs font-bold bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all cursor-pointer">
+                    This Weekend (< 7d)
+                </button>
+                <button type="button" onclick="setTimeFilter(2)" id="filter-btn-2" class="time-filter-btn px-3 py-1.5 rounded-full text-xs font-bold bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all cursor-pointer">
+                    Next 30 Days
+                </button>
+                <button type="button" onclick="setTimeFilter(3)" id="filter-btn-3" class="time-filter-btn px-3 py-1.5 rounded-full text-xs font-bold bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all cursor-pointer">
+                    Next 90 Days
+                </button>
+            </div>
+            <div class="text-xs text-slate-500 font-medium">
+                Showing <span id="filtered-count-badge" class="font-bold text-slate-900"><%= events.length %></span> events
             </div>
         </div>
     </div>
 
     <!-- ========================================================================= -->
-    <!-- VIEW 1: 360° CONCERT SONAR SCOPE & TARGET ACQUISITION CONSOLE (PRIMARY)   -->
+    <!-- VIEW 1: 360° CONCERT RADAR & EVENT SPOTLIGHT CONSOLE (PRIMARY)            -->
     <!-- ========================================================================= -->
     <div id="view-sonar" class="space-y-6">
-        <!-- Command Console Container -->
+        <!-- Main Radar Stage Console -->
         <div class="bg-slate-950 rounded-3xl border border-slate-800 p-5 sm:p-7 shadow-2xl relative overflow-hidden text-white">
-            <!-- Background Cyber Grid Mesh -->
-            <div class="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none"></div>
+            <!-- Background Stage Glow -->
+            <div class="absolute -top-32 -left-32 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-32 -right-32 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-            <!-- Top Telemetry Ribbon -->
-            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-5 mb-6">
-                <div class="space-y-1 font-mono text-[11px]">
+            <!-- Top Header Inside Radar -->
+            <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4 mb-6">
+                <div>
                     <div class="flex items-center gap-2">
                         <span class="px-2 py-0.5 rounded bg-pink-500/20 text-pink-400 border border-pink-500/40 font-bold uppercase tracking-widest text-[10px]">
-                            SONAR AZIMUTH SCANNER
+                            360° RADAR CONSOLE
                         </span>
-                        <span class="text-slate-400">GROUND ZERO: KLANG VALLEY [3.1390° N, 101.6869° E]</span>
+                        <span class="text-xs text-slate-400 font-medium">Malaysia Event Horizon</span>
                     </div>
-                    <div class="text-xs text-slate-300 font-sans font-bold flex items-center gap-2">
-                        <span>Range Horizons: Today (Center) · 7D (Inner) · 30D · 90D · Season 2026/27</span>
-                    </div>
+                    <p class="text-xs text-slate-400 mt-1">
+                        Events closer to the center are happening sooner (Center = Today, Outer Ring = Later this season).
+                    </p>
                 </div>
 
-                <!-- Sonar Control Docks -->
+                <!-- Radar Controls: Speed & Sound -->
                 <div class="flex items-center gap-2 shrink-0">
-                    <!-- Sweep Speed Selector -->
-                    <div class="inline-flex rounded-xl bg-slate-900 border border-slate-800 p-1 text-[11px] font-mono">
+                    <div class="inline-flex rounded-xl bg-slate-900 border border-slate-800 p-1 text-[11px]">
                         <button type="button" id="btn-speed-1" onclick="setSweepSpeed(1)" class="px-2.5 py-1 rounded-lg bg-pink-600 text-white font-bold cursor-pointer">1x Scan</button>
-                        <button type="button" id="btn-speed-2" onclick="setSweepSpeed(2)" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white cursor-pointer">2x Rapid</button>
-                        <button type="button" id="btn-speed-0" onclick="setSweepSpeed(0)" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white cursor-pointer">Freeze</button>
+                        <button type="button" id="btn-speed-2" onclick="setSweepSpeed(2)" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white cursor-pointer">2x Fast</button>
+                        <button type="button" id="btn-speed-0" onclick="setSweepSpeed(0)" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-white cursor-pointer">Pause</button>
                     </div>
 
-                    <!-- Audio Ping Toggle -->
                     <button type="button" id="btn-audio-ping" onclick="toggleAudioPing()" 
-                            class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white text-xs font-mono font-bold flex items-center gap-1.5 cursor-pointer transition-all"
-                            title="Toggle Acoustic Sonar Beep Sound">
+                            class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-all">
                         <i class="fas fa-volume-xmark text-slate-400" id="audio-icon"></i>
                         <span id="audio-label">Muted</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Sonar Stage: Two-Column Interactive Layout -->
+            <!-- Interactive Radar Layout: Canvas + Spotlight Card -->
             <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                <!-- Left/Center: 360° Circular Sonar Canvas -->
+                <!-- Left Column: 360° Radar Canvas -->
                 <div class="lg:col-span-7 flex flex-col items-center justify-center">
-                    <div class="relative w-full max-w-[320px] xs:max-w-[360px] sm:max-w-[440px] md:max-w-[500px] aspect-square flex items-center justify-center mx-auto">
-                        <!-- Canvas Element -->
-                        <canvas id="sonar-canvas" class="w-full h-full cursor-crosshair rounded-full shadow-[0_0_50px_rgba(236,72,153,0.15)]"></canvas>
+                    <div class="relative w-full max-w-[320px] xs:max-w-[360px] sm:max-w-[440px] md:max-w-[480px] aspect-square flex items-center justify-center mx-auto">
+                        <canvas id="sonar-canvas" class="w-full h-full cursor-crosshair rounded-full shadow-[0_0_40px_rgba(236,72,153,0.12)]"></canvas>
 
-                        <!-- Quadrant Overlay Badges (Absolute around canvas) -->
-                        <div class="absolute top-2 left-2 text-[10px] font-mono text-cyan-400/80 bg-slate-950/80 px-2 py-0.5 rounded border border-cyan-500/20 pointer-events-none">
-                            NW · BOY GROUPS
+                        <!-- Quadrant Labels -->
+                        <div class="absolute top-2 left-2 text-[10px] font-bold text-cyan-400/90 bg-slate-950/80 px-2.5 py-1 rounded-full border border-cyan-500/30 pointer-events-none">
+                            ✨ BOY GROUPS
                         </div>
-                        <div class="absolute top-2 right-2 text-[10px] font-mono text-pink-400/80 bg-slate-950/80 px-2 py-0.5 rounded border border-pink-500/20 pointer-events-none">
-                            NE · GIRL GROUPS
+                        <div class="absolute top-2 right-2 text-[10px] font-bold text-pink-400/90 bg-slate-950/80 px-2.5 py-1 rounded-full border border-pink-500/30 pointer-events-none">
+                            💖 GIRL GROUPS
                         </div>
-                        <div class="absolute bottom-2 left-2 text-[10px] font-mono text-emerald-400/80 bg-slate-950/80 px-2 py-0.5 rounded border border-emerald-500/20 pointer-events-none">
-                            SW · K-BANDS & FESTS
+                        <div class="absolute bottom-2 left-2 text-[10px] font-bold text-emerald-400/90 bg-slate-950/80 px-2.5 py-1 rounded-full border border-emerald-500/30 pointer-events-none">
+                            🎸 K-BANDS & FESTS
                         </div>
-                        <div class="absolute bottom-2 right-2 text-[10px] font-mono text-purple-400/80 bg-slate-950/80 px-2 py-0.5 rounded border border-purple-500/20 pointer-events-none">
-                            SE · SOLOISTS & VOCALS
+                        <div class="absolute bottom-2 right-2 text-[10px] font-bold text-purple-400/90 bg-slate-950/80 px-2.5 py-1 rounded-full border border-purple-500/30 pointer-events-none">
+                            🎤 SOLOISTS
                         </div>
                     </div>
 
-                    <!-- Canvas Telemetry Helper -->
-                    <div class="mt-4 text-center text-xs text-slate-400 font-mono">
-                        <span class="text-pink-400 font-bold"><i class="fas fa-hand-pointer me-1"></i> CLICK ANY ECHO BEACON</span> TO VIEW EVENT DETAILS
+                    <!-- Canvas Helper Text -->
+                    <div class="mt-4 text-center text-xs text-slate-400">
+                        <span class="text-pink-400 font-bold"><i class="fas fa-hand-pointer me-1"></i> Tap or click any beacon</span> to view event details
                     </div>
                 </div>
 
-                <!-- Right Column: Real-Time Target Acquisition HUD -->
+                <!-- Right Column: Selected Event Spotlight HUD Card -->
                 <div class="lg:col-span-5">
-                    <div id="target-hud-container" class="bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800 p-5 space-y-4 shadow-xl">
-                        <!-- Target Lock Status Header -->
+                    <div id="target-hud-container" class="bg-slate-900/90 backdrop-blur-md rounded-3xl border border-slate-800 p-5 space-y-4 shadow-xl">
+                        <!-- Card Header: Status & D-Day -->
                         <div class="flex items-center justify-between border-b border-slate-800 pb-3">
                             <div class="flex items-center gap-2">
                                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                                <span id="hud-status" class="text-xs font-mono font-bold text-emerald-400 tracking-wider">TARGET ACQUIRED · #01</span>
+                                <span id="hud-status" class="text-xs font-bold text-emerald-400 tracking-wider">EVENT SELECTED</span>
                             </div>
                             <span id="hud-dday" class="px-2.5 py-0.5 rounded-full text-xs font-black bg-pink-500 text-white font-mono">D-DAY</span>
                         </div>
 
-                        <!-- Artist & Tour Dossier Info -->
+                        <!-- Event Info -->
                         <div class="flex gap-4 items-start">
-                            <img id="hud-poster" src="" alt="Poster" class="w-20 h-28 object-cover rounded-xl border border-slate-700 shrink-0 bg-slate-950">
-                            <div class="space-y-1.5 flex-grow">
-                                <div id="hud-artist" class="text-xs font-bold text-pink-400 uppercase tracking-wider flex items-center gap-1.5">Artist</div>
-                                <h3 id="hud-title" class="text-base font-black text-white leading-tight line-clamp-2">Concert Title</h3>
-                                <p id="hud-venue" class="text-xs text-slate-300 flex items-center gap-1">
-                                    <i class="fas fa-location-dot text-slate-400"></i>
-                                    <span>Venue</span>
+                            <img id="hud-poster" src="" alt="Poster" class="w-20 h-28 object-cover rounded-2xl border border-slate-700 shrink-0 bg-slate-950 shadow-md">
+                            <div class="space-y-1 flex-grow min-w-0">
+                                <div id="hud-artist" class="text-xs font-extrabold text-pink-400 uppercase tracking-wider truncate">Artist</div>
+                                <h3 id="hud-title" class="text-base font-black text-white leading-snug line-clamp-2">Concert Title</h3>
+                                <p id="hud-venue" class="text-xs text-slate-300 flex items-center gap-1 mt-1 truncate">
+                                    <i class="fas fa-location-dot text-pink-400 shrink-0"></i>
+                                    <span class="truncate">Venue</span>
                                 </p>
-                                <p id="hud-date" class="text-xs text-slate-400 font-mono">Date</p>
+                                <p id="hud-date" class="text-xs text-slate-400 font-mono mt-0.5">Date & Time</p>
                             </div>
                         </div>
 
-                        <!-- Fandom Lightstick Hue Beacon -->
-                        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800/80 flex items-center justify-between">
+                        <!-- Fandom Lightstick Color Badge -->
+                        <div class="p-3 rounded-2xl bg-slate-950 border border-slate-800/80 flex items-center justify-between">
                             <div class="flex items-center gap-2.5">
                                 <span id="hud-lightstick-swatch" class="w-4 h-4 rounded-full border border-white/20 shadow-xs"></span>
                                 <div class="text-xs">
-                                    <div class="text-slate-400 text-[10px] uppercase font-mono">Fandom Lightstick Hue</div>
-                                    <div id="hud-lightstick-name" class="font-bold text-white">Lightstick Colors</div>
+                                    <div class="text-slate-400 text-[10px] uppercase font-bold">Fandom Lightstick Color</div>
+                                    <div id="hud-lightstick-name" class="font-bold text-white">Lightstick Hue</div>
                                 </div>
                             </div>
-                            <span id="hud-verified" class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-950 text-emerald-400 border border-emerald-800/80">
-                                98% VERIFIED
+                            <span id="hud-verified" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-950 text-emerald-400 border border-emerald-800/80">
+                                Verified Event
                             </span>
                         </div>
 
-                        <!-- Tour Anthem Audio Preview Component -->
-                        <div class="p-3.5 rounded-2xl bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border border-pink-500/30 shadow-lg space-y-2.5">
+                        <!-- Tour Anthem Audio Preview -->
+                        <div class="p-3.5 rounded-2xl bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border border-pink-500/30 shadow-md space-y-2.5">
                             <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-pink-400 font-mono">
+                                <div class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-pink-400">
                                     <i class="fas fa-compact-disc text-pink-500"></i>
                                     <span>Tour Anthem Preview</span>
                                 </div>
-                                <!-- Audio Visualizer Waves -->
                                 <div id="hud-audio-bars" class="flex items-end gap-1 h-3.5 opacity-40">
                                     <span class="w-1 bg-pink-400 rounded-full h-1.5 transition-all"></span>
                                     <span class="w-1 bg-pink-500 rounded-full h-3 transition-all"></span>
@@ -306,28 +328,25 @@
                             </div>
 
                             <div class="flex items-center gap-3">
-                                <!-- Vinyl Album Cover / Spinner -->
-                                <div class="relative w-12 h-12 rounded-full overflow-hidden shrink-0 border-2 border-slate-700 shadow-md bg-slate-950">
-                                    <img id="hud-song-art" src="" alt="Album Art" class="w-full h-full object-cover" style="animation-duration: 5s;">
-                                    <div class="absolute inset-0 m-auto w-3 h-3 rounded-full bg-slate-950 border border-white/50"></div>
+                                <div class="relative w-11 h-11 rounded-full overflow-hidden shrink-0 border-2 border-slate-700 shadow-md bg-slate-950">
+                                    <img id="hud-song-art" src="" alt="Album Art" class="w-full h-full object-cover">
+                                    <div class="absolute inset-0 m-auto w-2.5 h-2.5 rounded-full bg-slate-950 border border-white/50"></div>
                                 </div>
 
                                 <div class="flex-grow min-w-0">
-                                    <div id="hud-song-title" class="text-xs font-black text-white truncate">Loading Anthem...</div>
+                                    <div id="hud-song-title" class="text-xs font-bold text-white truncate">Loading Anthem...</div>
                                     <div id="hud-song-album" class="text-[10px] text-slate-400 truncate">Official Tour Hit</div>
                                 </div>
 
-                                <!-- Play/Pause Button -->
                                 <button type="button" id="hud-play-btn" onclick="toggleSongPlayback()" 
-                                        class="w-9 h-9 rounded-full bg-pink-600 hover:bg-pink-500 text-white flex items-center justify-center shrink-0 shadow-md press-tactile transition-all cursor-pointer"
+                                        class="w-8 h-8 rounded-full bg-pink-600 hover:bg-pink-500 text-white flex items-center justify-center shrink-0 shadow-md press-tactile transition-all cursor-pointer"
                                         title="Play/Pause 30s Audio Preview">
-                                    <i class="fas fa-play text-xs ps-0.5" id="hud-play-icon"></i>
+                                    <i class="fas fa-play text-[11px] ps-0.5" id="hud-play-icon"></i>
                                 </button>
                             </div>
 
-                            <!-- Audio Progress Bar -->
                             <div class="space-y-1">
-                                <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
                                     <div id="hud-song-progress" class="h-full bg-gradient-to-r from-pink-500 to-rose-400 w-0 transition-all duration-100"></div>
                                 </div>
                                 <div class="flex justify-between text-[10px] text-slate-400 font-mono">
@@ -336,104 +355,87 @@
                                 </div>
                             </div>
 
-                            <!-- Hidden HTML5 Audio Element -->
                             <audio id="hud-audio-player" preload="none"></audio>
                         </div>
 
-                        <!-- Transit Quick Advisory -->
-                        <div class="p-3 rounded-xl bg-slate-950/60 border border-slate-800/60 text-xs space-y-1">
-                            <div class="text-slate-400 font-mono text-[10px] flex items-center gap-1">
+                        <!-- Transit & Venue Guide -->
+                        <div class="p-3 rounded-2xl bg-slate-950/70 border border-slate-800/80 text-xs space-y-1">
+                            <div class="text-slate-400 font-bold text-[10px] flex items-center gap-1 uppercase">
                                 <i class="fas fa-train text-emerald-400"></i>
-                                <span>RAPID KL TRANSIT INTEL</span>
+                                <span>Transit & Venue Guide</span>
                             </div>
                             <p id="hud-transit-tip" class="text-slate-300 text-[11px] leading-relaxed">
                                 Direct connection via LRT Sri Petaling Line.
                             </p>
                         </div>
 
-                        <!-- Direct Action Buttons -->
-                        <div class="pt-2 flex flex-col sm:flex-row gap-2">
+                        <!-- Action Buttons -->
+                        <div class="pt-1 flex flex-col sm:flex-row gap-2">
                             <a id="hud-link-dossier" href="#" class="flex-1 px-4 py-2.5 rounded-xl text-xs font-black bg-pink-600 hover:bg-pink-500 text-white press-tactile text-center transition-all shadow-xs flex items-center justify-center gap-1.5">
                                 <span>View Event Details</span>
                                 <i class="fas fa-arrow-right text-[10px]"></i>
                             </a>
                             <a id="hud-link-ticket" href="#" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 press-tactile text-center transition-all flex items-center justify-center gap-1.5">
-                                <span>Tickets</span>
+                                <span>Official Tickets</span>
                                 <i class="fas fa-arrow-up-right-from-square text-[10px]"></i>
                             </a>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Bottom Temporal Range Filter Slider -->
-            <div class="relative z-10 mt-8 pt-6 border-t border-slate-800/80 space-y-3">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono">
-                    <span class="text-slate-400 flex items-center gap-1.5">
-                        <i class="fas fa-sliders text-pink-400"></i>
-                        <span>TIME HORIZON FILTER:</span>
-                        <span id="slider-label" class="text-white font-bold px-2 py-0.5 rounded bg-slate-900 border border-slate-800">All 2026/2027 Concert Season</span>
-                    </span>
-                    <span id="active-marker-count" class="text-pink-400 font-bold">
-                        <%= events.length %> Echoes Detected
-                    </span>
-                </div>
-                <input type="range" id="time-scrubber" min="0" max="4" step="1" value="4" 
-                       oninput="handleTimeScrubberChange(this.value)"
-                       class="w-full h-2.5 bg-slate-900 rounded-lg appearance-none cursor-pointer accent-pink-500 focus:outline-none border border-slate-800">
-                <div class="flex justify-between text-[11px] text-slate-400 font-mono pt-1">
-                    <span>Now / 48H</span>
-                    <span>This Weekend</span>
-                    <span>Next 30 Days</span>
-                    <span>Next 90 Days</span>
-                    <span class="text-pink-400 font-bold">Full Tour Season</span>
-                </div>
-            </div>
         </div>
     </div>
 
     <!-- ========================================================================= -->
-    <!-- VIEW 2: CALENDAR & TOUR SCHEDULE MATRIX                         -->
+    <!-- VIEW 2: CALENDAR & TOUR SCHEDULE MATRIX                                   -->
     <!-- ========================================================================= -->
     <div id="view-weekend" class="space-y-8 hidden">
         <% if (weekendClusters.length === 0) { %>
-            <div class="bg-white rounded-3xl p-10 text-center border border-slate-200">
+            <div class="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-xs">
                 <i class="fas fa-calendar-xmark text-4xl text-slate-300 mb-3"></i>
                 <h3 class="text-base font-bold text-slate-800">No Upcoming Weekend Clusters</h3>
-                <p class="text-xs text-slate-500 mt-1">Check individual tour announcements in the directory.</p>
+                <p class="text-xs text-slate-500 mt-1">Check individual tour listings in the events directory.</p>
             </div>
         <% } else { %>
             <% weekendClusters.forEach(function(cluster) { %>
                 <div class="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
-                    <div class="bg-gradient-to-r from-purple-950 via-slate-900 to-slate-900 text-white p-5 sm:p-6 flex items-center justify-between">
+                    <!-- Weekend Cohort Header -->
+                    <div class="bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 text-white p-5 sm:p-6 flex items-center justify-between">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-purple-500 text-white flex items-center justify-center font-bold text-base shadow-xs">
+                            <div class="w-10 h-10 rounded-2xl bg-purple-600 text-white flex items-center justify-center font-bold text-base shadow-xs">
                                 <i class="fas fa-calendar-week"></i>
                             </div>
                             <div>
                                 <h3 class="text-lg font-black text-white tracking-tight"><%= cluster.label %></h3>
-                                <p class="text-xs text-purple-300 font-medium">
-                                    <%= cluster.events.length %> Shows occurring in the same weekend
+                                <p class="text-xs text-purple-200 font-medium">
+                                    <%= cluster.events.length %> Shows scheduled on this weekend
                                 </p>
                             </div>
                         </div>
-                        <span class="px-3 py-1 rounded-full text-xs font-black bg-purple-500 text-white">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-purple-500/30 text-purple-200 border border-purple-400/40">
                             Weekend Cohort
                         </span>
                     </div>
 
-                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Events Cards Inside Weekend Cohort -->
+                    <div class="p-5 sm:p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                         <% cluster.events.forEach(function(event) { %>
                             <% const eventSlug = helpers.slugify(event.event_name) || event.id; %>
-                            <div class="bg-slate-50 rounded-2xl border border-slate-200 p-4 flex flex-col justify-between hover-lift transition-all">
+                            <div class="bg-slate-50 rounded-2xl border border-slate-200 p-4 flex flex-col justify-between hover:border-pink-300 hover:shadow-sm transition-all">
                                 <div>
-                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-pink-100 text-pink-700">
-                                        <%= event.cluster_area || 'KL Metro' %>
-                                    </span>
+                                    <div class="flex items-center justify-between gap-2">
+                                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-pink-100 text-pink-700">
+                                            <%= event.cluster_area || 'KL Metro' %>
+                                        </span>
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase">
+                                            <%= event.category_name || 'Concert' %>
+                                        </span>
+                                    </div>
                                     <h4 class="text-sm font-bold text-slate-900 mt-2 line-clamp-1"><%= event.event_name %></h4>
                                     <p class="text-xs text-slate-500 mt-0.5"><%= event.artist_name %> · <%= event.venue_display || event.venue_name %></p>
-                                    <div class="text-xs font-mono font-bold text-slate-700 mt-2">
-                                        <i class="fas fa-calendar-day text-pink-500 me-1"></i> <%= helpers.formatDate(event.event_date) %>
+                                    <div class="text-xs font-bold text-slate-700 mt-2 flex items-center gap-1">
+                                        <i class="fas fa-calendar-day text-pink-500"></i>
+                                        <span><%= helpers.formatDate(event.event_date) %></span>
                                     </div>
                                 </div>
                                 <div class="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between">
@@ -442,8 +444,9 @@
                                         <i class="fas fa-arrow-right text-[10px]"></i>
                                     </a>
                                     <% if (event.official_ticket_url) { %>
-                                        <a href="<%= event.official_ticket_url %>" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-pink-600">
-                                            Tickets <i class="fas fa-arrow-up-right-from-square text-[9px]"></i>
+                                        <a href="<%= event.official_ticket_url %>" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-pink-600 hover:underline flex items-center gap-1">
+                                            <span>Tickets</span>
+                                            <i class="fas fa-arrow-up-right-from-square text-[9px]"></i>
                                         </a>
                                     <% } %>
                                 </div>
@@ -454,23 +457,22 @@
             <% }); %>
         <% } %>
     </div>
+</div>
 
-    </div>
-
-<!-- Raw Injected Event Data for Sonar Engine -->
+<!-- Raw Injected Event Data for Radar Engine -->
 <script id="sonar-events-json" type="application/json">
     <%- JSON.stringify(mappedEventsData) %>
 </script>
 
 <!-- ========================================================================= -->
-<!-- 360° ACOUSTIC CONCERT SONAR ENGINE CLIENT SCRIPT                          -->
+<!-- 360° CONCERT RADAR ENGINE JAVASCRIPT                                      -->
 <!-- ========================================================================= -->
 <script>
     let rawEvents = [];
     let currentFilteredEvents = [];
     let selectedEventId = null;
-    let sweepAngle = 0; // In radians
-    let sweepSpeedMultiplier = 1; // 1 = 1x, 2 = 2x, 0 = freeze
+    let sweepAngle = 0;
+    let sweepSpeedMultiplier = 1;
     let audioPingEnabled = false;
     let audioCtx = null;
     let hoveredEvent = null;
@@ -483,19 +485,19 @@
                 currentFilteredEvents = rawEvents;
             }
         } catch (e) {
-            console.error('Failed to parse sonar events:', e);
+            console.error('Failed to parse radar events:', e);
         }
 
-        // Initialize Sonar Canvas Engine
+        // Initialize Canvas Engine
         initSonarCanvas();
 
-        // Lock onto first event by default
+        // Select first event by default
         if (rawEvents.length > 0) {
             selectEvent(rawEvents[0].id);
         }
     });
 
-    // Web Audio Synthesizer for Sonar Ping
+    // Web Audio Synthesizer for Radar Ping
     function playAcousticPing(freq = 880) {
         if (!audioPingEnabled) return;
         try {
@@ -507,16 +509,16 @@
 
             osc.type = 'sine';
             osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(freq * 0.5, audioCtx.currentTime + 0.18);
+            osc.frequency.exponentialRampToValueAtTime(freq * 0.5, audioCtx.currentTime + 0.16);
 
-            gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.22);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
 
             osc.connect(gain);
             gain.connect(audioCtx.destination);
 
             osc.start();
-            osc.stop(audioCtx.currentTime + 0.25);
+            osc.stop(audioCtx.currentTime + 0.22);
         } catch (err) {
             // Audio not allowed or error
         }
@@ -528,7 +530,7 @@
         const label = document.getElementById('audio-label');
         if (audioPingEnabled) {
             icon.className = 'fas fa-volume-high text-pink-400';
-            label.textContent = 'Audio Active';
+            label.textContent = 'Sound On';
             playAcousticPing(920);
         } else {
             icon.className = 'fas fa-volume-xmark text-slate-400';
@@ -542,15 +544,15 @@
         const b2 = document.getElementById('btn-speed-2');
         const b0 = document.getElementById('btn-speed-0');
         
-        [b1, b2, b0].forEach(b => b.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white cursor-pointer');
-        if (multiplier === 1) b1.className = 'px-2.5 py-1 rounded-lg bg-pink-600 text-white font-bold cursor-pointer';
-        else if (multiplier === 2) b2.className = 'px-2.5 py-1 rounded-lg bg-pink-600 text-white font-bold cursor-pointer';
-        else b0.className = 'px-2.5 py-1 rounded-lg bg-slate-700 text-white font-bold cursor-pointer';
+        [b1, b2, b0].forEach(b => {
+            if (b) b.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-white cursor-pointer';
+        });
+        if (multiplier === 1 && b1) b1.className = 'px-2.5 py-1 rounded-lg bg-pink-600 text-white font-bold cursor-pointer';
+        else if (multiplier === 2 && b2) b2.className = 'px-2.5 py-1 rounded-lg bg-pink-600 text-white font-bold cursor-pointer';
+        else if (multiplier === 0 && b0) b0.className = 'px-2.5 py-1 rounded-lg bg-slate-700 text-white font-bold cursor-pointer';
     }
 
-    // -------------------------------------------------------------------------
-    // Sonar Canvas Renderer
-    // -------------------------------------------------------------------------
+    // Canvas Engine Setup with Clean Reticle & Event Beacons
     function initSonarCanvas() {
         const canvas = document.getElementById('sonar-canvas');
         if (!canvas) return;
@@ -561,39 +563,66 @@
             const dpr = window.devicePixelRatio || 1;
             canvas.width = rect.width * dpr;
             canvas.height = rect.height * dpr;
-            ctx.scale(dpr, dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         }
         window.addEventListener('resize', resize);
         resize();
 
-        // Mouse move and click handling
-        canvas.addEventListener('mousemove', (e) => {
+        // Mouse & Touch Interactivity
+        function getCoordsFromEvent(e) {
             const rect = canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
-            const center = rect.width / 2;
-            const R = center - 24;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top,
+                width: rect.width,
+                height: rect.height
+            };
+        }
+
+        canvas.addEventListener('mousemove', (e) => {
+            const pos = getCoordsFromEvent(e);
+            const center = pos.width / 2;
+            const R = center - 20;
 
             hoveredEvent = null;
             currentFilteredEvents.forEach(ev => {
                 const pt = getEventPoint(ev, center, R);
-                const dx = mouseX - pt.x;
-                const dy = mouseY - pt.y;
-                if (Math.hypot(dx, dy) < 16) {
+                const dx = pos.x - pt.x;
+                const dy = pos.y - pt.y;
+                if (Math.hypot(dx, dy) < 18) {
                     hoveredEvent = ev;
                 }
             });
             canvas.style.cursor = hoveredEvent ? 'pointer' : 'crosshair';
         });
 
-        canvas.addEventListener('click', (e) => {
-            if (hoveredEvent) {
-                selectEvent(hoveredEvent.id);
+        function handlePointerSelect(e) {
+            const pos = getCoordsFromEvent(e);
+            const center = pos.width / 2;
+            const R = center - 20;
+
+            let clickedEv = null;
+            currentFilteredEvents.forEach(ev => {
+                const pt = getEventPoint(ev, center, R);
+                const dx = pos.x - pt.x;
+                const dy = pos.y - pt.y;
+                if (Math.hypot(dx, dy) < 22) {
+                    clickedEv = ev;
+                }
+            });
+
+            if (clickedEv) {
+                selectEvent(clickedEv.id);
                 playAcousticPing(1040);
             }
-        });
+        }
 
-        // Main Animation Loop
+        canvas.addEventListener('click', handlePointerSelect);
+        canvas.addEventListener('touchstart', handlePointerSelect, { passive: true });
+
+        // Animation Loop
         let lastTime = performance.now();
         function draw(time) {
             const dt = (time - lastTime) / 1000;
@@ -608,36 +637,18 @@
             const width = rect.width;
             const height = rect.height;
             const center = width / 2;
-            const R = center - 24;
+            const R = center - 20;
 
             ctx.clearRect(0, 0, width, height);
 
-            // 1. Draw Outer Bezel
+            // Outer Bezel
             ctx.beginPath();
             ctx.arc(center, center, R, 0, Math.PI * 2);
             ctx.strokeStyle = '#334155';
             ctx.lineWidth = 2;
             ctx.stroke();
 
-            // 2. Draw Degree Markings
-            for (let deg = 0; deg < 360; deg += 30) {
-                const rad = (deg * Math.PI) / 180;
-                const isMajor = deg % 90 === 0;
-                const tickLen = isMajor ? 10 : 5;
-                const x1 = center + (R - tickLen) * Math.cos(rad);
-                const y1 = center + (R - tickLen) * Math.sin(rad);
-                const x2 = center + R * Math.cos(rad);
-                const y2 = center + R * Math.sin(rad);
-
-                ctx.beginPath();
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(x2, y2);
-                ctx.strokeStyle = isMajor ? '#ec4899' : '#475569';
-                ctx.lineWidth = isMajor ? 2 : 1;
-                ctx.stroke();
-            }
-
-            // 3. Draw Concentric Range Rings (Temporal Scope)
+            // Concentric Range Rings
             const ringRatios = [0.25, 0.50, 0.75, 1.0];
             const ringLabels = ['< 7D', '< 30D', '< 90D', 'SEASON'];
             ringRatios.forEach((ratio, idx) => {
@@ -650,13 +661,13 @@
                 ctx.stroke();
                 ctx.setLineDash([]);
 
-                // Ring Label
+                // Label
                 ctx.fillStyle = '#64748b';
                 ctx.font = '10px ui-monospace, monospace';
                 ctx.fillText(ringLabels[idx], center + 4, center - r + 12);
             });
 
-            // 4. Draw Azimuth Crosshairs
+            // Crosshairs
             ctx.beginPath();
             ctx.moveTo(center - R, center);
             ctx.lineTo(center + R, center);
@@ -666,9 +677,9 @@
             ctx.lineWidth = 1;
             ctx.stroke();
 
-            // 5. Draw 360° Rotating Sweep Beam with Gradient Tail
+            // Rotating Sweep Beam with Gradient Tail
             const sweepGradient = ctx.createConicGradient(sweepAngle, center, center);
-            sweepGradient.addColorStop(0, 'rgba(236, 72, 153, 0.45)');
+            sweepGradient.addColorStop(0, 'rgba(236, 72, 153, 0.4)');
             sweepGradient.addColorStop(0.12, 'rgba(236, 72, 153, 0.08)');
             sweepGradient.addColorStop(0.25, 'rgba(236, 72, 153, 0.0)');
             sweepGradient.addColorStop(1, 'rgba(236, 72, 153, 0.0)');
@@ -678,24 +689,21 @@
             ctx.fillStyle = sweepGradient;
             ctx.fill();
 
-            // Sweep Leading Line
+            // Leading Sweep Line
             ctx.beginPath();
             ctx.moveTo(center, center);
             ctx.lineTo(center + R * Math.cos(sweepAngle), center + R * Math.sin(sweepAngle));
             ctx.strokeStyle = '#f472b6';
             ctx.lineWidth = 2;
-            ctx.shadowColor = '#ec4899';
-            ctx.shadowBlur = 8;
             ctx.stroke();
-            ctx.shadowBlur = 0; // Reset
 
-            // Center Ground Zero Beacon
+            // Center Origin Point
             ctx.beginPath();
             ctx.arc(center, center, 4, 0, Math.PI * 2);
             ctx.fillStyle = '#f43f5e';
             ctx.fill();
 
-            // 6. Draw Event Blip Echoes
+            // Render Event Blips
             currentFilteredEvents.forEach(ev => {
                 const pt = getEventPoint(ev, center, R);
                 const isSelected = ev.id === selectedEventId;
@@ -719,45 +727,41 @@
                     ctx.stroke();
                 }
 
-                // Selected Reticle Brackets [ + ]
+                // Selected Reticle Target Brackets
                 if (isSelected || isHovered) {
-                    const reticleSize = 16;
+                    const reticleSize = 14;
                     ctx.strokeStyle = isSelected ? '#38bdf8' : '#f472b6';
                     ctx.lineWidth = 1.8;
 
-                    // Corner brackets
                     ctx.beginPath();
-                    ctx.moveTo(pt.x - reticleSize, pt.y - 6);
+                    ctx.moveTo(pt.x - reticleSize, pt.y - 5);
                     ctx.lineTo(pt.x - reticleSize, pt.y - reticleSize);
-                    ctx.lineTo(pt.x - 6, pt.y - reticleSize);
+                    ctx.lineTo(pt.x - 5, pt.y - reticleSize);
 
-                    ctx.moveTo(pt.x + 6, pt.y - reticleSize);
+                    ctx.moveTo(pt.x + 5, pt.y - reticleSize);
                     ctx.lineTo(pt.x + reticleSize, pt.y - reticleSize);
-                    ctx.lineTo(pt.x + reticleSize, pt.y - 6);
+                    ctx.lineTo(pt.x + reticleSize, pt.y - 5);
 
-                    ctx.moveTo(pt.x + reticleSize, pt.y + 6);
+                    ctx.moveTo(pt.x + reticleSize, pt.y + 5);
                     ctx.lineTo(pt.x + reticleSize, pt.y + reticleSize);
-                    ctx.lineTo(pt.x + 6, pt.y + reticleSize);
+                    ctx.lineTo(pt.x + 5, pt.y + reticleSize);
 
-                    ctx.moveTo(pt.x - 6, pt.y + reticleSize);
+                    ctx.moveTo(pt.x - 5, pt.y + reticleSize);
                     ctx.lineTo(pt.x - reticleSize, pt.y + reticleSize);
-                    ctx.lineTo(pt.x - reticleSize, pt.y + 6);
+                    ctx.lineTo(pt.x - reticleSize, pt.y + 5);
                     ctx.stroke();
                 }
 
                 // Core Beacon Dot
                 ctx.beginPath();
-                ctx.arc(pt.x, pt.y, isSelected ? 6 : 4.5, 0, Math.PI * 2);
+                ctx.arc(pt.x, pt.y, isSelected ? 5.5 : 4, 0, Math.PI * 2);
                 ctx.fillStyle = primaryColor;
-                ctx.shadowColor = primaryColor;
-                ctx.shadowBlur = 10;
                 ctx.fill();
-                ctx.shadowBlur = 0;
 
                 // Artist Label Callout
                 ctx.fillStyle = isSelected ? '#ffffff' : '#cbd5e1';
                 ctx.font = isSelected ? 'bold 11px ui-sans-serif, sans-serif' : '10px ui-sans-serif, sans-serif';
-                ctx.fillText(ev.artist, pt.x + 10, pt.y + 3);
+                ctx.fillText(ev.artist, pt.x + 8, pt.y + 3);
             });
 
             requestAnimationFrame(draw);
@@ -766,29 +770,22 @@
         requestAnimationFrame(draw);
     }
 
-    // Mathematical coordinate projection: Days Away -> Radius, Category -> Quadrant Angle
+    // Map Event to Polar Radius and Quadrant Angle
     function getEventPoint(ev, center, R) {
-        // Distance mapping (closer = sooner!)
         const days = ev.daysAway;
         let normR = 0.85;
-        if (days <= 7) normR = 0.15 + (days / 7) * 0.15; // 0.15 to 0.30
-        else if (days <= 30) normR = 0.30 + ((days - 7) / 23) * 0.25; // 0.30 to 0.55
-        else if (days <= 90) normR = 0.55 + ((days - 30) / 60) * 0.25; // 0.55 to 0.80
-        else normR = 0.80 + Math.min(0.18, ((days - 90) / 180) * 0.18); // 0.80 to 0.98
+        if (days <= 7) normR = 0.15 + (days / 7) * 0.15;
+        else if (days <= 30) normR = 0.30 + ((days - 7) / 23) * 0.25;
+        else if (days <= 90) normR = 0.55 + ((days - 30) / 60) * 0.25;
+        else normR = 0.80 + Math.min(0.18, ((days - 90) / 180) * 0.18);
 
-        // Azimuth Angle by Quadrant
-        // NW: Boy Groups (180° to 270°)
-        // NE: Girl Groups (270° to 360°)
-        // SE: Soloists (0° to 90°)
-        // SW: Bands & Fests (90° to 180°)
-        let baseAngle = 225; // default NW
+        let baseAngle = 225; // default NW: Boy Groups
         const q = ev.fandom.quadrant;
         if (q === 'bg') baseAngle = 225;
         else if (q === 'gg') baseAngle = 315;
         else if (q === 'solo') baseAngle = 45;
         else if (q === 'band') baseAngle = 135;
 
-        // Spread events in same quadrant based on ID hash
         const angleSpread = ((ev.id * 37) % 50) - 25;
         const finalAngleRad = ((baseAngle + angleSpread) * Math.PI) / 180;
 
@@ -798,30 +795,43 @@
         return { x, y };
     }
 
-    // -------------------------------------------------------------------------
-    // Target Lock HUD Controller
-    // -------------------------------------------------------------------------
+    // Select and Highlight Event in Spotlight Card
     function selectEvent(eventId) {
         selectedEventId = eventId;
         const ev = rawEvents.find(e => e.id === eventId);
         if (!ev) return;
 
-        // Update HUD card elements
-        document.getElementById('hud-status').textContent = `TARGET LOCKED · #${String(ev.id).padStart(2, '0')}`;
-        document.getElementById('hud-dday').textContent = ev.daysAway === 0 ? 'D-DAY TODAY' : `D-${ev.daysAway} DAYS`;
-        document.getElementById('hud-poster').src = ev.poster;
-        document.getElementById('hud-poster').onerror = function() {
-            this.src = 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800';
-        };
-        document.getElementById('hud-artist').textContent = ev.artist;
-        document.getElementById('hud-title').textContent = ev.title;
-        document.getElementById('hud-venue').innerHTML = `<i class="fas fa-location-dot text-pink-400 me-1"></i> ${ev.venue} (${ev.area})`;
-        document.getElementById('hud-date').textContent = `${ev.date} · ${ev.time}`;
+        const statusEl = document.getElementById('hud-status');
+        const ddayEl = document.getElementById('hud-dday');
+        const posterEl = document.getElementById('hud-poster');
+        const artistEl = document.getElementById('hud-artist');
+        const titleEl = document.getElementById('hud-title');
+        const venueEl = document.getElementById('hud-venue');
+        const dateEl = document.getElementById('hud-date');
+        const swatchEl = document.getElementById('hud-lightstick-swatch');
+        const nameEl = document.getElementById('hud-lightstick-name');
+        const tipEl = document.getElementById('hud-transit-tip');
+        const linkDossier = document.getElementById('hud-link-dossier');
+        const linkTicket = document.getElementById('hud-link-ticket');
 
-        // Lightstick
-        document.getElementById('hud-lightstick-swatch').style.background = ev.fandom.primary;
-        document.getElementById('hud-lightstick-swatch').style.boxShadow = `0 0 10px ${ev.fandom.primary}`;
-        document.getElementById('hud-lightstick-name').textContent = ev.fandom.name;
+        if (statusEl) statusEl.textContent = `EVENT SELECTED · #${String(ev.id).padStart(2, '0')}`;
+        if (ddayEl) ddayEl.textContent = ev.daysAway === 0 ? 'D-DAY TODAY' : `D-${ev.daysAway} DAYS`;
+        if (posterEl) {
+            posterEl.src = ev.poster;
+            posterEl.onerror = function() {
+                this.src = 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800';
+            };
+        }
+        if (artistEl) artistEl.textContent = ev.artist;
+        if (titleEl) titleEl.textContent = ev.title;
+        if (venueEl) venueEl.innerHTML = `<i class="fas fa-location-dot text-pink-400 me-1"></i> ${ev.venue} (${ev.area})`;
+        if (dateEl) dateEl.textContent = `${ev.date} · ${ev.time}`;
+
+        if (swatchEl) {
+            swatchEl.style.background = ev.fandom.primary;
+            swatchEl.style.boxShadow = `0 0 10px ${ev.fandom.primary}`;
+        }
+        if (nameEl) nameEl.textContent = ev.fandom.name;
 
         // Transit advice
         const precinctMeta = {
@@ -838,34 +848,30 @@
                 break;
             }
         }
-        document.getElementById('hud-transit-tip').textContent = tip;
+        if (tipEl) tipEl.textContent = tip;
 
-        // Action links
-        document.getElementById('hud-link-dossier').href = `/events/${ev.slug}`;
-        `;
-        }
-        const ticketBtn = document.getElementById('hud-link-ticket');
-        if (ev.ticketUrl) {
-            ticketBtn.href = ev.ticketUrl;
-            ticketBtn.style.display = 'inline-flex';
-        } else {
-            ticketBtn.style.display = 'none';
+        if (linkDossier) linkDossier.href = `/events/${ev.slug}`;
+
+        if (linkTicket) {
+            if (ev.ticketUrl) {
+                linkTicket.href = ev.ticketUrl;
+                linkTicket.style.display = 'inline-flex';
+            } else {
+                linkTicket.style.display = 'none';
+            }
         }
 
-        // Load and synchronize Tour Anthem preview
+        // Load Anthem
         loadAnthemForEvent(ev);
     }
 
-    // -------------------------------------------------------------------------
-    // Tour Anthem Audio Preview Engine
-    // -------------------------------------------------------------------------
+    // Anthem Audio Player
     let isAnthemPlaying = false;
 
     async function loadAnthemForEvent(ev) {
         const titleEl = document.getElementById('hud-song-title');
         const albumEl = document.getElementById('hud-song-album');
         const artEl = document.getElementById('hud-song-art');
-        const playBtn = document.getElementById('hud-play-btn');
         const playIcon = document.getElementById('hud-play-icon');
         const progressEl = document.getElementById('hud-song-progress');
         const timeEl = document.getElementById('hud-song-current-time');
@@ -874,18 +880,16 @@
 
         if (!titleEl || !audio) return;
 
-        // Reset any playing song
         audio.pause();
         audio.currentTime = 0;
         isAnthemPlaying = false;
-        if (playIcon) playIcon.className = 'fas fa-play text-xs ps-0.5';
-        if (artEl) artEl.classList.remove('animate-spin');
+        if (playIcon) playIcon.className = 'fas fa-play text-[11px] ps-0.5';
         if (bars) bars.classList.add('opacity-40');
         if (progressEl) progressEl.style.width = '0%';
         if (timeEl) timeEl.textContent = '0:00';
 
-        titleEl.textContent = 'Scanning Tour Anthem...';
-        albumEl.textContent = 'Apple Music Preview';
+        titleEl.textContent = 'Loading Tour Anthem...';
+        albumEl.textContent = 'Preview Audio';
 
         try {
             const res = await fetch(`/api/music/preview?artist=${encodeURIComponent(ev.artist)}&title=${encodeURIComponent(ev.title)}`);
@@ -909,15 +913,13 @@
 
                 audio.onended = () => {
                     isAnthemPlaying = false;
-                    if (playIcon) playIcon.className = 'fas fa-play text-xs ps-0.5';
-                    if (artEl) artEl.classList.remove('animate-spin');
+                    if (playIcon) playIcon.className = 'fas fa-play text-[11px] ps-0.5';
                     if (bars) bars.classList.add('opacity-40');
                     if (progressEl) progressEl.style.width = '0%';
                     if (timeEl) timeEl.textContent = '0:00';
                 };
             }
         } catch (err) {
-            console.warn('Failed to load anthem:', err);
             titleEl.textContent = ev.artist + ' Live Tour Hit';
             albumEl.textContent = 'Tour Preview';
         }
@@ -926,7 +928,6 @@
     function toggleSongPlayback() {
         const audio = document.getElementById('hud-audio-player');
         const playIcon = document.getElementById('hud-play-icon');
-        const artEl = document.getElementById('hud-song-art');
         const bars = document.getElementById('hud-audio-bars');
 
         if (!audio || !audio.src) return;
@@ -934,56 +935,53 @@
         if (isAnthemPlaying) {
             audio.pause();
             isAnthemPlaying = false;
-            if (playIcon) playIcon.className = 'fas fa-play text-xs ps-0.5';
-            if (artEl) artEl.classList.remove('animate-spin');
+            if (playIcon) playIcon.className = 'fas fa-play text-[11px] ps-0.5';
             if (bars) bars.classList.add('opacity-40');
         } else {
             audio.play().then(() => {
                 isAnthemPlaying = true;
-                if (playIcon) playIcon.className = 'fas fa-pause text-xs';
-                if (artEl) artEl.classList.add('animate-spin');
+                if (playIcon) playIcon.className = 'fas fa-pause text-[11px]';
                 if (bars) bars.classList.remove('opacity-40');
-            }).catch(e => console.warn('Audio playback error:', e));
+            }).catch(e => console.warn('Playback error:', e));
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Temporal Continuum Filter Scrubber
-    // -------------------------------------------------------------------------
-    function handleTimeScrubberChange(value) {
-        const val = Number(value);
-        const sliderLabel = document.getElementById('slider-label');
-        const countBadge = document.getElementById('active-marker-count');
-
+    // Time Filter Buttons
+    function setTimeFilter(val) {
         let filtered = rawEvents;
-        if (val === 0) {
-            sliderLabel.textContent = "Now / Next 48 Hours Scope";
-            filtered = rawEvents.filter(e => e.daysAway <= 2);
-        } else if (val === 1) {
-            sliderLabel.textContent = "This Weekend Scope (< 7 Days)";
+        if (val === 1) {
             filtered = rawEvents.filter(e => e.daysAway <= 7);
         } else if (val === 2) {
-            sliderLabel.textContent = "Next 30 Days Scope";
             filtered = rawEvents.filter(e => e.daysAway <= 30);
         } else if (val === 3) {
-            sliderLabel.textContent = "Next 90 Days Scope";
             filtered = rawEvents.filter(e => e.daysAway <= 90);
         } else {
-            sliderLabel.textContent = "All 2026/2027 Concert Season";
             filtered = rawEvents;
         }
 
         currentFilteredEvents = filtered;
-        countBadge.textContent = `${filtered.length} Echoes Detected`;
+
+        const countBadge = document.getElementById('filtered-count-badge');
+        if (countBadge) countBadge.textContent = filtered.length;
+
+        // Update button states
+        [1, 2, 3, 4].forEach(i => {
+            const btn = document.getElementById(`filter-btn-${i}`);
+            if (btn) {
+                if (i === val) {
+                    btn.className = 'time-filter-btn px-3 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white shadow-xs transition-all cursor-pointer';
+                } else {
+                    btn.className = 'time-filter-btn px-3 py-1.5 rounded-full text-xs font-bold bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all cursor-pointer';
+                }
+            }
+        });
 
         if (filtered.length > 0 && !filtered.some(e => e.id === selectedEventId)) {
             selectEvent(filtered[0].id);
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Radar Mode Navigation Switcher
-    // -------------------------------------------------------------------------
+    // Switch between 360° Radar and Calendar Matrix
     function switchRadarMode(mode) {
         const vSonar = document.getElementById('view-sonar');
         const vWeekend = document.getElementById('view-weekend');
