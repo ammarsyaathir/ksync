@@ -1,54 +1,128 @@
 <%- include('partials/header', { title: 'K-Sync Malaysia | 4D K-Pop Event Intelligence & Community' }) %>
 
-<!-- Electric Stage Hero Section (Impeccable: Bold display voice, no eyebrows/kickers) -->
-<section class="relative overflow-hidden pt-12 pb-16 sm:pt-16 sm:pb-24 border-b border-slate-200/80 bg-gradient-to-b from-slate-100/70 via-pink-50/20 to-slate-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-        <!-- Live Showtime Ticker Bar (Next Upcoming Headline Concert) -->
-        <% if (upcoming_events && upcoming_events.length > 0) { %>
-            <% const headliner = upcoming_events[0]; %>
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-900 border border-slate-200/90 shadow-xs mb-8 press-tactile">
-                <span class="w-2 h-2 rounded-full bg-pink-500 animate-ping"></span>
-                <span class="text-pink-600 font-black uppercase tracking-wider">NEXT SHOWTIME:</span>
-                <a href="<%= helpers.getEventUrl(headliner) %>" class="hover:text-pink-600 font-semibold truncate max-w-xs sm:max-w-md">
-                    <%= headliner.artist_name || 'K-Pop' %> — <%= headliner.event_name %> (<%= helpers.formatDate(headliner.event_date) %>)
-                </a>
-                <i class="fas fa-chevron-right text-[10px] text-slate-400"></i>
+<<!-- GoLive-Inspired Cinematic Hero Carousel Section -->
+<section class="pt-6 pb-12 sm:pb-16 bg-slate-950 text-white relative overflow-hidden">
+    <!-- Ambient festival backdrop glow -->
+    <div class="absolute -top-40 -left-40 w-96 h-96 bg-pink-600/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute top-1/2 -right-40 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <!-- GoLive Panoramic Hero Carousel -->
+        <% const heroEvents = (upcoming_events && upcoming_events.length > 0) ? upcoming_events.slice(0, 4) : []; %>
+        <% if (heroEvents.length > 0) { %>
+            <div id="golive-carousel" class="relative w-full rounded-3xl overflow-hidden shadow-2xl bg-slate-900 border border-white/10 aspect-[16/9] sm:aspect-[21/9] min-h-[380px] sm:min-h-[460px] max-h-[560px]">
+                <% heroEvents.forEach(function(event, idx) { %>
+                    <% const isFirst = idx === 0; %>
+                    <% const nextEvt = heroEvents[(idx + 1) % heroEvents.length]; %>
+                    <div class="carousel-slide absolute inset-0 transition-opacity duration-700 ease-out <%= isFirst ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none' %>" data-index="<%= idx %>">
+                        <!-- Panoramic Stage Image -->
+                        <img src="<%= event.poster_image %>" alt="<%= event.event_name %>" 
+                             class="w-full h-full object-cover object-center"
+                             onerror="this.src='https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1600&auto=format&fit=crop'">
+                        
+                        <!-- GoLive Vignette Overlays (Cinematic Dark Gradients) -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-slate-950/20 sm:bg-gradient-to-r sm:from-slate-950/95 sm:via-slate-950/60 sm:to-transparent"></div>
+
+                        <!-- Left Overlay Content (GoLive Style: Badges, Big Typography, Date alert, Link) -->
+                        <div class="absolute inset-y-0 left-0 p-6 sm:p-10 lg:p-14 flex flex-col justify-end sm:justify-center max-w-2xl z-20">
+                            <!-- Badges (Green outline pill + trending) -->
+                            <div class="flex flex-wrap items-center gap-2 mb-3">
+                                <span class="px-3 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider border border-emerald-400 text-emerald-300 bg-emerald-950/50 backdrop-blur-md">
+                                    <%= event.category_name || 'CONCERT' %>
+                                </span>
+                                <span class="text-xs font-bold text-rose-400 flex items-center gap-1">
+                                    <i class="fas fa-arrow-trend-up text-[10px]"></i> TRENDING
+                                </span>
+                                <span class="text-xs font-bold text-amber-300 flex items-center gap-1">
+                                    <i class="fas fa-circle text-[7px] text-emerald-400 animate-pulse"></i> ON SALE
+                                </span>
+                            </div>
+
+                            <!-- Big Artist / Tour Headline -->
+                            <h2 class="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight uppercase leading-none font-sans drop-shadow-lg">
+                                <%= event.artist_name || 'K-POP TOUR' %>
+                            </h2>
+                            <p class="text-sm sm:text-base text-slate-200 font-bold mt-2 truncate drop-shadow">
+                                <%= event.event_name %>
+                            </p>
+
+                            <!-- Date & Venue Alert -->
+                            <p class="text-xs sm:text-sm text-slate-300 font-medium mt-3 flex items-center gap-2">
+                                <span><i class="far fa-calendar-days text-pink-400 me-1"></i> <%= helpers.formatDate(event.event_date) %></span>
+                                <span>&bull;</span>
+                                <span class="truncate"><i class="fas fa-location-dot text-rose-400 me-1"></i> <%= event.venue_name %>, <%= event.city %></span>
+                            </p>
+
+                            <!-- Cyan View More Info Link -->
+                            <div class="mt-5">
+                                <a href="<%= helpers.getEventUrl(event) %>" class="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 font-black text-xs sm:text-sm uppercase tracking-wider press-tactile transition-colors group">
+                                    <span>VIEW MORE INFO</span>
+                                    <i class="fas fa-chevron-right text-xs group-hover:translate-x-1 transition-transform"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Right Overlay Content (GoLive Style: Up Next in Malaysia) -->
+                        <div class="hidden lg:flex absolute bottom-12 right-12 flex-col items-end text-right z-20 pointer-events-none">
+                            <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">UP NEXT IN MALAYSIA</span>
+                            <span class="text-xl font-black text-white/90 tracking-tight mt-1"><%= nextEvt.artist_name %></span>
+                            <span class="text-xs text-slate-400"><%= helpers.formatDate(nextEvt.event_date) %></span>
+                        </div>
+                    </div>
+                <% }); %>
+
+                <!-- Prev & Next Circular Glass Buttons (GoLive Style) -->
+                <% if (heroEvents.length > 1) { %>
+                    <button type="button" onclick="moveCarousel(-1)" 
+                            class="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-slate-950/60 hover:bg-slate-900 border border-white/20 text-white flex items-center justify-center backdrop-blur-md transition-all shadow-lg z-30 cursor-pointer press-tactile"
+                            aria-label="Previous Slide">
+                        <i class="fas fa-chevron-left text-xs"></i>
+                    </button>
+                    <button type="button" onclick="moveCarousel(1)" 
+                            class="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-slate-950/60 hover:bg-slate-900 border border-white/20 text-white flex items-center justify-center backdrop-blur-md transition-all shadow-lg z-30 cursor-pointer press-tactile"
+                            aria-label="Next Slide">
+                        <i class="fas fa-chevron-right text-xs"></i>
+                    </button>
+
+                    <!-- Bottom Horizontal Progress Slider Bar (GoLive Style) -->
+                    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-30">
+                        <% heroEvents.forEach(function(_, idx) { %>
+                            <button type="button" onclick="jumpCarousel(<%= idx %>)" 
+                                    class="carousel-indicator h-1 rounded-full transition-all duration-300 <%= idx === 0 ? 'w-8 bg-cyan-400' : 'w-3 bg-white/30 hover:bg-white/60' %> cursor-pointer" 
+                                    aria-label="Go to slide <%= idx + 1 %>"></button>
+                        <% }); %>
+                    </div>
+                <% } %>
             </div>
         <% } %>
 
-        <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black tracking-[-0.035em] text-slate-900 mb-6 leading-[1.08] font-sans">
-            Malaysia’s Live <br class="hidden sm:inline">
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-purple-900 to-pink-600">K-Pop Stage</span>
-        </h1>
-        <p class="max-w-2xl mx-auto text-base sm:text-lg text-slate-600 mb-10 leading-relaxed font-medium">
-            Centralized tour dates, verified ticketing provider links, autonomous multimodal verification, and 4D fan transit radar across Malaysia.
-        </p>
-
-        <!-- Floating Intelligent Search Command -->
-        <form action="/events" method="GET" class="max-w-3xl mx-auto">
-            <div class="bg-white p-2.5 sm:p-3 rounded-3xl flex flex-col sm:flex-row items-center gap-2.5 shadow-xl border border-slate-200/90">
-                <div class="relative w-full flex-grow">
-                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                    <input type="text" name="search" placeholder="Search by artist, tour, venue (Axiata, Zepp), or city..." 
-                           class="w-full bg-slate-50 text-slate-900 placeholder-slate-400 pl-11 pr-4 py-3.5 rounded-2xl border border-slate-200/80 focus:outline-none focus:ring-2 focus:ring-pink-500 text-base sm:text-sm font-medium">
+        <!-- Capsule Search Command Bar (GoLive Style) -->
+        <div class="mt-8 max-w-3xl mx-auto">
+            <form action="/events" method="GET">
+                <div class="bg-slate-900/90 backdrop-blur-xl p-2 rounded-full flex flex-col sm:flex-row items-center gap-2 shadow-2xl border border-white/15">
+                    <div class="relative w-full flex-grow">
+                        <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" name="search" placeholder="Search by artist, tour, venue (Axiata, Zepp KL), or city..." 
+                               class="w-full bg-transparent text-white placeholder-slate-400 pl-12 pr-4 py-3 rounded-full focus:outline-none text-sm font-medium">
+                    </div>
+                    <button type="submit" class="w-full sm:w-auto px-7 py-3 rounded-full bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black text-xs uppercase tracking-wider shadow-md transition-all press-tactile flex items-center justify-center cursor-pointer shrink-0">
+                        <span>Search</span>
+                        <i class="fas fa-arrow-right ms-2 text-[10px]"></i>
+                    </button>
                 </div>
-                <button type="submit" class="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-md transition-all press-tactile flex items-center justify-center cursor-pointer shrink-0">
-                    <span>Search Events</span>
-                    <i class="fas fa-arrow-right ms-2 text-xs text-pink-400"></i>
-                </button>
-            </div>
-        </form>
+            </form>
 
-        <!-- Quick Filter Tags -->
-        <div class="mt-6 flex flex-wrap justify-center items-center gap-2 text-xs text-slate-600 font-medium">
-            <span class="text-slate-400 font-bold me-1 text-[11px] uppercase tracking-wider">Trending:</span>
-            <a href="/events?search=BOYNEXTDOOR" class="px-3 py-1 rounded-full bg-white border border-slate-200 hover:border-slate-300 text-slate-700 shadow-xs press-tactile cursor-pointer">#BOYNEXTDOOR</a>
-            <a href="/events?search=TXT" class="px-3 py-1 rounded-full bg-white border border-slate-200 hover:border-slate-300 text-slate-700 shadow-xs press-tactile cursor-pointer">#TOMORROW_X_TOGETHER</a>
-            <a href="/events?search=Axiata" class="px-3 py-1 rounded-full bg-white border border-slate-200 hover:border-slate-300 text-slate-700 shadow-xs press-tactile cursor-pointer">#AxiataArena</a>
-            <a href="/events?search=Zepp" class="px-3 py-1 rounded-full bg-white border border-slate-200 hover:border-slate-300 text-slate-700 shadow-xs press-tactile cursor-pointer">#ZeppKL</a>
-            <a href="/events/radar" class="px-3 py-1 rounded-full bg-pink-50 border border-pink-200 text-pink-700 font-bold shadow-xs press-tactile cursor-pointer">
-                <i class="fas fa-radar me-1"></i> 4D Event Radar
-            </a>
+            <!-- Quick Filter Capsule Tags -->
+            <div class="mt-4 flex flex-wrap justify-center items-center gap-2 text-xs text-slate-400 font-medium">
+                <span class="text-slate-500 font-bold text-[11px] uppercase tracking-wider me-1">Trending:</span>
+                <a href="/events?search=SEVENTEEN" class="px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer">#SEVENTEEN</a>
+                <a href="/events?search=BABYMONSTER" class="px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer">#BABYMONSTER</a>
+                <a href="/events?search=Axiata" class="px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer">#AxiataArena</a>
+                <a href="/events?search=Zepp" class="px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer">#ZeppKL</a>
+                <a href="/events/radar" class="px-3 py-1 rounded-full bg-pink-500/15 border border-pink-500/30 text-pink-300 font-bold hover:bg-pink-500/25 transition-colors cursor-pointer">
+                    <i class="fas fa-radar me-1 text-pink-400"></i> 4D Event Radar
+                </a>
+            </div>
         </div>
     </div>
 </section>
@@ -84,23 +158,21 @@
     </div>
 </section>
 
-<!-- Upcoming Verified Events Section -->
+<!-- GoLive Style ALL EVENTS Section -->
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+    <div class="flex items-center justify-between mb-8 pb-3 border-b border-slate-200">
         <div>
-            <h2 class="text-2xl sm:text-4xl font-black text-slate-900 tracking-[-0.03em] flex items-center gap-2.5">
-                <span>Upcoming K-Pop Stage Shows</span>
-            </h2>
-            <p class="text-slate-600 text-sm mt-1.5 font-medium">Verified arena tours, fan meetings, and community gatherings in Malaysia</p>
+            <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight uppercase">ALL EVENTS</h2>
+            <p class="text-slate-500 text-xs sm:text-sm mt-0.5 font-medium">Verified Malaysian K-Pop concerts, fan meetings, and arena tours</p>
         </div>
-        <a href="/events" class="text-xs font-bold text-pink-600 hover:text-pink-700 flex items-center gap-1.5 press-tactile cursor-pointer group">
-            <span>Explore All <%= upcoming_events ? upcoming_events.length : 0 %> Listings</span>
-            <i class="fas fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+        <a href="/events" class="text-xs font-black text-cyan-600 hover:text-cyan-700 uppercase tracking-wider flex items-center gap-1 group">
+            <span>View All</span>
+            <i class="fas fa-chevron-right text-[10px] group-hover:translate-x-0.5 transition-transform"></i>
         </a>
     </div>
 
-    <!-- Event Cards Grid (Impeccable: Ticket-stub style, high visual hierarchy) -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <!-- 3-Column Minimalist Widescreen Grid (GoLive Image 3) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
         <% if (!upcoming_events || upcoming_events.length === 0) { %>
             <div class="col-span-full text-center py-16 bg-white rounded-3xl border border-slate-200">
                 <i class="fas fa-calendar-xmark text-4xl text-slate-300 mb-3"></i>
@@ -113,85 +185,48 @@
             <% 
                 const calcStatus = helpers.getCalculatedEventStatus(event);
                 const isSaved = (savedEventIds || []).includes(event.id);
-                const eventSlug = helpers.slugify(event.event_name) || event.id;
             %>
-            <article class="bg-white rounded-3xl border border-slate-200/90 overflow-hidden flex flex-col group hover-lift transition-all shadow-xs">
-                <!-- Poster Banner with Overlaid Badges -->
-                <div class="relative h-56 overflow-hidden bg-slate-900">
+            <article class="flex flex-col group">
+                <!-- 16:9 Widescreen Image Thumbnail (GoLive Image 3) -->
+                <div class="relative aspect-[16/9] rounded-2xl overflow-hidden bg-slate-950 shadow-md group">
                     <img src="<%= event.poster_image %>" alt="<%= event.event_name %>" 
                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                          onerror="this.src='https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop'">
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
-                    
-                    <!-- Top Category & Verification Badges -->
-                    <div class="absolute top-3.5 left-3.5 flex flex-wrap gap-1.5 z-10">
-                        <span class="px-2.5 py-1 rounded-xl text-[10px] font-black bg-slate-900/90 text-white backdrop-blur-md border border-white/10 uppercase tracking-wider">
-                            <%= event.category_name || 'Concert' %>
-                        </span>
-                        <%- helpers.getStatusBadge(calcStatus) %>
-                    </div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none"></div>
 
-                    <!-- Heart Wishlist Toggle Button (Emil Kowalski Tactile Button) -->
-                    <div class="absolute top-3.5 right-3.5 z-10">
-                        <button type="button" onclick="toggleSaveEvent(<%= event.id %>, this)" 
-                                title="Save to Wishlist"
-                                class="w-9 h-9 rounded-2xl <%= isSaved ? 'bg-pink-600 text-white' : 'bg-slate-950/80 text-white hover:text-pink-400' %> backdrop-blur-md flex items-center justify-center text-xs shadow-md press-tactile cursor-pointer border border-white/10">
-                            <i class="<%= isSaved ? 'fas' : 'far' %> fa-heart"></i>
-                        </button>
-                    </div>
-
-                    <!-- Date Badge Overlaid on Poster Base -->
-                    <div class="absolute bottom-3.5 left-3.5 bg-slate-950/90 backdrop-blur-md rounded-2xl px-3 py-1.5 border border-white/15 text-center shadow-lg">
-                        <span class="block text-[10px] font-black text-pink-400 uppercase tracking-wider">
-                            <%= new Date(event.event_date).toLocaleDateString('en-MY', { month: 'short' }) %>
-                        </span>
-                        <span class="block text-lg font-black text-white leading-none font-mono">
-                            <%= new Date(event.event_date).getDate() %>
+                    <!-- Artist / Tour Logo Overlay at Bottom Left (GoLive Style) -->
+                    <div class="absolute bottom-3 left-3.5 right-12 z-10">
+                        <span class="block text-white font-black text-sm sm:text-base tracking-tight truncate drop-shadow">
+                            <%= event.artist_name || event.event_name %>
                         </span>
                     </div>
 
-                    <!-- Time & Location Strip -->
-                    <div class="absolute bottom-3.5 right-3.5 text-right text-xs text-white font-medium">
-                        <% if (event.cluster_area) { %>
-                            <span class="px-2 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-md text-[10px] text-slate-300 font-bold border border-white/10">
-                                <i class="fas fa-location-dot text-pink-400 me-1"></i> <%= event.cluster_area %>
-                            </span>
-                        <% } %>
-                    </div>
+                    <!-- Heart Wishlist Toggle Button -->
+                    <button type="button" onclick="toggleSaveEvent(<%= event.id %>, this)" 
+                            title="Save to Wishlist"
+                            class="absolute top-3 right-3 w-8 h-8 rounded-full <%= isSaved ? 'bg-pink-600 text-white' : 'bg-slate-950/70 text-white hover:text-pink-400' %> backdrop-blur-md flex items-center justify-center text-xs shadow-md press-tactile cursor-pointer border border-white/10 z-20 transition-colors">
+                        <i class="<%= isSaved ? 'fas' : 'far' %> fa-heart"></i>
+                    </button>
                 </div>
 
-                <!-- Card Content -->
-                <div class="p-5 sm:p-6 flex-grow flex flex-col justify-between space-y-4">
-                    <div>
-                        <div class="text-xs font-bold text-pink-600 mb-1 flex items-center gap-1.5">
-                            <i class="fas fa-microphone-lines text-purple-500"></i>
-                            <span><%= event.artist_name || 'Multiple Artists' %></span>
-                        </div>
-                        <h3 class="text-base sm:text-lg font-black text-slate-900 group-hover:text-pink-600 transition-colors line-clamp-2 leading-snug">
-                            <a href="<%= helpers.getEventUrl(event) %>" class="cursor-pointer">
-                                <%= event.event_name %>
-                            </a>
-                        </h3>
-                        <p class="text-xs text-slate-500 mt-2 flex items-center gap-1.5 font-medium">
-                            <i class="fas fa-building text-slate-400"></i>
-                            <span class="truncate"><%= event.venue_name %>, <%= event.city %></span>
-                        </p>
-                    </div>
-
-                    <!-- Bottom Action Controls -->
-                    <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
-                        <div class="text-[11px] font-bold text-emerald-700 flex items-center gap-1">
-                            <i class="fas fa-circle-check text-emerald-600"></i>
-                            <span>Verified Channel</span>
-                        </div>
-
-                        <div class="flex items-center gap-2">
-                            <a href="<%= helpers.getEventUrl(event) %>" 
-                               class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all press-tactile shadow-xs flex items-center gap-1.5">
-                                <span>Details</span>
-                                <i class="fas fa-arrow-right text-[10px] text-pink-400"></i>
-                            </a>
-                        </div>
+                <!-- Metadata Below Image (GoLive Style: Venue, Date, Outlined Pill) -->
+                <div class="pt-3">
+                    <a href="<%= helpers.getEventUrl(event) %>" class="block font-black text-slate-900 text-base hover:text-pink-600 transition-colors truncate">
+                        <%= event.venue_name %>, <%= event.city %>
+                    </a>
+                    <p class="text-xs text-slate-500 font-semibold mt-1">
+                        <%= helpers.formatDate(event.event_date) %>
+                        <% if (event.start_time) { %>
+                            &bull; <%= helpers.formatTime(event.start_time) %>
+                        <% } %>
+                    </p>
+                    <div class="mt-2.5 flex items-center gap-2">
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border border-emerald-500 text-emerald-600 bg-emerald-50">
+                            <%= event.category_name || 'CONCERT' %>
+                        </span>
+                        <span class="text-[11px] font-semibold text-slate-400 truncate">
+                            <%= event.event_name %>
+                        </span>
                     </div>
                 </div>
             </article>
@@ -276,7 +311,7 @@
     </div>
 </section>
 
-<!-- Wishlist Save Ajax Handler -->
+<!-- Wishlist Save Ajax Handler & GoLive Carousel Controller -->
 <script>
     async function toggleSaveEvent(eventId, btn) {
         try {
@@ -293,16 +328,75 @@
                 const icon = btn.querySelector('i');
                 if (data.saved) {
                     btn.classList.add('bg-pink-600', 'text-white');
-                    btn.classList.remove('bg-slate-950/80', 'text-white');
+                    btn.classList.remove('bg-slate-950/70', 'text-white');
                     icon.className = 'fas fa-heart text-xs';
                 } else {
                     btn.classList.remove('bg-pink-600', 'text-white');
-                    btn.classList.add('bg-slate-950/80', 'text-white');
+                    btn.classList.add('bg-slate-950/70', 'text-white');
                     icon.className = 'far fa-heart text-xs';
                 }
             }
         } catch (e) {
             console.error('Error toggling save:', e);
+        }
+    }
+
+    // GoLive Hero Carousel Controller
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.carousel-slide');
+    const indicators = document.querySelectorAll('.carousel-indicator');
+    let autoSlideInterval = null;
+
+    function showSlide(index) {
+        if (!slides.length) return;
+        if (index >= slides.length) currentSlide = 0;
+        else if (index < 0) currentSlide = slides.length - 1;
+        else currentSlide = index;
+
+        slides.forEach((s, idx) => {
+            if (idx === currentSlide) {
+                s.classList.remove('opacity-0', 'z-0', 'pointer-events-none');
+                s.classList.add('opacity-100', 'z-10');
+            } else {
+                s.classList.remove('opacity-100', 'z-10');
+                s.classList.add('opacity-0', 'z-0', 'pointer-events-none');
+            }
+        });
+
+        indicators.forEach((ind, idx) => {
+            if (idx === currentSlide) {
+                ind.className = 'carousel-indicator h-1 rounded-full transition-all duration-300 w-8 bg-cyan-400 cursor-pointer';
+            } else {
+                ind.className = 'carousel-indicator h-1 rounded-full transition-all duration-300 w-3 bg-white/30 hover:bg-white/60 cursor-pointer';
+            }
+        });
+    }
+
+    function moveCarousel(dir) {
+        showSlide(currentSlide + dir);
+        resetAutoSlide();
+    }
+
+    function jumpCarousel(idx) {
+        showSlide(idx);
+        resetAutoSlide();
+    }
+
+    function resetAutoSlide() {
+        if (autoSlideInterval) clearInterval(autoSlideInterval);
+        autoSlideInterval = setInterval(() => {
+            showSlide(currentSlide + 1);
+        }, 5500);
+    }
+
+    if (slides.length > 1) {
+        resetAutoSlide();
+        const carousel = document.getElementById('golive-carousel');
+        if (carousel) {
+            carousel.addEventListener('mouseenter', () => {
+                if (autoSlideInterval) clearInterval(autoSlideInterval);
+            });
+            carousel.addEventListener('mouseleave', resetAutoSlide);
         }
     }
 </script>
