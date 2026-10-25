@@ -689,11 +689,59 @@ router.get('/admin/users', async (req, res) => {
 // POST /admin/users/delete
 router.post('/admin/users/delete', async (req, res) => {
   const { id } = req.body;
+  const adminId = req.session && req.session.user ? req.session.user.id : null;
   try {
+    const target = await db.getOne("SELECT username FROM users WHERE id = ?", [id]);
     await db.execute("DELETE FROM users WHERE id = ?", [id]);
-    req.session.flash = { success: 'User deleted.' };
+    await logActivity(adminId, 'DELETE_USER', 'users', id, `Deleted user account #${id} (@${target ? target.username : 'unknown'})`, req.ip);
+    req.session.flash = { success: 'User account successfully deleted.' };
     res.redirect('/admin/users');
   } catch (err) {
+    req.session.flash = { error: 'Failed to delete user account.' };
+    res.redirect('/admin/users');
+  }
+});
+
+// POST /admin/users/update-role
+router.post('/admin/users/update-role', async (req, res) => {
+  const { user_id, role } = req.body;
+  const adminId = req.session && req.session.user ? req.session.user.id : null;
+  const validRoles = ['ADMIN', 'ORGANIZER', 'FAN'];
+  const targetRole = (role || '').toUpperCase().trim();
+
+  if (!validRoles.includes(targetRole)) {
+    req.session.flash = { error: 'Invalid role selection.' };
+    return res.redirect('/admin/users');
+  }
+
+  try {
+    const target = await db.getOne("SELECT username, role FROM users WHERE id = ?", [user_id]);
+    await db.execute("UPDATE users SET role = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?", [targetRole, user_id]);
+    await logActivity(adminId, 'UPDATE_ROLE', 'users', user_id, `Changed user #${user_id} (@${target ? target.username : 'user'}) role from [${target ? target.role : 'N/A'}] to [${targetRole}]`, req.ip);
+    req.session.flash = { success: `Successfully updated role for @${target ? target.username : user_id} to ${targetRole}.` };
+    res.redirect('/admin/users');
+  } catch (err) {
+    console.error('Update role error:', err);
+    req.session.flash = { error: 'Failed to update user role.' };
+    res.redirect('/admin/users');
+  }
+});
+
+// POST /admin/users/toggle-status
+router.post('/admin/users/toggle-status', async (req, res) => {
+  const { user_id, status } = req.body;
+  const adminId = req.session && req.session.user ? req.session.user.id : null;
+  const targetStatus = status === 'SUSPENDED' ? 'SUSPENDED' : 'ACTIVE';
+
+  try {
+    const target = await db.getOne("SELECT username FROM users WHERE id = ?", [user_id]);
+    await db.execute("UPDATE users SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?", [targetStatus, user_id]);
+    await logActivity(adminId, 'UPDATE_STATUS', 'users', user_id, `Set status of user #${user_id} (@${target ? target.username : 'user'}) to [${targetStatus}]`, req.ip);
+    req.session.flash = { success: `User @${target ? target.username : user_id} marked as ${targetStatus}.` };
+    res.redirect('/admin/users');
+  } catch (err) {
+    console.error('Toggle status error:', err);
+    req.session.flash = { error: 'Failed to update user status.' };
     res.redirect('/admin/users');
   }
 });

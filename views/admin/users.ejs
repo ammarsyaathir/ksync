@@ -1,169 +1,380 @@
-<%- include('../partials/header', { title: 'Manage Users | K-Sync Admin' }) %>
+<%- include('../partials/header', { title: 'User Accounts & Access Control | K-Sync Admin' }) %>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-    <%- include('../partials/flash') %>
+  <%- include('../partials/flash') %>
 
-    <!-- Standard Header with Breadcrumbs & Action -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-        <div>
-            <div class="flex items-center space-x-2 mb-2 flex-wrap gap-y-1">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-white shadow-sm border border-slate-700">
-                    <i class="fas fa-users-gear me-1.5 text-indigo-400"></i> Member Governance
-                </span>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
-                    <%= users.length %> Accounts Total
-                </span>
-            </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">System Users & Access Control</h1>
-            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Manage member accounts, role privileges (Admin, Organizer, Fan), locations, and active account statuses.</p>
-        </div>
-        <div class="flex items-center space-x-2 self-start md:self-auto shrink-0">
-            <a href="/admin/verifications" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center cursor-pointer">
-                <i class="fas fa-certificate me-1.5 text-pink-600"></i> Fanclub Badges
-            </a>
-        </div>
+  <!-- Admin Command Subnav Ribbon -->
+  <%- include('admin-nav', { activeTab: 'users', pageTitle: 'User Accounts & Access Control' }) %>
+
+  <%
+    const adminCount = users.filter(u => ((u.role || u.role_name || '').toUpperCase() === 'ADMIN')).length;
+    const organizerCount = users.filter(u => ((u.role || u.role_name || '').toUpperCase() === 'ORGANIZER')).length;
+    const fanCount = users.filter(u => {
+      const r = (u.role || u.role_name || 'FAN').toUpperCase();
+      return r !== 'ADMIN' && r !== 'ORGANIZER';
+    }).length;
+    const suspendedCount = users.filter(u => (u.status || '').toUpperCase() === 'SUSPENDED').length;
+  %>
+
+  <!-- Role & Account Metrics Overview -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+    <!-- Total Users -->
+    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Accounts</span>
+        <div class="text-xl sm:text-2xl font-black text-slate-900 mt-0.5"><%= users.length %></div>
+        <div class="text-[11px] text-slate-500 font-medium">Registered members</div>
+      </div>
+      <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-base shrink-0">
+        <i class="fas fa-users"></i>
+      </div>
     </div>
 
+    <!-- Admins -->
+    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-bold uppercase tracking-wider text-purple-600">Platform Admins</span>
+        <div class="text-xl sm:text-2xl font-black text-purple-700 mt-0.5"><%= adminCount %></div>
+        <div class="text-[11px] text-purple-600/80 font-medium">Superuser privileges</div>
+      </div>
+      <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-base shrink-0">
+        <i class="fas fa-crown"></i>
+      </div>
+    </div>
 
-    <!-- Filter & Table Card -->
-    <div class="bg-white rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-200/80 shadow-xs space-y-4">
-        <!-- Search & Filter Bar -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-1 max-w-2xl">
-                <div class="relative flex-1">
-                    <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" id="userSearchInput" onkeyup="filterUsersTable()" placeholder="Search by name, @username, email, or location..."
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                </div>
+    <!-- Organizers -->
+    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Hosts & Fanclubs</span>
+        <div class="text-xl sm:text-2xl font-black text-emerald-700 mt-0.5"><%= organizerCount %></div>
+        <div class="text-[11px] text-emerald-600/80 font-medium">Verified event curators</div>
+      </div>
+      <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base shrink-0">
+        <i class="fas fa-building-user"></i>
+      </div>
+    </div>
 
-                <div class="w-full sm:w-44 shrink-0">
-                    <select id="userRoleFilter" onchange="filterUsersTable()" 
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 cursor-pointer">
-                        <option value="">All Roles</option>
-                        <option value="ADMIN">Admins</option>
-                        <option value="ORGANIZER">Organizers</option>
-                        <option value="FAN">Fans</option>
-                    </select>
-                </div>
-            </div>
+    <!-- Fans & Community -->
+    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-bold uppercase tracking-wider text-pink-600">Community Fans</span>
+        <div class="text-xl sm:text-2xl font-black text-pink-700 mt-0.5"><%= fanCount %></div>
+        <div class="text-[11px] text-pink-600/80 font-medium">General attendees</div>
+      </div>
+      <div class="w-10 h-10 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center text-base shrink-0">
+        <i class="fas fa-heart"></i>
+      </div>
+    </div>
+  </div>
 
-            <div class="text-[11px] text-slate-500 font-medium self-end sm:self-auto">
-                Showing <strong id="visibleUserCount" class="text-slate-900"><%= users.length %></strong> of <%= users.length %> users
-            </div>
+  <!-- Main User Table Card -->
+  <div class="bg-white rounded-3xl p-5 sm:p-6 lg:p-7 border border-slate-200/80 shadow-xs space-y-4">
+    <!-- Filter & Search Toolbar -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-1 max-w-2xl">
+        <div class="relative flex-1">
+          <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+          <input type="text" id="userSearchInput" onkeyup="filterUsersTable()" 
+                 placeholder="Search by name, @username, email, or organization..."
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-300">
         </div>
 
-        <!-- Responsive Table Container -->
-        <div class="overflow-x-auto rounded-2xl border border-slate-100">
-            <table class="w-full text-left text-xs text-slate-700 min-w-[700px]" id="usersTable">
-                <thead class="bg-slate-50/80 text-slate-500 uppercase font-bold text-[10px] tracking-wider border-b border-slate-200">
-                    <tr>
-                        <th class="p-3.5">User Identity</th>
-                        <th class="p-3.5">System Role</th>
-                        <th class="p-3.5">Location</th>
-                        <th class="p-3.5">Account Status</th>
-                        <th class="p-3.5">Registered Date</th>
-                        <th class="p-3.5 text-right">Action</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    <% if (users.length === 0) { %>
-                        <tr>
-                            <td colspan="6" class="p-10 text-center text-slate-400">
-                                No registered user accounts found.
-                            </td>
-                        </tr>
+        <div class="w-full sm:w-40 shrink-0">
+          <select id="userRoleFilter" onchange="filterUsersTable()" 
+                  class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-300 cursor-pointer">
+            <option value="">All Roles (<%= users.length %>)</option>
+            <option value="ADMIN">Admins (<%= adminCount %>)</option>
+            <option value="ORGANIZER">Organizers (<%= organizerCount %>)</option>
+            <option value="FAN">Fans (<%= fanCount %>)</option>
+          </select>
+        </div>
+
+        <div class="w-full sm:w-36 shrink-0">
+          <select id="userStatusFilter" onchange="filterUsersTable()" 
+                  class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-300 cursor-pointer">
+            <option value="">All Statuses</option>
+            <option value="ACTIVE">Active Only</option>
+            <option value="SUSPENDED">Suspended (<%= suspendedCount %>)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="text-[11px] text-slate-500 font-medium self-end sm:self-auto">
+        Showing <strong id="visibleUserCount" class="text-slate-900"><%= users.length %></strong> of <%= users.length %> accounts
+      </div>
+    </div>
+
+    <!-- Responsive Table -->
+    <div class="overflow-x-auto rounded-2xl border border-slate-100">
+      <table class="w-full text-left text-xs text-slate-700 min-w-[760px]" id="usersTable">
+        <thead class="bg-slate-50/80 text-slate-500 uppercase font-bold text-[10px] tracking-wider border-b border-slate-200">
+          <tr>
+            <th class="p-3.5">User Identity</th>
+            <th class="p-3.5">System Role</th>
+            <th class="p-3.5">Organization / Location</th>
+            <th class="p-3.5">Status</th>
+            <th class="p-3.5">Registered</th>
+            <th class="p-3.5 text-right">Access Controls</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% if (users.length === 0) { %>
+            <tr>
+              <td colspan="6" class="p-12 text-center text-slate-400">
+                <i class="fas fa-users-slash text-2xl text-slate-300 mb-2 block"></i>
+                No user accounts recorded in the database.
+              </td>
+            </tr>
+          <% } %>
+          <% users.forEach(function(u) { 
+            const displayRole = (u.role || u.role_name || 'FAN').toUpperCase();
+            const isSuspended = (u.status || '').toUpperCase() === 'SUSPENDED';
+            const isSelf = (typeof currentUser !== 'undefined' && currentUser && currentUser.id === u.id);
+          %>
+            <tr class="hover:bg-slate-50/70 transition-colors user-row"
+                data-text="<%= ((u.full_name || '') + ' ' + (u.username || '') + ' ' + (u.email || '') + ' ' + (u.location || '') + ' ' + (u.organization_name || '')).toLowerCase() %>"
+                data-role="<%= displayRole %>"
+                data-status="<%= isSuspended ? 'SUSPENDED' : 'ACTIVE' %>">
+              
+              <!-- User Identity -->
+              <td class="p-3.5">
+                <div class="flex items-center space-x-3">
+                  <div class="relative w-10 h-10 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 shrink-0 overflow-hidden border border-slate-200 flex items-center justify-center font-bold text-slate-700 text-xs shadow-xs">
+                    <% if (u.profile_image) { %>
+                      <img src="<%= u.profile_image %>" alt="" class="w-full h-full object-cover" onerror="this.style.display='none'">
+                    <% } else { %>
+                      <%= (u.full_name || u.username || 'U').charAt(0).toUpperCase() %>
                     <% } %>
-                    <% users.forEach(function(u) { 
-                        const displayRole = (u.role || u.role_name || 'FAN').toUpperCase();
-                    %>
-                        <tr class="hover:bg-slate-50/60 transition-colors user-row"
-                            data-text="<%= ((u.full_name || '') + ' ' + (u.username || '') + ' ' + (u.email || '') + ' ' + (u.location || '')).toLowerCase() %>"
-                            data-role="<%= displayRole %>">
-                            <td class="p-3.5">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-9 h-9 rounded-full bg-slate-200 shrink-0 overflow-hidden border border-slate-300 flex items-center justify-center font-bold text-slate-600 text-xs shadow-xs">
-                                        <% if (u.profile_image) { %>
-                                            <img src="<%= u.profile_image %>" alt="" class="w-full h-full object-cover" onerror="this.style.display='none'">
-                                        <% } else { %>
-                                            <%= (u.full_name || u.username || 'U').charAt(0).toUpperCase() %>
-                                        <% } %>
-                                    </div>
-                                    <div class="min-w-0">
-                                        <div class="font-bold text-slate-900 truncate max-w-[180px]"><%= u.full_name || u.username %></div>
-                                        <div class="text-[11px] text-slate-400 truncate max-w-[180px]">@<%= u.username %> &bull; <%= u.email %></div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="p-3.5">
-                                <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase inline-flex items-center
-                                    <%= displayRole === 'ADMIN' ? 'bg-purple-100 text-purple-800 border border-purple-200' :
-                                       (displayRole === 'ORGANIZER' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' :
-                                       'bg-slate-100 text-slate-700 border border-slate-200') %>">
-                                    <% if (displayRole === 'ADMIN') { %>
-                                        <i class="fas fa-crown text-amber-500 me-1"></i> Admin
-                                    <% } else if (displayRole === 'ORGANIZER') { %>
-                                        <i class="fas fa-building-user text-emerald-600 me-1"></i> Organizer
-                                    <% } else { %>
-                                        <i class="fas fa-heart text-pink-500 me-1"></i> Fan
-                                    <% } %>
-                                </span>
-                            </td>
-                            <td class="p-3.5 text-slate-600">
-                                <i class="fas fa-location-dot text-rose-400 me-1 text-[10px]"></i>
-                                <%= u.location || 'Malaysia' %>
-                            </td>
-                            <td class="p-3.5">
-                                <span class="px-2.5 py-0.5 rounded-md text-[10px] font-bold inline-flex items-center
-                                    <%= (u.status || 'ACTIVE') === 'ACTIVE' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200' %>">
-                                    <span class="w-1.5 h-1.5 rounded-full <%= (u.status || 'ACTIVE') === 'ACTIVE' ? 'bg-emerald-500' : 'bg-rose-500' %> me-1.5"></span>
-                                    <%= u.status || 'ACTIVE' %>
-                                </span>
-                            </td>
-                            <td class="p-3.5 text-slate-500 text-[11px]">
-                                <%= helpers.formatDate(u.created_at) %>
-                            </td>
-                            <td class="p-3.5 text-right whitespace-nowrap">
-                                <% if (typeof currentUser === 'undefined' || !currentUser || u.id !== currentUser.id) { %>
-                                    <form action="/admin/users/delete" method="POST" onsubmit="return confirm('Permanently delete account for @<%= u.username %>?')" class="inline">
-                                        <input type="hidden" name="id" value="<%= u.id %>">
-                                        <button type="submit" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer" title="Delete User">
-                                            <i class="fas fa-trash-can text-xs"></i>
-                                        </button>
-                                    </form>
-                                <% } else { %>
-                                    <span class="text-[10px] text-slate-400 italic px-2 py-1 rounded bg-slate-50 border border-slate-200/60">Current Admin</span>
-                                <% } %>
-                            </td>
-                        </tr>
-                    <% }); %>
-                </tbody>
-            </table>
-        </div>
+                    <span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white <%= isSuspended ? 'bg-rose-500' : 'bg-emerald-500' %>"></span>
+                  </div>
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-1.5">
+                      <span class="font-bold text-slate-900 truncate max-w-[180px]"><%= u.full_name || u.username %></span>
+                      <% if (isSelf) { %>
+                        <span class="px-1.5 py-0.2 rounded text-[9px] font-black bg-purple-100 text-purple-800 border border-purple-200">YOU</span>
+                      <% } %>
+                    </div>
+                    <div class="text-[11px] text-slate-500 truncate max-w-[200px]">
+                      <span class="text-purple-600 font-semibold">@<%= u.username %></span> &bull; <%= u.email %>
+                    </div>
+                  </div>
+                </div>
+              </td>
+
+              <!-- System Role -->
+              <td class="p-3.5 whitespace-nowrap">
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase inline-flex items-center gap-1
+                  <%= displayRole === 'ADMIN' ? 'bg-purple-100 text-purple-800 border border-purple-200 shadow-xs' :
+                     (displayRole === 'ORGANIZER' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-xs' :
+                     'bg-slate-100 text-slate-700 border border-slate-200') %>">
+                  <% if (displayRole === 'ADMIN') { %>
+                    <i class="fas fa-crown text-amber-500 text-[10px]"></i> Administrator
+                  <% } else if (displayRole === 'ORGANIZER') { %>
+                    <i class="fas fa-building-user text-emerald-600 text-[10px]"></i> Organizer
+                  <% } else { %>
+                    <i class="fas fa-heart text-pink-500 text-[10px]"></i> Fan
+                  <% } %>
+                </span>
+                <% if (u.is_verified_organizer) { %>
+                  <span class="ms-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-pink-100 text-pink-700 border border-pink-200" title="Verified Fanclub Host">
+                    <i class="fas fa-certificate text-[8px] text-pink-600"></i> Verified
+                  </span>
+                <% } %>
+              </td>
+
+              <!-- Location / Org -->
+              <td class="p-3.5">
+                <% if (u.organization_name) { %>
+                  <div class="font-bold text-slate-800 text-[11px] truncate max-w-[160px]"><%= u.organization_name %></div>
+                <% } %>
+                <div class="text-slate-500 text-[11px] flex items-center gap-1">
+                  <i class="fas fa-location-dot text-rose-400 text-[10px]"></i>
+                  <span><%= u.location || 'Malaysia' %></span>
+                </div>
+              </td>
+
+              <!-- Status -->
+              <td class="p-3.5 whitespace-nowrap">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1.5
+                  <%= !isSuspended ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200' %>">
+                  <span class="w-1.5 h-1.5 rounded-full <%= !isSuspended ? 'bg-emerald-500' : 'bg-rose-500' %>"></span>
+                  <%= !isSuspended ? 'ACTIVE' : 'SUSPENDED' %>
+                </span>
+              </td>
+
+              <!-- Registered Date -->
+              <td class="p-3.5 text-slate-500 text-[11px] whitespace-nowrap">
+                <%= helpers.formatDate(u.created_at) %>
+              </td>
+
+              <!-- Action Controls -->
+              <td class="p-3.5 text-right whitespace-nowrap">
+                <div class="flex items-center justify-end gap-1.5">
+                  <!-- Modify Role Button -->
+                  <button type="button" 
+                          onclick="openRoleModal(<%= u.id %>, '<%= (u.username || '').replace(/'/g, "\\'") %>', '<%= displayRole %>')"
+                          class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-700 font-bold text-xs transition-colors cursor-pointer flex items-center gap-1"
+                          title="Modify User Role">
+                    <i class="fas fa-user-gear text-[11px]"></i>
+                    <span class="hidden sm:inline">Role</span>
+                  </button>
+
+                  <!-- Toggle Status (Active / Suspended) -->
+                  <% if (!isSelf) { %>
+                    <form action="/admin/users/toggle-status" method="POST" class="inline">
+                      <input type="hidden" name="user_id" value="<%= u.id %>">
+                      <input type="hidden" name="status" value="<%= isSuspended ? 'ACTIVE' : 'SUSPENDED' %>">
+                      <button type="submit" 
+                              class="p-2 rounded-xl transition-colors cursor-pointer <%= isSuspended ? 'text-emerald-600 hover:bg-emerald-50' : 'text-amber-600 hover:bg-amber-50' %>"
+                              title="<%= isSuspended ? 'Unsuspend / Reactivate Account' : 'Suspend Account' %>">
+                        <i class="fas <%= isSuspended ? 'fa-unlock' : 'fa-user-slash' %> text-xs"></i>
+                      </button>
+                    </form>
+
+                    <!-- Delete Account -->
+                    <form action="/admin/users/delete" method="POST" onsubmit="return confirm('Permanently delete account for @<%= u.username %>? This action is irreversible.')" class="inline">
+                      <input type="hidden" name="id" value="<%= u.id %>">
+                      <button type="submit" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer" title="Delete User">
+                        <i class="fas fa-trash-can text-xs"></i>
+                      </button>
+                    </form>
+                  <% } else { %>
+                    <span class="text-[10px] text-slate-400 italic px-2 py-1 rounded bg-slate-50 border border-slate-200/60">Protected</span>
+                  <% } %>
+                </div>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
     </div>
+  </div>
+</div>
+
+<!-- ===================================================================== -->
+<!-- ROLE MODIFIER DIALOG MODAL -->
+<!-- ===================================================================== -->
+<div id="roleModal" class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+  <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg shrink-0">
+          <i class="fas fa-user-gear"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-slate-900">Modify System Role</h3>
+          <p id="roleModalSubtitle" class="text-xs text-slate-500 mt-0.5">Change permissions for member</p>
+        </div>
+      </div>
+      <button type="button" onclick="closeRoleModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-xs transition-all cursor-pointer">
+        <i class="fas fa-xmark"></i>
+      </button>
+    </div>
+
+    <form action="/admin/users/update-role" method="POST" class="space-y-4">
+      <input type="hidden" name="user_id" id="modal_user_id">
+
+      <div>
+        <label class="block text-xs font-bold text-slate-800 mb-2">Select Account Role:</label>
+        <div class="space-y-2.5">
+          <!-- ADMIN -->
+          <label class="flex items-start p-3 rounded-2xl border border-slate-200 hover:border-purple-300 hover:bg-purple-50/40 cursor-pointer transition-all role-option" id="label-role-admin">
+            <input type="radio" name="role" value="ADMIN" class="mt-1 text-purple-600 focus:ring-purple-500">
+            <div class="ms-3">
+              <span class="font-extrabold text-xs text-purple-900 flex items-center gap-1.5">
+                <i class="fas fa-crown text-amber-500"></i> Platform Administrator
+              </span>
+              <span class="text-[11px] text-slate-600 leading-tight block mt-0.5">
+                Full unrestricted access: verification desk, scam moderation, talent directory, transit guide, and immutable audit trails.
+              </span>
+            </div>
+          </label>
+
+          <!-- ORGANIZER -->
+          <label class="flex items-start p-3 rounded-2xl border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/40 cursor-pointer transition-all role-option" id="label-role-organizer">
+            <input type="radio" name="role" value="ORGANIZER" class="mt-1 text-emerald-600 focus:ring-emerald-500">
+            <div class="ms-3">
+              <span class="font-extrabold text-xs text-emerald-900 flex items-center gap-1.5">
+                <i class="fas fa-building-user text-emerald-600"></i> Event Organizer / Fanclub Host
+              </span>
+              <span class="text-[11px] text-slate-600 leading-tight block mt-0.5">
+                Organizer workspace access: submit official events, create broadcast updates, view ticket clicks, and run check-ins.
+              </span>
+            </div>
+          </label>
+
+          <!-- FAN -->
+          <label class="flex items-start p-3 rounded-2xl border border-slate-200 hover:border-pink-300 hover:bg-pink-50/40 cursor-pointer transition-all role-option" id="label-role-fan">
+            <input type="radio" name="role" value="FAN" class="mt-1 text-pink-600 focus:ring-pink-500">
+            <div class="ms-3">
+              <span class="font-extrabold text-xs text-pink-900 flex items-center gap-1.5">
+                <i class="fas fa-heart text-pink-500"></i> Community Fan
+              </span>
+              <span class="text-[11px] text-slate-600 leading-tight block mt-0.5">
+                Standard fan access: concert discovery, event calendar sync, community RSVPs, wishlist, and reviews.
+              </span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+        <button type="button" onclick="closeRoleModal()" class="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs transition-all cursor-pointer">
+          Cancel
+        </button>
+        <button type="submit" class="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-md transition-all cursor-pointer">
+          Update Role
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <script>
 function filterUsersTable() {
-    const q = (document.getElementById("userSearchInput").value || '').toLowerCase().trim();
-    const role = (document.getElementById("userRoleFilter").value || '').toUpperCase().trim();
-    const rows = document.querySelectorAll(".user-row");
-    let count = 0;
+  const q = (document.getElementById("userSearchInput").value || '').toLowerCase().trim();
+  const role = (document.getElementById("userRoleFilter").value || '').toUpperCase().trim();
+  const status = (document.getElementById("userStatusFilter").value || '').toUpperCase().trim();
+  const rows = document.querySelectorAll(".user-row");
+  let count = 0;
 
-    rows.forEach(row => {
-        const text = row.getAttribute('data-text') || '';
-        const rowRole = row.getAttribute('data-role') || '';
+  rows.forEach(row => {
+    const text = row.getAttribute('data-text') || '';
+    const rowRole = row.getAttribute('data-role') || '';
+    const rowStatus = row.getAttribute('data-status') || '';
 
-        const matchesText = !q || text.includes(q);
-        const matchesRole = !role || rowRole === role;
+    const matchesText = !q || text.includes(q);
+    const matchesRole = !role || rowRole === role;
+    const matchesStatus = !status || rowStatus === status;
 
-        if (matchesText && matchesRole) {
-            row.style.display = "";
-            count++;
-        } else {
-            row.style.display = "none";
-        }
-    });
-    document.getElementById("visibleUserCount").innerText = count;
+    if (matchesText && matchesRole && matchesStatus) {
+      row.style.display = "";
+      count++;
+    } else {
+      row.style.display = "none";
+    }
+  });
+  document.getElementById("visibleUserCount").innerText = count;
+}
+
+function openRoleModal(userId, username, currentRole) {
+  document.getElementById('modal_user_id').value = userId;
+  document.getElementById('roleModalSubtitle').innerText = `Editing privileges for @${username} (Current: ${currentRole})`;
+  
+  const radios = document.querySelectorAll('#roleModal input[name="role"]');
+  radios.forEach(radio => {
+    radio.checked = (radio.value === currentRole);
+  });
+
+  const modal = document.getElementById('roleModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function closeRoleModal() {
+  const modal = document.getElementById('roleModal');
+  modal.classList.remove('flex');
+  modal.classList.add('hidden');
 }
 </script>
 

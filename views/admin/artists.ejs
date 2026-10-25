@@ -1,608 +1,705 @@
-<%- include('../partials/header', { title: 'Manage Artists & Lineups | K-Sync Admin' }) %>
+<%- include('../partials/header', { title: 'Talent Directory & Lineups | K-Sync Admin' }) %>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-    <%- include('../partials/flash') %>
+  <%- include('../partials/flash') %>
 
-    <!-- Standard Header with Breadcrumbs & Action -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+  <!-- Admin Command Subnav Ribbon -->
+  <%- include('admin-nav', { activeTab: 'artists', pageTitle: 'Talent Directory & Lineup Hub' }) %>
+
+  <%
+    const boyGroupCount = artists.filter(a => a.group_type === 'Boy Group').length;
+    const girlGroupCount = artists.filter(a => a.group_type === 'Girl Group').length;
+    const soloistCount = artists.filter(a => a.group_type === 'Soloist').length;
+    const totalMembers = artists.reduce((acc, a) => acc + (parseInt(a.member_count) || 0), 0);
+  %>
+
+  <!-- Roster Overview Metrics -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Artists</span>
+        <div class="text-xl sm:text-2xl font-black text-slate-900 mt-0.5"><%= artists.length %></div>
+        <div class="text-[11px] text-slate-500 font-medium">Official talent directory</div>
+      </div>
+      <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-base shrink-0">
+        <i class="fas fa-microphone-lines"></i>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600">Boy Groups</span>
+        <div class="text-xl sm:text-2xl font-black text-indigo-700 mt-0.5"><%= boyGroupCount %></div>
+        <div class="text-[11px] text-indigo-600/80 font-medium">SEVENTEEN, Stray Kids...</div>
+      </div>
+      <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-base shrink-0">
+        <i class="fas fa-users"></i>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-bold uppercase tracking-wider text-pink-600">Girl Groups</span>
+        <div class="text-xl sm:text-2xl font-black text-pink-700 mt-0.5"><%= girlGroupCount %></div>
+        <div class="text-[11px] text-pink-600/80 font-medium">aespa, IVE, TWICE...</div>
+      </div>
+      <div class="w-10 h-10 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center text-base shrink-0">
+        <i class="fas fa-venus"></i>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Total Lineup Members</span>
+        <div class="text-xl sm:text-2xl font-black text-emerald-700 mt-0.5"><%= totalMembers %></div>
+        <div class="text-[11px] text-emerald-600/80 font-medium">Normalized biodata profiles</div>
+      </div>
+      <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base shrink-0">
+        <i class="fas fa-id-card"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+    <!-- Add Artist Form Card -->
+    <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs h-fit space-y-4">
+      <div class="flex items-center space-x-2.5 border-b border-slate-100 pb-3">
+        <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xs font-bold">
+          <i class="fas fa-plus"></i>
+        </div>
         <div>
-            <div class="flex items-center space-x-2 mb-2 flex-wrap gap-y-1">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-white shadow-sm border border-slate-700">
-                    <i class="fas fa-microphone-lines me-1.5 text-purple-400"></i> Talent Directory & Lineup Hub
-                </span>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
-                    <%= artists.length %> Artists Registered
-                </span>
-            </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">K-Pop Artists & Member Profiles</h1>
-            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Full administrative CRUD access over artist master records, official fandom names, tour debut dates, and individual member biodata.</p>
+          <h3 class="text-sm font-bold text-slate-900">Register New Talent</h3>
+          <p class="text-[11px] text-slate-500">Add K-Pop group or solo artist</p>
         </div>
-        <div class="flex items-center space-x-2 self-start md:self-auto shrink-0">
-            <a href="/admin/events" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center cursor-pointer">
-                <i class="fas fa-calendar-days me-1.5 text-purple-600"></i> View Events Catalog
-            </a>
+      </div>
+
+      <form action="/admin/artists/add" method="POST" class="space-y-3.5" id="addArtistForm">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Artist / Group Name <span class="text-rose-500">*</span></label>
+          <input type="text" name="name" id="new_artist_name" required placeholder="e.g. BABYMONSTER / SEVENTEEN"
+                 oninput="autoSlugify(this.value)"
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
         </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">URL Slug</label>
+            <input type="text" name="slug" id="new_artist_slug" placeholder="e.g. babymonster"
+                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Group Type</label>
+            <select name="group_type" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300 cursor-pointer">
+              <option value="Boy Group">Boy Group</option>
+              <option value="Girl Group">Girl Group</option>
+              <option value="Soloist">Soloist</option>
+              <option value="Band">Band</option>
+              <option value="Co-ed Group">Co-ed Group</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Agency</label>
+            <input type="text" name="agency" placeholder="e.g. YG / HYBE / JYP"
+                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Debut Year</label>
+            <input type="number" name="debut_year" placeholder="e.g. 2023" min="1990" max="2030"
+                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Official Fandom Name</label>
+          <input type="text" name="fandom_name" placeholder="e.g. MONSTIEZ / CARAT / STAY"
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Profile Photo URL</label>
+          <input type="text" name="image_url" placeholder="https://... or /images/..."
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Banner Header URL</label>
+          <input type="text" name="header_image" placeholder="https://... or /images/..."
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Artist Bio / Description</label>
+          <textarea name="description" rows="2.5" placeholder="Brief summary of group achievements, Malaysia concert history..."
+                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300"></textarea>
+        </div>
+
+        <button type="submit" class="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-md shadow-purple-900/20 transition-all cursor-pointer flex items-center justify-center gap-1.5 active:scale-98">
+          <i class="fas fa-plus"></i> Add Artist Profile
+        </button>
+      </form>
     </div>
 
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-        <!-- Add Artist Form Card -->
-        <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs h-fit space-y-4">
-            <div class="flex items-center space-x-2 border-b border-slate-100 pb-3">
-                <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xs font-bold">
-                    <i class="fas fa-plus"></i>
-                </div>
-                <h3 class="text-sm font-bold text-slate-900">Add New Artist / Group</h3>
-            </div>
-            <form action="/admin/artists/add" method="POST" class="space-y-3.5">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Artist / Group Name <span class="text-rose-500">*</span></label>
-                    <input type="text" name="name" required placeholder="e.g. SEVENTEEN / BABYMONSTER"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">URL Slug</label>
-                        <input type="text" name="slug" placeholder="e.g. babymonster"
-                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Group Type</label>
-                        <select name="group_type" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300 cursor-pointer">
-                            <option value="Boy Group">Boy Group</option>
-                            <option value="Girl Group">Girl Group</option>
-                            <option value="Soloist">Soloist</option>
-                            <option value="Band">Band</option>
-                            <option value="Co-ed Group">Co-ed Group</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Entertainment Agency</label>
-                        <input type="text" name="agency" placeholder="e.g. YG / HYBE / JYP"
-                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Debut Year</label>
-                        <input type="number" name="debut_year" placeholder="e.g. 2023" min="1990" max="2030"
-                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Official Fandom Name</label>
-                    <input type="text" name="fandom_name" placeholder="e.g. CARAT / MONSTIEZ / ONCE"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Profile Photo URL</label>
-                    <input type="text" name="image_url" placeholder="https://... or /images/..."
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Banner Header Image URL</label>
-                    <input type="text" name="header_image" placeholder="https://... or /images/..."
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Artist Bio / Description</label>
-                    <textarea name="description" rows="2" placeholder="Brief summary of group achievements, Malaysia concert history..."
-                              class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300"></textarea>
-                </div>
-
-                <button type="submit" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-all cursor-pointer">
-                    <i class="fas fa-plus me-1 text-purple-400"></i> Add Artist
-                </button>
-            </form>
+    <!-- Artists Directory List Card -->
+    <div class="lg:col-span-2 bg-white rounded-3xl p-5 sm:p-6 lg:p-7 border border-slate-200/80 shadow-xs space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+        <div>
+          <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+            <i class="fas fa-users-viewfinder text-purple-600"></i> Talent Directory (<%= artists.length %>)
+          </h3>
+          <p class="text-[11px] text-slate-500 mt-0.5">Manage lineups, member biodata, and official metadata</p>
         </div>
+        <div class="relative w-full sm:w-64">
+          <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+          <input type="text" id="artistSearchInput" onkeyup="filterArtists()" placeholder="Search artist, fandom, agency..."
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+        </div>
+      </div>
 
-        <!-- Artists Grid Card -->
-        <div class="lg:col-span-2 bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
-                <h3 class="text-sm font-bold text-slate-900 flex items-center">
-                    <i class="fas fa-users-viewfinder text-purple-500 me-2"></i> Artists Directory (<%= artists.length %>)
-                </h3>
-                <div class="relative w-full sm:w-60">
-                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" id="artistSearchInput" onkeyup="filterArtists()" placeholder="Search artist, fandom, or agency..."
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                </div>
-            </div>
+      <!-- Quick Group Type Filter Buttons -->
+      <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 text-[11px] font-bold">
+        <button type="button" onclick="setArtistFilter('')" class="artist-type-chip px-2.5 py-1 rounded-lg bg-slate-900 text-white shrink-0 cursor-pointer">
+          All Types (<%= artists.length %>)
+        </button>
+        <button type="button" onclick="setArtistFilter('Boy Group')" class="artist-type-chip px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 cursor-pointer">
+          Boy Groups (<%= boyGroupCount %>)
+        </button>
+        <button type="button" onclick="setArtistFilter('Girl Group')" class="artist-type-chip px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 cursor-pointer">
+          Girl Groups (<%= girlGroupCount %>)
+        </button>
+        <button type="button" onclick="setArtistFilter('Soloist')" class="artist-type-chip px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 cursor-pointer">
+          Soloists (<%= soloistCount %>)
+        </button>
+      </div>
+
+      <!-- Artist Cards Grid -->
+      <div class="grid grid-cols-1 gap-3.5" id="artistsGrid">
+        <% if (artists.length === 0) { %>
+          <div class="col-span-full py-12 text-center text-slate-400 text-xs">
+            No artists registered yet. Use the form to add your first group or soloist.
+          </div>
+        <% } %>
+        <% artists.forEach(function(a) { %>
+          <div class="p-4 rounded-2xl bg-slate-50/80 hover:bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all artist-card"
+               data-artist='<%- JSON.stringify(a) %>'
+               data-group-type="<%= a.group_type || '' %>">
             
-            <div class="grid grid-cols-1 gap-3" id="artistsGrid">
-                <% if (artists.length === 0) { %>
-                    <div class="col-span-full py-12 text-center text-slate-400 text-xs">
-                        No artists added yet. Use the form to register your first group or soloist.
-                    </div>
+            <div class="flex items-center space-x-3.5 min-w-0">
+              <div class="w-14 h-14 rounded-2xl overflow-hidden bg-slate-200 shrink-0 border-2 border-white shadow-xs">
+                <img src="<%= a.image_url || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&auto=format&fit=crop' %>" 
+                     alt="<%= a.name %>" class="w-full h-full object-cover"
+                     onerror="this.src='https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&auto=format&fit=crop'">
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h4 class="font-extrabold text-sm text-slate-900 truncate artist-name"><%= a.name %></h4>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold <%= a.group_type === 'Girl Group' ? 'bg-pink-100 text-pink-700' : 'bg-indigo-100 text-indigo-700' %>">
+                    <%= a.group_type %>
+                  </span>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-violet-100 text-violet-700">
+                    <%= a.member_count || 0 %> Members
+                  </span>
+                </div>
+                <div class="text-[11px] text-slate-500 font-medium truncate mt-0.5 artist-agency">
+                  <%= a.agency || 'Independent' %> 
+                  <% if (a.debut_year) { %> &bull; Debut <%= a.debut_year %><% } %>
+                </div>
+                <% if (a.fandom_name) { %>
+                  <div class="text-[10px] text-pink-600 font-semibold mt-0.5 flex items-center gap-1">
+                    <i class="fas fa-heart text-[8px]"></i> Fandom: <%= a.fandom_name %>
+                  </div>
                 <% } %>
-                <% artists.forEach(function(a) { %>
-                    <div class="p-4 rounded-2xl bg-slate-50/80 hover:bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors artist-card"
-                         data-artist='<%- JSON.stringify(a) %>'>
-                        <div class="flex items-center space-x-3.5 min-w-0">
-                            <div class="w-14 h-14 rounded-2xl overflow-hidden bg-slate-200 shrink-0 border-2 border-white shadow-xs">
-                                <img src="<%= a.image_url || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&auto=format&fit=crop' %>" 
-                                     alt="<%= a.name %>" class="w-full h-full object-cover"
-                                     onerror="this.src='https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&auto=format&fit=crop'">
-                            </div>
-                            <div class="min-w-0">
-                                <div class="flex items-center gap-2">
-                                    <h4 class="font-bold text-sm text-slate-900 truncate artist-name"><%= a.name %></h4>
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-violet-100 text-violet-700">
-                                        <%= a.member_count || 0 %> Members
-                                    </span>
-                                </div>
-                                <div class="text-[11px] text-slate-500 font-medium truncate mt-0.5 artist-agency">
-                                    <span class="text-purple-600 font-bold"><%= a.group_type %></span> &bull; 
-                                    <%= a.agency || 'Independent' %> 
-                                    <% if (a.debut_year) { %> &bull; Debut <%= a.debut_year %><% } %>
-                                </div>
-                                <% if (a.fandom_name) { %>
-                                    <div class="text-[10px] text-pink-600 font-semibold mt-0.5">
-                                        <i class="fas fa-heart text-[9px] me-1"></i> Fandom: <%= a.fandom_name %>
-                                    </div>
-                                <% } %>
-                            </div>
-                        </div>
-
-                        <!-- Action Buttons -->
-                        <div class="flex items-center gap-1.5 self-end sm:self-center shrink-0">
-                            <!-- Manage Lineup Button -->
-                            <button type="button" onclick="openMembersModal(<%= a.id %>, '<%= a.name.replace(/'/g, "\\'") %>')" 
-                                    class="px-3 py-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
-                                    title="Manage Individual Member Profiles">
-                                <i class="fas fa-id-card text-xs"></i>
-                                <span>Lineup</span>
-                            </button>
-
-                            <!-- Edit Artist Button -->
-                            <button type="button" onclick="openEditArtistModal(<%= a.id %>)" 
-                                    class="p-2 text-slate-600 hover:text-purple-700 hover:bg-purple-100/70 rounded-xl transition-colors cursor-pointer" 
-                                    title="Edit Artist Metadata">
-                                <i class="fas fa-pen-to-square text-xs"></i>
-                            </button>
-
-                            <!-- Public Profile Link -->
-                            <a href="/artists/<%= a.slug || a.id %>" target="_blank" class="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-colors cursor-pointer" title="View Public Page">
-                                <i class="fas fa-arrow-up-right-from-square text-xs"></i>
-                            </a>
-
-                            <!-- Delete Artist -->
-                            <form action="/admin/artists/delete" method="POST" onsubmit="return confirm('Permanently delete <%= a.name %> and all associated members?')" class="inline">
-                                <input type="hidden" name="id" value="<%= a.id %>">
-                                <button type="submit" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer" title="Delete Artist">
-                                    <i class="fas fa-trash-can text-xs"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                <% }); %>
+              </div>
             </div>
-        </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-1.5 self-end sm:self-center shrink-0">
+              <!-- Manage Lineup Button -->
+              <button type="button" onclick="openMembersModal(<%= a.id %>, '<%= a.name.replace(/'/g, "\\'") %>')" 
+                      class="px-3 py-1.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+                      title="Manage Individual Member Profiles">
+                <i class="fas fa-id-card text-xs"></i>
+                <span>Lineup</span>
+              </button>
+
+              <!-- Edit Artist Button -->
+              <button type="button" onclick="openEditArtistModal(<%= a.id %>)" 
+                      class="p-2 text-slate-600 hover:text-purple-700 hover:bg-purple-100/70 rounded-xl transition-colors cursor-pointer" 
+                      title="Edit Artist Metadata">
+                <i class="fas fa-pen-to-square text-xs"></i>
+              </button>
+
+              <!-- Public Profile Link -->
+              <a href="/artists/<%= a.slug || a.id %>" target="_blank" class="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-colors cursor-pointer" title="View Public Page">
+                <i class="fas fa-arrow-up-right-from-square text-xs"></i>
+              </a>
+
+              <!-- Delete Artist -->
+              <form action="/admin/artists/delete" method="POST" onsubmit="return confirm('Permanently delete <%= a.name %> and all associated members?')" class="inline">
+                <input type="hidden" name="id" value="<%= a.id %>">
+                <button type="submit" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer" title="Delete Artist">
+                  <i class="fas fa-trash-can text-xs"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+        <% }); %>
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- ===================================================================== -->
 <!-- MODAL 1: EDIT ARTIST PROFILE -->
 <!-- ===================================================================== -->
 <div id="editArtistModal" class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                <i class="fas fa-pen-to-square text-purple-600"></i> Edit Artist Profile
-            </h3>
-            <button type="button" onclick="closeEditArtistModal()" class="text-slate-400 hover:text-slate-600 text-sm p-1 cursor-pointer">
-                <i class="fas fa-xmark"></i>
-            </button>
-        </div>
-
-        <form action="/admin/artists/edit" method="POST" class="space-y-3.5">
-            <input type="hidden" name="id" id="edit_artist_id">
-            <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Artist / Group Name</label>
-                <input type="text" name="name" id="edit_artist_name" required
-                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">URL Slug</label>
-                    <input type="text" name="slug" id="edit_artist_slug" required
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Group Type</label>
-                    <select name="group_type" id="edit_artist_group_type" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300 cursor-pointer">
-                        <option value="Boy Group">Boy Group</option>
-                        <option value="Girl Group">Girl Group</option>
-                        <option value="Soloist">Soloist</option>
-                        <option value="Band">Band</option>
-                        <option value="Co-ed Group">Co-ed Group</option>
-                    </select>
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Agency</label>
-                    <input type="text" name="agency" id="edit_artist_agency"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Debut Year</label>
-                    <input type="number" name="debut_year" id="edit_artist_debut_year" min="1990" max="2030"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                </div>
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Official Fandom Name</label>
-                <input type="text" name="fandom_name" id="edit_artist_fandom_name"
-                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Profile Image URL</label>
-                <input type="text" name="image_url" id="edit_artist_image_url"
-                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Banner Header Image URL</label>
-                <input type="text" name="header_image" id="edit_artist_header_image"
-                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Description / Biography</label>
-                <textarea name="description" id="edit_artist_description" rows="3"
-                          class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300"></textarea>
-            </div>
-
-            <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                <button type="button" onclick="closeEditArtistModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer">
-                    Cancel
-                </button>
-                <button type="submit" class="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-md cursor-pointer">
-                    Save Changes
-                </button>
-            </div>
-        </form>
+  <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto space-y-4">
+    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+      <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+        <i class="fas fa-pen-to-square text-purple-600"></i> Edit Artist Profile
+      </h3>
+      <button type="button" onclick="closeEditArtistModal()" class="text-slate-400 hover:text-slate-600 text-sm p-1 cursor-pointer">
+        <i class="fas fa-xmark"></i>
+      </button>
     </div>
+
+    <form action="/admin/artists/edit" method="POST" class="space-y-3.5">
+      <input type="hidden" name="id" id="edit_artist_id">
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">Artist / Group Name</label>
+        <input type="text" name="name" id="edit_artist_name" required
+               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">URL Slug</label>
+          <input type="text" name="slug" id="edit_artist_slug" required
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Group Type</label>
+          <select name="group_type" id="edit_artist_group_type" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300 cursor-pointer">
+            <option value="Boy Group">Boy Group</option>
+            <option value="Girl Group">Girl Group</option>
+            <option value="Soloist">Soloist</option>
+            <option value="Band">Band</option>
+            <option value="Co-ed Group">Co-ed Group</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Agency</label>
+          <input type="text" name="agency" id="edit_artist_agency"
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Debut Year</label>
+          <input type="number" name="debut_year" id="edit_artist_debut_year" min="1990" max="2030"
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">Official Fandom Name</label>
+        <input type="text" name="fandom_name" id="edit_artist_fandom_name"
+               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">Profile Image URL</label>
+        <input type="text" name="image_url" id="edit_artist_image_url"
+               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">Banner Header Image URL</label>
+        <input type="text" name="header_image" id="edit_artist_header_image"
+               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1">Description / Biography</label>
+        <textarea name="description" id="edit_artist_description" rows="3"
+                  class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300"></textarea>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+        <button type="button" onclick="closeEditArtistModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer">
+          Cancel
+        </button>
+        <button type="submit" class="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-md cursor-pointer">
+          Save Changes
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <!-- ===================================================================== -->
 <!-- MODAL 2: MANAGE MEMBERS / LINEUP MODAL -->
 <!-- ===================================================================== -->
 <div id="membersModal" class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-4xl w-full p-6 shadow-2xl border border-slate-200 max-h-[92vh] flex flex-col space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-            <div>
-                <span class="text-[10px] font-bold text-violet-600 uppercase tracking-wider">Lineup & Biodata Management</span>
-                <h3 class="text-lg font-extrabold text-slate-900 flex items-center gap-2" id="membersModalTitle">
-                    <i class="fas fa-id-card text-violet-600"></i> Members Lineup
-                </h3>
-            </div>
-            <button type="button" onclick="closeMembersModal()" class="text-slate-400 hover:text-slate-600 text-base p-1 cursor-pointer">
-                <i class="fas fa-xmark"></i>
-            </button>
-        </div>
-
-        <div class="overflow-y-auto flex-grow space-y-6 pr-1">
-            <!-- Add Member Form (Accordion / Collapsible) -->
-            <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4">
-                <div class="flex items-center justify-between mb-3">
-                    <h4 class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                        <i class="fas fa-user-plus text-purple-600"></i> Add New Member to Lineup
-                    </h4>
-                </div>
-                <form action="/admin/members/add" method="POST" class="space-y-3">
-                    <input type="hidden" name="artist_id" id="add_member_artist_id">
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-700 mb-1">Stage Name <span class="text-rose-500">*</span></label>
-                            <input type="text" name="stage_name" required placeholder="e.g. Ruka"
-                                   class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-700 mb-1">Birth / Real Name</label>
-                            <input type="text" name="birth_name" placeholder="e.g. Kawai Ruka (河井 瑠花)"
-                                   class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-700 mb-1">Position</label>
-                            <input type="text" name="position" placeholder="e.g. Main Dancer, Main Rapper"
-                                   class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-700 mb-1">Date of Birth</label>
-                            <input type="date" name="dob"
-                                   class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-700 mb-1">Zodiac</label>
-                            <input type="text" name="zodiac" placeholder="e.g. Aries"
-                                   class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-700 mb-1">MBTI</label>
-                            <input type="text" name="mbti" placeholder="e.g. ENFP"
-                                   class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-700 mb-1">Blood Type</label>
-                            <input type="text" name="blood_type" placeholder="e.g. O / A / B / AB"
-                                   class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-700 mb-1">Nationality</label>
-                            <input type="text" name="nationality" placeholder="e.g. South Korean / Japanese"
-                                   class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-700 mb-1">Photo Path / URL</label>
-                            <input type="text" name="photo" placeholder="/images/members/... or https://..."
-                                   class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-700 mb-1">Sort Order (0-99)</label>
-                            <input type="number" name="sort_order" value="0"
-                                   class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end pt-1">
-                        <button type="submit" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs cursor-pointer">
-                            <i class="fas fa-plus me-1 text-purple-400"></i> Add Member
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Existing Members List -->
-            <div>
-                <h4 class="text-xs font-bold text-slate-800 mb-3 flex items-center justify-between">
-                    <span>Current Members (<span id="membersCountText">0</span>)</span>
-                </h4>
-                <div id="membersListContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div class="text-center py-8 text-slate-400 text-xs col-span-full">
-                        <i class="fas fa-spinner fa-spin text-lg mb-2"></i> Loading members...
-                    </div>
-                </div>
-            </div>
-        </div>
+  <div class="bg-white rounded-3xl max-w-4xl w-full p-6 shadow-2xl border border-slate-200 max-h-[92vh] flex flex-col space-y-4">
+    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+      <div>
+        <span class="text-[10px] font-bold text-violet-600 uppercase tracking-wider">Lineup & Biodata Management</span>
+        <h3 class="text-lg font-extrabold text-slate-900 flex items-center gap-2" id="membersModalTitle">
+          <i class="fas fa-id-card text-violet-600"></i> Members Lineup
+        </h3>
+      </div>
+      <button type="button" onclick="closeMembersModal()" class="text-slate-400 hover:text-slate-600 text-base p-1 cursor-pointer">
+        <i class="fas fa-xmark"></i>
+      </button>
     </div>
+
+    <div class="overflow-y-auto flex-grow space-y-6 pr-1">
+      <!-- Add Member Form -->
+      <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h4 class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+            <i class="fas fa-user-plus text-purple-600"></i> Add Member to Lineup
+          </h4>
+        </div>
+        <form action="/admin/members/add" method="POST" class="space-y-3">
+          <input type="hidden" name="artist_id" id="add_member_artist_id">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Stage Name <span class="text-rose-500">*</span></label>
+              <input type="text" name="stage_name" required placeholder="e.g. Ruka"
+                     class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Birth / Real Name</label>
+              <input type="text" name="birth_name" placeholder="e.g. Kawai Ruka (河井 瑠花)"
+                     class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Position</label>
+              <input type="text" name="position" placeholder="e.g. Main Dancer, Main Rapper"
+                     class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Date of Birth</label>
+              <input type="date" name="dob"
+                     class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Zodiac</label>
+              <input type="text" name="zodiac" placeholder="e.g. Aries"
+                     class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">MBTI</label>
+              <input type="text" name="mbti" placeholder="e.g. ENFP"
+                     class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Blood Type</label>
+              <input type="text" name="blood_type" placeholder="e.g. O / A / B / AB"
+                     class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Nationality</label>
+              <input type="text" name="nationality" placeholder="e.g. South Korean / Japanese"
+                     class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Photo Path / URL</label>
+              <input type="text" name="photo" placeholder="/images/members/... or https://..."
+                     class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Sort Order (0-99)</label>
+              <input type="number" name="sort_order" value="0"
+                     class="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+            </div>
+          </div>
+
+          <div class="flex justify-end pt-1">
+            <button type="submit" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs cursor-pointer">
+              <i class="fas fa-plus me-1 text-purple-400"></i> Add Member
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Existing Members List -->
+      <div>
+        <h4 class="text-xs font-bold text-slate-800 mb-3 flex items-center justify-between">
+          <span>Current Lineup Members (<span id="membersCountText">0</span>)</span>
+        </h4>
+        <div id="membersListContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="text-center py-8 text-slate-400 text-xs col-span-full">
+            <i class="fas fa-spinner fa-spin text-lg mb-2"></i> Loading members...
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ===================================================================== -->
 <!-- MODAL 3: EDIT MEMBER PROFILE -->
 <!-- ===================================================================== -->
 <div id="editMemberModal" class="fixed inset-0 z-55 hidden bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <i class="fas fa-user-pen text-violet-600"></i> Edit Member Biodata
-            </h3>
-            <button type="button" onclick="closeEditMemberModal()" class="text-slate-400 hover:text-slate-600 text-sm p-1 cursor-pointer">
-                <i class="fas fa-xmark"></i>
-            </button>
-        </div>
-
-        <form action="/admin/members/edit" method="POST" class="space-y-3">
-            <input type="hidden" name="id" id="edit_member_id">
-            <div class="grid grid-cols-2 gap-2">
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Stage Name</label>
-                    <input type="text" name="stage_name" id="edit_member_stage_name" required
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Birth / Real Name</label>
-                    <input type="text" name="birth_name" id="edit_member_birth_name"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-[11px] font-bold text-slate-700 mb-1">Position</label>
-                <input type="text" name="position" id="edit_member_position"
-                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-            </div>
-
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-700 mb-1">DOB</label>
-                    <input type="date" name="dob" id="edit_member_dob"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Zodiac</label>
-                    <input type="text" name="zodiac" id="edit_member_zodiac"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-700 mb-1">MBTI</label>
-                    <input type="text" name="mbti" id="edit_member_mbti"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Blood</label>
-                    <input type="text" name="blood_type" id="edit_member_blood_type"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Height (cm)</label>
-                    <input type="number" step="0.1" name="height_cm" id="edit_member_height_cm"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Nationality</label>
-                    <input type="text" name="nationality" id="edit_member_nationality"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                </div>
-            </div>
-
-            <div class="grid grid-cols-3 gap-2">
-                <div class="col-span-2">
-                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Photo Path / URL</label>
-                    <input type="text" name="photo" id="edit_member_photo"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-700 mb-1">Sort Order</label>
-                    <input type="number" name="sort_order" id="edit_member_sort_order"
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                </div>
-            </div>
-
-            <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                <button type="button" onclick="closeEditMemberModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer">
-                    Cancel
-                </button>
-                <button type="submit" class="px-5 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs shadow-md cursor-pointer">
-                    Update Member
-                </button>
-            </div>
-        </form>
+  <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto space-y-4">
+    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+      <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+        <i class="fas fa-user-pen text-violet-600"></i> Edit Member Biodata
+      </h3>
+      <button type="button" onclick="closeEditMemberModal()" class="text-slate-400 hover:text-slate-600 text-sm p-1 cursor-pointer">
+        <i class="fas fa-xmark"></i>
+      </button>
     </div>
+
+    <form action="/admin/members/edit" method="POST" class="space-y-3">
+      <input type="hidden" name="id" id="edit_member_id">
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-[11px] font-bold text-slate-700 mb-1">Stage Name</label>
+          <input type="text" name="stage_name" id="edit_member_stage_name" required
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-700 mb-1">Birth / Real Name</label>
+          <input type="text" name="birth_name" id="edit_member_birth_name"
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-[11px] font-bold text-slate-700 mb-1">Position</label>
+        <input type="text" name="position" id="edit_member_position"
+               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div>
+          <label class="block text-[11px] font-bold text-slate-700 mb-1">DOB</label>
+          <input type="date" name="dob" id="edit_member_dob"
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-700 mb-1">Zodiac</label>
+          <input type="text" name="zodiac" id="edit_member_zodiac"
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-700 mb-1">MBTI</label>
+          <input type="text" name="mbti" id="edit_member_mbti"
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-700 mb-1">Blood</label>
+          <input type="text" name="blood_type" id="edit_member_blood_type"
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-[11px] font-bold text-slate-700 mb-1">Height (cm)</label>
+          <input type="number" step="0.1" name="height_cm" id="edit_member_height_cm"
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-700 mb-1">Nationality</label>
+          <input type="text" name="nationality" id="edit_member_nationality"
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-2">
+        <div class="col-span-2">
+          <label class="block text-[11px] font-bold text-slate-700 mb-1">Photo Path / URL</label>
+          <input type="text" name="photo" id="edit_member_photo"
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-700 mb-1">Sort Order</label>
+          <input type="number" name="sort_order" id="edit_member_sort_order"
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-300">
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+        <button type="button" onclick="closeEditMemberModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer">
+          Cancel
+        </button>
+        <button type="submit" class="px-5 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs shadow-md cursor-pointer">
+          Update Member
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <script>
-// Filter Artists by Name, Fandom, Agency
-function filterArtists() {
-    const filter = (document.getElementById("artistSearchInput").value || '').toLowerCase().trim();
-    const cards = document.querySelectorAll(".artist-card");
-
-    cards.forEach(card => {
-        const text = card.innerText.toLowerCase();
-        card.style.display = text.includes(filter) ? "" : "none";
-    });
+function autoSlugify(text) {
+  const slugInput = document.getElementById('new_artist_slug');
+  if (slugInput) {
+    slugInput.value = text.toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
 }
 
-// Edit Artist Modal
-function openEditArtistModal(artistId) {
-    const card = document.querySelector(`.artist-card[data-artist*='"id":${artistId},']`) || 
-                 document.querySelector(`.artist-card[data-artist*='"id":${artistId}}']`);
-    if (!card) return;
+let activeTypeFilter = '';
 
-    try {
-        const artist = JSON.parse(card.getAttribute('data-artist'));
-        document.getElementById('edit_artist_id').value = artist.id;
-        document.getElementById('edit_artist_name').value = artist.name || '';
-        document.getElementById('edit_artist_slug').value = artist.slug || '';
-        document.getElementById('edit_artist_group_type').value = artist.group_type || 'Boy Group';
-        document.getElementById('edit_artist_agency').value = artist.agency || '';
-        document.getElementById('edit_artist_debut_year').value = artist.debut_year || '';
-        document.getElementById('edit_artist_fandom_name').value = artist.fandom_name || '';
-        document.getElementById('edit_artist_image_url').value = artist.image_url || '';
-        document.getElementById('edit_artist_header_image').value = artist.header_image || '';
-        document.getElementById('edit_artist_description').value = artist.description || '';
-        
-        document.getElementById('editArtistModal').classList.remove('hidden');
-    } catch (e) {
-        console.error('Error parsing artist data:', e);
+function setArtistFilter(type) {
+  activeTypeFilter = type;
+  const chips = document.querySelectorAll('.artist-type-chip');
+  chips.forEach(chip => {
+    if ((type === '' && chip.innerText.includes('All')) || (type !== '' && chip.innerText.includes(type))) {
+      chip.className = 'artist-type-chip px-2.5 py-1 rounded-lg bg-slate-900 text-white shrink-0 cursor-pointer';
+    } else {
+      chip.className = 'artist-type-chip px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 cursor-pointer';
     }
+  });
+  filterArtists();
+}
+
+function filterArtists() {
+  const query = (document.getElementById("artistSearchInput").value || '').toLowerCase().trim();
+  const cards = document.querySelectorAll(".artist-card");
+
+  cards.forEach(card => {
+    const text = card.innerText.toLowerCase();
+    const groupType = card.getAttribute('data-group-type') || '';
+
+    const matchesQuery = !query || text.includes(query);
+    const matchesType = !activeTypeFilter || groupType === activeTypeFilter;
+
+    card.style.display = (matchesQuery && matchesType) ? "" : "none";
+  });
+}
+
+function openEditArtistModal(artistId) {
+  const card = document.querySelector(`.artist-card[data-artist*='"id":${artistId},']`) || 
+               document.querySelector(`.artist-card[data-artist*='"id":${artistId}}']`);
+  if (!card) return;
+
+  try {
+    const artist = JSON.parse(card.getAttribute('data-artist'));
+    document.getElementById('edit_artist_id').value = artist.id;
+    document.getElementById('edit_artist_name').value = artist.name || '';
+    document.getElementById('edit_artist_slug').value = artist.slug || '';
+    document.getElementById('edit_artist_group_type').value = artist.group_type || 'Boy Group';
+    document.getElementById('edit_artist_agency').value = artist.agency || '';
+    document.getElementById('edit_artist_debut_year').value = artist.debut_year || '';
+    document.getElementById('edit_artist_fandom_name').value = artist.fandom_name || '';
+    document.getElementById('edit_artist_image_url').value = artist.image_url || '';
+    document.getElementById('edit_artist_header_image').value = artist.header_image || '';
+    document.getElementById('edit_artist_description').value = artist.description || '';
+    
+    document.getElementById('editArtistModal').classList.remove('hidden');
+  } catch (e) {
+    console.error('Error parsing artist data:', e);
+  }
 }
 
 function closeEditArtistModal() {
-    document.getElementById('editArtistModal').classList.add('hidden');
+  document.getElementById('editArtistModal').classList.add('hidden');
 }
 
-// Members Management Modal
 let currentMembersCache = [];
 
 async function openMembersModal(artistId, artistName) {
-    document.getElementById('membersModalTitle').innerHTML = `<i class="fas fa-id-card text-violet-600"></i> ${artistName} Lineup`;
-    document.getElementById('add_member_artist_id').value = artistId;
-    document.getElementById('membersListContainer').innerHTML = '<div class="text-center py-8 text-slate-400 text-xs col-span-full"><i class="fas fa-spinner fa-spin text-lg mb-2"></i> Loading members...</div>';
-    document.getElementById('membersModal').classList.remove('hidden');
+  document.getElementById('membersModalTitle').innerHTML = `<i class="fas fa-id-card text-violet-600"></i> ${artistName} Lineup`;
+  document.getElementById('add_member_artist_id').value = artistId;
+  document.getElementById('membersListContainer').innerHTML = '<div class="text-center py-8 text-slate-400 text-xs col-span-full"><i class="fas fa-spinner fa-spin text-lg mb-2"></i> Loading lineup members...</div>';
+  document.getElementById('membersModal').classList.remove('hidden');
 
-    try {
-        const res = await fetch(`/admin/artists/${artistId}/members`);
-        const data = await res.json();
-        if (data.success) {
-            currentMembersCache = data.members;
-            document.getElementById('membersCountText').innerText = data.members.length;
-            renderMembersList(data.members);
-        } else {
-            document.getElementById('membersListContainer').innerHTML = `<div class="text-center py-6 text-rose-500 text-xs col-span-full">${data.message || 'Failed to load members.'}</div>`;
-        }
-    } catch (err) {
-        document.getElementById('membersListContainer').innerHTML = `<div class="text-center py-6 text-rose-500 text-xs col-span-full">Error loading members: ${err.message}</div>`;
+  try {
+    const res = await fetch(`/admin/artists/${artistId}/members`);
+    const data = await res.json();
+    if (data.success) {
+      currentMembersCache = data.members;
+      document.getElementById('membersCountText').innerText = data.members.length;
+      renderMembersList(data.members);
+    } else {
+      document.getElementById('membersListContainer').innerHTML = `<div class="text-center py-6 text-rose-500 text-xs col-span-full">${data.message || 'Failed to load members.'}</div>`;
     }
+  } catch (err) {
+    document.getElementById('membersListContainer').innerHTML = `<div class="text-center py-6 text-rose-500 text-xs col-span-full">Error loading members: ${err.message}</div>`;
+  }
 }
 
 function renderMembersList(members) {
-    const container = document.getElementById('membersListContainer');
-    if (!members || members.length === 0) {
-        container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs col-span-full">No members added to this lineup yet. Use the form above to add members.</div>`;
-        return;
-    }
+  const container = document.getElementById('membersListContainer');
+  if (!members || members.length === 0) {
+    container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs col-span-full">No members added to this lineup yet. Use the form above to add members.</div>`;
+    return;
+  }
 
-    container.innerHTML = members.map(m => `
-        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-3">
-            <div class="flex items-center space-x-3 min-w-0">
-                <div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-200 shrink-0 border border-slate-200">
-                    <img src="${m.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300'}" 
-                         alt="${m.stage_name}" class="w-full h-full object-cover"
-                         onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300'">
-                </div>
-                <div class="min-w-0">
-                    <div class="flex items-center gap-1.5">
-                        <span class="font-bold text-xs text-slate-900 truncate">${m.stage_name}</span>
-                        ${m.position ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-violet-100 text-violet-700 truncate">${m.position.split(',')[0]}</span>` : ''}
-                    </div>
-                    <div class="text-[10px] text-slate-500 truncate mt-0.5">
-                        ${m.birth_name || ''} ${m.mbti ? `&bull; ${m.mbti}` : ''} ${m.dob ? `&bull; ${m.dob}` : ''}
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-1 shrink-0">
-                <button type="button" onclick="openEditMemberModal(${m.id})" 
-                        class="p-1.5 text-slate-600 hover:text-violet-700 hover:bg-violet-100 rounded-lg transition-colors cursor-pointer" title="Edit Member">
-                    <i class="fas fa-user-pen text-xs"></i>
-                </button>
-                <form action="/admin/members/delete" method="POST" onsubmit="return confirm('Remove ${m.stage_name} from lineup?')" class="inline">
-                    <input type="hidden" name="id" value="${m.id}">
-                    <button type="submit" class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Delete Member">
-                        <i class="fas fa-trash-can text-xs"></i>
-                    </button>
-                </form>
-            </div>
+  container.innerHTML = members.map(m => `
+    <div class="p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center justify-between gap-3">
+      <div class="flex items-center space-x-3 min-w-0">
+        <div class="w-12 h-12 rounded-xl overflow-hidden bg-slate-200 shrink-0 border border-slate-200">
+          <img src="${m.photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300'}" 
+               alt="${m.stage_name}" class="w-full h-full object-cover"
+               onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300'">
         </div>
-    `).join('');
+        <div class="min-w-0">
+          <div class="flex items-center gap-1.5">
+            <span class="font-bold text-xs text-slate-900 truncate">${m.stage_name}</span>
+            ${m.position ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-violet-100 text-violet-700 truncate">${m.position.split(',')[0]}</span>` : ''}
+          </div>
+          <div class="text-[10px] text-slate-500 truncate mt-0.5">
+            ${m.birth_name || ''} ${m.mbti ? `&bull; ${m.mbti}` : ''} ${m.dob ? `&bull; ${m.dob}` : ''}
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-1 shrink-0">
+        <button type="button" onclick="openEditMemberModal(${m.id})" 
+                class="p-1.5 text-slate-600 hover:text-violet-700 hover:bg-violet-100 rounded-lg transition-colors cursor-pointer" title="Edit Member">
+          <i class="fas fa-user-pen text-xs"></i>
+        </button>
+        <form action="/admin/members/delete" method="POST" onsubmit="return confirm('Remove ${m.stage_name} from lineup?')" class="inline">
+          <input type="hidden" name="id" value="${m.id}">
+          <button type="submit" class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Delete Member">
+            <i class="fas fa-trash-can text-xs"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  `).join('');
 }
 
 function closeMembersModal() {
-    document.getElementById('membersModal').classList.add('hidden');
+  document.getElementById('membersModal').classList.add('hidden');
 }
 
-// Edit Member Modal
 function openEditMemberModal(memberId) {
-    const member = currentMembersCache.find(m => m.id === memberId);
-    if (!member) return;
+  const member = currentMembersCache.find(m => m.id === memberId);
+  if (!member) return;
 
-    document.getElementById('edit_member_id').value = member.id;
-    document.getElementById('edit_member_stage_name').value = member.stage_name || '';
-    document.getElementById('edit_member_birth_name').value = member.birth_name || '';
-    document.getElementById('edit_member_position').value = member.position || '';
-    document.getElementById('edit_member_dob').value = member.dob || '';
-    document.getElementById('edit_member_zodiac').value = member.zodiac || '';
-    document.getElementById('edit_member_mbti').value = member.mbti || '';
-    document.getElementById('edit_member_blood_type').value = member.blood_type || '';
-    document.getElementById('edit_member_height_cm').value = member.height_cm || '';
-    document.getElementById('edit_member_nationality').value = member.nationality || '';
-    document.getElementById('edit_member_photo').value = member.photo || '';
-    document.getElementById('edit_member_sort_order').value = member.sort_order || 0;
+  document.getElementById('edit_member_id').value = member.id;
+  document.getElementById('edit_member_stage_name').value = member.stage_name || '';
+  document.getElementById('edit_member_birth_name').value = member.birth_name || '';
+  document.getElementById('edit_member_position').value = member.position || '';
+  document.getElementById('edit_member_dob').value = member.dob || '';
+  document.getElementById('edit_member_zodiac').value = member.zodiac || '';
+  document.getElementById('edit_member_mbti').value = member.mbti || '';
+  document.getElementById('edit_member_blood_type').value = member.blood_type || '';
+  document.getElementById('edit_member_height_cm').value = member.height_cm || '';
+  document.getElementById('edit_member_nationality').value = member.nationality || '';
+  document.getElementById('edit_member_photo').value = member.photo || '';
+  document.getElementById('edit_member_sort_order').value = member.sort_order || 0;
 
-    document.getElementById('editMemberModal').classList.remove('hidden');
+  document.getElementById('editMemberModal').classList.remove('hidden');
 }
 
 function closeEditMemberModal() {
-    document.getElementById('editMemberModal').classList.add('hidden');
+  document.getElementById('editMemberModal').classList.add('hidden');
 }
 </script>
 

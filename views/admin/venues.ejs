@@ -1,103 +1,110 @@
-<%- include('../partials/header', { title: 'Manage Venues | K-Sync Admin' }) %>
+<%- include('../partials/header', { title: 'Manage Venues & Transit | K-Sync Admin' }) %>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
     <%- include('../partials/flash') %>
-
-    <!-- Standard Header with Breadcrumbs & Action -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-        <div>
-            <div class="flex items-center space-x-2 mb-2 flex-wrap gap-y-1">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-white shadow-sm border border-slate-700">
-                    <i class="fas fa-location-dot me-1.5 text-emerald-400"></i> Venues & Transit
-                </span>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <%= venues.length %> Venues Recorded
-                </span>
-            </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Malaysian Concert & Event Venues</h1>
-            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Manage preset concert arenas, stadiums, and public transit navigation (LRT, MRT, Monorail, KTM).</p>
-        </div>
-        <div class="flex items-center space-x-2 self-start md:self-auto shrink-0">
-            <a href="/admin/events" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center cursor-pointer">
-                <i class="fas fa-calendar-days me-1.5 text-purple-600"></i> View Events Catalog
-            </a>
-        </div>
-    </div>
-
+    <%- include('admin-nav', { activeTab: 'venues', pageTitle: 'Malaysian Venues & Transit Hubs' }) %>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-        <!-- Venue Model Info & Action Card -->
-        <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs h-fit space-y-4">
-            <div class="flex items-center space-x-2 border-b border-slate-100 pb-3">
-                <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs font-bold">
-                    <i class="fas fa-circle-info"></i>
+        <!-- Venue Model Info & Transit Guide Card -->
+        <div class="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs h-fit space-y-5">
+            <div class="flex items-center space-x-2.5 border-b border-slate-100 pb-3.5">
+                <div class="w-9 h-9 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm font-black border border-emerald-100">
+                    <i class="fas fa-train"></i>
                 </div>
-                <h3 class="text-sm font-bold text-slate-900">Embedded Venue Architecture</h3>
+                <div>
+                    <h3 class="text-sm font-black text-slate-900">Transit Navigation Guide</h3>
+                    <p class="text-[11px] text-slate-500 font-medium">LRT, MRT & KTM stations connected to venues.</p>
+                </div>
             </div>
             
-            <p class="text-xs text-slate-500 leading-relaxed font-medium">
-                In K-Sync Malaysia, concert venues (<span class="font-bold text-slate-700">Name, City, State, Address</span>) are embedded directly within event records for maximum database performance.
+            <p class="text-xs text-slate-600 leading-relaxed font-medium">
+                Concert venues in K-Sync Malaysia are embedded directly with rapid transit directions to help Malaysian fans avoid parking congestion and highway bottlenecks.
             </p>
 
-            <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 space-y-2 text-xs">
-                <div class="font-bold text-slate-800 flex items-center">
-                    <i class="fas fa-train text-emerald-600 me-1.5"></i> Top Malaysian Transit Hubs:
+            <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-3 text-xs">
+                <div class="font-black text-slate-900 flex items-center gap-1.5">
+                    <i class="fas fa-compass text-emerald-600"></i> Key Concert Transit Stations:
                 </div>
-                <ul class="text-[11px] text-slate-600 space-y-1.5 list-disc list-inside font-medium">
-                    <li><strong class="text-slate-800">Axiata Arena:</strong> LRT Sri Petaling Line</li>
-                    <li><strong class="text-slate-800">Zepp KL:</strong> Hang Tuah LRT & Monorail</li>
-                    <li><strong class="text-slate-800">Mega Star Arena:</strong> MRT Cochrane / Maluri</li>
-                    <li><strong class="text-slate-800">Bukit Jalil Stadium:</strong> LRT Bukit Jalil Gate A</li>
-                </ul>
+                <div class="space-y-2.5">
+                    <div class="p-2.5 rounded-xl bg-white border border-slate-100 shadow-2xs">
+                        <div class="font-extrabold text-slate-900">Axiata Arena Bukit Jalil</div>
+                        <div class="text-[11px] text-emerald-700 font-bold mt-0.5"><i class="fas fa-train-subway me-1"></i> LRT Sri Petaling (PH5)</div>
+                        <div class="text-[10px] text-slate-500 mt-0.5">5-minute covered pedestrian plaza straight to Gate 1.</div>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-white border border-slate-100 shadow-2xs">
+                        <div class="font-extrabold text-slate-900">Zepp Kuala Lumpur (BBCC)</div>
+                        <div class="text-[11px] text-purple-700 font-bold mt-0.5"><i class="fas fa-train-subway me-1"></i> Hang Tuah Interchange</div>
+                        <div class="text-[10px] text-slate-500 mt-0.5">Direct air-conditioned mall connection via LaLaport Level 2.</div>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-white border border-slate-100 shadow-2xs">
+                        <div class="font-extrabold text-slate-900">Mega Star Arena KL</div>
+                        <div class="text-[11px] text-indigo-700 font-bold mt-0.5"><i class="fas fa-train-subway me-1"></i> MRT Bukit Bintang</div>
+                        <div class="text-[10px] text-slate-500 mt-0.5">Inside Sungei Wang Plaza Level 4 via pedestrian bridge.</div>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-white border border-slate-100 shadow-2xs">
+                        <div class="font-extrabold text-slate-900">National Stadium Bukit Jalil</div>
+                        <div class="text-[11px] text-emerald-700 font-bold mt-0.5"><i class="fas fa-train-subway me-1"></i> LRT Bukit Jalil (PH5)</div>
+                        <div class="text-[10px] text-slate-500 mt-0.5">Covered overhead pedestrian linkway to Gate A, B, and C.</div>
+                    </div>
+                </div>
             </div>
 
-            <a href="/admin/events" class="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center justify-center space-x-1.5 cursor-pointer">
-                <i class="fas fa-calendar-days text-slate-500"></i>
-                <span>View Events at Venues</span>
+            <a href="/admin/events" class="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95">
+                <i class="fas fa-calendar-days text-emerald-400"></i> View Events at Venues
             </a>
         </div>
 
-        <!-- Venues List Directory (Derived from Events) -->
-        <div class="lg:col-span-2 bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
-                <h3 class="text-sm font-bold text-slate-900 flex items-center">
-                    <i class="fas fa-map-location-dot text-emerald-500 me-2"></i> Active Venues Directory (<%= venues.length %>)
-                </h3>
-                <div class="relative w-full sm:w-60">
-                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" id="venueSearchInput" onkeyup="filterVenues()" placeholder="Search venue, city, or state..."
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-300">
+        <!-- Venues List Directory -->
+        <div class="lg:col-span-2 bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                <div>
+                    <h3 class="text-sm font-black text-slate-900 flex items-center gap-2">
+                        <i class="fas fa-map-location-dot text-emerald-500"></i> Active Malaysian Venues (<%= venues.length %>)
+                    </h3>
+                    <p class="text-[11px] text-slate-500 font-medium">Arenas, exhibition centres, and event halls in registry.</p>
+                </div>
+                <div class="relative w-full sm:w-64">
+                    <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="venueSearchInput" onkeyup="filterVenues()" placeholder="Search venue, city, or transit..."
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-300 font-medium">
                 </div>
             </div>
 
-            <div class="space-y-3" id="venuesList">
+            <div class="space-y-3.5" id="venuesList">
                 <% if (venues.length === 0) { %>
-                    <div class="text-center py-10 text-slate-400 text-xs">
-                        <i class="fas fa-map-pin text-2xl text-slate-300 mb-2"></i>
-                        <div>No venues recorded yet. Create an event to record a concert venue.</div>
+                    <div class="text-center py-14 text-slate-400 text-xs">
+                        <i class="fas fa-map-pin text-3xl text-slate-300 mb-2.5"></i>
+                        <div class="font-bold text-slate-700">No venues recorded yet</div>
+                        <div class="text-slate-500 mt-0.5">Submit an event listing to record a venue.</div>
                     </div>
                 <% } else { %>
                     <% venues.forEach(function(v) { %>
-                        <div class="p-4 rounded-2xl bg-slate-50/80 hover:bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-start justify-between gap-3 transition-colors venue-card"
+                        <div class="p-4.5 rounded-2xl bg-slate-50/70 hover:bg-slate-50 border border-slate-200/80 hover:border-emerald-300 flex flex-col sm:flex-row sm:items-start justify-between gap-3.5 transition-all venue-card"
                              data-text="<%= (v.name + ' ' + (v.city || '') + ' ' + (v.state || '') + ' ' + (v.address || '')).toLowerCase() %>">
-                            <div class="space-y-1 min-w-0 flex-1">
+                            <div class="space-y-1.5 min-w-0 flex-1">
                                 <div class="flex items-center space-x-2 flex-wrap gap-y-1">
-                                    <h4 class="font-bold text-sm text-slate-900"><%= v.name %></h4>
-                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
-                                        <i class="fas fa-calendar-check me-1"></i><%= v.event_count || 1 %> Event<%= (v.event_count || 1) > 1 ? 's' : '' %>
+                                    <h4 class="font-black text-sm text-slate-900"><%= v.name %></h4>
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        <i class="fas fa-calendar-check me-1"></i><%= v.event_count || 1 %> Show<%= (v.event_count || 1) > 1 ? 's' : '' %>
                                     </span>
                                 </div>
-                                <div class="text-[11px] text-slate-500 flex items-center">
+                                <div class="text-xs text-slate-600 flex items-center font-medium">
                                     <i class="fas fa-location-dot text-rose-500 me-1.5 shrink-0"></i>
                                     <span class="truncate"><%= v.address ? (v.address + ', ') : '' %><%= v.city %>, <%= v.state %></span>
                                 </div>
+                                <% if (v.transit_info) { %>
+                                    <div class="text-[11px] text-emerald-700 font-bold flex items-center mt-1">
+                                        <i class="fas fa-train-subway me-1.5 text-emerald-500"></i>
+                                        <span><%= v.transit_info %></span>
+                                    </div>
+                                <% } %>
                             </div>
-                            <div class="flex items-center space-x-1.5 self-end sm:self-start shrink-0">
-                                <a href="https://maps.google.com/?q=<%= encodeURIComponent(v.name + ' ' + (v.city || 'Malaysia')) %>" target="_blank" rel="noopener noreferrer" class="p-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-xl border border-emerald-200/60 transition-colors" title="Open Google Maps">
+                            <div class="flex items-center space-x-2 self-end sm:self-start shrink-0">
+                                <a href="https://maps.google.com/?q=<%= encodeURIComponent(v.name + ' ' + (v.city || 'Malaysia')) %>" target="_blank" rel="noopener noreferrer" class="p-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-xl border border-emerald-200 transition-colors" title="Open Google Maps">
                                     <i class="fas fa-map-location-dot text-xs"></i>
                                 </a>
-                                <a href="/admin/events?search=<%= encodeURIComponent(v.name) %>" class="px-3 py-1.5 text-xs font-bold bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 rounded-xl transition-all shadow-xs flex items-center">
-                                    <i class="fas fa-eye text-emerald-600 me-1.5"></i> View Events
+                                <a href="/admin/events?search=<%= encodeURIComponent(v.name) %>" class="px-3.5 py-1.5 text-xs font-bold bg-white border border-slate-200 text-slate-800 hover:bg-slate-100 rounded-xl transition-all shadow-2xs flex items-center gap-1.5">
+                                    <i class="fas fa-eye text-emerald-600 text-xs"></i> View Shows
                                 </a>
                             </div>
                         </div>

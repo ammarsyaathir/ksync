@@ -1,148 +1,166 @@
-<%- include('../partials/header', { title: 'Audit Trail Logs | K-Sync Admin' }) %>
+<%- include('../partials/header', { title: 'Security Audit Trail | K-Sync Admin' }) %>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-    <%- include('../partials/flash') %>
+  <%- include('../partials/flash') %>
 
-    <!-- Standard Header with Breadcrumbs & Action -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-        <div>
-            <div class="flex items-center space-x-2 mb-2 flex-wrap gap-y-1">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-white shadow-sm border border-slate-700">
-                    <i class="fas fa-clock-rotate-left me-1.5 text-amber-400"></i> Immutable Audit Trail
-                </span>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                    <%= logs.length %> Records Displayed
-                </span>
-            </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">System Security & Activity Audit Trail</h1>
-            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Immutable audit trail of administrator verification actions, event submissions, credential logins, and security events.</p>
+  <!-- Admin Command Subnav Ribbon -->
+  <%- include('admin-nav', { activeTab: 'logs', pageTitle: 'Security Audit Trail & Governance' }) %>
+
+  <!-- Filter & Action Chips Bar -->
+  <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs mb-6 space-y-4">
+    <!-- Server-Side Filter Form -->
+    <form action="/admin/logs" method="GET" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+      <div class="w-full sm:w-64">
+        <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Filter by Action</label>
+        <select name="action" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-300 cursor-pointer">
+          <option value="">All Action Types (<%= actionTypes ? actionTypes.length : 0 %>)</option>
+          <% if (typeof actionTypes !== 'undefined' && actionTypes) { %>
+            <% actionTypes.forEach(function(act) { %>
+              <option value="<%= act %>" <%= selectedAction === act ? 'selected' : '' %>><%= act %></option>
+            <% }); %>
+          <% } %>
+        </select>
+      </div>
+
+      <div class="w-full sm:flex-1">
+        <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Search Keywords</label>
+        <div class="relative">
+          <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+          <input type="text" name="q" value="<%= searchQuery || '' %>" placeholder="Search by description, username, action, or IP address..."
+                 class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-300">
         </div>
-        <div class="flex items-center space-x-2 self-start md:self-auto shrink-0">
-            <span class="px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold border border-slate-200 inline-flex items-center">
-                <i class="fas fa-fingerprint text-purple-600 me-1.5"></i> Tamper-Evident Logs
-            </span>
-        </div>
+      </div>
+
+      <div class="flex items-center space-x-2 pt-2 sm:pt-4">
+        <button type="submit" class="w-full sm:w-auto px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5">
+          <i class="fas fa-filter text-amber-400 text-xs"></i> Apply Filter
+        </button>
+        <% if (selectedAction || searchQuery) { %>
+          <a href="/admin/logs" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition-colors">
+            Clear
+          </a>
+        <% } %>
+      </div>
+    </form>
+
+    <!-- Quick Filter Chips -->
+    <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-2 border-t border-slate-100 text-[11px] font-bold">
+      <span class="text-slate-400 text-[10px] uppercase font-black me-1 shrink-0">Quick Views:</span>
+      <a href="/admin/logs" class="px-2.5 py-1 rounded-lg transition-colors shrink-0 <%= !selectedAction ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' %>">
+        All Logs
+      </a>
+      <a href="/admin/logs?action=APPROVE_EVENT" class="px-2.5 py-1 rounded-lg transition-colors shrink-0 <%= selectedAction === 'APPROVE_EVENT' ? 'bg-emerald-600 text-white' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' %>">
+        <i class="fas fa-check-circle me-1"></i> Approvals
+      </a>
+      <a href="/admin/logs?action=REJECT_EVENT" class="px-2.5 py-1 rounded-lg transition-colors shrink-0 <%= selectedAction === 'REJECT_EVENT' ? 'bg-rose-600 text-white' : 'bg-rose-50 text-rose-700 hover:bg-rose-100' %>">
+        <i class="fas fa-times-circle me-1"></i> Rejections
+      </a>
+      <a href="/admin/logs?action=UPDATE_ROLE" class="px-2.5 py-1 rounded-lg transition-colors shrink-0 <%= selectedAction === 'UPDATE_ROLE' ? 'bg-purple-600 text-white' : 'bg-purple-50 text-purple-700 hover:bg-purple-100' %>">
+        <i class="fas fa-user-shield me-1"></i> Role Updates
+      </a>
+      <a href="/admin/logs?action=VERIFY_FANCLUB" class="px-2.5 py-1 rounded-lg transition-colors shrink-0 <%= selectedAction === 'VERIFY_FANCLUB' ? 'bg-pink-600 text-white' : 'bg-pink-50 text-pink-700 hover:bg-pink-100' %>">
+        <i class="fas fa-certificate me-1"></i> Fanclub Badges
+      </a>
+    </div>
+  </div>
+
+  <!-- Audit Table Card Container -->
+  <div class="bg-white rounded-3xl p-5 sm:p-6 lg:p-7 border border-slate-200/80 shadow-xs space-y-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-2">
+      <span class="text-xs font-bold text-slate-600">
+        Showing <strong class="text-slate-900"><%= logs.length %></strong> recorded audit events
+      </span>
+      <span class="text-[10px] text-slate-400 uppercase font-black tracking-wider flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        Append-Only Forensic Ledger
+      </span>
     </div>
 
-
-    <!-- Filter Bar Card -->
-    <div class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/80 shadow-xs mb-6">
-        <form action="/admin/logs" method="GET" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-            <div class="w-full sm:w-64">
-                <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Filter by Action</label>
-                <select name="action" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-300 cursor-pointer">
-                    <option value="">All Action Types (<%= actionTypes ? actionTypes.length : 0 %>)</option>
-                    <% if (typeof actionTypes !== 'undefined' && actionTypes) { %>
-                        <% actionTypes.forEach(function(act) { %>
-                            <option value="<%= act %>" <%= selectedAction === act ? 'selected' : '' %>><%= act %></option>
-                        <% }); %>
-                    <% } %>
-                </select>
-            </div>
-
-            <div class="w-full sm:flex-1">
-                <label class="block text-[10px] uppercase font-bold text-slate-400 mb-1">Search Keywords</label>
-                <div class="relative">
-                    <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" name="q" value="<%= searchQuery || '' %>" placeholder="Search by description, username, or IP address..."
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-300">
+    <div class="overflow-x-auto rounded-2xl border border-slate-100">
+      <table class="w-full text-left text-xs text-slate-700 min-w-[850px]">
+        <thead class="bg-slate-50/80 text-slate-500 uppercase font-bold text-[10px] tracking-wider border-b border-slate-200">
+          <tr>
+            <th class="p-3.5">Log ID</th>
+            <th class="p-3.5">Timestamp</th>
+            <th class="p-3.5">Actor</th>
+            <th class="p-3.5">Action Code</th>
+            <th class="p-3.5">Target Entity</th>
+            <th class="p-3.5">Context & Audit Note</th>
+            <th class="p-3.5 text-right">Origin IP</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 text-[11px]">
+          <% if (logs.length === 0) { %>
+            <tr>
+              <td colspan="7" class="p-12 text-center text-slate-400 font-sans">
+                <div class="w-12 h-12 mx-auto rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center text-xl mb-3 shadow-xs">
+                  <i class="fas fa-inbox"></i>
                 </div>
-            </div>
-
-            <div class="flex items-center space-x-2 pt-2 sm:pt-4">
-                <button type="submit" class="w-full sm:w-auto px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer flex items-center justify-center">
-                    <i class="fas fa-filter me-1.5 text-amber-400"></i> Apply Filter
-                </button>
-                <% if (selectedAction || searchQuery) { %>
-                    <a href="/admin/logs" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition-colors">
-                        Clear
-                    </a>
+                <div class="font-bold text-slate-700 text-sm">No Audit Logs Recorded</div>
+                <p class="text-[11px] text-slate-500 mt-1">No security activity logs match your filter criteria.</p>
+              </td>
+            </tr>
+          <% } %>
+          <% logs.forEach(function(l) { 
+            const act = (l.action || '').toUpperCase();
+            let badgeStyle = 'bg-slate-100 text-slate-700 border-slate-200';
+            if (act.includes('APPROVE') || act.includes('VERIFY')) {
+              badgeStyle = 'bg-emerald-50 text-emerald-800 border-emerald-200';
+            } else if (act.includes('REJECT') || act.includes('DELETE') || act.includes('REVOKE') || act.includes('SCAM')) {
+              badgeStyle = 'bg-rose-50 text-rose-800 border-rose-200';
+            } else if (act.includes('UPDATE') || act.includes('FREEZE') || act.includes('STATUS')) {
+              badgeStyle = 'bg-amber-50 text-amber-800 border-amber-200';
+            } else if (act.includes('LOGIN') || act.includes('REGISTER')) {
+              badgeStyle = 'bg-sky-50 text-sky-800 border-sky-200';
+            } else if (act.includes('SUBMIT')) {
+              badgeStyle = 'bg-purple-50 text-purple-800 border-purple-200';
+            }
+          %>
+            <tr class="hover:bg-slate-50/70 transition-colors">
+              <td class="p-3.5 font-mono text-[10px] text-slate-400 font-bold">#<%= l.id %></td>
+              <td class="p-3.5 text-slate-500 whitespace-nowrap font-medium"><%= helpers.formatDate(l.created_at) %></td>
+              <td class="p-3.5 whitespace-nowrap">
+                <% if (l.username) { %>
+                  <span class="font-bold text-slate-900 inline-flex items-center gap-1">
+                    <span class="w-5 h-5 rounded-full bg-purple-100 text-purple-700 text-[10px] flex items-center justify-center font-bold">
+                      <%= l.username.charAt(0).toUpperCase() %>
+                    </span>
+                    <span class="text-purple-600 font-extrabold">@<%= l.username %></span>
+                  </span>
+                <% } else { %>
+                  <span class="text-slate-400 italic flex items-center gap-1">
+                    <i class="fas fa-robot text-[10px]"></i> System Automation
+                  </span>
                 <% } %>
-            </div>
-        </form>
+              </td>
+              <td class="p-3.5 whitespace-nowrap">
+                <span class="px-2.5 py-0.5 rounded-md text-[10px] font-mono font-bold border <%= badgeStyle %>">
+                  <%= l.action %>
+                </span>
+              </td>
+              <td class="p-3.5 whitespace-nowrap font-medium text-slate-700">
+                <% if (l.entity_type) { %>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-100 text-slate-700 border border-slate-200">
+                    <%= l.entity_type %> #<%= l.entity_id %>
+                  </span>
+                <% } else { %>
+                  <span class="text-slate-400">-</span>
+                <% } %>
+              </td>
+              <td class="p-3.5 text-slate-700 font-medium max-w-md truncate" title="<%= l.description %>">
+                <%= l.description %>
+              </td>
+              <td class="p-3.5 text-right whitespace-nowrap">
+                <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200/80">
+                  <%= l.ip_address || '127.0.0.1' %>
+                </span>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
     </div>
-
-    <!-- Table Card Container -->
-    <div class="bg-white rounded-3xl p-4 sm:p-6 lg:p-8 border border-slate-200/80 shadow-xs space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-2">
-            <span class="text-xs font-bold text-slate-600">Showing <strong class="text-slate-900"><%= logs.length %></strong> recorded audit logs</span>
-            <span class="text-[10px] text-slate-400 uppercase font-black tracking-wider flex items-center">
-                <i class="fas fa-shield-check text-emerald-500 me-1"></i> Recorded Live
-            </span>
-        </div>
-
-        <div class="overflow-x-auto rounded-2xl border border-slate-100">
-            <table class="w-full text-left text-xs text-slate-700 min-w-[850px]">
-                <thead class="bg-slate-50/80 text-slate-500 uppercase font-bold text-[10px] tracking-wider border-b border-slate-200">
-                    <tr>
-                        <th class="p-3.5">Log ID</th>
-                        <th class="p-3.5">Timestamp</th>
-                        <th class="p-3.5">Actor / User</th>
-                        <th class="p-3.5">Action Type</th>
-                        <th class="p-3.5">Target Entity</th>
-                        <th class="p-3.5">Description & Context</th>
-                        <th class="p-3.5">Origin IP</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 font-mono text-[11px]">
-                    <% if (logs.length === 0) { %>
-                        <tr>
-                            <td colspan="7" class="p-10 text-center text-slate-400 font-sans">
-                                <div class="w-12 h-12 mx-auto rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center text-xl mb-3">
-                                    <i class="fas fa-inbox"></i>
-                                </div>
-                                <div class="font-bold text-slate-700 text-sm">No audit logs found</div>
-                                <p class="text-[11px] text-slate-500 mt-1">No security activity logs match your filter criteria.</p>
-                            </td>
-                        </tr>
-                    <% } %>
-                    <% logs.forEach(function(l) { 
-                        const act = l.action || '';
-                        let badgeStyle = 'bg-slate-100 text-slate-700 border-slate-200';
-                        if (act.includes('APPROVE') || act.includes('VERIFY')) {
-                            badgeStyle = 'bg-emerald-50 text-emerald-700 border-emerald-200';
-                        } else if (act.includes('REJECT') || act.includes('DELETE') || act.includes('REVOKE') || act.includes('SCAM')) {
-                            badgeStyle = 'bg-rose-50 text-rose-700 border-rose-200';
-                        } else if (act.includes('UPDATE') || act.includes('FREEZE')) {
-                            badgeStyle = 'bg-amber-50 text-amber-700 border-amber-200';
-                        } else if (act.includes('LOGIN') || act.includes('REGISTER')) {
-                            badgeStyle = 'bg-sky-50 text-sky-700 border-sky-200';
-                        } else if (act.includes('SUBMIT')) {
-                            badgeStyle = 'bg-purple-50 text-purple-700 border-purple-200';
-                        }
-                    %>
-                        <tr class="hover:bg-slate-50/70 transition-colors">
-                            <td class="p-3.5 text-slate-400 font-bold">#<%= l.id %></td>
-                            <td class="p-3.5 text-slate-500 font-sans whitespace-nowrap"><%= helpers.formatDate(l.created_at) %></td>
-                            <td class="p-3.5 font-sans font-bold text-slate-900">
-                                <% if (l.username) { %>
-                                    <span class="text-pink-600 font-extrabold">@<%= l.username %></span>
-                                <% } else { %>
-                                    <span class="text-slate-400 italic">Guest / System</span>
-                                <% } %>
-                            </td>
-                            <td class="p-3.5 whitespace-nowrap">
-                                <span class="px-2.5 py-1 rounded-md text-[10px] font-bold border <%= badgeStyle %>">
-                                    <%= l.action %>
-                                </span>
-                            </td>
-                            <td class="p-3.5 text-purple-600 font-sans whitespace-nowrap font-medium">
-                                <%= l.entity_type ? l.entity_type + ' #' + l.entity_id : '-' %>
-                            </td>
-                            <td class="p-3.5 font-sans text-slate-700 font-medium max-w-md truncate" title="<%= l.description %>">
-                                <%= l.description %>
-                            </td>
-                            <td class="p-3.5 text-slate-400 font-mono text-[10px] whitespace-nowrap">
-                                <span class="bg-slate-100 px-2 py-0.5 rounded text-[10px]">
-                                    <%= l.ip_address || '127.0.0.1' %>
-                                </span>
-                            </td>
-                        </tr>
-                    <% }); %>
-                </tbody>
-            </table>
-        </div>
-    </div>
+  </div>
 </div>
 
 <%- include('../partials/footer') %>

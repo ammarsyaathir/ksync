@@ -1,174 +1,183 @@
-<%- include('../partials/header', { title: 'Admin Dashboard | K-Sync Malaysia' }) %>
+<%- include('../partials/header', { title: 'System Executive Dashboard | K-Sync Admin' }) %>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
     <%- include('../partials/flash') %>
+    <%- include('admin-nav', { activeTab: 'dashboard', pageTitle: 'System Executive Dashboard' }) %>
 
-    <!-- Standard Header with Breadcrumbs & Action -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-        <div>
-            <div class="flex items-center space-x-2 mb-2 flex-wrap gap-y-1">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-900 text-white shadow-sm border border-slate-700">
-                    <i class="fas fa-shield-halved me-1.5 text-purple-400"></i> Admin Portal
-                </span>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse me-1.5"></span> System Live
-                </span>
-            </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">System Administrator Dashboard</h1>
-            <p class="text-slate-600 text-xs sm:text-sm mt-1 font-medium">Platform overview, verification queue, content moderation & security audit trail.</p>
-        </div>
-        <div class="flex items-center space-x-2 self-start md:self-auto shrink-0 flex-wrap gap-2">
-            <a href="/admin/reports" class="px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
-                <i class="fas fa-shield-virus text-rose-500"></i> Scam Reports Audit
-            </a>
-            <a href="/admin/venues" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
-                <i class="fas fa-landmark text-pink-400"></i> Manage Venues
-            </a>
-        </div>
-    </div>
-
-
-    <!-- Metric Stat Cards (2 columns on mobile, 4 on desktop) -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
-        <div class="p-4 sm:p-5 rounded-3xl bg-white border border-pink-200/80 shadow-xs relative overflow-hidden group hover:shadow-md transition-all">
-            <div class="absolute -right-3 -top-3 w-16 sm:w-20 h-16 sm:h-20 bg-pink-500/10 rounded-full blur-xl group-hover:bg-pink-500/20 transition-all"></div>
-            <div class="flex items-center justify-between mb-2 sm:mb-3">
-                <span class="text-[10px] sm:text-xs font-bold text-pink-700 uppercase tracking-wider">Total Events</span>
-                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center text-xs sm:text-sm font-black border border-pink-100">
+    <!-- Executive KPI Grid (4 Metrics with High-Elevation Surfaces) -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-8">
+        <!-- 1. Total Events Catalog -->
+        <a href="/admin/events" class="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/80 shadow-xs hover:shadow-md hover:border-purple-300 transition-all group relative overflow-hidden block">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-[11px] font-black uppercase tracking-wider text-purple-700">Events Catalog</span>
+                <div class="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-sm font-black border border-purple-100 group-hover:scale-110 transition-transform">
                     <i class="fas fa-calendar-star"></i>
                 </div>
             </div>
-            <div class="text-2xl sm:text-3xl font-black text-slate-900"><%= totalEvents %></div>
-            <div class="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-1 truncate">Concerts & Fan Meetings</div>
-        </div>
+            <div class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight"><%= totalEvents %></div>
+            <div class="text-xs text-slate-500 font-medium mt-1 flex items-center justify-between">
+                <span>Concerts & Gatherings</span>
+                <span class="text-purple-600 font-bold group-hover:translate-x-1 transition-transform">&rarr;</span>
+            </div>
+        </a>
 
-        <div class="p-4 sm:p-5 rounded-3xl bg-white border border-emerald-200/80 shadow-xs relative overflow-hidden group hover:shadow-md transition-all">
-            <div class="absolute -right-3 -top-3 w-16 sm:w-20 h-16 sm:h-20 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition-all"></div>
-            <div class="flex items-center justify-between mb-2 sm:mb-3">
-                <span class="text-[10px] sm:text-xs font-bold text-emerald-700 uppercase tracking-wider">Dual-AI Verified</span>
-                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs sm:text-sm font-black border border-emerald-100">
-                    <i class="fas fa-circle-check"></i>
+        <!-- 2. Pending Verifications (Pulsing if > 0) -->
+        <a href="/admin/verifications" class="p-5 sm:p-6 rounded-3xl bg-white border <%= pendingSubmissionsCount > 0 ? 'border-amber-300 shadow-amber-500/10' : 'border-slate-200/80' %> shadow-xs hover:shadow-md hover:border-amber-400 transition-all group relative overflow-hidden block">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-[11px] font-black uppercase tracking-wider text-amber-700">Pending Review</span>
+                <div class="w-10 h-10 rounded-2xl <%= pendingSubmissionsCount > 0 ? 'bg-amber-100 text-amber-700 animate-pulse' : 'bg-slate-100 text-slate-500' %> flex items-center justify-center text-sm font-black border border-amber-200 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-hourglass-half"></i>
                 </div>
             </div>
-            <div class="text-2xl sm:text-3xl font-black text-slate-900"><%= typeof verifiedEvents !== 'undefined' ? verifiedEvents : (totalEvents - pendingSubmissionsCount) %></div>
-            <div class="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-1 truncate">Autonomous Zero-Admin Pass</div>
-        </div>
-
-        <div class="p-4 sm:p-5 rounded-3xl bg-white border border-purple-200/80 shadow-xs relative overflow-hidden group hover:shadow-md transition-all">
-            <div class="absolute -right-3 -top-3 w-16 sm:w-20 h-16 sm:h-20 bg-purple-500/10 rounded-full blur-xl group-hover:bg-purple-500/20 transition-all"></div>
-            <div class="flex items-center justify-between mb-2 sm:mb-3">
-                <span class="text-[10px] sm:text-xs font-bold text-purple-700 uppercase tracking-wider">Members</span>
-                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xs sm:text-sm font-black border border-purple-100">
-                    <i class="fas fa-users"></i>
-                </div>
+            <div class="text-3xl sm:text-4xl font-black <%= pendingSubmissionsCount > 0 ? 'text-amber-600' : 'text-slate-900' %> tracking-tight"><%= pendingSubmissionsCount %></div>
+            <div class="text-xs text-slate-500 font-medium mt-1 flex items-center justify-between">
+                <span><%= pendingSubmissionsCount > 0 ? 'Requires Audit' : 'Queue Cleared' %></span>
+                <span class="text-amber-600 font-bold group-hover:translate-x-1 transition-transform">&rarr;</span>
             </div>
-            <div class="text-2xl sm:text-3xl font-black text-slate-900"><%= totalUsers %></div>
-            <div class="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-1 truncate">Fans & Organizers</div>
-        </div>
+        </a>
 
-        <div class="p-4 sm:p-5 rounded-3xl bg-white border border-emerald-200/80 shadow-xs relative overflow-hidden group hover:shadow-md transition-all">
-            <div class="absolute -right-3 -top-3 w-16 sm:w-20 h-16 sm:h-20 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition-all"></div>
-            <div class="flex items-center justify-between mb-2 sm:mb-3">
-                <span class="text-[10px] sm:text-xs font-bold text-emerald-700 uppercase tracking-wider">Verified Bases</span>
-                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs sm:text-sm font-black border border-emerald-100">
+        <!-- 3. Verified Fanclub Bases -->
+        <a href="/admin/verifications#fanclubs-section" class="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/80 shadow-xs hover:shadow-md hover:border-pink-300 transition-all group relative overflow-hidden block">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-[11px] font-black uppercase tracking-wider text-pink-700">Verified Fanclubs</span>
+                <div class="w-10 h-10 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center text-sm font-black border border-pink-100 group-hover:scale-110 transition-transform">
                     <i class="fas fa-certificate"></i>
                 </div>
             </div>
-            <div class="text-2xl sm:text-3xl font-black text-slate-900"><%= verifiedFanclubs %></div>
-            <div class="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-1 truncate">Verified Fanclubs</div>
+            <div class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight"><%= verifiedFanclubs %></div>
+            <div class="text-xs text-slate-500 font-medium mt-1 flex items-center justify-between">
+                <span>Official MY Bases</span>
+                <span class="text-pink-600 font-bold group-hover:translate-x-1 transition-transform">&rarr;</span>
+            </div>
+        </a>
+
+        <!-- 4. Registered Community Users -->
+        <a href="/admin/users" class="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/80 shadow-xs hover:shadow-md hover:border-indigo-300 transition-all group relative overflow-hidden block">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-[11px] font-black uppercase tracking-wider text-indigo-700">Total Users</span>
+                <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm font-black border border-indigo-100 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+            <div class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight"><%= totalUsers %></div>
+            <div class="text-xs text-slate-500 font-medium mt-1 flex items-center justify-between">
+                <span>Fans, Hosts & Admins</span>
+                <span class="text-indigo-600 font-bold group-hover:translate-x-1 transition-transform">&rarr;</span>
+            </div>
+        </a>
+    </div>
+
+    <!-- Quick Administrative Operations Hub -->
+    <div class="bg-gradient-to-br from-slate-900 to-slate-950 rounded-3xl p-5 sm:p-7 text-white shadow-lg mb-8 border border-slate-800">
+        <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+            <div>
+                <h3 class="text-base sm:text-lg font-black text-white flex items-center gap-2">
+                    <i class="fas fa-bolt text-pink-400"></i> Operational Quick Launchpad
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Direct shortcuts to high-frequency moderation workflows.</p>
+            </div>
+            <span class="text-[11px] font-bold text-slate-400 bg-slate-800/80 px-3 py-1 rounded-full border border-slate-700">
+                Administrative Shortcuts
+            </span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <a href="/admin/verifications" class="p-3.5 rounded-2xl bg-slate-800/70 hover:bg-slate-800 border border-slate-700/80 hover:border-pink-500/50 text-center transition-all group cursor-pointer">
+                <div class="w-10 h-10 mx-auto rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-check-double"></i>
+                </div>
+                <div class="text-xs font-bold text-white">Review Queue</div>
+                <div class="text-[10px] text-slate-400 mt-0.5"><%= pendingSubmissionsCount %> Pending</div>
+            </a>
+
+            <a href="/admin/events" class="p-3.5 rounded-2xl bg-slate-800/70 hover:bg-slate-800 border border-slate-700/80 hover:border-purple-500/50 text-center transition-all group cursor-pointer">
+                <div class="w-10 h-10 mx-auto rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-calendar-days"></i>
+                </div>
+                <div class="text-xs font-bold text-white">Events Catalog</div>
+                <div class="text-[10px] text-slate-400 mt-0.5"><%= totalEvents %> Total</div>
+            </a>
+
+            <a href="/admin/reports" class="p-3.5 rounded-2xl bg-slate-800/70 hover:bg-slate-800 border border-slate-700/80 hover:border-rose-500/50 text-center transition-all group cursor-pointer">
+                <div class="w-10 h-10 mx-auto rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-shield-virus"></i>
+                </div>
+                <div class="text-xs font-bold text-white">Scam Reports</div>
+                <div class="text-[10px] text-slate-400 mt-0.5">Fraud Audit</div>
+            </a>
+
+            <a href="/admin/artists" class="p-3.5 rounded-2xl bg-slate-800/70 hover:bg-slate-800 border border-slate-700/80 hover:border-indigo-500/50 text-center transition-all group cursor-pointer">
+                <div class="w-10 h-10 mx-auto rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-microphone-lines"></i>
+                </div>
+                <div class="text-xs font-bold text-white">Artists & Lineup</div>
+                <div class="text-[10px] text-slate-400 mt-0.5">20 Official MY</div>
+            </a>
+
+            <a href="/admin/venues" class="p-3.5 rounded-2xl bg-slate-800/70 hover:bg-slate-800 border border-slate-700/80 hover:border-emerald-500/50 text-center transition-all group cursor-pointer">
+                <div class="w-10 h-10 mx-auto rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-location-dot"></i>
+                </div>
+                <div class="text-xs font-bold text-white">Venues & Transit</div>
+                <div class="text-[10px] text-slate-400 mt-0.5">LRT / MRT Hubs</div>
+            </a>
+
+            <a href="/admin/logs" class="p-3.5 rounded-2xl bg-slate-800/70 hover:bg-slate-800 border border-slate-700/80 hover:border-amber-500/50 text-center transition-all group cursor-pointer">
+                <div class="w-10 h-10 mx-auto rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm mb-2 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-clock-rotate-left"></i>
+                </div>
+                <div class="text-xs font-bold text-white">Audit Trail</div>
+                <div class="text-[10px] text-slate-400 mt-0.5">Security Stream</div>
+            </a>
         </div>
     </div>
 
-    <!-- Quick Administrative Shortcuts Grid (Responsive 2 cols mobile, 4 sm, 8 lg) -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 sm:gap-3 mb-8">
-        <a href="/admin/verifications" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-pink-300 hover:shadow-sm transition-all text-center group cursor-pointer">
-            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
-                <i class="fas fa-check-double"></i>
-            </div>
-            <div class="text-[11px] sm:text-xs font-bold text-slate-800 truncate">Verifications</div>
-        </a>
-        <a href="/admin/events" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-purple-300 hover:shadow-sm transition-all text-center group cursor-pointer">
-            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
-                <i class="fas fa-calendar-days"></i>
-            </div>
-            <div class="text-[11px] sm:text-xs font-bold text-slate-800 truncate">All Events</div>
-        </a>
-        <a href="/admin/reports" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-rose-300 hover:shadow-sm transition-all text-center group cursor-pointer">
-            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
-                <i class="fas fa-shield-virus"></i>
-            </div>
-            <div class="text-[11px] sm:text-xs font-bold text-slate-800 truncate">Scam Reports</div>
-        </a>
-        <a href="/admin/artists" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-sm transition-all text-center group cursor-pointer">
-            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
-                <i class="fas fa-microphone-lines"></i>
-            </div>
-            <div class="text-[11px] sm:text-xs font-bold text-slate-800 truncate">Artists & Lineup</div>
-        </a>
-        <a href="/admin/venues" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-emerald-300 hover:shadow-sm transition-all text-center group cursor-pointer">
-            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
-                <i class="fas fa-location-dot"></i>
-            </div>
-            <div class="text-[11px] sm:text-xs font-bold text-slate-800 truncate">Venues & Transit</div>
-        </a>
-        <a href="/admin/categories" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-pink-300 hover:shadow-sm transition-all text-center group cursor-pointer">
-            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
-                <i class="fas fa-layer-group"></i>
-            </div>
-            <div class="text-[11px] sm:text-xs font-bold text-slate-800 truncate">Categories</div>
-        </a>
-        <a href="/admin/users" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-indigo-300 hover:shadow-sm transition-all text-center group cursor-pointer">
-            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
-                <i class="fas fa-users-gear"></i>
-            </div>
-            <div class="text-[11px] sm:text-xs font-bold text-slate-800 truncate">Users & Roles</div>
-        </a>
-        <a href="/admin/logs" class="p-3 sm:p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-amber-300 hover:shadow-sm transition-all text-center group cursor-pointer">
-            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xs mb-1.5 sm:mb-2 group-hover:scale-110 transition-transform">
-                <i class="fas fa-clock-rotate-left"></i>
-            </div>
-            <div class="text-[11px] sm:text-xs font-bold text-slate-800 truncate">Audit Logs</div>
-        </a>
-    </div>
-
-    <!-- Two-Column Review & Logs Grid -->
+    <!-- Two-Column Workbench: Live Submissions Queue & Security Audit Stream -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-        <!-- Pending Submissions Preview -->
-        <div class="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h3 class="text-sm font-bold text-slate-900 flex items-center">
-                    <i class="fas fa-clock text-amber-500 me-2"></i> Submissions Awaiting Approval
-                </h3>
-                <a href="/admin/verifications" class="text-xs font-bold text-pink-600 hover:text-pink-700 hover:underline">View All &rarr;</a>
+        <!-- Column 1: Submissions Queue Triage -->
+        <div class="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xs font-bold">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-extrabold text-slate-900">Submissions Awaiting Approval</h3>
+                        <p class="text-[11px] text-slate-500 font-medium">Model 2 user and organizer event drafts.</p>
+                    </div>
+                </div>
+                <a href="/admin/verifications" class="text-xs font-bold text-pink-600 hover:text-pink-700 hover:underline flex items-center gap-1">
+                    <span>Queue</span> &rarr;
+                </a>
             </div>
 
             <% if (!pendingList || pendingList.length === 0) { %>
-                <div class="text-center py-10 text-slate-400 text-xs">
-                    <div class="w-12 h-12 mx-auto rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center text-xl mb-3">
+                <div class="text-center py-12 px-4 rounded-2xl bg-slate-50/60 border border-dashed border-slate-200">
+                    <div class="w-12 h-12 mx-auto rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-2.5">
                         <i class="fas fa-circle-check"></i>
                     </div>
-                    <div class="font-bold text-slate-700 text-sm">All caught up!</div>
-                    <p class="text-[11px] text-slate-500 mt-1">There are no pending event submissions in the review queue.</p>
+                    <div class="font-extrabold text-slate-900 text-sm">All caught up!</div>
+                    <p class="text-xs text-slate-500 mt-1 max-w-xs mx-auto">There are zero pending event submissions waiting in the verification triage.</p>
                 </div>
             <% } else { %>
                 <div class="space-y-3">
                     <% pendingList.forEach(function(ev) { %>
-                        <div class="p-3.5 rounded-2xl bg-slate-50/80 hover:bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors">
+                        <div class="p-4 rounded-2xl bg-slate-50/70 hover:bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all hover:border-slate-300">
                             <div class="min-w-0 flex-1">
-                                <div class="flex items-center space-x-2 mb-1 flex-wrap gap-y-1">
-                                    <span class="text-[10px] font-mono text-pink-600 font-bold bg-pink-50 px-2 py-0.5 rounded-md border border-pink-100">
+                                <div class="flex items-center space-x-2 mb-1.5 flex-wrap gap-y-1">
+                                    <span class="text-[10px] font-mono text-pink-700 font-black bg-pink-50 px-2 py-0.5 rounded-md border border-pink-200">
                                         <%= ev.tracking_code || 'REF#' + ev.id %>
                                     </span>
                                     <span class="text-[11px] text-slate-500 font-medium">
-                                        <%= helpers.formatDate(ev.event_date) %>
+                                        <i class="fas fa-calendar-day me-1 text-slate-400"></i><%= helpers.formatDate(ev.event_date) %>
                                     </span>
                                 </div>
-                                <div class="text-xs sm:text-sm font-bold text-slate-900 truncate"><%= ev.event_name %></div>
-                                <div class="text-[11px] text-slate-500 mt-0.5 truncate">
-                                    By <strong class="text-slate-700"><%= ev.submitter_name %></strong> &bull; <%= ev.venue_name || ev.city || 'Malaysia' %>
+                                <div class="text-xs sm:text-sm font-extrabold text-slate-900 truncate"><%= ev.event_name %></div>
+                                <div class="text-[11px] text-slate-500 mt-1 truncate">
+                                    Submitted by <strong class="text-slate-800"><%= ev.submitter_name || 'Anonymous Fan' %></strong> &bull; <%= ev.venue_name || ev.city || 'Malaysia' %>
                                 </div>
                             </div>
-                            <a href="/admin/verifications" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold shadow-xs shrink-0 text-center transition-all cursor-pointer">
+                            <a href="/admin/verifications" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs shrink-0 text-center transition-all cursor-pointer active:scale-95">
                                 Review &rarr;
                             </a>
                         </div>
@@ -177,33 +186,54 @@
             <% } %>
         </div>
 
-        <!-- Recent Audit Trail Logs -->
-        <div class="bg-white rounded-3xl p-4 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h3 class="text-sm font-bold text-slate-900 flex items-center">
-                    <i class="fas fa-list-check text-purple-600 me-2"></i> Recent Activity Audit Logs
-                </h3>
-                <a href="/admin/logs" class="text-xs font-bold text-slate-600 hover:text-slate-900 hover:underline">Full Log &rarr;</a>
+        <!-- Column 2: Recent Security & Administrative Activity Audit Trail -->
+        <div class="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xs font-bold">
+                        <i class="fas fa-list-check"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-extrabold text-slate-900">Live Activity Audit Trail</h3>
+                        <p class="text-[11px] text-slate-500 font-medium">Real-time log of security events and actions.</p>
+                    </div>
+                </div>
+                <a href="/admin/logs" class="text-xs font-bold text-slate-600 hover:text-slate-900 hover:underline flex items-center gap-1">
+                    <span>Full Log</span> &rarr;
+                </a>
             </div>
 
             <div class="space-y-2.5">
                 <% if (!recentLogs || recentLogs.length === 0) { %>
-                    <div class="text-center py-10 text-slate-400 text-xs">
-                        <i class="fas fa-clipboard-list text-2xl text-slate-300 mb-2"></i>
-                        <div>No activity logs recorded yet.</div>
+                    <div class="text-center py-12 px-4 rounded-2xl bg-slate-50/60 border border-dashed border-slate-200">
+                        <div class="w-12 h-12 mx-auto rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center text-xl mb-2.5">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="font-extrabold text-slate-800 text-sm">No activity records yet</div>
+                        <p class="text-xs text-slate-500 mt-1">Audit events will appear as actions are performed on the platform.</p>
                     </div>
                 <% } else { %>
-                    <% recentLogs.forEach(function(l) { %>
-                        <div class="p-3 rounded-2xl bg-slate-50/80 border border-slate-100 flex items-start justify-between text-xs hover:bg-slate-50 transition-colors">
-                            <div class="min-w-0 pr-2">
-                                <div class="flex items-center space-x-1.5 flex-wrap gap-y-1">
-                                    <span class="font-extrabold text-[10px] px-2 py-0.5 rounded-md bg-slate-200 text-slate-800"><%= l.action %></span>
-                                    <span class="text-slate-700 text-[11px] font-medium truncate"><%= l.description %></span>
+                    <% recentLogs.forEach(function(l) { 
+                        let actionBadgeColor = 'bg-slate-100 text-slate-700 border-slate-200';
+                        if (l.action && l.action.includes('APPROVE')) actionBadgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                        else if (l.action && l.action.includes('REJECT')) actionBadgeColor = 'bg-rose-50 text-rose-700 border-rose-200';
+                        else if (l.action && l.action.includes('LOGIN')) actionBadgeColor = 'bg-indigo-50 text-indigo-700 border-indigo-200';
+                        else if (l.action && l.action.includes('DELETE')) actionBadgeColor = 'bg-red-50 text-red-700 border-red-200';
+                    %>
+                        <div class="p-3 rounded-2xl bg-slate-50/70 border border-slate-100 hover:bg-slate-50 transition-colors flex items-start justify-between text-xs gap-3">
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center space-x-2 flex-wrap gap-y-1">
+                                    <span class="font-mono text-[10px] font-black px-2 py-0.5 rounded-md border <%= actionBadgeColor %>">
+                                        <%= l.action %>
+                                    </span>
+                                    <span class="text-slate-800 text-xs font-bold truncate">
+                                        <%= l.description %>
+                                    </span>
                                 </div>
-                                <div class="text-[10px] text-slate-400 mt-1 flex items-center space-x-1.5">
-                                    <span><i class="fas fa-user-circle me-1"></i><%= l.username ? '@' + l.username : 'System' %></span>
+                                <div class="text-[10px] text-slate-400 mt-1 flex items-center space-x-2 font-medium">
+                                    <span><i class="fas fa-user-circle me-1 text-slate-400"></i><%= l.username ? '@' + l.username : 'System Autonomous' %></span>
                                     <span>&bull;</span>
-                                    <span><%= helpers.formatDate(l.created_at) %></span>
+                                    <span><i class="fas fa-clock me-1 text-slate-400"></i><%= helpers.formatDate(l.created_at) %></span>
                                 </div>
                             </div>
                         </div>
