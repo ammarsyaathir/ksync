@@ -293,23 +293,43 @@ router.get('/events/:idOrSlug', async (req, res) => {
       LEFT JOIN users u ON e.organizer_id = u.id
     `;
 
+    const fetchEvent = async (whereClause, params) => {
+      try {
+        return await db.getOne(`${baseQuery} ${whereClause}`, params);
+      } catch (err) {
+        console.warn('Primary event query note, using resilient query:', err.message);
+        const resilientQuery = `
+          SELECT e.*, 
+                 a.name as artist_name, a.slug as artist_slug, a.group_type, a.image_url as artist_image, a.description as artist_description, a.agency as artist_agency,
+                 c.name as category_name, c.badge_color,
+                 u.full_name as organizer_name, u.email as organizer_email,
+                 u.organization_name, u.organization_type, u.social_handle, u.social_url, 0 as is_verified_organizer
+          FROM events e
+          LEFT JOIN artists a ON e.artist_id = a.id
+          LEFT JOIN event_categories c ON e.category_id = c.id
+          LEFT JOIN users u ON e.organizer_id = u.id
+        `;
+        return await db.getOne(`${resilientQuery} ${whereClause}`, params);
+      }
+    };
+
     let event = null;
 
     // 1. Check numeric ID (e.g. /events/24)
     if (/^\d+$/.test(param)) {
-      event = await db.getOne(`${baseQuery} WHERE e.id = ?`, [Number(param)]);
+      event = await fetchEvent('WHERE e.id = ?', [Number(param)]);
     }
 
     // 2. Check prefixed ID (e.g. /events/24-seventeen-right-here)
     if (!event && /^\d+-/.test(param)) {
       const idPrefix = parseInt(param.split('-')[0], 10);
-      event = await db.getOne(`${baseQuery} WHERE e.id = ?`, [idPrefix]);
+      event = await fetchEvent('WHERE e.id = ?', [idPrefix]);
     }
 
     // 3. Check exact slug column (e.g. /events/seventeen-right-here)
     if (!event) {
       try {
-        event = await db.getOne(`${baseQuery} WHERE e.slug = ?`, [param]);
+        event = await fetchEvent('WHERE e.slug = ?', [param]);
       } catch (e) {
         // Column may be pending in remote MySQL
       }
@@ -320,7 +340,7 @@ router.get('/events/:idOrSlug', async (req, res) => {
       const candidates = await db.query("SELECT id, event_name FROM events");
       const matched = candidates.find(c => helpers.slugify(c.event_name) === param);
       if (matched) {
-        event = await db.getOne(`${baseQuery} WHERE e.id = ?`, [matched.id]);
+        event = await fetchEvent('WHERE e.id = ?', [matched.id]);
       }
     }
 
@@ -335,15 +355,28 @@ router.get('/events/:idOrSlug', async (req, res) => {
     let isSavedEvent = false;
     let isInterested = false;
     if (req.session && req.session.userId) {
-      const saved = await db.getOne("SELECT id FROM saved_events WHERE user_id = ? AND event_id = ?", [req.session.userId, eventId]);
-      isSavedEvent = !!saved;
+      try {
+        const saved = await db.getOne("SELECT id FROM saved_events WHERE user_id = ? AND event_id = ?", [req.session.userId, eventId]);
+        isSavedEvent = !!saved;
+      } catch (e) {
+        isSavedEvent = false;
+      }
 
-      const rec = await db.getOne("SELECT id FROM event_recommendations WHERE user_id = ? AND event_id = ?", [req.session.userId, eventId]);
-      isInterested = !!rec;
+      try {
+        const rec = await db.getOne("SELECT id FROM event_recommendations WHERE user_id = ? AND event_id = ?", [req.session.userId, eventId]);
+        isInterested = !!rec;
+      } catch (e) {
+        isInterested = false;
+      }
     }
 
-    const recCountRow = await db.getOne("SELECT COUNT(*) as cnt FROM event_recommendations WHERE event_id = ?", [eventId]);
-    const interestCount = recCountRow ? recCountRow.cnt : 0;
+    let interestCount = 0;
+    try {
+      const recCountRow = await db.getOne("SELECT COUNT(*) as cnt FROM event_recommendations WHERE event_id = ?", [eventId]);
+      interestCount = recCountRow ? recCountRow.cnt : 0;
+    } catch (e) {
+      interestCount = 0;
+    }
 
     // Fetch discussion comments with user roles and organize 1-level threading
     let chatMessages = [];

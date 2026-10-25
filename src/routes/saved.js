@@ -37,17 +37,23 @@ router.get('/dashboard', requireAuth, async (req, res) => {
     const nextEvent = upcomingSaved.length > 0 ? upcomingSaved[0] : null;
 
     // 4. Fetch events recommended/upvoted by user (UC018 Crowdsourced Reliability)
-    const recommended_events = await db.query(`
-      SELECT e.*, er.created_at as recommended_at,
-             a.name as artist_name, c.name as category_name,
-             (SELECT COUNT(*) FROM event_recommendations WHERE event_id = e.id) as total_recommendations
-      FROM event_recommendations er
-      JOIN events e ON er.event_id = e.id
-      LEFT JOIN artists a ON e.artist_id = a.id
-      LEFT JOIN event_categories c ON e.category_id = c.id
-      WHERE er.user_id = ?
-      ORDER BY er.created_at DESC
-    `, [userId]);
+    let recommended_events = [];
+    try {
+      recommended_events = await db.query(`
+        SELECT e.*, er.created_at as recommended_at,
+               a.name as artist_name, c.name as category_name,
+               (SELECT COUNT(*) FROM event_recommendations WHERE event_id = e.id) as total_recommendations
+        FROM event_recommendations er
+        JOIN events e ON er.event_id = e.id
+        LEFT JOIN artists a ON e.artist_id = a.id
+        LEFT JOIN event_categories c ON e.category_id = c.id
+        WHERE er.user_id = ?
+        ORDER BY er.created_at DESC
+      `, [userId]);
+    } catch (recErr) {
+      console.warn('Dashboard recommended events note:', recErr.message);
+      recommended_events = [];
+    }
 
     // 5. Fetch recent notifications
     const recent_notifications = await db.query(`

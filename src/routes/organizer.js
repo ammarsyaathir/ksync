@@ -25,17 +25,33 @@ router.get(['/', '/dashboard'], async (req, res) => {
 
   try {
     // 1. Fetch all events created by this Organizer with live interaction counters
-    const events = await db.query(`
-      SELECT e.*, a.name as artist_name, a.slug as artist_slug, c.name as category_name, c.badge_color,
-        (SELECT COUNT(id) FROM event_recommendations r WHERE r.event_id = e.id) as upvote_count,
-        (SELECT COUNT(id) FROM saved_events s WHERE s.event_id = e.id) as save_count,
-        (SELECT COUNT(id) FROM event_chat_messages m WHERE m.event_id = e.id) as comment_count
-      FROM events e
-      LEFT JOIN artists a ON e.artist_id = a.id
-      LEFT JOIN event_categories c ON e.category_id = c.id
-      WHERE e.organizer_id = ?
-      ORDER BY e.event_date ASC
-    `, [organizerId]);
+    let events = [];
+    try {
+      events = await db.query(`
+        SELECT e.*, a.name as artist_name, a.slug as artist_slug, c.name as category_name, c.badge_color,
+          (SELECT COUNT(id) FROM event_recommendations r WHERE r.event_id = e.id) as upvote_count,
+          (SELECT COUNT(id) FROM saved_events s WHERE s.event_id = e.id) as save_count,
+          (SELECT COUNT(id) FROM event_chat_messages m WHERE m.event_id = e.id) as comment_count
+        FROM events e
+        LEFT JOIN artists a ON e.artist_id = a.id
+        LEFT JOIN event_categories c ON e.category_id = c.id
+        WHERE e.organizer_id = ?
+        ORDER BY e.event_date ASC
+      `, [organizerId]);
+    } catch (queryErr) {
+      console.warn('[Organizer Workspace Query Fallback]:', queryErr.message);
+      events = await db.query(`
+        SELECT e.*, a.name as artist_name, a.slug as artist_slug, c.name as category_name, c.badge_color,
+          0 as upvote_count,
+          (SELECT COUNT(id) FROM saved_events s WHERE s.event_id = e.id) as save_count,
+          (SELECT COUNT(id) FROM event_chat_messages m WHERE m.event_id = e.id) as comment_count
+        FROM events e
+        LEFT JOIN artists a ON e.artist_id = a.id
+        LEFT JOIN event_categories c ON e.category_id = c.id
+        WHERE e.organizer_id = ?
+        ORDER BY e.event_date ASC
+      `, [organizerId]);
+    }
 
     // Extract score heuristics
     events.forEach(ev => {
@@ -67,15 +83,21 @@ router.get(['/', '/dashboard'], async (req, res) => {
     const upcomingListings = upcomingFuture.length > 0 ? upcomingFuture.slice(0, 4) : events.slice(0, 4);
 
     // Recent fan replies across organizer events
-    const recentComments = await db.query(`
-      SELECT m.*, u.username, u.full_name, u.profile_image, e.event_name, e.slug as event_slug, e.tracking_code
-      FROM event_chat_messages m
-      JOIN events e ON m.event_id = e.id
-      LEFT JOIN users u ON m.user_id = u.id
-      WHERE e.organizer_id = ?
-      ORDER BY m.created_at DESC
-      LIMIT 5
-    `, [organizerId]);
+    let recentComments = [];
+    try {
+      recentComments = await db.query(`
+        SELECT m.*, u.username, u.full_name, u.profile_image, e.event_name, e.slug as event_slug, e.tracking_code
+        FROM event_chat_messages m
+        JOIN events e ON m.event_id = e.id
+        LEFT JOIN users u ON m.user_id = u.id
+        WHERE e.organizer_id = ?
+        ORDER BY m.created_at DESC
+        LIMIT 5
+      `, [organizerId]);
+    } catch (commentErr) {
+      console.warn('[Organizer Recent Comments Fallback]:', commentErr.message);
+      recentComments = [];
+    }
 
     res.render('organizer/dashboard', {
       stats: {
@@ -110,17 +132,33 @@ router.get('/events', async (req, res) => {
   const search = (req.query.search || '').trim().toLowerCase();
 
   try {
-    const events = await db.query(`
-      SELECT e.*, a.name as artist_name, a.slug as artist_slug, c.name as category_name, c.badge_color,
-        (SELECT COUNT(id) FROM event_recommendations r WHERE r.event_id = e.id) as upvote_count,
-        (SELECT COUNT(id) FROM saved_events s WHERE s.event_id = e.id) as save_count,
-        (SELECT COUNT(id) FROM event_chat_messages m WHERE m.event_id = e.id) as comment_count
-      FROM events e
-      LEFT JOIN artists a ON e.artist_id = a.id
-      LEFT JOIN event_categories c ON e.category_id = c.id
-      WHERE e.organizer_id = ?
-      ORDER BY e.created_at DESC
-    `, [organizerId]);
+    let events = [];
+    try {
+      events = await db.query(`
+        SELECT e.*, a.name as artist_name, a.slug as artist_slug, c.name as category_name, c.badge_color,
+          (SELECT COUNT(id) FROM event_recommendations r WHERE r.event_id = e.id) as upvote_count,
+          (SELECT COUNT(id) FROM saved_events s WHERE s.event_id = e.id) as save_count,
+          (SELECT COUNT(id) FROM event_chat_messages m WHERE m.event_id = e.id) as comment_count
+        FROM events e
+        LEFT JOIN artists a ON e.artist_id = a.id
+        LEFT JOIN event_categories c ON e.category_id = c.id
+        WHERE e.organizer_id = ?
+        ORDER BY e.created_at DESC
+      `, [organizerId]);
+    } catch (queryErr) {
+      console.warn('[Organizer Events Query Fallback]:', queryErr.message);
+      events = await db.query(`
+        SELECT e.*, a.name as artist_name, a.slug as artist_slug, c.name as category_name, c.badge_color,
+          0 as upvote_count,
+          (SELECT COUNT(id) FROM saved_events s WHERE s.event_id = e.id) as save_count,
+          (SELECT COUNT(id) FROM event_chat_messages m WHERE m.event_id = e.id) as comment_count
+        FROM events e
+        LEFT JOIN artists a ON e.artist_id = a.id
+        LEFT JOIN event_categories c ON e.category_id = c.id
+        WHERE e.organizer_id = ?
+        ORDER BY e.created_at DESC
+      `, [organizerId]);
+    }
 
     // Extract score heuristics
     events.forEach(ev => {

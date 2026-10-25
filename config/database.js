@@ -40,17 +40,88 @@ if (isUsingMySQL) {
     // Self-healing schema enhancement for Hostinger MySQL
     setTimeout(async () => {
       try {
-        const [colRows] = await mysqlPool.query("SHOW COLUMNS FROM `events` LIKE 'cluster_area'");
-        if (!colRows || colRows.length === 0) {
-          await mysqlPool.query("ALTER TABLE `events` ADD COLUMN `cluster_area` VARCHAR(100) NULL AFTER `state`");
-          console.log("✅ Auto-migrated MySQL: Added cluster_area to events.");
-          await mysqlPool.query("UPDATE events SET cluster_area = 'Bukit Jalil Hub' WHERE venue_name LIKE '%Axiata%' OR venue_name LIKE '%Bukit Jalil%' OR venue_name LIKE '%National Stadium%' OR venue_name LIKE '%Unifi Arena%'");
-          await mysqlPool.query("UPDATE events SET cluster_area = 'BBCC & Downtown KL' WHERE venue_name LIKE '%Zepp%' OR venue_name LIKE '%Bukit Bintang%' OR venue_name LIKE '%KLCC%'");
-          await mysqlPool.query("UPDATE events SET cluster_area = 'KL Sentral & Brickfields' WHERE venue_name LIKE '%Mega Star Arena%' OR venue_name LIKE '%Sentral%'");
-          await mysqlPool.query("UPDATE events SET cluster_area = 'Petaling Jaya & Sunway' WHERE venue_name LIKE '%Sunway%' OR city LIKE '%Petaling Jaya%' OR city LIKE '%Subang%'");
-          await mysqlPool.query("UPDATE events SET cluster_area = 'Penang & Northern Region' WHERE city LIKE '%Penang%' OR city LIKE '%George Town%'");
-          await mysqlPool.query("UPDATE events SET cluster_area = 'Kuala Lumpur Metro Hub' WHERE cluster_area IS NULL OR cluster_area = ''");
-        }
+        const ensureMySQLColumn = async (table, column, definition) => {
+          try {
+            const [cols] = await mysqlPool.query(`SHOW COLUMNS FROM \`${table}\` LIKE ?`, [column]);
+            if (!cols || cols.length === 0) {
+              await mysqlPool.query(`ALTER TABLE \`${table}\` ADD COLUMN \`${column}\` ${definition}`);
+              console.log(`✅ Auto-migrated MySQL: Added ${column} to ${table}.`);
+            }
+          } catch (e) {
+            console.warn(`MySQL column check note (${table}.${column}):`, e.message);
+          }
+        };
+
+        // 1. Ensure all columns in users table
+        await ensureMySQLColumn('users', 'is_verified_organizer', 'TINYINT(1) DEFAULT 0');
+        await ensureMySQLColumn('users', 'verification_proof', 'VARCHAR(255) NULL');
+        await ensureMySQLColumn('users', 'verification_notes', 'TEXT NULL');
+        await ensureMySQLColumn('users', 'buddy_preference', 'VARCHAR(50) DEFAULT "ANY"');
+        await ensureMySQLColumn('users', 'notify_event_updates', 'TINYINT(1) DEFAULT 1');
+        await ensureMySQLColumn('users', 'notify_countdown_reminders', 'TINYINT(1) DEFAULT 1');
+        await ensureMySQLColumn('users', 'notify_discussion_replies', 'TINYINT(1) DEFAULT 1');
+
+        // 2. Ensure all columns in events table
+        await ensureMySQLColumn('events', 'cluster_area', 'VARCHAR(100) NULL');
+        await ensureMySQLColumn('events', 'slug', 'VARCHAR(200) NULL');
+        await ensureMySQLColumn('events', 'gallery_images', 'LONGTEXT NULL');
+        await ensureMySQLColumn('events', 'tracking_code', 'VARCHAR(50) NULL');
+        await ensureMySQLColumn('events', 'trust_level', 'VARCHAR(30) DEFAULT "PENDING"');
+        await ensureMySQLColumn('events', 'admin_verification_notes', 'TEXT NULL');
+        await ensureMySQLColumn('events', 'evidence_link', 'VARCHAR(255) NULL');
+        await ensureMySQLColumn('events', 'submitter_name', 'VARCHAR(150) NULL');
+        await ensureMySQLColumn('events', 'submitter_email', 'VARCHAR(150) NULL');
+        await ensureMySQLColumn('events', 'organizer_name', 'VARCHAR(150) NULL');
+        await ensureMySQLColumn('events', 'organizer_social_url', 'VARCHAR(255) NULL');
+        await ensureMySQLColumn('events', 'organizer_type', 'VARCHAR(50) DEFAULT "Fanclub"');
+
+        // Populate cluster_area for existing events
+        await mysqlPool.query("UPDATE events SET cluster_area = 'Bukit Jalil Hub' WHERE (cluster_area IS NULL OR cluster_area = '') AND (venue_name LIKE '%Axiata%' OR venue_name LIKE '%Bukit Jalil%' OR venue_name LIKE '%National Stadium%' OR venue_name LIKE '%Unifi Arena%')");
+        await mysqlPool.query("UPDATE events SET cluster_area = 'BBCC & Downtown KL' WHERE (cluster_area IS NULL OR cluster_area = '') AND (venue_name LIKE '%Zepp%' OR venue_name LIKE '%Bukit Bintang%' OR venue_name LIKE '%KLCC%')");
+        await mysqlPool.query("UPDATE events SET cluster_area = 'KL Sentral & Brickfields' WHERE (cluster_area IS NULL OR cluster_area = '') AND (venue_name LIKE '%Mega Star Arena%' OR venue_name LIKE '%Sentral%')");
+        await mysqlPool.query("UPDATE events SET cluster_area = 'Petaling Jaya & Sunway' WHERE (cluster_area IS NULL OR cluster_area = '') AND (venue_name LIKE '%Sunway%' OR city LIKE '%Petaling Jaya%' OR city LIKE '%Subang%')");
+        await mysqlPool.query("UPDATE events SET cluster_area = 'Penang & Northern Region' WHERE (cluster_area IS NULL OR cluster_area = '') AND (city LIKE '%Penang%' OR city LIKE '%George Town%')");
+        await mysqlPool.query("UPDATE events SET cluster_area = 'Kuala Lumpur Metro Hub' WHERE cluster_area IS NULL OR cluster_area = ''");
+
+        // 3. Ensure event_chat_messages columns
+        await ensureMySQLColumn('event_chat_messages', 'parent_id', 'INT DEFAULT NULL');
+        await ensureMySQLColumn('event_chat_messages', 'is_organizer', 'TINYINT(1) DEFAULT 0');
+
+        // 4. Ensure reports columns
+        await ensureMySQLColumn('reports', 'evidence_url', 'VARCHAR(255) NULL');
+        await ensureMySQLColumn('reports', 'admin_action', 'VARCHAR(100) NULL');
+        await ensureMySQLColumn('reports', 'admin_notes', 'TEXT NULL');
+        await ensureMySQLColumn('reports', 'resolved_by', 'INT NULL');
+        await ensureMySQLColumn('reports', 'resolved_at', 'DATETIME NULL');
+
+        // 5. Ensure event_recommendations table exists (UC018: Crowdsourced Reliability Voting)
+        await mysqlPool.query(`
+          CREATE TABLE IF NOT EXISTS \`event_recommendations\` (
+            \`id\` INT AUTO_INCREMENT PRIMARY KEY,
+            \`user_id\` INT NOT NULL,
+            \`event_id\` INT NOT NULL,
+            \`vote_type\` VARCHAR(10) DEFAULT 'UP',
+            \`created_at\` DATETIME DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE KEY \`uniq_user_event_rec\` (\`user_id\`, \`event_id\`),
+            FOREIGN KEY (\`user_id\`) REFERENCES \`users\`(\`id\`) ON DELETE CASCADE,
+            FOREIGN KEY (\`event_id\`) REFERENCES \`events\`(\`id\`) ON DELETE CASCADE
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+        `);
+
+        // 6. Ensure event_updates table exists
+        await mysqlPool.query(`
+          CREATE TABLE IF NOT EXISTS \`event_updates\` (
+            \`id\` INT AUTO_INCREMENT PRIMARY KEY,
+            \`event_id\` INT NOT NULL,
+            \`created_by\` INT NOT NULL,
+            \`update_title\` VARCHAR(255) NOT NULL,
+            \`update_description\` TEXT,
+            \`update_type\` VARCHAR(50) DEFAULT 'General Announcement',
+            \`created_at\` DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (\`event_id\`) REFERENCES \`events\`(\`id\`) ON DELETE CASCADE,
+            FOREIGN KEY (\`created_by\`) REFERENCES \`users\`(\`id\`) ON DELETE CASCADE
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+        `);
 
         await mysqlPool.query(`
           CREATE TABLE IF NOT EXISTS \`venues\` (

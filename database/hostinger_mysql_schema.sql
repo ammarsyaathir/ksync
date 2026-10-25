@@ -26,6 +26,13 @@ CREATE TABLE `users` (
   `organization_type` VARCHAR(50) DEFAULT 'Fanclub',
   `social_handle` VARCHAR(50),
   `social_url` VARCHAR(255),
+  `is_verified_organizer` TINYINT(1) DEFAULT 0,
+  `verification_proof` VARCHAR(255) DEFAULT NULL,
+  `verification_notes` TEXT DEFAULT NULL,
+  `buddy_preference` VARCHAR(50) DEFAULT 'ANY',
+  `notify_event_updates` TINYINT(1) DEFAULT 1,
+  `notify_countdown_reminders` TINYINT(1) DEFAULT 1,
+  `notify_discussion_replies` TINYINT(1) DEFAULT 1,
   `location` VARCHAR(100) DEFAULT 'Kuala Lumpur',
   `status` VARCHAR(20) DEFAULT 'ACTIVE',
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -192,6 +199,7 @@ CREATE TABLE `events` (
   `address` TEXT,
   `city` VARCHAR(100) NOT NULL,
   `state` VARCHAR(100) NOT NULL,
+  `cluster_area` VARCHAR(100) DEFAULT NULL,
   `ticket_info` TEXT,
   `event_rules` TEXT,
   `official_url` VARCHAR(255),
@@ -244,6 +252,7 @@ CREATE TABLE `event_chat_messages` (
   `user_id` INT NOT NULL,
   `parent_id` INT DEFAULT NULL,
   `message` TEXT NOT NULL,
+  `is_organizer` TINYINT(1) DEFAULT 0,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (`event_id`) REFERENCES `events`(`id`) ON DELETE CASCADE,
   FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
@@ -263,6 +272,11 @@ CREATE TABLE `reports` (
   `report_type` VARCHAR(50) DEFAULT 'EVENT',
   `reason` VARCHAR(255) NOT NULL,
   `details` TEXT,
+  `evidence_url` VARCHAR(255) DEFAULT NULL,
+  `admin_action` VARCHAR(100) DEFAULT NULL,
+  `admin_notes` TEXT DEFAULT NULL,
+  `resolved_by` INT DEFAULT NULL,
+  `resolved_at` DATETIME DEFAULT NULL,
   `status` VARCHAR(30) DEFAULT 'PENDING',
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE SET NULL,
@@ -299,6 +313,90 @@ CREATE TABLE `notifications` (
   `is_read` TINYINT(1) DEFAULT 0,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+-- 11. Table structure for `event_recommendations` (UC018 Crowdsourced Reliability Voting)
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS `event_recommendations`;
+CREATE TABLE `event_recommendations` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NOT NULL,
+  `event_id` INT NOT NULL,
+  `vote_type` VARCHAR(10) DEFAULT 'UP',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY `uniq_user_event_rec` (`user_id`, `event_id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`event_id`) REFERENCES `events`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+-- 12. Table structure for `event_updates`
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS `event_updates`;
+CREATE TABLE `event_updates` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `event_id` INT NOT NULL,
+  `created_by` INT NOT NULL,
+  `update_title` VARCHAR(255) NOT NULL,
+  `update_description` TEXT,
+  `update_type` VARCHAR(50) DEFAULT 'General Announcement',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`event_id`) REFERENCES `events`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`created_by`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+-- 13. Table structure for `venues`
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS `venues`;
+CREATE TABLE `venues` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(150) NOT NULL,
+  `address` TEXT NULL,
+  `city` VARCHAR(100) NOT NULL,
+  `state` VARCHAR(100) NOT NULL,
+  `capacity` INT NULL,
+  `transit_info` TEXT NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `venues` (`id`, `name`, `city`, `state`, `capacity`, `transit_info`) VALUES
+(1, 'Axiata Arena Bukit Jalil', 'Kuala Lumpur', 'W.P. Kuala Lumpur', 16000, 'LRT Sri Petaling Line (Bukit Jalil PH5). 5-min covered walkway.'),
+(2, 'National Stadium Bukit Jalil', 'Kuala Lumpur', 'W.P. Kuala Lumpur', 87000, 'LRT Sri Petaling Line (Bukit Jalil PH5). Covered pedestrian plaza.'),
+(3, 'Zepp Kuala Lumpur', 'Kuala Lumpur', 'W.P. Kuala Lumpur', 2500, 'Direct connection from Hang Tuah station (LRT/Monorail) via LaLaport BBCC.'),
+(4, 'Idea Live KL (Mega Star Arena)', 'Kuala Lumpur', 'W.P. Kuala Lumpur', 5000, 'Inside Sungei Wang Plaza Level 4. Direct walkway from MRT Bukit Bintang.');
+
+-- --------------------------------------------------------
+-- 14. Table structure for `user_passport_stamps`
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS `user_passport_stamps`;
+CREATE TABLE `user_passport_stamps` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NOT NULL,
+  `event_id` INT NOT NULL,
+  `seat_section` VARCHAR(100) DEFAULT 'General Seated / Standing',
+  `attendance_status` VARCHAR(20) DEFAULT 'ATTENDED',
+  `fan_review` TEXT NULL,
+  `stamped_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY `user_event_stamp` (`user_id`, `event_id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`event_id`) REFERENCES `events`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+-- 15. Table structure for `email_otp_verifications`
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS `email_otp_verifications`;
+CREATE TABLE `email_otp_verifications` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `email` VARCHAR(255) NOT NULL,
+  `otp_code` VARCHAR(10) NOT NULL,
+  `purpose` VARCHAR(50) DEFAULT 'REGISTRATION',
+  `expires_at` DATETIME NOT NULL,
+  `is_used` TINYINT(1) DEFAULT 0,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  INDEX `idx_email_otp` (`email`, `otp_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;
