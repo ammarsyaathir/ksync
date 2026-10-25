@@ -72,43 +72,35 @@
         </nav>
     </div>
 
-    <!-- Modern 2-Column Hero Card -->
-    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm relative overflow-hidden mb-8">
-        <!-- Subtle Top Accent Ribbon -->
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500"></div>
+    <!-- Modern Concert Stage Split Pass (Zero Dead Space, Cinematic Festival Aesthetic) -->
+    <div class="relative bg-slate-950 rounded-3xl overflow-hidden border border-slate-800 shadow-2xl mb-8 text-white">
+        <!-- Ambient Stage Glow Accents -->
+        <div class="absolute -top-24 -right-24 w-80 h-80 bg-pink-500/15 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -left-24 w-80 h-80 bg-purple-600/15 rounded-full blur-3xl pointer-events-none"></div>
 
         <% if (event.verification_status === 'SUSPENDED') { %>
-            <div class="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-300 text-rose-900 text-xs font-medium flex items-center gap-3 shadow-xs">
-                <i class="fas fa-triangle-exclamation text-rose-600 text-lg shrink-0"></i>
+            <div class="m-4 p-4 rounded-2xl bg-rose-950/80 border border-rose-500/50 text-rose-200 text-xs font-medium flex items-center gap-3 backdrop-blur-md">
+                <i class="fas fa-triangle-exclamation text-rose-400 text-lg shrink-0"></i>
                 <div>
-                    <span class="font-extrabold uppercase tracking-wide text-rose-800">Listing Suspended for Community Safety:</span>
+                    <span class="font-extrabold uppercase tracking-wide text-rose-300">Listing Suspended for Community Safety:</span>
                     This event has been frozen following verified community reports. Ticket purchases are locked pending official promoter clarification.
                 </div>
             </div>
         <% } %>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <!-- Left Column (5 cols): Framed High-Res Poster with Overlaid Date Badge -->
-            <div class="lg:col-span-5 relative">
-                <div class="relative rounded-2xl overflow-hidden bg-slate-900 shadow-md border border-slate-200 group max-w-md mx-auto lg:max-w-none">
-                    <img src="<%= event.poster_image || (eventPosters && eventPosters[0]) %>" 
-                         alt="<%= event.event_name %>" 
-                         data-poster="<%= event.poster_image || (eventPosters && eventPosters[0]) %>"
-                         data-name="<%= event.event_name %>"
-                         class="w-full h-auto max-h-[480px] object-cover mx-auto cursor-pointer group-hover:scale-[1.01] transition-transform duration-300"
-                         onclick="openLightbox(this.dataset.poster, this.dataset.name)"
-                         onerror="this.src='https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop'">
-                    
-                    <!-- Zoom Button Overlay -->
-                    <button type="button" 
-                            data-poster="<%= event.poster_image || (eventPosters && eventPosters[0]) %>"
-                            data-name="<%= event.event_name %>"
-                            onclick="openLightbox(this.dataset.poster, this.dataset.name)"
-                            class="absolute bottom-3 right-3 px-3 py-1.5 rounded-xl bg-slate-950/80 hover:bg-slate-900 text-white text-[11px] font-bold backdrop-blur-md flex items-center gap-1.5 shadow-md transition-all cursor-pointer">
-                        <i class="fas fa-expand text-[10px] text-pink-400"></i>
-                        <span>Zoom Visual</span>
-                    </button>
-                </div>
+        <div class="flex flex-col lg:flex-row items-stretch">
+            <!-- Left Side: Official Visual Key Art (Fills 100% height, zero blank gap) -->
+            <div class="w-full lg:w-5/12 min-h-[360px] sm:min-h-[440px] lg:min-h-[520px] relative overflow-hidden bg-slate-900 shrink-0 group">
+                <img src="<%= event.poster_image || (eventPosters && eventPosters[0]) %>" 
+                     alt="<%= event.event_name %>" 
+                     data-poster="<%= event.poster_image || (eventPosters && eventPosters[0]) %>"
+                     data-name="<%= event.event_name %>"
+                     class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 cursor-pointer"
+                     onclick="openLightbox(this.dataset.poster, this.dataset.name)"
+                     onerror="this.src='https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop'">
+                
+                <!-- Ambient Vignette Overlays -->
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-slate-950/20 lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-slate-950/90 pointer-events-none"></div>
 
                 <!-- Overlaid Lime Date Badge -->
                 <% 
@@ -116,41 +108,65 @@
                     const heroDay = heroD.getDate() || '26';
                     const heroMonth = heroD.toLocaleString('en-US', { month: 'short' }).toUpperCase() || 'MAY';
                 %>
-                <div class="absolute -top-3 -left-3 w-13 h-14 sm:w-14 sm:h-15 rounded-2xl bg-[#c6f03d] text-slate-950 flex flex-col items-center justify-center font-black leading-none shadow-lg border-2 border-white">
-                    <span class="text-base sm:text-lg"><%= heroDay %></span>
-                    <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-900"><%= heroMonth %></span>
+                <div class="absolute top-4 left-4 w-14 h-15 rounded-2xl bg-[#c6f03d] text-slate-950 flex flex-col items-center justify-center font-black leading-none shadow-xl border-2 border-slate-950/20">
+                    <span class="text-lg"><%= heroDay %></span>
+                    <span class="text-[10px] uppercase tracking-wider text-slate-900 font-extrabold"><%= heroMonth %></span>
                 </div>
+
+                <!-- Zoom Visual Button Overlay -->
+                <button type="button" 
+                        data-poster="<%= event.poster_image || (eventPosters && eventPosters[0]) %>"
+                        data-name="<%= event.event_name %>"
+                        onclick="openLightbox(this.dataset.poster, this.dataset.name)"
+                        class="absolute bottom-4 left-4 px-3 py-1.5 rounded-xl bg-slate-950/80 hover:bg-slate-900 text-white text-[11px] font-bold backdrop-blur-md flex items-center gap-1.5 border border-white/10 shadow-lg transition-all cursor-pointer">
+                    <i class="fas fa-expand text-[10px] text-pink-400"></i>
+                    <span>Zoom Poster</span>
+                </button>
             </div>
 
-            <!-- Right Column (7 cols): Badges, Title, Key Meta Info, Direct Ticket CTA, Outbound Actions -->
-            <div class="lg:col-span-7 space-y-5">
-                <!-- Badges Row -->
-                <div class="flex flex-wrap items-center gap-2">
-                    <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-slate-900 text-white shadow-2xs">
-                        <%= event.category_name || 'Concert' %>
-                    </span>
-                    <%- helpers.getStatusBadge(calcStatus) %>
-                    <%- helpers.getVerificationBadge(event.verification_status) %>
-                    <% const trust = (event.trust_level || '').toUpperCase(); %>
-                    <% if (trust === 'OFFICIAL') { %>
-                        <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
-                            <i class="fas fa-shield-halved text-emerald-600"></i> Verified Official Tour
+            <!-- Right Side: Concert Pass Intel, Live Showtime Countdown & Direct Ticket Command -->
+            <div class="w-full lg:w-7/12 p-6 sm:p-8 lg:p-9 flex flex-col justify-between space-y-5 relative z-10">
+                
+                <!-- Top Badges & Status -->
+                <div class="space-y-3">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-pink-500 text-white shadow-xs">
+                            <%= event.category_name || 'Concert' %>
                         </span>
-                    <% } else if (trust === 'COMMUNITY') { %>
-                        <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-purple-50 text-purple-700 border border-purple-200 flex items-center gap-1.5">
-                            <i class="fas fa-users text-pink-500"></i> Verified Fan Event
-                        </span>
+                        <%- helpers.getStatusBadge(calcStatus) %>
+                        <%- helpers.getVerificationBadge(event.verification_status) %>
+                        <% const trust = (event.trust_level || '').toUpperCase(); %>
+                        <% if (trust === 'OFFICIAL') { %>
+                            <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
+                                <i class="fas fa-shield-halved text-emerald-400"></i> Verified Official Tour
+                            </span>
+                        <% } else if (trust === 'COMMUNITY') { %>
+                            <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-purple-500/15 text-purple-300 border border-purple-500/30 flex items-center gap-1.5">
+                                <i class="fas fa-users text-pink-400"></i> Verified Fan Event
+                            </span>
+                        <% } %>
+                    </div>
+
+                    <!-- Main Event Title -->
+                    <h1 class="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight">
+                        <%= event.event_name %>
+                    </h1>
+
+                    <!-- Artist / Headliner Lineup Link -->
+                    <% if (event.artist_slug) { %>
+                        <div class="pt-0.5">
+                            <a href="/artists/<%= event.artist_slug %>" class="inline-flex items-center gap-2 text-xs font-extrabold text-pink-400 hover:text-pink-300 transition-colors">
+                                <i class="fas fa-microphone-lines"></i>
+                                <span><%= event.artist_name || 'Headliner Artist' %></span>
+                                <i class="fas fa-arrow-up-right-from-square text-[9px] text-pink-500"></i>
+                            </a>
+                        </div>
                     <% } %>
                 </div>
 
-                <!-- Main Event Title -->
-                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight leading-tight">
-                    <%= event.event_name %>
-                </h1>
-
-                <!-- Live Synchronized Countdown Timer Card -->
-                <div class="bg-gradient-to-r from-slate-950 via-purple-950 to-slate-900 rounded-2xl p-4 sm:p-5 border border-purple-500/20 shadow-lg text-white">
-                    <div class="flex items-center justify-between mb-3">
+                <!-- Integrated Live Countdown to Showtime Strip -->
+                <div class="bg-white/5 backdrop-blur-md rounded-2xl p-3.5 sm:p-4 border border-white/10 shadow-inner">
+                    <div class="flex items-center justify-between mb-2.5">
                         <div class="flex items-center gap-2">
                             <span class="relative flex h-2.5 w-2.5">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
@@ -158,158 +174,140 @@
                             </span>
                             <span class="text-xs font-black uppercase tracking-wider text-pink-400">Live Countdown to Showtime</span>
                         </div>
-                        <span class="text-[11px] text-slate-400 font-medium font-mono">MYT (UTC+8)</span>
+                        <span class="text-[11px] text-slate-400 font-mono">MYT (UTC+8)</span>
                     </div>
-                    <div id="countdown-timer" class="grid grid-cols-4 gap-2 sm:gap-3 text-center">
-                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-2.5 border border-white/10">
+                    <div id="countdown-timer" class="grid grid-cols-4 gap-2 sm:gap-2.5 text-center">
+                        <div class="bg-black/40 rounded-xl py-2 px-1 border border-white/5">
                             <div id="cd-days" class="text-xl sm:text-2xl font-black text-white font-mono">00</div>
-                            <div class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-300 mt-0.5">Days</div>
+                            <div class="text-[9px] uppercase tracking-wider text-slate-400 font-bold mt-0.5">Days</div>
                         </div>
-                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-2.5 border border-white/10">
+                        <div class="bg-black/40 rounded-xl py-2 px-1 border border-white/5">
                             <div id="cd-hours" class="text-xl sm:text-2xl font-black text-white font-mono">00</div>
-                            <div class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-300 mt-0.5">Hours</div>
+                            <div class="text-[9px] uppercase tracking-wider text-slate-400 font-bold mt-0.5">Hours</div>
                         </div>
-                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-2.5 border border-white/10">
+                        <div class="bg-black/40 rounded-xl py-2 px-1 border border-white/5">
                             <div id="cd-minutes" class="text-xl sm:text-2xl font-black text-white font-mono">00</div>
-                            <div class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-300 mt-0.5">Mins</div>
+                            <div class="text-[9px] uppercase tracking-wider text-slate-400 font-bold mt-0.5">Mins</div>
                         </div>
-                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-2.5 border border-white/10">
+                        <div class="bg-black/40 rounded-xl py-2 px-1 border border-white/5">
                             <div id="cd-seconds" class="text-xl sm:text-2xl font-black text-pink-400 font-mono">00</div>
-                            <div class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-pink-300 mt-0.5">Secs</div>
+                            <div class="text-[9px] uppercase tracking-wider text-pink-300 font-bold mt-0.5">Secs</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Key Details Stack (Clean, uncluttered, focused) -->
-                <div class="bg-slate-50/90 rounded-2xl p-4 sm:p-5 border border-slate-200/80 space-y-3.5 text-xs sm:text-sm">
-                    <!-- 1. Date & Time -->
-                    <div class="flex items-center justify-between gap-3">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-xs shrink-0">
-                                <i class="far fa-calendar-days"></i>
-                            </div>
-                            <div class="min-w-0">
-                                <div class="font-extrabold text-slate-900 truncate">
-                                    <%= helpers.formatDate(event.event_date) %>
-                                    <% if (event.start_time) { %>
-                                        <span class="text-slate-500 font-medium"> &bull; <%= helpers.formatTime(event.start_time) %> <%= event.end_time ? '– ' + helpers.formatTime(event.end_time) : '' %></span>
-                                    <% } %>
-                                </div>
-                            </div>
+                <!-- 2x2 Key Intel Matrix (Balanced, zero dead space) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <!-- Date & Showtime -->
+                    <div class="bg-white/5 rounded-xl p-3 border border-white/10 flex items-start gap-2.5">
+                        <div class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center shrink-0 mt-0.5 text-xs">
+                            <i class="far fa-calendar-days"></i>
                         </div>
-                        <button onclick="openCalendarModal()" class="shrink-0 px-2.5 py-1 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-[11px] font-bold flex items-center gap-1.5 cursor-pointer transition-colors" title="Export Calendar (.ics / Google)">
-                            <i class="far fa-calendar-plus text-[10px]"></i>
-                            <span>Export Calendar</span>
-                        </button>
+                        <div class="min-w-0 flex-1">
+                            <div class="font-black text-white truncate"><%= helpers.formatDate(event.event_date) %></div>
+                            <div class="text-[11px] text-slate-400 truncate"><%= helpers.formatTime(event.start_time) %><%= event.end_time ? ' – ' + helpers.formatTime(event.end_time) : '' %></div>
+                            <button onclick="openCalendarModal()" class="text-[11px] text-purple-400 hover:text-purple-300 font-bold inline-flex items-center gap-1 mt-1 cursor-pointer">
+                                <i class="far fa-calendar-plus text-[9px]"></i>
+                                <span>Export Calendar (.ics / Google)</span>
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- 2. Venue & Transit -->
-                    <div class="flex items-center justify-between gap-3 pt-2 border-t border-slate-200/60">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center text-xs shrink-0">
-                                <i class="fas fa-location-dot"></i>
-                            </div>
-                            <div class="min-w-0">
-                                <div class="font-extrabold text-slate-900 truncate">
-                                    <%= event.venue_name %>, <%= event.city %>
-                                </div>
-                            </div>
+                    <!-- Venue & Location -->
+                    <div class="bg-white/5 rounded-xl p-3 border border-white/10 flex items-start gap-2.5">
+                        <div class="w-7 h-7 rounded-lg bg-rose-500/20 text-rose-300 flex items-center justify-center shrink-0 mt-0.5 text-xs">
+                            <i class="fas fa-location-dot"></i>
                         </div>
-                        <a href="https://maps.google.com/maps?q=<%= encodeURIComponent(event.venue_name + ' ' + (event.city || 'Malaysia')) %>" 
-                           target="_blank" rel="noopener noreferrer" 
-                           class="shrink-0 px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-[11px] font-bold flex items-center gap-1.5 transition-colors">
-                            <i class="fas fa-map-location-dot text-[10px]"></i>
-                            <span>Venue Map ↗</span>
-                        </a>
+                        <div class="min-w-0 flex-1">
+                            <div class="font-black text-white truncate"><%= event.venue_name %></div>
+                            <div class="text-[11px] text-slate-400 truncate"><%= event.city %>, <%= event.state %></div>
+                            <a href="https://maps.google.com/maps?q=<%= encodeURIComponent(event.venue_name + ' ' + (event.city || 'Malaysia')) %>" 
+                               target="_blank" rel="noopener noreferrer" 
+                               class="text-[11px] text-rose-400 hover:text-rose-300 font-bold inline-flex items-center gap-1 mt-1">
+                                <i class="fas fa-map-location-dot text-[9px]"></i>
+                                <span>Open Venue Map ↗</span>
+                            </a>
+                        </div>
                     </div>
 
-                    <!-- 3. Artist & Performer -->
-                    <div class="flex items-center gap-3 pt-2 border-t border-slate-200/60">
-                        <div class="w-8 h-8 rounded-xl bg-pink-100 text-pink-700 flex items-center justify-center text-xs shrink-0">
+                    <!-- Headliner Lineup -->
+                    <div class="bg-white/5 rounded-xl p-3 border border-white/10 flex items-start gap-2.5">
+                        <div class="w-7 h-7 rounded-lg bg-pink-500/20 text-pink-300 flex items-center justify-center shrink-0 mt-0.5 text-xs">
                             <i class="fas fa-microphone-lines"></i>
                         </div>
-                        <div class="min-w-0 flex-1 flex items-center justify-between gap-2">
-                            <div class="font-extrabold text-slate-900 truncate">
-                                <% if (event.artist_slug) { %>
-                                    <a href="/artists/<%= event.artist_slug %>" class="hover:text-pink-600 transition-colors inline-flex items-center gap-1.5">
-                                        <span><%= event.artist_name || 'Multiple Artists' %></span>
-                                        <i class="fas fa-arrow-up-right-from-square text-[9px] text-slate-400"></i>
-                                    </a>
-                                <% } else { %>
-                                    <span><%= event.artist_name || 'Multiple Artists' %></span>
-                                <% } %>
-                            </div>
-                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Lineup</span>
+                        <div class="min-w-0 flex-1">
+                            <div class="font-black text-white truncate"><%= event.artist_name || 'Multiple Artists' %></div>
+                            <div class="text-[11px] text-slate-400">Official Concert Lineup</div>
                         </div>
                     </div>
 
-                    <!-- 4. Organizer / Host -->
-                    <div class="flex items-center gap-3 pt-2 border-t border-slate-200/60">
-                        <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs shrink-0">
+                    <!-- Organizer / Verified Host -->
+                    <div class="bg-white/5 rounded-xl p-3 border border-white/10 flex items-start gap-2.5">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0 mt-0.5 text-xs">
                             <i class="fas fa-shield-check"></i>
                         </div>
-                        <div class="min-w-0 flex-1 flex items-center justify-between gap-2">
-                            <div class="font-extrabold text-slate-900 truncate flex items-center gap-1.5">
+                        <div class="min-w-0 flex-1">
+                            <div class="font-black text-white truncate flex items-center gap-1.5">
                                 <span><%= displayOrgName %></span>
                                 <% if (orgSocialLink) { %>
-                                    <a href="<%= orgSocialLink %>" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-purple-600 text-xs" title="Official Links">
+                                    <a href="<%= orgSocialLink %>" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-purple-300 text-xs">
                                         <i class="fas fa-link"></i>
                                     </a>
                                 <% } %>
                             </div>
-                            <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Verified Host</span>
+                            <div class="text-[11px] text-emerald-400 font-bold">Verified Host &bull; Anti-Scalp</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Primary Ticketing Action Box (Prominent Ticket CTA) -->
-                <div class="pt-1">
+                <!-- Primary Ticketing Action Box -->
+                <div>
                     <% if (event.official_url && event.verification_status !== 'SUSPENDED') { %>
-                        <div class="space-y-2">
+                        <div class="space-y-1.5">
                             <a href="<%= event.official_url %>" target="_blank" rel="noopener noreferrer" 
-                               class="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-pink-600 via-purple-600 to-slate-950 hover:from-pink-500 hover:to-slate-900 text-white font-black text-sm shadow-lg shadow-pink-500/20 flex items-center justify-center gap-2.5 transition-all press-tactile">
+                               class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 hover:from-pink-400 hover:to-indigo-500 text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-pink-500/25 press-tactile transition-all">
                                 <i class="fas fa-ticket text-amber-300 text-base"></i>
                                 <span>Buy Official Tickets</span>
                                 <i class="fas fa-arrow-up-right-from-square text-xs"></i>
                             </a>
-                            <div class="text-[11px] text-slate-500 flex items-center gap-1.5">
-                                <i class="fas fa-shield-check text-emerald-600"></i>
-                                <span>Direct official vendor &bull; Secure authenticated checkout &bull; No scalper markups</span>
+                            <div class="text-[11px] text-slate-400 flex items-center justify-center gap-1.5">
+                                <i class="fas fa-shield-check text-emerald-400"></i>
+                                <span>Direct official vendor &bull; Authenticated checkout &bull; No scalper markups</span>
                             </div>
                         </div>
                     <% } else if (event.verification_status === 'SUSPENDED') { %>
-                        <div class="p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-center gap-2">
-                            <i class="fas fa-lock text-rose-600"></i>
+                        <div class="p-3 rounded-2xl bg-rose-900/60 border border-rose-500/50 text-rose-200 text-xs font-bold flex items-center gap-2">
+                            <i class="fas fa-lock text-rose-400"></i>
                             <span>Ticket sales locked due to community safety review</span>
                         </div>
                     <% } %>
                 </div>
 
                 <!-- Outbound Fan Engagement & Utility Bar -->
-                <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2">
+                <div class="pt-3 border-t border-white/10 flex flex-wrap items-center gap-2">
                     <!-- UC017: Save / Wishlist -->
                     <button onclick="toggleSaveEvent(<%= event.id %>, this)" 
-                            class="px-4 py-2 rounded-xl border <%= isSaved ? 'bg-rose-50 text-rose-600 border-rose-200 font-extrabold' : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200' %> font-bold text-xs flex items-center shadow-2xs cursor-pointer press-tactile transition-all">
-                        <i class="<%= isSaved ? 'fas' : 'far' %> fa-heart me-1.5 text-rose-500"></i>
+                            class="px-4 py-2 rounded-xl <%= isSaved ? 'bg-rose-500/20 text-rose-400 border-rose-500/40 font-extrabold' : 'bg-white/10 hover:bg-white/15 text-slate-200 border-white/10' %> font-bold text-xs border flex items-center shadow-xs cursor-pointer press-tactile transition-all">
+                        <i class="<%= isSaved ? 'fas' : 'far' %> fa-heart me-1.5 text-rose-400"></i>
                         <span><%= isSaved ? 'Saved to Wishlist' : 'Save Event' %></span>
                     </button>
 
                     <!-- UC018: Upvote / Recommend -->
                     <button onclick="toggleRecommendEvent(<%= event.id %>, this)" 
                             id="btnRecommendEvent"
-                            class="px-4 py-2 rounded-xl border <%= (typeof isInterested !== 'undefined' && isInterested) ? 'bg-amber-50 text-amber-700 border-amber-300 font-extrabold' : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200' %> font-bold text-xs flex items-center shadow-2xs cursor-pointer press-tactile transition-all"
+                            class="px-4 py-2 rounded-xl <%= (typeof isInterested !== 'undefined' && isInterested) ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 font-extrabold' : 'bg-white/10 hover:bg-white/15 text-slate-200 border-white/10' %> font-bold text-xs border flex items-center shadow-xs cursor-pointer press-tactile transition-all"
                             title="Recommend this legitimate event">
-                        <i class="<%= (typeof isInterested !== 'undefined' && isInterested) ? 'fas' : 'far' %> fa-thumbs-up me-1.5 <%= (typeof isInterested !== 'undefined' && isInterested) ? 'text-amber-500' : 'text-slate-400' %>"></i>
+                        <i class="<%= (typeof isInterested !== 'undefined' && isInterested) ? 'fas' : 'far' %> fa-thumbs-up me-1.5 text-amber-400"></i>
                         <span>Recommend</span>
-                        <span id="recommendCountBadge" class="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] <%= (typeof isInterested !== 'undefined' && isInterested) ? 'bg-amber-200 text-amber-900' : 'bg-slate-200 text-slate-700' %> font-black"><%= (typeof interestCount !== 'undefined') ? interestCount : 0 %></span>
+                        <span id="recommendCountBadge" class="ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] <%= (typeof isInterested !== 'undefined' && isInterested) ? 'bg-amber-400 text-slate-950 font-black' : 'bg-white/20 text-white font-bold' %>"><%= (typeof interestCount !== 'undefined') ? interestCount : 0 %></span>
                     </button>
 
                     <!-- UC010: Share -->
                     <button data-name="<%= event.event_name %>" 
                             data-slug="<%= eventSlug %>" 
                             onclick="openShareModal(this.dataset.name, this.dataset.slug)" 
-                            class="px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center shadow-2xs cursor-pointer press-tactile transition-all">
-                        <i class="fas fa-share-nodes me-1.5 text-pink-500"></i>
+                            class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-slate-200 border border-white/10 font-bold text-xs flex items-center shadow-xs cursor-pointer press-tactile transition-all">
+                        <i class="fas fa-share-nodes me-1.5 text-pink-400"></i>
                         <span>Share</span>
                     </button>
 
@@ -317,13 +315,13 @@
                     <% if (isOrganizer || isAdmin) { %>
                         <% if (isAdmin || (userObj && userObj.id === event.organizer_id)) { %>
                             <a href="/organizer/events/<%= event.id %>/edit" 
-                               class="px-3.5 py-2 rounded-xl border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs flex items-center shadow-2xs transition-all">
-                                <i class="fas fa-pen text-emerald-600 me-1"></i>
+                               class="px-3.5 py-2 rounded-xl border border-emerald-500/40 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 font-bold text-xs flex items-center shadow-xs transition-all">
+                                <i class="fas fa-pen text-emerald-400 me-1"></i>
                                 <span>Edit</span>
                             </a>
                             <a href="/organizer/events/<%= event.tracking_code || event.slug || event.id %>/verification" 
-                               class="px-3.5 py-2 rounded-xl border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-800 font-bold text-xs flex items-center shadow-2xs transition-all">
-                                <i class="fas fa-shield-check text-purple-600 me-1"></i>
+                               class="px-3.5 py-2 rounded-xl border border-purple-500/40 bg-purple-500/15 hover:bg-purple-500/25 text-purple-300 font-bold text-xs flex items-center shadow-xs transition-all">
+                                <i class="fas fa-shield-check text-purple-400 me-1"></i>
                                 <span>Verification</span>
                             </a>
                         <% } %>
@@ -331,9 +329,9 @@
 
                     <!-- UC019: Report Listing -->
                     <button onclick="openReportModal()" 
-                            class="px-3 py-2 rounded-xl border border-slate-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 text-slate-500 font-bold text-xs flex items-center shadow-2xs cursor-pointer press-tactile ms-auto transition-all"
+                            class="px-3 py-2 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-white/5 text-xs font-bold flex items-center ms-auto transition-all cursor-pointer"
                             title="Report inaccurate info or suspicious ticket listing">
-                        <i class="fas fa-flag text-slate-400 hover:text-rose-500 me-1"></i>
+                        <i class="fas fa-flag text-slate-400 hover:text-rose-400 me-1"></i>
                         <span>Report</span>
                     </button>
                 </div>
