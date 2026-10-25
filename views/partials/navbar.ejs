@@ -116,21 +116,25 @@
                         </div>
                     </div>
                 <% } else { %>
-                    <!-- Fan & Guest Discovery: Artists, 360° Radar, For Organizers -->
-                    <a href="/artists" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer <%= path.startsWith('/artists') ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-900/5' %>">
-                        <i class="fas fa-microphone-lines text-xs text-purple-500"></i>
-                        <span>Artists</span>
+                    <!-- Fan & Guest Main Navigation: Discovery / Event / Radar / Artist -->
+                    <a href="/" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer <%= path === '/' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-900/5' %>">
+                        <i class="fas fa-compass text-xs <%= path === '/' ? 'text-pink-400' : 'text-slate-400' %>"></i>
+                        <span>Discovery</span>
+                    </a>
+                    <a href="/events" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer <%= (path === '/events' || (path.startsWith('/events/') && path !== '/events/radar')) ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-900/5' %>">
+                        <i class="fas fa-calendar-days text-xs <%= (path === '/events' || (path.startsWith('/events/') && path !== '/events/radar')) ? 'text-[#c6f03d]' : 'text-purple-500' %>"></i>
+                        <span>Event</span>
                     </a>
                     <a href="/events/radar" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer <%= path === '/events/radar' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-900/5' %>">
                         <span class="relative flex h-2 w-2">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-pink-500"></span>
                         </span>
-                        <span>360° Radar</span>
+                        <span>Radar</span>
                     </a>
-                    <a href="/submit-event" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer text-slate-600 hover:text-pink-600 hover:bg-pink-50/60">
-                        <i class="fas fa-bullhorn text-xs text-pink-500"></i>
-                        <span>For Organizers</span>
+                    <a href="/artists" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer <%= path.startsWith('/artists') ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-900/5' %>">
+                        <i class="fas fa-microphone-lines text-xs <%= path.startsWith('/artists') ? 'text-purple-300' : 'text-purple-500' %>"></i>
+                        <span>Artist</span>
                     </a>
                 <% } %>
             </nav>
@@ -417,22 +421,22 @@
                 <span>Public Portal</span>
             </a>
         <% } else { %>
-            <!-- Fan & Guest Mobile Links -->
+            <!-- Fan & Guest Mobile Links: Discovery / Event / Radar / Artist -->
             <a href="/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path === '/' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
-                <i class="fas fa-house w-4 text-slate-400"></i>
-                <span>Home</span>
+                <i class="fas fa-compass w-4 text-purple-500"></i>
+                <span>Discovery</span>
             </a>
             <a href="/events" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= (path === '/events' || path.startsWith('/events/')) && path !== '/events/radar' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
-                <i class="fas fa-compass w-4 text-slate-400"></i>
-                <span>Discover Events</span>
-            </a>
-            <a href="/artists" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path.startsWith('/artists') ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
-                <i class="fas fa-microphone-lines w-4 text-purple-500"></i>
-                <span>Artists & Groups</span>
+                <i class="fas fa-calendar-days w-4 text-pink-500"></i>
+                <span>Event</span>
             </a>
             <a href="/events/radar" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path === '/events/radar' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
                 <i class="fas fa-radar w-4 text-pink-500"></i>
-                <span>360° Radar</span>
+                <span>Radar</span>
+            </a>
+            <a href="/artists" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path.startsWith('/artists') ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
+                <i class="fas fa-microphone-lines w-4 text-purple-500"></i>
+                <span>Artist</span>
             </a>
             <% if (user) { %>
                 <a href="/saved-events" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path === '/saved-events' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
@@ -448,10 +452,6 @@
                     <span>Fan Passport</span>
                 </a>
             <% } %>
-            <a href="/submit-event" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-white">
-                <i class="fas fa-bullhorn w-4 text-pink-400"></i>
-                <span>For Organizers (Publish Event)</span>
-            </a>
         <% } %>
 
         <!-- Mobile Auth Tray -->
