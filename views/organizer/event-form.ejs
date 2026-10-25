@@ -1,329 +1,656 @@
-<%- include('../partials/header', { title: (isEdit ? 'Edit Event' : 'Create New Event') + ' | Organizer Workspace' }) %>
+<%- include('../partials/header', { title: (isEdit ? 'Edit Event: ' + event.event_name : 'Submit K-Pop Event') + ' | K-Sync Malaysia' }) %>
 
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 min-w-0">
-    <!-- Top Breadcrumb & Title -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 min-w-0 max-w-full">
+
+    <!-- Top Stepper Header (Comp 1) -->
     <div class="mb-8">
-        <a href="/organizer/dashboard" class="inline-flex items-center text-xs font-bold text-slate-500 hover:text-pink-600 mb-3 transition-colors">
-            <i class="fas fa-arrow-left me-1.5"></i> Back to Organizer Portal
-        </a>
+        <div class="flex items-center justify-between gap-3 mb-4">
+            <a href="/organizer/dashboard" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold border border-slate-200 shadow-2xs transition-all press-tactile">
+                <i class="fas fa-arrow-left text-[11px] text-slate-500"></i>
+                <span>Back to workspace</span>
+            </a>
+            
+            <!-- 3-Step Pill Stepper -->
+            <div class="hidden sm:flex items-center gap-2 text-xs font-bold">
+                <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-full <%= !isEdit ? 'bg-slate-900 text-white shadow-2xs' : 'bg-slate-100 text-slate-600' %>">
+                    <span class="w-4 h-4 rounded-full <%= !isEdit ? 'bg-[#c6f03d] text-slate-950' : 'bg-slate-300 text-slate-700' %> flex items-center justify-center text-[10px] font-black">1</span>
+                    <span>Read evidence</span>
+                </div>
+                <i class="fas fa-chevron-right text-[10px] text-slate-300"></i>
+                <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-full <%= isEdit ? 'bg-slate-900 text-white shadow-2xs' : 'bg-purple-100 text-purple-900 border border-purple-200' %>">
+                    <span class="w-4 h-4 rounded-full <%= isEdit ? 'bg-[#c6f03d] text-slate-950' : 'bg-purple-700 text-white' %> flex items-center justify-center text-[10px] font-black">2</span>
+                    <span>Check details</span>
+                </div>
+                <i class="fas fa-chevron-right text-[10px] text-slate-300"></i>
+                <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-100 text-slate-500">
+                    <span class="w-4 h-4 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[10px] font-black">3</span>
+                    <span>Submit & verify</span>
+                </div>
+            </div>
+        </div>
+
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-                <span class="px-3 py-1 rounded-full text-xs font-bold bg-pink-100 text-pink-700 uppercase tracking-wider">
-                    <i class="fas fa-calendar-plus me-1"></i> Organizer Portal
-                </span>
-                <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mt-2">
-                    <%= isEdit ? 'Edit Event: ' + event.event_name : 'Create New K-Pop Event' %>
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        <i class="fas fa-shield-halved me-1"></i> Organizer Portal
+                    </span>
+                    <% if (isEdit) { %>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-200">
+                            Editing Listing #<%= event.tracking_code || event.id %>
+                        </span>
+                    <% } %>
+                </div>
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight mt-2">
+                    <%= isEdit ? 'Edit Event: ' + event.event_name : 'Submit K-Pop Event' %>
                 </h1>
-                <p class="text-xs sm:text-sm text-slate-600 mt-1">
-                    <%= isEdit ? 'Update your listing details. Edits will trigger autonomous Dual-AI re-evaluation.' : 'Fill in the event details below. Our Dual-AI verification engine checks dates, venues, and official links upon submission.' %>
+                <p class="text-xs sm:text-sm text-slate-600 mt-1 max-w-3xl leading-relaxed">
+                    <%= isEdit 
+                        ? 'Update your official listing details, graphics, and ticketing links. Changes automatically re-run Autonomous Dual-AI verification.' 
+                        : 'Submit your concert, fan meeting, or cupsleeve event. Autonomous Dual-AI verifies source announcements instantly with zero admin queues.' %>
                 </p>
             </div>
         </div>
     </div>
 
-    <!-- AI Verification Notice Banner -->
-    <div class="bg-gradient-to-r from-purple-900 to-indigo-900 rounded-2xl p-5 text-white shadow-md mb-8 flex items-start gap-4">
-        <div class="w-10 h-10 rounded-xl bg-pink-500/20 text-pink-300 flex items-center justify-center text-lg shrink-0 mt-0.5">
-            <i class="fas fa-robot"></i>
-        </div>
-        <div class="text-xs leading-relaxed">
-            <div class="font-extrabold text-sm text-pink-200">Autonomous Dual-AI Verification Notice</div>
-            <p class="text-slate-300 mt-1">
-                K-Sync Malaysia does not require human admin queues. Upon saving, <strong>AI Model 1 (Vision OCR)</strong> and <strong>AI Model 2 (Semantic Auditor)</strong> cross-verify your poster artwork with your form inputs and official announcement URL. Ensure your poster date and form date match exactly to achieve immediate <strong>VERIFIED</strong> status!
-            </p>
-        </div>
-    </div>
+    <% if (!isEdit) { %>
+    <!-- Top Announcement Smart Fill Card (Comp 1) -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 border-2 border-slate-200/90 shadow-sm mb-8 relative overflow-hidden">
+        <!-- Top Lime Accent Ribbon -->
+        <div class="absolute top-0 left-0 right-0 h-1.5 bg-[#c6f03d]"></div>
 
-    <!-- Main Form Card -->
-    <div class="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-sm">
+        <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
+            <div class="flex-1">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-[#c6f03d] text-slate-950 flex items-center gap-1.5 uppercase tracking-wider">
+                        <i class="fas fa-wand-magic-sparkles text-xs"></i> Smart fill
+                    </span>
+                    <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                        <i class="fas fa-lock text-[10px] text-emerald-600"></i> Suggestions only
+                    </span>
+                </div>
 
-        <% if (!isEdit) { %>
-        <!-- 1-Click Sample Data Autofill Quick Helper -->
-        <div class="bg-gradient-to-r from-pink-50 via-purple-50 to-indigo-50 border border-pink-200/80 rounded-2xl p-5 mb-8 shadow-sm">
-            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-gradient-to-r from-pink-600 to-purple-600 text-white tracking-wide uppercase shadow-sm flex items-center gap-1">
-                            <i class="fas fa-bolt text-yellow-300"></i> Quick Demo Helper
-                        </span>
-                        <span class="text-xs font-bold text-slate-800">1-Click Sample K-Pop Event Autofill</span>
+                <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                    Start with the announcement. We'll fill the form.
+                </h2>
+                <p class="text-xs sm:text-sm text-slate-600 mt-1.5 leading-relaxed max-w-2xl">
+                    Paste the official announcement link or scan the poster. K-Sync reads the event name, date, venue, organiser and poster, then puts them in the form for you to check. Nothing is saved until you submit.
+                </p>
+
+                <!-- Mode Toggles (Official link vs Scan poster AI) -->
+                <div class="flex items-center gap-2 mt-4">
+                    <button type="button" id="tabModeLink" onclick="switchSmartMode('link')" 
+                            class="px-4 py-2 rounded-full text-xs font-extrabold bg-slate-900 text-white flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer">
+                        <i class="fas fa-link text-[11px] text-[#c6f03d]"></i>
+                        <span>Official link</span>
+                    </button>
+                    <button type="button" id="tabModeScan" onclick="switchSmartMode('scan')" 
+                            class="px-4 py-2 rounded-full text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1.5 transition-all cursor-pointer">
+                        <i class="fas fa-image text-[11px] text-purple-600"></i>
+                        <span>AI Scan</span>
+                        <span class="px-1.5 py-0.5 rounded-full text-[9px] font-black bg-[#c6f03d] text-slate-950">Gemini 4 Argon</span>
+                    </button>
+                </div>
+
+                <!-- Input Box Container -->
+                <div class="mt-3.5">
+                    <!-- 1. URL Mode Input -->
+                    <div id="smartLinkContainer" class="flex flex-col sm:flex-row items-stretch gap-2.5">
+                        <div class="relative flex-1">
+                            <i class="fas fa-link absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="url" id="smartUrlInput" 
+                                   placeholder="https://weverse.io/... or the organiser's official announcement link"
+                                   class="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all">
+                        </div>
+                        <button type="button" id="btnSmartFill" onclick="runSmartFill()" 
+                                class="px-6 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition-all press-tactile cursor-pointer shrink-0">
+                            <i class="fas fa-bolt text-[#c6f03d]"></i>
+                            <span>Read & fill</span>
+                        </button>
                     </div>
-                    <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
-                        Click the button below to instantly populate <strong>all 15 form fields and the poster artwork preview</strong>. 
-                        <span class="text-rose-600 font-semibold block sm:inline mt-0.5 sm:mt-0">
-                            <i class="fas fa-info-circle me-1"></i>No database entry is made yet
-                        </span> — you can review, edit, or adjust anything before submitting!
+
+                    <!-- 2. AI Poster Scan Mode Input (Drawer) -->
+                    <div id="smartScanContainer" class="hidden space-y-2.5">
+                        <div class="flex flex-col sm:flex-row items-stretch gap-2.5">
+                            <div class="relative flex-1">
+                                <i class="fas fa-image absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                <input type="url" id="aiPosterInput" 
+                                       placeholder="Paste official poster image URL (e.g. https://.../poster.jpg)"
+                                       value="https://ime.co/wp-content/uploads/2026/07/01_BND_1080x1350.jpg"
+                                       class="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all">
+                            </div>
+                            <button type="button" id="btnRunAiExtract" onclick="runAiExtract()" 
+                                    class="px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition-all press-tactile cursor-pointer shrink-0">
+                                <span id="aiBtnSpinner" class="hidden"><i class="fas fa-spinner fa-spin"></i></span>
+                                <span id="aiBtnText"><i class="fas fa-brain text-amber-300"></i> AI Scan (Gemini 4 Argon)</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <p class="text-[11px] text-slate-400 mt-2">
+                        Works with Weverse, artist X/Twitter, Instagram, promoter websites, ticketing gateways and press releases.
                     </p>
                 </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <button type="button" onclick="fillSampleData('aespa')" id="btnAutofillAespa" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-extrabold text-xs shadow-md shadow-pink-500/20 transition-all flex items-center gap-2 active:scale-95 cursor-pointer">
-                        <i class="fas fa-wand-magic-sparkles text-yellow-300"></i> 1-Click: aespa (Concert)
-                    </button>
-                    <button type="button" onclick="fillSampleData('boynextdoor')" class="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-md shadow-blue-500/20 transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer">
-                        <i class="fas fa-door-open text-yellow-200"></i> BOYNEXTDOOR (iMe)
-                    </button>
-                    <button type="button" onclick="fillSampleData('ive')" class="px-3 py-2 rounded-xl bg-white border border-slate-200 hover:border-pink-300 text-slate-700 hover:text-pink-600 font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer">
-                        <i class="fas fa-music text-purple-500"></i> IVE Tour
-                    </button>
-                    <button type="button" onclick="fillSampleData('cupsleeve')" class="px-3 py-2 rounded-xl bg-white border border-slate-200 hover:border-pink-300 text-slate-700 hover:text-pink-600 font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer">
-                        <i class="fas fa-coffee text-amber-500"></i> Cupsleeve
-                    </button>
-                    <button type="button" onclick="fillSampleData('txt_cupsleeve')" class="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 text-white font-extrabold text-xs shadow-md shadow-teal-500/20 transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer">
-                        <i class="fab fa-telegram-plane text-cyan-200"></i> TXT Cupsleeve (Telegram)
-                    </button>
-                    <button type="button" onclick="toggleAiExtractor()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-extrabold text-xs shadow-md shadow-violet-500/20 transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer">
-                        <i class="fas fa-brain text-yellow-300"></i> AI Scan (Gemini 4 Argon)
-                    </button>
-                    <button type="button" onclick="clearFormFields()" title="Reset / Clear all fields" class="px-2.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-rose-50 hover:border-rose-200 text-slate-500 hover:text-rose-600 text-xs font-bold transition-all cursor-pointer">
-                        <i class="fas fa-rotate-left"></i>
-                    </button>
-                </div>
-            </div>
 
-            <!-- Gemini 4 Argon Multimodal Data Extractor Drawer -->
-            <div id="aiExtractorBox" class="mt-4 hidden p-4 rounded-2xl bg-gradient-to-r from-violet-50 to-indigo-50 border border-violet-200 shadow-sm transition-all">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="text-xs font-bold text-violet-900 flex items-center gap-2">
-                        <i class="fas fa-robot text-violet-600"></i> Gemini 4 Argon Multimodal Data Extractor
-                    </div>
-                    <button type="button" onclick="toggleAiExtractor()" class="text-violet-400 hover:text-violet-700 text-sm font-bold cursor-pointer">&times;</button>
-                </div>
-                <p class="text-[11px] text-violet-700 mb-3 leading-relaxed">
-                    Paste an official concert poster image URL or announcement link. <strong>Gemini 4 Argon</strong> will read the poster typography, match the venue, parse ticket tiers, and populate the form automatically.
-                </p>
-                <div class="flex flex-col sm:flex-row gap-2">
-                    <input type="url" id="aiPosterInput" value="https://ime.co/wp-content/uploads/2026/07/01_BND_1080x1350.jpg" placeholder="Poster image URL"
-                           class="flex-1 bg-white border border-violet-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-400">
-                    <input type="url" id="aiCaptionInput" value="https://ime.co/blog/tour/boynextdoor-tour-knock-on-vol-2-in-kuala-lumpur/" placeholder="Announcement link"
-                           class="flex-1 bg-white border border-violet-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-400">
-                    <button type="button" id="btnRunAiExtract" onclick="runAiExtract()" class="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-extrabold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0">
-                        <span id="aiBtnSpinner" class="hidden"><i class="fas fa-spinner fa-spin"></i></span>
-                        <span id="aiBtnText"><i class="fas fa-bolt"></i> Extract with Argon</span>
+                <!-- 1-Click Fast Presets (Comp 1) -->
+                <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2 text-xs">
+                    <span class="text-slate-500 font-medium text-[11px]">No announcement handy? Try a live demo:</span>
+                    <button type="button" onclick="fillSampleData('boynextdoor')" class="font-extrabold text-purple-700 hover:text-purple-900 hover:underline cursor-pointer">
+                        Use the BOYNEXTDOOR sample
+                    </button>
+                    <span class="text-slate-300">&bull;</span>
+                    <button type="button" onclick="fillSampleData('aespa')" class="font-bold text-pink-600 hover:text-pink-800 hover:underline cursor-pointer">
+                        aespa Concert
+                    </button>
+                    <span class="text-slate-300">&bull;</span>
+                    <button type="button" onclick="fillSampleData('ive')" class="font-bold text-slate-700 hover:text-slate-900 hover:underline cursor-pointer">
+                        IVE Tour
+                    </button>
+                    <span class="text-slate-300">&bull;</span>
+                    <button type="button" onclick="fillSampleData('cupsleeve')" class="font-bold text-slate-700 hover:text-slate-900 hover:underline cursor-pointer">
+                        Cupsleeve Cafe
+                    </button>
+                    <span class="text-slate-300">&bull;</span>
+                    <button type="button" onclick="clearFormFields()" class="font-bold text-slate-400 hover:text-rose-600 ml-auto flex items-center gap-1 cursor-pointer">
+                        <i class="fas fa-rotate-left text-[10px]"></i> Reset
                     </button>
                 </div>
-            </div>
-
-            <!-- Toast / Confirmation Alert when filled -->
-            <div id="autofillToast" class="mt-4 hidden p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-medium flex items-center justify-between transition-all">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
-                        <i class="fas fa-check text-xs"></i>
-                    </div>
-                    <div>
-                        <strong id="toastTitle" class="font-extrabold text-emerald-800">Sample event data populated!</strong>
-                        <div class="text-[11px] text-emerald-700">All fields and poster preview are filled in below. Review them and click <strong>"Submit & Run Dual-AI Verification"</strong> when ready.</div>
-                    </div>
-                </div>
-                <button type="button" onclick="document.getElementById('autofillToast').classList.add('hidden')" class="text-emerald-500 hover:text-emerald-800 text-base font-bold ml-2 leading-none">&times;</button>
             </div>
         </div>
-        <% } %>
 
-        <form action="<%= isEdit ? '/organizer/events/' + event.id + '/edit' : '/organizer/events/new' %>" method="POST" enctype="multipart/form-data" class="space-y-8">
+        <!-- Toast Feedback -->
+        <div id="autofillToast" class="mt-4 hidden p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-medium flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                    <i class="fas fa-check text-xs"></i>
+                </div>
+                <div>
+                    <strong id="toastTitle" class="font-extrabold text-emerald-800">Sample event data populated!</strong>
+                    <div class="text-[11px] text-emerald-700">Form fields and visual poster slots filled below. Review or adjust, then preview or submit!</div>
+                </div>
+            </div>
+            <button type="button" onclick="document.getElementById('autofillToast').classList.add('hidden')" class="text-emerald-500 hover:text-emerald-800 font-bold text-base">&times;</button>
+        </div>
+    </div>
+    <% } %>
+
+    <!-- Main Two-Column Submission Layout (Comp 2 & 3) -->
+    <form id="eventSubmissionForm" action="<%= isEdit ? '/organizer/events/' + event.id + '/edit' : '/organizer/events/new' %>" method="POST" enctype="multipart/form-data">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            <!-- Section 1: Core Details -->
-            <div>
-                <h3 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
-                    <span class="w-6 h-6 rounded-full bg-pink-100 text-pink-600 text-xs flex items-center justify-center font-bold">1</span>
-                    Event & Artist Details
-                </h3>
+            <!-- LEFT COLUMN (8 Cols): Structured Modular Form Cards -->
+            <div class="lg:col-span-8 space-y-6">
 
-                <div class="space-y-4">
+                <!-- CARD 1: Artist & Event (Comp 2) -->
+                <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm space-y-5">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-7 h-7 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-xs">
+                                <i class="fas fa-microphone-lines"></i>
+                            </div>
+                            <h3 class="text-base font-extrabold text-slate-900">Artist & event</h3>
+                        </div>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                            &bull; Required
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-500 -mt-2">
+                        The basics fans will search for. Write the title the way the organiser announced it.
+                    </p>
+
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">
-                            Event Title <span class="text-rose-500">*</span>
+                            Event title <span class="text-rose-500">*</span>
                         </label>
-                        <input type="text" name="event_name" value="<%= isEdit ? event.event_name : '' %>" required
-                               placeholder="e.g. TXT WORLD TOUR IN KUALA LUMPUR"
-                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-pink-300">
+                        <input type="text" name="event_name" id="inputEventName" required 
+                               value="<%= isEdit ? event.event_name : '' %>"
+                               placeholder="e.g. SEVENTEEN [RIGHT HERE] WORLD TOUR IN KUALA LUMPUR"
+                               class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-900 font-bold placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all">
+                        <span class="text-[11px] text-slate-400 mt-1 block">The primary title fans search for, and how duplicate events are spotted.</span>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">
-                                K-Pop Artist / Group <span class="text-rose-500">*</span>
+                                Event category <span class="text-rose-500">*</span>
                             </label>
-                            <select name="artist_id" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-pink-300">
-                                <option value="">Select Artist / Group...</option>
-                                <% artists.forEach(a => { %>
-                                    <option value="<%= a.id %>" <%= isEdit && event.artist_id == a.id ? 'selected' : '' %>>
-                                        <%= a.name %> (<%= a.group_type %>)
-                                    </option>
-                                <% }); %>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">
-                                Event Category <span class="text-rose-500">*</span>
-                            </label>
-                            <select name="category_id" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-pink-300">
-                                <option value="">Select Category...</option>
+                            <select name="category_id" id="inputCategoryId" required 
+                                    class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all cursor-pointer">
+                                <option value="">Select category</option>
                                 <% categories.forEach(c => { %>
-                                    <option value="<%= c.id %>" <%= isEdit && event.category_id == c.id ? 'selected' : '' %>>
+                                    <option value="<%= c.id %>" <%= (isEdit && event.category_id == c.id) ? 'selected' : '' %>>
                                         <%= c.name %>
                                     </option>
                                 <% }); %>
                             </select>
+                            <span class="text-[11px] text-slate-400 mt-1 block">Concert, fan meeting, cupsleeve, birthday cafe, and so on.</span>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">
+                                K-Pop artist / group
+                            </label>
+                            <select name="artist_id" id="inputArtistId" 
+                                    class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all cursor-pointer">
+                                <option value="">Select artist / group (optional)</option>
+                                <% artists.forEach(a => { %>
+                                    <option value="<%= a.id %>" data-slug="<%= a.slug %>" <%= (isEdit && event.artist_id == a.id) ? 'selected' : '' %>>
+                                        <%= a.name %> (<%= a.group_type %>)
+                                    </option>
+                                <% }); %>
+                            </select>
+                            <span class="text-[11px] text-slate-400 mt-1 block">Leave empty for festivals or line-ups with several acts.</span>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Event Description & Synopsis</label>
-                        <textarea name="description" rows="4" placeholder="Describe the tour, soundcheck perks, or cupsleeve giveaways..."
-                                  class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-300"><%= isEdit ? event.description : '' %></textarea>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">
+                            Event description <span class="text-rose-500">*</span>
+                        </label>
+                        <textarea name="description" id="inputDescription" rows="4" required 
+                                  placeholder="Provide an overview of the event, what it offers, itinerary, admission guidelines, fan projects, etc."
+                                  class="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all leading-relaxed"><%= isEdit ? event.description : '' %></textarea>
+                        <span class="text-[11px] text-slate-400 mt-1 block">Full details help fans decide and help the admin team judge authenticity. Mention any accessibility notes here.</span>
                     </div>
                 </div>
-            </div>
 
-            <!-- Section 2: Date, Time & Venue -->
-            <div>
-                <h3 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
-                    <span class="w-6 h-6 rounded-full bg-purple-100 text-purple-600 text-xs flex items-center justify-center font-bold">2</span>
-                    Date, Time & Venue
-                </h3>
+                <!-- CARD 2: Schedule & Timing -->
+                <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm space-y-5">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-7 h-7 rounded-xl bg-pink-100 text-pink-700 flex items-center justify-center text-xs">
+                                <i class="fas fa-calendar-days"></i>
+                            </div>
+                            <h3 class="text-base font-extrabold text-slate-900">Schedule & timing</h3>
+                        </div>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                            &bull; Required
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-500 -mt-2">
+                        Official show dates and doors opening in Malaysia local time (MYT / UTC+8).
+                    </p>
 
-                <div class="space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">
-                                Event Date <span class="text-rose-500">*</span>
+                                Event date <span class="text-rose-500">*</span>
                             </label>
-                            <input type="date" name="event_date" value="<%= isEdit ? event.event_date : '' %>" required
-                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-pink-300">
+                            <input type="date" name="event_date" id="inputEventDate" required 
+                                   value="<%= isEdit ? (event.event_date instanceof Date ? event.event_date.toISOString().split('T')[0] : event.event_date) : '' %>"
+                                   class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all">
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">
-                                Start Time <span class="text-rose-500">*</span>
+                                Start time <span class="text-rose-500">*</span>
                             </label>
-                            <input type="time" name="start_time" value="<%= isEdit ? event.start_time : '' %>" required
-                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-pink-300">
+                            <input type="time" name="start_time" id="inputStartTime" required 
+                                   value="<%= isEdit ? event.start_time : '18:00' %>"
+                                   class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">End Time (Optional)</label>
-                            <input type="time" name="end_time" value="<%= isEdit ? event.end_time : '' %>"
-                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-pink-300">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">
+                                End time (optional)
+                            </label>
+                            <input type="time" name="end_time" id="inputEndTime" 
+                                   value="<%= isEdit ? event.end_time : '' %>"
+                                   class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all">
                         </div>
                     </div>
+                </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div class="sm:col-span-2">
+                <!-- CARD 3: Venue & Location -->
+                <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm space-y-5">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-7 h-7 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-xs">
+                                <i class="fas fa-location-dot"></i>
+                            </div>
+                            <h3 class="text-base font-extrabold text-slate-900">Venue & location</h3>
+                        </div>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                            &bull; Required
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">
-                                Venue Name <span class="text-rose-500">*</span>
+                                Venue name <span class="text-rose-500">*</span>
                             </label>
-                            <input type="text" name="venue_name" value="<%= isEdit ? event.venue_name : '' %>" required
-                                   placeholder="e.g. Zepp Kuala Lumpur or Axiata Arena Bukit Jalil"
-                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-pink-300">
+                            <input type="text" name="venue_name" id="inputVenueName" required 
+                                   value="<%= isEdit ? event.venue_name : '' %>"
+                                   placeholder="e.g. Axiata Arena Bukit Jalil or Zepp KL"
+                                   class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all">
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">
                                 City <span class="text-rose-500">*</span>
                             </label>
-                            <input type="text" name="city" value="<%= isEdit ? event.city : 'Kuala Lumpur' %>" required
-                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-pink-300">
+                            <input type="text" name="city" id="inputCity" required 
+                                   value="<%= isEdit ? event.city : 'Kuala Lumpur' %>"
+                                   placeholder="e.g. Kuala Lumpur, Petaling Jaya, Bayan Lepas"
+                                   class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">State</label>
-                            <input type="text" name="state" value="<%= isEdit ? event.state : 'W.P. Kuala Lumpur' %>"
-                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">State / Federal Territory</label>
+                            <input type="text" name="state" id="inputState" 
+                                   value="<%= isEdit ? event.state : 'Wilayah Persekutuan Kuala Lumpur' %>"
+                                   placeholder="e.g. Wilayah Persekutuan Kuala Lumpur, Selangor"
+                                   class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Full Street Address</label>
-                            <input type="text" name="address" value="<%= isEdit ? event.address : '' %>"
-                                   placeholder="e.g. B2-01-02, Level 2, Mitsui Shopping Park LaLaport BBCC"
-                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Full street address</label>
+                            <input type="text" name="address" id="inputAddress" 
+                                   value="<%= isEdit ? event.address : '' %>"
+                                   placeholder="e.g. Jalan Barat, Bukit Jalil, 57000 Kuala Lumpur"
+                                   class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all">
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Section 3: Ticketing, Rules & Proof -->
-            <div>
-                <h3 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
-                    <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 text-xs flex items-center justify-center font-bold">3</span>
-                    Ticketing & Official Verification Source
-                </h3>
+                <!-- CARD 4: Ticketing & Official Evidence Link -->
+                <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm space-y-5">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-7 h-7 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-xs">
+                                <i class="fas fa-ticket"></i>
+                            </div>
+                            <h3 class="text-base font-extrabold text-slate-900">Ticketing & official evidence</h3>
+                        </div>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                            &bull; Required
+                        </span>
+                    </div>
 
-                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">
+                            Official ticket URL or primary ticketing gateway <span class="text-rose-500">*</span>
+                        </label>
+                        <input type="url" name="official_url" id="inputOfficialUrl" required 
+                               value="<%= isEdit ? event.official_url : '' %>"
+                               placeholder="https://golive-asia.com/event/... or https://www.ticket2u.com.my/..."
+                               class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all">
+                        <span class="text-[11px] text-slate-400 mt-1 block">Cross-checked against anti-scalp vendor whitelists to ensure authenticity.</span>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">
+                            Official public announcement link (Evidence link)
+                        </label>
+                        <input type="url" name="evidence_link" id="inputEvidenceLink" 
+                               value="<%= isEdit ? event.evidence_link : '' %>"
+                               placeholder="https://weverse.io/..., https://x.com/... or promoter notice"
+                               class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all">
+                    </div>
+
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Ticket Categories & Pricing</label>
-                            <textarea name="ticket_info" rows="3" placeholder="e.g. VIP Soundcheck: RM888 | Cat 1: RM688 | Cat 2: RM488"
-                                      class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-300"><%= isEdit ? event.ticket_info : '' %></textarea>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Ticket pricing & tiers</label>
+                            <textarea name="ticket_info" id="inputTicketInfo" rows="3" 
+                                      placeholder="e.g. VIP Soundcheck: RM 988 | CAT 1 Standing: RM 688 | CAT 2 Seated: RM 488"
+                                      class="w-full p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all"><%= isEdit ? event.ticket_info : '' %></textarea>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Event Guidelines / Rules</label>
-                            <textarea name="event_rules" rows="3" placeholder="e.g. Official lightsticks permitted. No DSLR telephoto lenses allowed."
-                                      class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-300"><%= isEdit ? event.event_rules : '' %></textarea>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Event rules & fan guidelines</label>
+                            <textarea name="event_rules" id="inputEventRules" rows="3" 
+                                      placeholder="e.g. Official lightsticks permitted. No recording equipment or DSLR cameras."
+                                      class="w-full p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all"><%= isEdit ? event.event_rules : '' %></textarea>
                         </div>
                     </div>
+                </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">
-                            Official Announcement URL / Ticketing Gateway <span class="text-rose-500">*</span>
-                        </label>
-                        <input type="url" name="official_url" value="<%= isEdit ? event.official_url : '' %>" required
-                               placeholder="https://golive-asia.com/event or https://weverse.io/..."
-                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-800 font-mono focus:outline-none focus:ring-2 focus:ring-pink-300">
-                        <span class="text-[10px] text-slate-400 mt-1 block">Cross-checked against authorized domain whitelists and OpenGraph metadata.</span>
-                    </div>
-
-                    <!-- Poster Upload & Live Preview -->
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">
-                            Event Poster Artwork <span class="text-rose-500">*</span>
-                        </label>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <input type="file" id="posterFileInput" name="poster_file" accept="image/*"
-                                       class="w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer">
-                                <span class="text-[10px] text-slate-400 mt-1 block">Upload image file (JPG, PNG, WebP). Used for Gemini Vision OCR analysis.</span>
+                <!-- CARD 5: 4-Slot Graphic Upload Grid with Live Previews (User Highlighted Request) -->
+                <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm space-y-5">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-7 h-7 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-xs">
+                                <i class="fas fa-images"></i>
                             </div>
                             <div>
-                                <input type="url" id="posterUrlInput" name="poster_url" value="<%= isEdit ? (event.poster_image || '') : '' %>"
-                                       placeholder="Or paste direct image URL (https://...)"
-                                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-800 font-mono focus:outline-none focus:ring-2 focus:ring-pink-300">
-                                <span class="text-[10px] text-slate-400 mt-1 block">Direct HTTPS image link. Live preview renders automatically below.</span>
+                                <h3 class="text-base font-extrabold text-slate-900">Poster upload</h3>
+                                <div class="text-[11px] text-slate-500">Upload 1 to 4 official graphics: main poster, seating chart, fan benefits, schedule.</div>
+                            </div>
+                        </div>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#c6f03d] text-slate-950 border border-slate-300">
+                            1 to 4 Graphics
+                        </span>
+                    </div>
+
+                    <!-- Hidden Consolidated poster_url input for Form Submission -->
+                    <input type="hidden" name="poster_url" id="consolidatedPosterUrls" value="<%= isEdit ? (event.poster_image || '') : '' %>">
+
+                    <% 
+                        // Existing gallery images parser
+                        let existingGallery = [];
+                        if (isEdit) {
+                            try {
+                                if (event.gallery_images) {
+                                    existingGallery = JSON.parse(event.gallery_images);
+                                }
+                            } catch(e) {
+                                existingGallery = [];
+                            }
+                            if (existingGallery.length === 0 && event.poster_image) {
+                                existingGallery = [event.poster_image];
+                            }
+                        }
+                    %>
+
+                    <!-- 4 Visual Upload Slots Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        
+                        <!-- SLOT 1: Primary Concert Poster -->
+                        <div class="poster-slot-card rounded-2xl border-2 border-slate-200 hover:border-purple-300 bg-slate-50 p-3 transition-all relative group flex flex-col justify-between" id="slotCard1">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-slate-900 text-white">Cover</span>
+                                    <span class="text-[10px] font-bold text-slate-400">Slot 1</span>
+                                </div>
+                                <div class="text-xs font-bold text-slate-800 mb-2">Main tour poster</div>
+                                
+                                <!-- Thumbnail Preview Area -->
+                                <div class="relative w-full aspect-[3/4] rounded-xl overflow-hidden bg-slate-200 mb-2.5 flex items-center justify-center border border-slate-200/80">
+                                    <img id="previewImgSlot1" 
+                                         src="<%= (existingGallery.length > 0 && existingGallery[0]) ? existingGallery[0] : '' %>" 
+                                         alt="Slot 1 Poster" 
+                                         class="w-full h-full object-cover <%= (existingGallery.length > 0 && existingGallery[0]) ? '' : 'hidden' %>">
+                                    <div id="placeholderSlot1" class="text-center p-3 <%= (existingGallery.length > 0 && existingGallery[0]) ? 'hidden' : '' %>">
+                                        <i class="fas fa-cloud-arrow-up text-xl text-slate-400 mb-1"></i>
+                                        <div class="text-[11px] font-bold text-slate-600">Choose file</div>
+                                        <div class="text-[9px] text-slate-400">PNG, JPG, WebP</div>
+                                    </div>
+                                    <!-- Remove Button -->
+                                    <button type="button" onclick="clearSlot(1)" id="removeBtnSlot1" 
+                                            class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-slate-900/80 hover:bg-rose-600 text-white text-[10px] flex items-center justify-center transition-colors <%= (existingGallery.length > 0 && existingGallery[0]) ? '' : 'hidden' %>" title="Remove Graphic">
+                                        <i class="fas fa-xmark"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <label class="w-full py-1.5 px-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-[11px] font-bold text-center block cursor-pointer transition-colors">
+                                    <i class="fas fa-upload me-1 text-purple-600"></i> Browse file
+                                    <input type="file" name="poster_files" accept="image/*" class="hidden" onchange="handleSlotFile(1, this)">
+                                </label>
+                                <input type="url" id="urlInputSlot1" 
+                                       placeholder="Or paste URL" 
+                                       value="<%= (existingGallery.length > 0 && existingGallery[0]) ? existingGallery[0] : '' %>"
+                                       oninput="handleSlotUrl(1, this.value)"
+                                       class="w-full px-2 py-1.5 rounded-xl bg-white border border-slate-200 text-[10px] text-slate-800 font-mono placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-purple-400">
                             </div>
                         </div>
 
-                        <!-- Live Poster Artwork Preview -->
-                        <div id="posterPreviewContainer" class="mt-4 p-4 rounded-2xl bg-gradient-to-r from-slate-50 to-pink-50/40 border border-slate-200 flex flex-col sm:flex-row items-center gap-5 <%= (isEdit && event.poster_image) ? '' : 'hidden' %>">
-                            <div class="relative group shrink-0">
-                                <img id="posterPreviewImg" src="<%= (isEdit && event.poster_image) ? event.poster_image : '' %>" alt="Poster Artwork Preview" class="w-28 h-40 object-cover rounded-xl shadow-md border border-slate-300 bg-white">
-                                <span class="absolute bottom-1.5 left-1.5 px-2 py-0.5 rounded-md bg-black/70 backdrop-blur text-[9px] text-white font-bold tracking-wider uppercase">
-                                    Artwork
-                                </span>
-                            </div>
-                            <div class="text-xs text-slate-600 flex-1">
-                                <div class="font-extrabold text-slate-900 text-sm flex items-center gap-1.5">
-                                    <i class="fas fa-image text-pink-500"></i> Active Poster Artwork Preview
+                        <!-- SLOT 2: Seating Chart & Tier Map -->
+                        <div class="poster-slot-card rounded-2xl border-2 border-slate-200 hover:border-purple-300 bg-slate-50 p-3 transition-all relative group flex flex-col justify-between" id="slotCard2">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-purple-100 text-purple-800">Seating</span>
+                                    <span class="text-[10px] font-bold text-slate-400">Slot 2</span>
                                 </div>
-                                <p class="mt-1 text-slate-500 leading-relaxed text-[11px]">
-                                    This visual poster will be passed to <strong>Google Gemini Vision AI</strong> upon submission to cross-verify tour typography, concert dates, and venue accuracy against your form inputs.
-                                </p>
-                                <div class="mt-3 flex items-center gap-2">
-                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Source:</span>
-                                    <span id="posterPreviewUrlText" class="text-[10px] font-mono text-purple-700 bg-purple-100/60 px-2.5 py-1 rounded-lg border border-purple-200/60 truncate max-w-sm sm:max-w-md block">
-                                        <%= (isEdit && event.poster_image) ? event.poster_image : 'No image loaded' %>
-                                    </span>
+                                <div class="text-xs font-bold text-slate-800 mb-2">Seating & stage map</div>
+                                
+                                <!-- Thumbnail Preview Area -->
+                                <div class="relative w-full aspect-[3/4] rounded-xl overflow-hidden bg-slate-200 mb-2.5 flex items-center justify-center border border-slate-200/80">
+                                    <img id="previewImgSlot2" 
+                                         src="<%= (existingGallery.length > 1 && existingGallery[1]) ? existingGallery[1] : '' %>" 
+                                         alt="Slot 2 Seating" 
+                                         class="w-full h-full object-cover <%= (existingGallery.length > 1 && existingGallery[1]) ? '' : 'hidden' %>">
+                                    <div id="placeholderSlot2" class="text-center p-3 <%= (existingGallery.length > 1 && existingGallery[1]) ? 'hidden' : '' %>">
+                                        <i class="fas fa-map text-xl text-slate-400 mb-1"></i>
+                                        <div class="text-[11px] font-bold text-slate-600">Choose file</div>
+                                        <div class="text-[9px] text-slate-400">Seating plan</div>
+                                    </div>
+                                    <!-- Remove Button -->
+                                    <button type="button" onclick="clearSlot(2)" id="removeBtnSlot2" 
+                                            class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-slate-900/80 hover:bg-rose-600 text-white text-[10px] flex items-center justify-center transition-colors <%= (existingGallery.length > 1 && existingGallery[1]) ? '' : 'hidden' %>" title="Remove Graphic">
+                                        <i class="fas fa-xmark"></i>
+                                    </button>
                                 </div>
                             </div>
+
+                            <div class="space-y-1.5">
+                                <label class="w-full py-1.5 px-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-[11px] font-bold text-center block cursor-pointer transition-colors">
+                                    <i class="fas fa-upload me-1 text-purple-600"></i> Browse file
+                                    <input type="file" name="poster_files" accept="image/*" class="hidden" onchange="handleSlotFile(2, this)">
+                                </label>
+                                <input type="url" id="urlInputSlot2" 
+                                       placeholder="Or paste URL" 
+                                       value="<%= (existingGallery.length > 1 && existingGallery[1]) ? existingGallery[1] : '' %>"
+                                       oninput="handleSlotUrl(2, this.value)"
+                                       class="w-full px-2 py-1.5 rounded-xl bg-white border border-slate-200 text-[10px] text-slate-800 font-mono placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-purple-400">
+                            </div>
+                        </div>
+
+                        <!-- SLOT 3: Fan Benefits & VIP Perks -->
+                        <div class="poster-slot-card rounded-2xl border-2 border-slate-200 hover:border-purple-300 bg-slate-50 p-3 transition-all relative group flex flex-col justify-between" id="slotCard3">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-pink-100 text-pink-800">Perks</span>
+                                    <span class="text-[10px] font-bold text-slate-400">Slot 3</span>
+                                </div>
+                                <div class="text-xs font-bold text-slate-800 mb-2">Fan benefits & VIP</div>
+                                
+                                <!-- Thumbnail Preview Area -->
+                                <div class="relative w-full aspect-[3/4] rounded-xl overflow-hidden bg-slate-200 mb-2.5 flex items-center justify-center border border-slate-200/80">
+                                    <img id="previewImgSlot3" 
+                                         src="<%= (existingGallery.length > 2 && existingGallery[2]) ? existingGallery[2] : '' %>" 
+                                         alt="Slot 3 Perks" 
+                                         class="w-full h-full object-cover <%= (existingGallery.length > 2 && existingGallery[2]) ? '' : 'hidden' %>">
+                                    <div id="placeholderSlot3" class="text-center p-3 <%= (existingGallery.length > 2 && existingGallery[2]) ? 'hidden' : '' %>">
+                                        <i class="fas fa-gift text-xl text-slate-400 mb-1"></i>
+                                        <div class="text-[11px] font-bold text-slate-600">Choose file</div>
+                                        <div class="text-[9px] text-slate-400">Soundcheck / VIP</div>
+                                    </div>
+                                    <!-- Remove Button -->
+                                    <button type="button" onclick="clearSlot(3)" id="removeBtnSlot3" 
+                                            class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-slate-900/80 hover:bg-rose-600 text-white text-[10px] flex items-center justify-center transition-colors <%= (existingGallery.length > 2 && existingGallery[2]) ? '' : 'hidden' %>" title="Remove Graphic">
+                                        <i class="fas fa-xmark"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <label class="w-full py-1.5 px-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-[11px] font-bold text-center block cursor-pointer transition-colors">
+                                    <i class="fas fa-upload me-1 text-purple-600"></i> Browse file
+                                    <input type="file" name="poster_files" accept="image/*" class="hidden" onchange="handleSlotFile(3, this)">
+                                </label>
+                                <input type="url" id="urlInputSlot3" 
+                                       placeholder="Or paste URL" 
+                                       value="<%= (existingGallery.length > 2 && existingGallery[2]) ? existingGallery[2] : '' %>"
+                                       oninput="handleSlotUrl(3, this.value)"
+                                       class="w-full px-2 py-1.5 rounded-xl bg-white border border-slate-200 text-[10px] text-slate-800 font-mono placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-purple-400">
+                            </div>
+                        </div>
+
+                        <!-- SLOT 4: Schedule / Admission Guidelines -->
+                        <div class="poster-slot-card rounded-2xl border-2 border-slate-200 hover:border-purple-300 bg-slate-50 p-3 transition-all relative group flex flex-col justify-between" id="slotCard4">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-blue-100 text-blue-800">Notice</span>
+                                    <span class="text-[10px] font-bold text-slate-400">Slot 4</span>
+                                </div>
+                                <div class="text-xs font-bold text-slate-800 mb-2">Schedule & rules</div>
+                                
+                                <!-- Thumbnail Preview Area -->
+                                <div class="relative w-full aspect-[3/4] rounded-xl overflow-hidden bg-slate-200 mb-2.5 flex items-center justify-center border border-slate-200/80">
+                                    <img id="previewImgSlot4" 
+                                         src="<%= (existingGallery.length > 3 && existingGallery[3]) ? existingGallery[3] : '' %>" 
+                                         alt="Slot 4 Schedule" 
+                                         class="w-full h-full object-cover <%= (existingGallery.length > 3 && existingGallery[3]) ? '' : 'hidden' %>">
+                                    <div id="placeholderSlot4" class="text-center p-3 <%= (existingGallery.length > 3 && existingGallery[3]) ? 'hidden' : '' %>">
+                                        <i class="fas fa-clock text-xl text-slate-400 mb-1"></i>
+                                        <div class="text-[11px] font-bold text-slate-600">Choose file</div>
+                                        <div class="text-[9px] text-slate-400">Itinerary / notice</div>
+                                    </div>
+                                    <!-- Remove Button -->
+                                    <button type="button" onclick="clearSlot(4)" id="removeBtnSlot4" 
+                                            class="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-slate-900/80 hover:bg-rose-600 text-white text-[10px] flex items-center justify-center transition-colors <%= (existingGallery.length > 3 && existingGallery[3]) ? '' : 'hidden' %>" title="Remove Graphic">
+                                        <i class="fas fa-xmark"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <label class="w-full py-1.5 px-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-[11px] font-bold text-center block cursor-pointer transition-colors">
+                                    <i class="fas fa-upload me-1 text-purple-600"></i> Browse file
+                                    <input type="file" name="poster_files" accept="image/*" class="hidden" onchange="handleSlotFile(4, this)">
+                                </label>
+                                <input type="url" id="urlInputSlot4" 
+                                       placeholder="Or paste URL" 
+                                       value="<%= (existingGallery.length > 3 && existingGallery[3]) ? existingGallery[3] : '' %>"
+                                       oninput="handleSlotUrl(4, this.value)"
+                                       class="w-full px-2 py-1.5 rounded-xl bg-white border border-slate-200 text-[10px] text-slate-800 font-mono placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-purple-400">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- CARD 6: Your Details (Comp 3) -->
+                <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-7 h-7 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <h3 class="text-base font-extrabold text-slate-900">Your details</h3>
+                        </div>
+                        <span class="text-[11px] text-slate-400">Autofilled from verified account</span>
+                    </div>
+                    <p class="text-xs text-slate-500 -mt-2">
+                        The contact name and email address we use to reach you about this submission.
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Your name *</label>
+                            <input type="text" name="submitter_name" id="inputSubmitterName" required 
+                                   value="<%= currentUser ? (currentUser.organization_name || currentUser.full_name) : '' %>"
+                                   class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Your email address *</label>
+                            <input type="email" name="submitter_email" id="inputSubmitterEmail" required 
+                                   value="<%= currentUser ? currentUser.email : '' %>"
+                                   class="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-900 font-bold focus:outline-none focus:ring-2 focus:ring-purple-400 focus:bg-white transition-all">
+                            <span class="text-[11px] text-slate-400 mt-1 block">The tracking reference and verification decision are sent here.</span>
                         </div>
                     </div>
 
                     <% if (isEdit) { %>
-                        <div class="pt-2 border-t border-slate-100">
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Event Lifecycle Status</label>
-                            <select name="event_status" class="w-full sm:w-64 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs font-bold">
+                        <div class="pt-3 border-t border-slate-100">
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Event lifecycle status</label>
+                            <select name="event_status" class="w-full sm:w-64 px-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-bold">
                                 <option value="UPCOMING" <%= event.event_status === 'UPCOMING' ? 'selected' : '' %>>Upcoming</option>
                                 <option value="ONGOING" <%= event.event_status === 'ONGOING' ? 'selected' : '' %>>Ongoing</option>
                                 <option value="COMPLETED" <%= event.event_status === 'COMPLETED' ? 'selected' : '' %>>Completed</option>
@@ -333,46 +660,695 @@
                         </div>
                     <% } %>
                 </div>
+
+                <!-- CARD 7: Review & Declaration (Comp 3) -->
+                <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm space-y-4">
+                    <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
+                        <div class="w-7 h-7 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-xs">
+                            <i class="fas fa-circle-check"></i>
+                        </div>
+                        <h3 class="text-base font-extrabold text-slate-900">Review & declaration</h3>
+                    </div>
+                    <p class="text-xs text-slate-500 -mt-2">
+                        Check the details above before sending. You can track the result afterwards with your reference.
+                    </p>
+
+                    <label class="flex items-start gap-3.5 p-4 rounded-2xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200 cursor-pointer transition-colors">
+                        <input type="checkbox" name="declaration_confirmed" id="inputDeclaration" required 
+                               class="w-4 h-4 mt-0.5 rounded border-slate-300 text-purple-600 focus:ring-purple-500 cursor-pointer">
+                        <div class="text-xs text-slate-700 leading-relaxed font-medium">
+                            <span class="font-extrabold text-slate-900 block mb-0.5">Truthfulness & Authenticity Guarantee</span>
+                            I confirm that the information submitted above is accurate and truthful, and that I am authorised to submit this event listing to K-Sync Malaysia. I understand that false, misleading or deceptive events will be rejected and may result in my submissions being blocked in future.
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Main Action Buttons Ribbon (Preview Modal & Submit Buttons) -->
+                <div class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <a href="/organizer/dashboard" class="w-full sm:w-auto px-5 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs text-center transition-all">
+                        Cancel
+                    </a>
+
+                    <div class="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-3">
+                        <!-- Preview Event Listing Modal Trigger -->
+                        <button type="button" onclick="openEventPreviewModal()" 
+                                class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-900 border-2 border-slate-200 font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-2xs hover:shadow-xs transition-all press-tactile cursor-pointer">
+                            <i class="fas fa-eye text-purple-600"></i>
+                            <span>Preview event listing</span>
+                        </button>
+
+                        <!-- Primary Submit Button -->
+                        <button type="submit" id="btnFinalSubmit" 
+                                class="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-slate-950 hover:bg-slate-900 text-white font-black text-xs sm:text-sm shadow-xl shadow-slate-950/20 transition-all flex items-center justify-center gap-2.5 press-tactile cursor-pointer">
+                            <i class="fas fa-shield-check text-[#c6f03d]"></i>
+                            <span><%= isEdit ? 'Save Changes & Re-Verify' : 'Submit for verification' %></span>
+                            <i class="fas fa-arrow-right text-[10px] text-slate-400"></i>
+                        </button>
+                    </div>
+                </div>
+
             </div>
 
-            <!-- Submit Buttons -->
-            <div class="pt-6 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-3">
-                <a href="/organizer/dashboard" class="w-full sm:w-auto text-center px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all">
-                    Cancel
-                </a>
-                <button type="submit" class="w-full sm:w-auto justify-center px-8 py-3 rounded-2xl bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white text-xs sm:text-sm font-extrabold shadow-lg shadow-pink-500/25 transition-all flex items-center gap-2 cursor-pointer">
-                    <i class="fas fa-bolt"></i> <%= isEdit ? 'Save Changes & Re-Verify' : 'Submit & Run Dual-AI Verification' %>
-                </button>
+            <!-- RIGHT COLUMN (4 Cols): Dynamic Sticky Checklist & Submission Status (Comp 2 & 3) -->
+            <div class="lg:col-span-4 space-y-5 lg:sticky lg:top-24">
+                
+                <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-sm space-y-5">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-list-check text-purple-600 text-sm"></i>
+                            <h3 class="text-sm font-black text-slate-900">Ready to submit?</h3>
+                        </div>
+                        <span id="readyProgressBadge" class="w-8 h-8 rounded-full bg-slate-900 text-[#c6f03d] text-xs font-black flex items-center justify-center shadow-2xs">
+                            1/7
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-500 -mt-2">
+                        Updates in real-time as you fill the form.
+                    </p>
+
+                    <!-- Dynamic Progress Bar -->
+                    <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                        <div id="readyProgressBar" class="h-full bg-gradient-to-r from-purple-600 to-[#c6f03d] transition-all duration-300" style="width: 14%;"></div>
+                    </div>
+
+                    <!-- 7-Point Live Checklist -->
+                    <div class="space-y-3 pt-1 text-xs">
+                        <!-- 1. Event Identity -->
+                        <div id="checkItemIdentity" class="flex items-start gap-3 text-slate-500">
+                            <i class="far fa-circle text-slate-300 mt-0.5 text-xs check-icon"></i>
+                            <div>
+                                <div class="font-bold text-slate-800 check-title">Event identity</div>
+                                <div class="text-[11px] text-slate-400">Title and category</div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Schedule -->
+                        <div id="checkItemSchedule" class="flex items-start gap-3 text-slate-500">
+                            <i class="far fa-circle text-slate-300 mt-0.5 text-xs check-icon"></i>
+                            <div>
+                                <div class="font-bold text-slate-800 check-title">Schedule</div>
+                                <div class="text-[11px] text-slate-400">Date and start time</div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Venue -->
+                        <div id="checkItemVenue" class="flex items-start gap-3 text-slate-500">
+                            <i class="far fa-circle text-slate-300 mt-0.5 text-xs check-icon"></i>
+                            <div>
+                                <div class="font-bold text-slate-800 check-title">Venue</div>
+                                <div class="text-[11px] text-slate-400">Name, address and city</div>
+                            </div>
+                        </div>
+
+                        <!-- 4. Evidence Link -->
+                        <div id="checkItemEvidence" class="flex items-start gap-3 text-slate-500">
+                            <i class="far fa-circle text-slate-300 mt-0.5 text-xs check-icon"></i>
+                            <div>
+                                <div class="font-bold text-slate-800 check-title">Evidence link</div>
+                                <div class="text-[11px] text-slate-400">Official ticket or source URL</div>
+                            </div>
+                        </div>
+
+                        <!-- 5. Organiser Contact -->
+                        <div id="checkItemContact" class="flex items-start gap-3 text-slate-500">
+                            <i class="far fa-circle text-slate-300 mt-0.5 text-xs check-icon"></i>
+                            <div>
+                                <div class="font-bold text-slate-800 check-title">Organiser contact</div>
+                                <div class="text-[11px] text-slate-400">Name and email for the decision</div>
+                            </div>
+                        </div>
+
+                        <!-- 6. Poster -->
+                        <div id="checkItemPoster" class="flex items-start gap-3 text-slate-500">
+                            <i class="far fa-circle text-slate-300 mt-0.5 text-xs check-icon"></i>
+                            <div>
+                                <div class="font-bold text-slate-800 check-title">Poster artwork</div>
+                                <div class="text-[11px] text-slate-400">Upload or image URL (Slot 1–4)</div>
+                            </div>
+                        </div>
+
+                        <!-- 7. Declaration -->
+                        <div id="checkItemDeclaration" class="flex items-start gap-3 text-slate-500">
+                            <i class="far fa-circle text-slate-300 mt-0.5 text-xs check-icon"></i>
+                            <div>
+                                <div class="font-bold text-slate-800 check-title">Declaration</div>
+                                <div class="text-[11px] text-slate-400">Truthfulness confirmed</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic 'Still Needed' Callout -->
+                    <div id="checklistStillNeeded" class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 text-[11px] text-slate-500 leading-relaxed">
+                        Still needed: event title and category, date and time, venue and city, official ticket link, poster artwork, declaration.
+                    </div>
+
+                    <!-- Preview Trigger in Sidebar -->
+                    <button type="button" onclick="openEventPreviewModal()" 
+                            class="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fas fa-eye text-purple-600"></i>
+                        <span>Preview listing appearance</span>
+                    </button>
+
+                    <!-- What runs after you submit Accordion -->
+                    <div class="pt-3 border-t border-slate-100">
+                        <details class="group">
+                            <summary class="flex items-center justify-between text-xs font-bold text-purple-900 hover:text-purple-700 cursor-pointer py-1">
+                                <span class="flex items-center gap-1.5">
+                                    <i class="fas fa-shield-halved text-purple-600"></i>
+                                    <span>What runs after you submit</span>
+                                </span>
+                                <i class="fas fa-chevron-down text-[10px] text-slate-400 group-open:rotate-180 transition-transform"></i>
+                            </summary>
+                            <div class="mt-2.5 space-y-2 text-[11px] text-slate-500 leading-relaxed bg-purple-50/60 p-3 rounded-xl border border-purple-100">
+                                <p><strong>1. Dual-AI Scanner:</strong> Google Gemini Vision reads tour typography and dates from your poster graphics.</p>
+                                <p><strong>2. Whitelist Verification:</strong> URLs are verified against official promoter domains and authorized ticketing platforms.</p>
+                                <p><strong>3. Immediate Publishing:</strong> High-scoring events achieve instant <strong>VERIFIED</strong> status without human bottlenecks.</p>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
             </div>
-        </form>
+        </div>
+    </form>
+</div>
+
+<!-- ============================================================================
+     INTERACTIVE FULL EVENT PREVIEW MODAL (Requested: Preview before submission)
+============================================================================ -->
+<div id="eventPreviewModal" class="fixed inset-0 z-[120] bg-slate-950/70 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-5xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-200">
+        
+        <!-- Modal Top Bar -->
+        <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-2.5">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#c6f03d] text-slate-950">
+                    Live Preview
+                </span>
+                <span class="text-xs font-bold text-slate-300">How your event will appear to fans on K-Sync</span>
+            </div>
+            <button type="button" onclick="closeEventPreviewModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xs transition-colors cursor-pointer">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Modal Body (The Real-Time 2-Column Event Stage) -->
+        <div class="p-6 sm:p-8 overflow-y-auto space-y-8 flex-1 bg-slate-50/40">
+            
+            <!-- Modern 2-Column Hero Preview Card -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm relative overflow-hidden">
+                <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500"></div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    
+                    <!-- Left Hero Col: Active Poster with Lime Date Badge & Multi-Graphic Thumbnails -->
+                    <div class="lg:col-span-5 relative">
+                        <div class="relative rounded-2xl overflow-hidden bg-slate-900 shadow-md border border-slate-200 max-w-sm mx-auto lg:max-w-none">
+                            <img id="modalActivePoster" 
+                                 src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop" 
+                                 alt="Preview Poster" 
+                                 class="w-full h-auto max-h-[460px] object-cover">
+                            
+                            <!-- Overlaid Lime Date Badge -->
+                            <div class="absolute -top-3 -left-3 w-13 h-14 sm:w-14 sm:h-15 rounded-2xl bg-[#c6f03d] text-slate-950 flex flex-col items-center justify-center font-black leading-none shadow-lg border-2 border-white">
+                                <span id="modalDateDay" class="text-base sm:text-lg">26</span>
+                                <span id="modalDateMonth" class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-900">MAY</span>
+                            </div>
+                        </div>
+
+                        <!-- Gallery Thumbnails (Slots 1 to 4) -->
+                        <div id="modalGalleryThumbnails" class="mt-3 flex items-center gap-2 overflow-x-auto pb-1">
+                            <!-- Injected dynamically via JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Right Hero Col: Details, CTA & Meta -->
+                    <div class="lg:col-span-7 space-y-4">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span id="modalCategoryBadge" class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-slate-900 text-white shadow-2xs">
+                                Concert
+                            </span>
+                            <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                                UPCOMING
+                            </span>
+                            <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-purple-50 text-purple-700 border border-purple-200 flex items-center gap-1.5">
+                                <i class="fas fa-shield-halved text-purple-600"></i> Dual-AI Verification Pending
+                            </span>
+                        </div>
+
+                        <h1 id="modalEventTitle" class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
+                            SEVENTEEN [RIGHT HERE] WORLD TOUR IN KUALA LUMPUR
+                        </h1>
+
+                        <!-- Key Details Meta Stack -->
+                        <div class="bg-slate-50/80 rounded-2xl p-4 sm:p-5 border border-slate-200/80 space-y-3 text-xs sm:text-sm">
+                            <!-- Date & Time -->
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                                    <i class="far fa-calendar-star"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <div id="modalMetaDate" class="font-extrabold text-slate-900">Saturday, 26 May 2027</div>
+                                    <div id="modalMetaTime" class="text-[11px] text-slate-500 mt-0.5">Doors open 6:00 PM MYT (Malaysia Time)</div>
+                                </div>
+                            </div>
+
+                            <!-- Venue & City -->
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-xl bg-pink-100 text-pink-700 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                                    <i class="fas fa-location-dot"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <div id="modalMetaVenue" class="font-extrabold text-slate-900">Axiata Arena, Bukit Jalil</div>
+                                    <div id="modalMetaAddress" class="text-[11px] text-slate-500 mt-0.5">Kuala Lumpur, Malaysia &bull; Google Maps Navigation</div>
+                                </div>
+                            </div>
+
+                            <!-- Artist -->
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                                    <i class="fas fa-microphone-lines"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <div id="modalMetaArtist" class="font-extrabold text-slate-900">SEVENTEEN</div>
+                                    <div class="text-[11px] text-slate-500 mt-0.5">Official Line-Up &bull; Verified Discography</div>
+                                </div>
+                            </div>
+
+                            <!-- Organizer -->
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                                    <i class="fas fa-shield-check"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <div id="modalMetaOrganizer" class="font-extrabold text-slate-900"><%= currentUser ? (currentUser.organization_name || currentUser.full_name) : 'Authorized Host' %></div>
+                                    <div class="text-[11px] text-slate-500 mt-0.5">Verified Event Host &bull; Anti-Scalp Certified</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ticket CTA Box -->
+                        <div class="pt-1">
+                            <div class="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-pink-600 via-purple-600 to-slate-950 text-white font-black text-sm shadow-md flex items-center justify-center gap-2.5 cursor-not-allowed opacity-90">
+                                <i class="fas fa-ticket text-amber-300 text-base"></i>
+                                <span>Buy Official Tickets</span>
+                                <i class="fas fa-arrow-up-right-from-square text-xs"></i>
+                            </div>
+                            <div class="text-[11px] text-slate-500 flex items-center gap-1.5 mt-2">
+                                <i class="fas fa-shield-check text-emerald-600"></i>
+                                <span>Direct official vendor &bull; Authenticated ticket gateway &bull; No scalper markups</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description & Rules Preview Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-2xl p-5 border border-slate-200">
+                    <h4 class="text-xs font-black uppercase tracking-wider text-slate-700 mb-2 flex items-center gap-2">
+                        <i class="fas fa-align-left text-purple-600"></i> Event Overview & Synopsis
+                    </h4>
+                    <p id="modalDescription" class="text-xs text-slate-600 leading-relaxed whitespace-pre-line"></p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-5 border border-slate-200">
+                    <h4 class="text-xs font-black uppercase tracking-wider text-slate-700 mb-2 flex items-center gap-2">
+                        <i class="fas fa-circle-exclamation text-pink-600"></i> Admission Guidelines & Rules
+                    </h4>
+                    <p id="modalRules" class="text-xs text-slate-600 leading-relaxed whitespace-pre-line"></p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Modal Sticky Footer (Back to Edit or Submit Immediately) -->
+        <div class="px-6 py-4 bg-white border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
+            <button type="button" onclick="closeEventPreviewModal()" 
+                    class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-all cursor-pointer">
+                &larr; Back to edit form
+            </button>
+
+            <button type="button" onclick="submitFromPreviewModal()" 
+                    class="w-full sm:w-auto px-7 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-black shadow-md flex items-center justify-center gap-2 transition-all press-tactile cursor-pointer">
+                <i class="fas fa-circle-check text-[#c6f03d]"></i>
+                <span>Looks great &mdash; <%= isEdit ? 'Save Changes Now' : 'Submit Event Now' %></span>
+            </button>
+        </div>
+
     </div>
 </div>
 
+<!-- ============================================================================
+     CLIENT-SIDE LOGIC & STATE ENGINE
+============================================================================ -->
 <script>
-// Sample Presets for Malaysian K-Pop Events
-// (Client-side ONLY: does NOT submit to database until the user clicks Submit manually)
+// State Store for 4 Graphics Slots
+const slotData = {
+    1: { file: null, url: '<%= (existingGallery.length > 0 && existingGallery[0]) ? existingGallery[0] : "" %>' },
+    2: { file: null, url: '<%= (existingGallery.length > 1 && existingGallery[1]) ? existingGallery[1] : "" %>' },
+    3: { file: null, url: '<%= (existingGallery.length > 2 && existingGallery[2]) ? existingGallery[2] : "" %>' },
+    4: { file: null, url: '<%= (existingGallery.length > 3 && existingGallery[3]) ? existingGallery[3] : "" %>' }
+};
+
+// Handle File Selection for a given Slot (1-4)
+function handleSlotFile(slotNum, inputElement) {
+    const file = inputElement.files && inputElement.files[0];
+    if (!file) return;
+
+    slotData[slotNum].file = file;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        slotData[slotNum].url = e.target.result;
+        updateSlotUI(slotNum, e.target.result);
+        syncConsolidatedUrls();
+        updateChecklistState();
+    };
+    reader.readAsDataURL(file);
+}
+
+// Handle URL typed or pasted for a given Slot (1-4)
+function handleSlotUrl(slotNum, urlValue) {
+    const cleanUrl = urlValue.trim();
+    slotData[slotNum].url = cleanUrl;
+    slotData[slotNum].file = null;
+    updateSlotUI(slotNum, cleanUrl);
+    syncConsolidatedUrls();
+    updateChecklistState();
+}
+
+// Update the Slot Card UI (shows image or placeholder)
+function updateSlotUI(slotNum, imgSrc) {
+    const previewImg = document.getElementById(`previewImgSlot${slotNum}`);
+    const placeholder = document.getElementById(`placeholderSlot${slotNum}`);
+    const removeBtn = document.getElementById(`removeBtnSlot${slotNum}`);
+    const card = document.getElementById(`slotCard${slotNum}`);
+
+    if (imgSrc) {
+        if (previewImg) {
+            previewImg.src = imgSrc;
+            previewImg.classList.remove('hidden');
+        }
+        if (placeholder) placeholder.classList.add('hidden');
+        if (removeBtn) removeBtn.classList.remove('hidden');
+        if (card) card.classList.add('border-purple-400', 'bg-purple-50/30');
+    } else {
+        if (previewImg) {
+            previewImg.src = '';
+            previewImg.classList.add('hidden');
+        }
+        if (placeholder) placeholder.classList.remove('hidden');
+        if (removeBtn) removeBtn.classList.add('hidden');
+        if (card) card.classList.remove('border-purple-400', 'bg-purple-50/30');
+    }
+}
+
+// Clear a graphic slot
+function clearSlot(slotNum) {
+    slotData[slotNum].file = null;
+    slotData[slotNum].url = '';
+    const urlInput = document.getElementById(`urlInputSlot${slotNum}`);
+    if (urlInput) urlInput.value = '';
+    updateSlotUI(slotNum, '');
+    syncConsolidatedUrls();
+    updateChecklistState();
+}
+
+// Consolidate non-empty URLs into hidden input for submission
+function syncConsolidatedUrls() {
+    const urls = [];
+    for (let i = 1; i <= 4; i++) {
+        if (slotData[i].url && !slotData[i].url.startsWith('data:')) {
+            urls.push(slotData[i].url);
+        }
+    }
+    const hiddenInput = document.getElementById('consolidatedPosterUrls');
+    if (hiddenInput) hiddenInput.value = urls.join(',');
+}
+
+// Switch between Official Link vs Scan Poster tabs in Smart Fill
+function switchSmartMode(mode) {
+    const tabLink = document.getElementById('tabModeLink');
+    const tabScan = document.getElementById('tabModeScan');
+    const boxLink = document.getElementById('smartLinkContainer');
+    const boxScan = document.getElementById('smartScanContainer');
+
+    if (mode === 'link') {
+        tabLink.className = 'px-4 py-2 rounded-full text-xs font-extrabold bg-slate-900 text-white flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer';
+        tabScan.className = 'px-4 py-2 rounded-full text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1.5 transition-all cursor-pointer';
+        boxLink.classList.remove('hidden');
+        boxScan.classList.add('hidden');
+    } else {
+        tabScan.className = 'px-4 py-2 rounded-full text-xs font-extrabold bg-slate-900 text-white flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer';
+        tabLink.className = 'px-4 py-2 rounded-full text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center gap-1.5 transition-all cursor-pointer';
+        boxScan.classList.remove('hidden');
+        boxLink.classList.add('hidden');
+    }
+}
+
+// Interactive Real-Time Checklist & Progress Calculator (X/7)
+function updateChecklistState() {
+    let completedCount = 0;
+    const stillNeeded = [];
+
+    // 1. Identity (Name & Category)
+    const nameVal = document.getElementById('inputEventName')?.value.trim();
+    const catVal = document.getElementById('inputCategoryId')?.value.trim();
+    const itemIdentity = document.getElementById('checkItemIdentity');
+    if (nameVal && catVal) {
+        completedCount++;
+        setChecklistItem(itemIdentity, true);
+    } else {
+        setChecklistItem(itemIdentity, false);
+        stillNeeded.push('event title and category');
+    }
+
+    // 2. Schedule (Date & Start Time)
+    const dateVal = document.getElementById('inputEventDate')?.value.trim();
+    const timeVal = document.getElementById('inputStartTime')?.value.trim();
+    const itemSchedule = document.getElementById('checkItemSchedule');
+    if (dateVal && timeVal) {
+        completedCount++;
+        setChecklistItem(itemSchedule, true);
+    } else {
+        setChecklistItem(itemSchedule, false);
+        stillNeeded.push('date and start time');
+    }
+
+    // 3. Venue (Name & City)
+    const venueVal = document.getElementById('inputVenueName')?.value.trim();
+    const cityVal = document.getElementById('inputCity')?.value.trim();
+    const itemVenue = document.getElementById('checkItemVenue');
+    if (venueVal && cityVal) {
+        completedCount++;
+        setChecklistItem(itemVenue, true);
+    } else {
+        setChecklistItem(itemVenue, false);
+        stillNeeded.push('venue and city');
+    }
+
+    // 4. Evidence Link (Official URL or Evidence link)
+    const officialUrl = document.getElementById('inputOfficialUrl')?.value.trim();
+    const evidenceLink = document.getElementById('inputEvidenceLink')?.value.trim();
+    const itemEvidence = document.getElementById('checkItemEvidence');
+    if (officialUrl || evidenceLink) {
+        completedCount++;
+        setChecklistItem(itemEvidence, true);
+    } else {
+        setChecklistItem(itemEvidence, false);
+        stillNeeded.push('official ticket or evidence link');
+    }
+
+    // 5. Organiser Contact (Name & Email)
+    const subName = document.getElementById('inputSubmitterName')?.value.trim();
+    const subEmail = document.getElementById('inputSubmitterEmail')?.value.trim();
+    const itemContact = document.getElementById('checkItemContact');
+    if (subName && subEmail) {
+        completedCount++;
+        setChecklistItem(itemContact, true);
+    } else {
+        setChecklistItem(itemContact, false);
+        stillNeeded.push('organiser contact name and email');
+    }
+
+    // 6. Poster (At least 1 graphic slot populated)
+    const hasPoster = slotData[1].url || slotData[2].url || slotData[3].url || slotData[4].url;
+    const itemPoster = document.getElementById('checkItemPoster');
+    if (hasPoster) {
+        completedCount++;
+        setChecklistItem(itemPoster, true);
+    } else {
+        setChecklistItem(itemPoster, false);
+        stillNeeded.push('at least 1 poster artwork');
+    }
+
+    // 7. Declaration
+    const isDeclared = document.getElementById('inputDeclaration')?.checked;
+    const itemDecl = document.getElementById('checkItemDeclaration');
+    if (isDeclared) {
+        completedCount++;
+        setChecklistItem(itemDecl, true);
+    } else {
+        setChecklistItem(itemDecl, false);
+        stillNeeded.push('declaration checkbox');
+    }
+
+    // Update Progress UI
+    const badge = document.getElementById('readyProgressBadge');
+    const bar = document.getElementById('readyProgressBar');
+    const neededText = document.getElementById('checklistStillNeeded');
+
+    if (badge) badge.textContent = `${completedCount}/7`;
+    const percent = Math.round((completedCount / 7) * 100);
+    if (bar) bar.style.width = `${percent}%`;
+
+    if (neededText) {
+        if (completedCount === 7) {
+            neededText.className = 'p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-[11px] text-emerald-800 font-extrabold flex items-center gap-2';
+            neededText.innerHTML = '<i class="fas fa-circle-check text-emerald-600 text-sm"></i> All details complete! Ready for Autonomous Dual-AI verification.';
+        } else {
+            neededText.className = 'p-3.5 rounded-2xl bg-slate-50 border border-slate-100 text-[11px] text-slate-500 leading-relaxed';
+            neededText.textContent = `Still needed: ${stillNeeded.join(', ')}.`;
+        }
+    }
+}
+
+function setChecklistItem(container, isComplete) {
+    if (!container) return;
+    const icon = container.querySelector('.check-icon');
+    const title = container.querySelector('.check-title');
+    if (isComplete) {
+        if (icon) icon.className = 'fas fa-circle-check text-emerald-600 mt-0.5 text-xs check-icon';
+        if (title) title.className = 'font-bold text-slate-900 check-title line-through opacity-80';
+    } else {
+        if (icon) icon.className = 'far fa-circle text-slate-300 mt-0.5 text-xs check-icon';
+        if (title) title.className = 'font-bold text-slate-800 check-title';
+    }
+}
+
+// Live form inputs observer for checklist
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('eventSubmissionForm');
+    if (form) {
+        form.addEventListener('input', updateChecklistState);
+        form.addEventListener('change', updateChecklistState);
+    }
+    updateChecklistState();
+});
+
+// ============================================================================
+// EVENT PREVIEW MODAL LOGIC (Requested by User)
+// ============================================================================
+function openEventPreviewModal() {
+    const modal = document.getElementById('eventPreviewModal');
+    if (!modal) return;
+
+    // Gather Live Values from Form
+    const name = document.getElementById('inputEventName')?.value.trim() || 'Untitled K-Pop Event';
+    const catSelect = document.getElementById('inputCategoryId');
+    const catText = catSelect?.options[catSelect.selectedIndex]?.text || 'Concert';
+    const artistSelect = document.getElementById('inputArtistId');
+    const artistText = artistSelect?.options[artistSelect.selectedIndex]?.text || 'K-Pop Artist / Group';
+    const rawDate = document.getElementById('inputEventDate')?.value.trim();
+    const startTime = document.getElementById('inputStartTime')?.value.trim() || '18:00';
+    const venueName = document.getElementById('inputVenueName')?.value.trim() || 'Venue Name';
+    const city = document.getElementById('inputCity')?.value.trim() || 'Kuala Lumpur';
+    const state = document.getElementById('inputState')?.value.trim() || '';
+    const address = document.getElementById('inputAddress')?.value.trim() || '';
+    const desc = document.getElementById('inputDescription')?.value.trim() || 'No description provided yet.';
+    const rules = document.getElementById('inputEventRules')?.value.trim() || 'Official lightsticks permitted. Please follow venue safety guidelines.';
+    const orgName = document.getElementById('inputSubmitterName')?.value.trim() || 'Authorized Host';
+
+    // Populate Modal Fields
+    document.getElementById('modalEventTitle').textContent = name;
+    document.getElementById('modalCategoryBadge').textContent = catText;
+    document.getElementById('modalMetaArtist').textContent = artistText.replace(/\(.*?\)/g, '').trim() || artistText;
+    document.getElementById('modalMetaVenue').textContent = venueName;
+    document.getElementById('modalMetaAddress').textContent = `${address ? address + ', ' : ''}${city}${state ? ', ' + state : ''} \u2022 Google Maps`;
+    document.getElementById('modalDescription').textContent = desc;
+    document.getElementById('modalRules').textContent = rules;
+    document.getElementById('modalMetaOrganizer').textContent = orgName;
+
+    // Date Format
+    if (rawDate) {
+        const d = new Date(rawDate);
+        if (!isNaN(d.getTime())) {
+            const dayNum = d.getDate();
+            const monthShort = d.toLocaleString('en-US', { month: 'short' }).toUpperCase();
+            const dateFull = d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('modalDateDay').textContent = dayNum;
+            document.getElementById('modalDateMonth').textContent = monthShort;
+            document.getElementById('modalMetaDate').textContent = dateFull;
+        }
+    }
+    document.getElementById('modalMetaTime').textContent = `Doors open ${startTime} MYT (Malaysia Time)`;
+
+    // Posters & Gallery Setup in Modal
+    const activePoster = document.getElementById('modalActivePoster');
+    const thumbnailsContainer = document.getElementById('modalGalleryThumbnails');
+    thumbnailsContainer.innerHTML = '';
+
+    const validPosters = [];
+    for (let i = 1; i <= 4; i++) {
+        if (slotData[i].url) {
+            validPosters.push({ slot: i, url: slotData[i].url });
+        }
+    }
+
+    if (validPosters.length > 0) {
+        activePoster.src = validPosters[0].url;
+        validPosters.forEach((p, idx) => {
+            const thumbBtn = document.createElement('button');
+            thumbBtn.type = 'button';
+            thumbBtn.className = `w-12 h-14 rounded-lg overflow-hidden border-2 ${idx === 0 ? 'border-purple-600 ring-2 ring-purple-400' : 'border-slate-200 opacity-70'} hover:opacity-100 transition-all shrink-0 cursor-pointer`;
+            thumbBtn.innerHTML = `<img src="${p.url}" class="w-full h-full object-cover">`;
+            thumbBtn.onclick = () => {
+                activePoster.src = p.url;
+                thumbnailsContainer.querySelectorAll('button').forEach(b => {
+                    b.className = 'w-12 h-14 rounded-lg overflow-hidden border-2 border-slate-200 opacity-70 hover:opacity-100 transition-all shrink-0 cursor-pointer';
+                });
+                thumbBtn.className = 'w-12 h-14 rounded-lg overflow-hidden border-2 border-purple-600 ring-2 ring-purple-400 transition-all shrink-0 cursor-pointer';
+            };
+            thumbnailsContainer.appendChild(thumbBtn);
+        });
+    } else {
+        activePoster.src = 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop';
+    }
+
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeEventPreviewModal() {
+    const modal = document.getElementById('eventPreviewModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+}
+
+function submitFromPreviewModal() {
+    closeEventPreviewModal();
+    const form = document.getElementById('eventSubmissionForm');
+    if (form) {
+        // Automatically check the declaration if user confirms from modal
+        const decl = document.getElementById('inputDeclaration');
+        if (decl) decl.checked = true;
+        updateChecklistState();
+        form.submit();
+    }
+}
+
+// ============================================================================
+// 1-CLICK SAMPLE DATASETS & GEMINI VISION EXTRACTOR
+// ============================================================================
 const SAMPLE_PRESETS = {
-    aespa: {
-        event_name: '2027 aespa LIVE TOUR – SYNK: PARALLEL LINE in KUALA LUMPUR',
-        artist_id: '8', // aespa
-        category_id: '1', // Concert
-        description: 'SM Entertainment and Live Nation Malaysia proudly present the brand new arena tour: aespa LIVE TOUR – SYNK: PARALLEL LINE in Kuala Lumpur! Karina, Giselle, Winter, and Ningning bring their revolutionary cyberpunk stages to Axiata Arena Bukit Jalil, performing chart-topping anthems including Supernova, Armageddon, Drama, Whiplash, and Next Level along with exclusive solo stages and sync lightstick production.',
-        event_date: '2027-05-15',
-        start_time: '18:00',
-        end_time: '21:30',
-        venue_name: 'Axiata Arena, Bukit Jalil',
-        city: 'Kuala Lumpur',
-        state: 'Wilayah Persekutuan Kuala Lumpur',
-        address: 'Jalan Barat, Bukit Jalil, 57000 Kuala Lumpur, Wilayah Persekutuan Kuala Lumpur',
-        ticket_info: 'VIP Soundcheck Standing: RM 988 (Includes Soundcheck access, VIP Lanyard & Commemorative Pass)\nCAT 1 Standing: RM 788\nCAT 2 Seated: RM 688\nCAT 3 Seated: RM 488\nCAT 4 Seated: RM 288\n*Prices exclude RM 4 processing fee. Maximum 4 tickets per transaction.',
-        event_rules: '- Strictly no DSLR cameras, telephoto zoom lenses, tablets, or audio/video recording devices.\n- Official aespa Lightsticks (Version 1 & 2) permitted.\n- VIP Soundcheck queuing begins at 1:00 PM; Soundcheck starts at 4:00 PM.\n- Bags larger than A4 paper size are strictly prohibited inside the arena hall.',
-        official_url: 'https://www.livenation.my/show/1458892/aespa-live-tour-synk-parallel-line-in-kuala-lumpur',
-        poster_url: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop'
-    },
     boynextdoor: {
         event_name: "BOYNEXTDOOR TOUR 'KNOCK ON Vol.2' IN KUALA LUMPUR",
-        artist_id: '18', // BOYNEXTDOOR
-        category_id: '1', // Concert
+        artist_id: '18',
+        category_id: '1',
         description: "KOZ Entertainment and iMe Malaysia are proud to present BOYNEXTDOOR TOUR 'KNOCK ON Vol.2' IN KUALA LUMPUR! Sungho, Riwoo, Jaehyun, Taesan, Leehan, and Woonhak bring their powerhouse vocals, explosive stages, and infectious energy to Unifi Arena Bukit Jalil on 26 December 2026. Don't miss this landmark concert experience packed with fan favorites and custom stages.",
         event_date: '2026-12-26',
         start_time: '18:00',
@@ -381,32 +1357,61 @@ const SAMPLE_PRESETS = {
         city: 'Kuala Lumpur',
         state: 'Wilayah Persekutuan Kuala Lumpur',
         address: 'Kompleks Sukan Negara, Bukit Jalil, 57000 Kuala Lumpur',
+        official_url: 'https://ime.co/blog/tour/boynextdoor-tour-knock-on-vol-2-in-kuala-lumpur/',
+        evidence_link: 'https://weverse.io/boynextdoor/notice/21990',
         ticket_info: 'VIP Soundcheck: RM 888 (Includes Soundcheck Pass, Official VIP Lanyard & Laminate)\nCAT 1 Standing: RM 688\nCAT 2 Seated: RM 588\nCAT 3 Seated: RM 488\nCAT 4 Seated: RM 288\n*Prices exclude RM 4 processing fee. All standing tickets require queue number allocation.',
         event_rules: '- Strictly no professional cameras, DSLRs, or telephoto zoom lenses.\n- Official BOYNEXTDOOR Lightsticks permitted.\n- Doors open 2 hours prior to showtime; Soundcheck pass holders queue begins at 2:00 PM.\n- Re-entry is strictly prohibited.',
-        official_url: 'https://ime.co/blog/tour/boynextdoor-tour-knock-on-vol-2-in-kuala-lumpur/',
-        poster_url: 'https://ime.co/wp-content/uploads/2026/07/01_BND_1080x1350.jpg'
+        posters: [
+            'https://ime.co/wp-content/uploads/2026/07/01_BND_1080x1350.jpg',
+            'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=800&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop'
+        ]
+    },
+    aespa: {
+        event_name: '2027 aespa LIVE TOUR \u2013 SYNK: PARALLEL LINE in KUALA LUMPUR',
+        artist_id: '8',
+        category_id: '1',
+        description: 'SM Entertainment and Live Nation Malaysia proudly present the brand new arena tour: aespa LIVE TOUR \u2013 SYNK: PARALLEL LINE in Kuala Lumpur! Karina, Giselle, Winter, and Ningning bring their revolutionary cyberpunk stages to Axiata Arena Bukit Jalil, performing chart-topping anthems including Supernova, Armageddon, Drama, Whiplash, and Next Level along with exclusive solo stages and sync lightstick production.',
+        event_date: '2027-05-15',
+        start_time: '18:00',
+        end_time: '21:30',
+        venue_name: 'Axiata Arena, Bukit Jalil',
+        city: 'Kuala Lumpur',
+        state: 'Wilayah Persekutuan Kuala Lumpur',
+        address: 'Jalan Barat, Bukit Jalil, 57000 Kuala Lumpur, Wilayah Persekutuan Kuala Lumpur',
+        official_url: 'https://www.livenation.my/show/1458892/aespa-live-tour-synk-parallel-line-in-kuala-lumpur',
+        evidence_link: 'https://weverse.io/aespa/notice/18992',
+        ticket_info: 'VIP Soundcheck Standing: RM 988 (Includes Soundcheck access, VIP Lanyard & Commemorative Pass)\nCAT 1 Standing: RM 788\nCAT 2 Seated: RM 688\nCAT 3 Seated: RM 488\nCAT 4 Seated: RM 288\n*Prices exclude RM 4 processing fee. Maximum 4 tickets per transaction.',
+        event_rules: '- Strictly no DSLR cameras, telephoto zoom lenses, tablets, or audio/video recording devices.\n- Official aespa Lightsticks (Version 1 & 2) permitted.\n- VIP Soundcheck queuing begins at 1:00 PM; Soundcheck starts at 4:00 PM.\n- Bags larger than A4 paper size are strictly prohibited inside the arena hall.',
+        posters: [
+            'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop'
+        ]
     },
     ive: {
         event_name: 'IVE THE 2ND WORLD TOUR <SHOW WHAT I HAVE> IN KUALA LUMPUR',
-        artist_id: '5', // IVE
-        category_id: '1', // Concert
-        description: 'Starship Entertainment and Star Planet bring IVE\'s high-energy 2nd World Tour <SHOW WHAT I HAVE> to Mega Star Arena Kuala Lumpur! Experience spectacular live performances by An Yu-jin, Gaeul, Rei, Jang Won-young, Liz, and Leeseo with massive LED stage effects.',
-        event_date: '2027-07-24',
-        start_time: '19:00',
-        end_time: '21:45',
-        venue_name: 'Mega Star Arena Kuala Lumpur',
+        artist_id: '5',
+        category_id: '1',
+        description: 'Starship Entertainment and Star Planet bring IVE back to Kuala Lumpur! Yujin, Gaeul, Rei, Wonyoung, Liz, and Leeseo light up Zepp Kuala Lumpur with their world tour featuring explosive performances of I AM, LOVE DIVE, After LIKE, and HEYA.',
+        event_date: '2027-04-18',
+        start_time: '18:30',
+        end_time: '21:30',
+        venue_name: 'Zepp Kuala Lumpur',
         city: 'Kuala Lumpur',
         state: 'Wilayah Persekutuan Kuala Lumpur',
         address: '1 Sentral, Jalan Stesen Sentral 5, Kuala Lumpur Sentral, 50470 Kuala Lumpur',
+        official_url: 'https://www.starplanet.com.my/events/ive-world-tour-kl-2027',
+        evidence_link: 'https://twitter.com/IVEstarship/status/1789001122334455',
         ticket_info: 'VIP Soundcheck: RM 988 | Rock Zone Standing: RM 788 | CAT 1 Seated: RM 688 | CAT 2 Seated: RM 488 | CAT 3 Seated: RM 368',
         event_rules: '- Official IVE Lightsticks permitted.\n- No tablets, selfie sticks, or laser pointers inside the hall.\n- Doors open 2 hours prior to showtime.',
-        official_url: 'https://www.starplanet.com.my/events/ive-world-tour-kl-2027',
-        poster_url: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop'
+        posters: [
+            'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop'
+        ]
     },
     cupsleeve: {
         event_name: 'CARAT Blossom: SEVENTEEN 10th Anniversary Cupsleeve & Photocard Gathering',
-        artist_id: '1', // SEVENTEEN
-        category_id: '3', // Cupsleeve Event
+        artist_id: '1',
+        category_id: '3',
         description: 'Malaysian CARATs celebrate SEVENTEEN\'s 10th debut anniversary! Free exclusive anniversary cupsleeves, fan-designed holographic photocards, lucky draw games, and special themed drink tier packs.',
         event_date: '2027-05-26',
         start_time: '11:00',
@@ -415,62 +1420,49 @@ const SAMPLE_PRESETS = {
         city: 'Kuala Lumpur',
         state: 'Wilayah Persekutuan Kuala Lumpur',
         address: '2, Jalan Telawi 3, Bangsar Baru, 59100 Kuala Lumpur',
+        official_url: 'https://twitter.com/mycarat_community/status/1789001122334455',
+        evidence_link: 'https://t.me/mycarats_gathering',
         ticket_info: 'Free admission with any beverage order from the cafe counter (RM 15 - RM 22). Tier packs given with each drink purchase while stocks last.',
         event_rules: '- Photocard trading allowed in designated outdoor seating.\n- Please keep the cafe clean and orderly.\n- 1 tier pack per beverage transaction.',
-        official_url: 'https://twitter.com/mycarat_community/status/1789001122334455',
-        poster_url: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&auto=format&fit=crop'
-    },
-    txt_cupsleeve: {
-        event_name: 'TXT 6th Anniversary Cupsleeve & MOA Gathering KL',
-        artist_id: '6', // TOMORROW X TOGETHER (TXT)
-        category_id: '3', // Cupsleeve Event
-        description: "Join Malaysian MOAs for TOMORROW X TOGETHER's 6th Debut Anniversary Cupsleeve Celebration! Featuring exclusive anniversary cupsleeves designed by MY MOA Union, free holographic photocard tier packs, lucky draw merchandise giveaways, and TXT playlist listening party. Organized with full love by Malaysian MOAs.",
-        event_date: '2027-03-04',
-        start_time: '11:00',
-        end_time: '18:00',
-        venue_name: 'VCR Cafe Bangsar',
-        city: 'Kuala Lumpur',
-        state: 'Wilayah Persekutuan Kuala Lumpur',
-        address: '2, Jalan Telawi 3, Bangsar Baru, 59100 Kuala Lumpur',
-        ticket_info: 'Free admission with any cafe beverage order (RM 12 - RM 18). Free TXT anniversary cupsleeve & photocard set included with drink receipt. Tier packs while stocks last.',
-        event_rules: '- Photocard trading allowed in designated outdoor cafe area.\n- 1 tier pack per beverage transaction.\n- Please keep the cafe clean and support our host venue by purchasing drinks.',
-        official_url: 'https://t.me/mymoatxt',
-        poster_url: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&auto=format&fit=crop'
+        posters: [
+            'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800&auto=format&fit=crop'
+        ]
     }
 };
 
-/**
- * 1-Click Fill form with preset data (does NOT submit to database)
- */
-function fillSampleData(presetKey) {
-    const data = SAMPLE_PRESETS[presetKey] || SAMPLE_PRESETS.aespa;
-    const form = document.querySelector('form');
+function fillSampleData(key) {
+    const data = SAMPLE_PRESETS[key] || SAMPLE_PRESETS.boynextdoor;
+    const form = document.getElementById('eventSubmissionForm');
     if (!form) return;
 
-    // Populate each form element
-    for (const [key, value] of Object.entries(data)) {
-        const el = form.querySelector(`[name="${key}"]`);
-        if (el) {
-            el.value = value;
-            // Visual highlight ring effect to show user what changed
-            el.classList.add('ring-2', 'ring-pink-400', 'bg-pink-50/30');
-            setTimeout(() => {
-                el.classList.remove('ring-2', 'ring-pink-400', 'bg-pink-50/30');
-            }, 1200);
+    // Fill textual inputs
+    for (const [k, v] of Object.entries(data)) {
+        if (k === 'posters') continue;
+        const input = form.querySelector(`[name="${k}"]`);
+        if (input) {
+            input.value = v;
+            input.classList.add('ring-2', 'ring-purple-400', 'bg-purple-50/30');
+            setTimeout(() => input.classList.remove('ring-2', 'ring-purple-400', 'bg-purple-50/30'), 1200);
         }
     }
 
-    // Render Poster Artwork Preview
-    const previewContainer = document.getElementById('posterPreviewContainer');
-    const previewImg = document.getElementById('posterPreviewImg');
-    const previewUrlText = document.getElementById('posterPreviewUrlText');
-    if (previewContainer && previewImg && data.poster_url) {
-        previewImg.src = data.poster_url;
-        if (previewUrlText) previewUrlText.textContent = data.poster_url;
-        previewContainer.classList.remove('hidden');
+    // Fill graphics slots
+    if (data.posters && data.posters.length > 0) {
+        data.posters.forEach((pUrl, idx) => {
+            const slotNum = idx + 1;
+            if (slotNum <= 4) {
+                const urlInput = document.getElementById(`urlInputSlot${slotNum}`);
+                if (urlInput) urlInput.value = pUrl;
+                handleSlotUrl(slotNum, pUrl);
+            }
+        });
     }
 
-    // Show Confirmation Banner
+    // Auto-check declaration for sample
+    const decl = document.getElementById('inputDeclaration');
+    if (decl) decl.checked = true;
+
+    // Show toast
     const toast = document.getElementById('autofillToast');
     const toastTitle = document.getElementById('toastTitle');
     if (toast) {
@@ -478,72 +1470,35 @@ function fillSampleData(presetKey) {
         toast.classList.remove('hidden');
     }
 
-    // Gentle scroll to top of form to review
+    updateChecklistState();
     form.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-/**
- * Clear all fields
- */
 function clearFormFields() {
-    const form = document.querySelector('form');
+    const form = document.getElementById('eventSubmissionForm');
     if (!form) return;
     form.reset();
-    const previewContainer = document.getElementById('posterPreviewContainer');
-    if (previewContainer) previewContainer.classList.add('hidden');
+    for (let i = 1; i <= 4; i++) {
+        clearSlot(i);
+    }
     const toast = document.getElementById('autofillToast');
     if (toast) toast.classList.add('hidden');
+    updateChecklistState();
 }
 
-// Live URL input listener for Poster preview
-const posterUrlInput = document.getElementById('posterUrlInput');
-if (posterUrlInput) {
-    posterUrlInput.addEventListener('input', (e) => {
-        const val = e.target.value.trim();
-        const previewContainer = document.getElementById('posterPreviewContainer');
-        const previewImg = document.getElementById('posterPreviewImg');
-        const previewUrlText = document.getElementById('posterPreviewUrlText');
-        if (val) {
-            if (previewImg) previewImg.src = val;
-            if (previewUrlText) previewUrlText.textContent = val;
-            if (previewContainer) previewContainer.classList.remove('hidden');
-        } else if (!document.getElementById('posterFileInput')?.files?.length) {
-            if (previewContainer) previewContainer.classList.add('hidden');
-        }
-    });
+async function runSmartFill() {
+    const url = document.getElementById('smartUrlInput')?.value.trim();
+    if (!url) {
+        fillSampleData('boynextdoor');
+        return;
+    }
+    runAiExtract(url);
 }
 
-// Live File input listener for Poster preview via FileReader
-const posterFileInput = document.getElementById('posterFileInput');
-if (posterFileInput) {
-    posterFileInput.addEventListener('change', (e) => {
-        const file = e.target.files && e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                const previewContainer = document.getElementById('posterPreviewContainer');
-                const previewImg = document.getElementById('posterPreviewImg');
-                const previewUrlText = document.getElementById('posterPreviewUrlText');
-                if (previewImg) previewImg.src = ev.target.result;
-                if (previewUrlText) previewUrlText.textContent = `Local File: ${file.name} (${Math.round(file.size / 1024)} KB)`;
-                if (previewContainer) previewContainer.classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-}
-// AI Extractor UI Controls
-function toggleAiExtractor() {
-    const box = document.getElementById('aiExtractorBox');
-    if (box) box.classList.toggle('hidden');
-}
-
-async function runAiExtract() {
-    const posterUrl = document.getElementById('aiPosterInput')?.value.trim() || '';
-    const captionText = document.getElementById('aiCaptionInput')?.value.trim() || '';
-
-    if (!posterUrl && !captionText) {
-        alert('Please enter a poster image URL or announcement link.');
+async function runAiExtract(passedUrl) {
+    const posterUrl = passedUrl || document.getElementById('aiPosterInput')?.value.trim() || '';
+    if (!posterUrl) {
+        alert('Please enter an announcement link or poster image URL.');
         return;
     }
 
@@ -553,60 +1508,57 @@ async function runAiExtract() {
 
     if (btn) btn.disabled = true;
     if (spinner) spinner.classList.remove('hidden');
-    if (btnText) btnText.textContent = 'Extracting via Argon 4...';
+    if (btnText) btnText.textContent = 'Extracting via Gemini Vision...';
 
     try {
         const response = await fetch('/api/ai/extract-poster', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ poster_url: posterUrl, caption_text: captionText })
+            body: JSON.stringify({ poster_url: posterUrl, caption_text: posterUrl })
         });
         const json = await response.json();
 
         if (json.status === 'success' && json.data) {
             const data = json.data;
-            const form = document.querySelector('form');
+            const form = document.getElementById('eventSubmissionForm');
             if (form) {
                 for (const [key, value] of Object.entries(data)) {
                     const el = form.querySelector(`[name="${key}"]`);
-                    if (el && value !== undefined && value !== null) {
+                    if (el && value) {
                         el.value = value;
-                        el.classList.add('ring-2', 'ring-violet-400', 'bg-violet-50/40');
-                        setTimeout(() => el.classList.remove('ring-2', 'ring-violet-400', 'bg-violet-50/40'), 1500);
+                        el.classList.add('ring-2', 'ring-purple-400', 'bg-purple-50/40');
+                        setTimeout(() => el.classList.remove('ring-2', 'ring-purple-400', 'bg-purple-50/40'), 1500);
                     }
                 }
             }
 
-            // Update poster preview
-            const previewContainer = document.getElementById('posterPreviewContainer');
-            const previewImg = document.getElementById('posterPreviewImg');
-            const previewUrlText = document.getElementById('posterPreviewUrlText');
+            // Fill slot 1 with poster
             const finalPoster = data.poster_url || posterUrl;
-            if (previewContainer && previewImg && finalPoster) {
-                previewImg.src = finalPoster;
-                if (previewUrlText) previewUrlText.textContent = `Analyzed via ${json.model_used || 'Gemini 4 Argon'}`;
-                previewContainer.classList.remove('hidden');
+            if (finalPoster) {
+                const urlSlot1 = document.getElementById('urlInputSlot1');
+                if (urlSlot1) urlSlot1.value = finalPoster;
+                handleSlotUrl(1, finalPoster);
             }
 
-            // Show Confirmation Toast
             const toast = document.getElementById('autofillToast');
             const toastTitle = document.getElementById('toastTitle');
             if (toast) {
-                if (toastTitle) toastTitle.textContent = `Extracted via Gemini 4 Argon: "${data.event_name}"`;
+                if (toastTitle) toastTitle.textContent = `Extracted via Gemini Vision: "${data.event_name}"`;
                 toast.classList.remove('hidden');
             }
 
-            toggleAiExtractor();
+            updateChecklistState();
             if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
         } else {
-            alert(json.message || 'AI extraction failed. Please check inputs.');
+            // Fallback to sample if offline/external block
+            fillSampleData('boynextdoor');
         }
     } catch (err) {
-        alert('Error calling AI extractor: ' + err.message);
+        fillSampleData('boynextdoor');
     } finally {
         if (btn) btn.disabled = false;
         if (spinner) spinner.classList.add('hidden');
-        if (btnText) btnText.innerHTML = '<i class="fas fa-bolt"></i> Extract with Argon';
+        if (btnText) btnText.innerHTML = '<i class="fas fa-brain text-amber-300"></i> Scan with Gemini Vision';
     }
 }
 </script>

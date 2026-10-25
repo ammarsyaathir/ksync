@@ -528,15 +528,23 @@ router.post('/events/:id/edit', upload.fields([{ name: 'poster_files', maxCount:
       event_status
     } = req.body;
 
-    let poster_image = existing.poster_image;
+    let uploadedPosters = [];
     if (req.files) {
       if (req.files.poster_files && req.files.poster_files.length > 0) {
-        poster_image = '/uploads/' + req.files.poster_files[0].filename;
+        uploadedPosters = req.files.poster_files.map(f => '/uploads/' + f.filename);
       } else if (req.files.poster_file && req.files.poster_file.length > 0) {
-        poster_image = '/uploads/' + req.files.poster_file[0].filename;
+        uploadedPosters = req.files.poster_file.map(f => '/uploads/' + f.filename);
       }
-    } else if (poster_url && poster_url.trim()) {
-      poster_image = poster_url.trim();
+    }
+    if (uploadedPosters.length === 0 && poster_url && poster_url.trim()) {
+      uploadedPosters = poster_url.split(',').map(u => u.trim()).filter(Boolean);
+    }
+
+    let poster_image = existing.poster_image;
+    let gallery_images = existing.gallery_images;
+    if (uploadedPosters.length > 0) {
+      poster_image = uploadedPosters[0];
+      gallery_images = JSON.stringify(uploadedPosters);
     }
 
     const updatedCandidate = {
@@ -558,6 +566,7 @@ router.post('/events/:id/edit', upload.fields([{ name: 'poster_files', maxCount:
       official_url: official_url ? official_url.trim() : '',
       evidence_link: evidence_link ? evidence_link.trim() : '',
       poster_image,
+      gallery_images,
       event_status: event_status || existing.event_status
     };
 
@@ -583,6 +592,7 @@ router.post('/events/:id/edit', upload.fields([{ name: 'poster_files', maxCount:
         official_url = ?,
         evidence_link = ?,
         poster_image = ?,
+        gallery_images = ?,
         event_status = ?,
         verification_status = ?,
         trust_level = ?,
@@ -607,6 +617,7 @@ router.post('/events/:id/edit', upload.fields([{ name: 'poster_files', maxCount:
       updatedCandidate.official_url,
       updatedCandidate.evidence_link,
       updatedCandidate.poster_image,
+      updatedCandidate.gallery_images,
       updatedCandidate.event_status,
       vResult.verificationStatus,
       vResult.trustLevel,
