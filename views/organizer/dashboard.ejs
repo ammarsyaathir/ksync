@@ -166,7 +166,7 @@
                                         <% } %>
 
                                         <div>
-                                            <a href="/organizer/events/<%= event.id %>/verification" class="text-[10px] font-bold text-pink-600 hover:underline flex items-center gap-1">
+                                            <a href="/organizer/events/<%= event.tracking_code || event.slug || event.id %>/verification" class="text-[10px] font-bold text-pink-600 hover:underline flex items-center gap-1">
                                                 <i class="fas fa-shield-check text-purple-500"></i> Safety Report &rarr;
                                             </a>
                                         </div>
@@ -234,7 +234,7 @@
                             </form>
 
                             <div class="flex items-center gap-1.5">
-                                <a href="/organizer/events/<%= event.id %>/verification" class="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 font-bold text-[11px] hover:bg-purple-100 flex items-center gap-1">
+                                <a href="/organizer/events/<%= event.tracking_code || event.slug || event.id %>/verification" class="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 font-bold text-[11px] hover:bg-purple-100 flex items-center gap-1">
                                     <i class="fas fa-shield-check text-purple-500"></i> Safety Report
                                 </a>
                                 <a href="/organizer/events/<%= event.id %>/edit" class="p-1.5 rounded-lg bg-pink-50 text-pink-700" title="Edit">

@@ -488,23 +488,38 @@ router.post('/events/:id/delete', async (req, res) => {
 });
 
 // ============================================================================
+// 7.5 SUBMISSION LOOKUP (GET /organizer/events/lookup)
+// ============================================================================
+router.get('/events/lookup', (req, res) => {
+  const code = (req.query.code || req.query.reference || '').trim();
+  if (!code) {
+    req.session.flash = { error: 'Please enter a valid reference code or event name.' };
+    return res.redirect('/organizer/dashboard');
+  }
+  return res.redirect(`/organizer/events/${encodeURIComponent(code)}/verification`);
+});
+
+// ============================================================================
 // 8. DUAL-AI VERIFICATION DETAILS (GET /organizer/events/:id/verification)
 // ============================================================================
 router.get('/events/:id/verification', async (req, res) => {
-  const eventId = Number(req.params.id);
+  const rawIdentifier = String(req.params.id).trim();
+  const isNumeric = /^\d+$/.test(rawIdentifier);
+  const numericId = isNumeric ? Number(rawIdentifier) : -1;
   const organizerId = req.user.id;
 
   try {
     const event = await db.getOne(`
-      SELECT e.*, a.name as artist_name, c.name as category_name
+      SELECT e.*, a.name as artist_name, a.slug as artist_slug, c.name as category_name
       FROM events e
       LEFT JOIN artists a ON e.artist_id = a.id
       LEFT JOIN event_categories c ON e.category_id = c.id
-      WHERE e.id = ? AND e.organizer_id = ?
-    `, [eventId, organizerId]);
+      WHERE (e.id = ? OR e.tracking_code = ? OR UPPER(e.tracking_code) = ? OR e.slug = ?)
+        AND (e.organizer_id = ? OR ? = 'ADMIN')
+    `, [numericId, rawIdentifier, rawIdentifier.toUpperCase(), rawIdentifier, organizerId, req.user.role || '']);
 
     if (!event) {
-      req.session.flash = { error: 'Event not found.' };
+      req.session.flash = { error: 'Event not found or you do not have permission to view its report.' };
       return res.redirect('/organizer/dashboard');
     }
 
@@ -514,7 +529,7 @@ router.get('/events/:id/verification', async (req, res) => {
     event.organizer_social_url = req.user.social_url;
 
     // Run live verification telemetry
-    const vResult = await verificationEngine.executeAutomatedVerification(event, eventId);
+    const vResult = await verificationEngine.executeAutomatedVerification(event, event.id);
 
     res.render('organizer/event-verification', {
       event,
@@ -531,16 +546,24 @@ router.get('/events/:id/verification', async (req, res) => {
 // 9. ON-DEMAND RE-VERIFICATION (POST /organizer/events/:id/reverify)
 // ============================================================================
 router.post('/events/:id/reverify', async (req, res) => {
-  const eventId = Number(req.params.id);
+  const rawIdentifier = String(req.params.id).trim();
+  const isNumeric = /^\d+$/.test(rawIdentifier);
+  const numericId = isNumeric ? Number(rawIdentifier) : -1;
   const organizerId = req.user.id;
 
   try {
-    const event = await db.getOne("SELECT * FROM events WHERE id = ? AND organizer_id = ?", [eventId, organizerId]);
+    const event = await db.getOne(`
+      SELECT * FROM events 
+      WHERE (id = ? OR tracking_code = ? OR UPPER(tracking_code) = ? OR slug = ?)
+        AND (organizer_id = ? OR ? = 'ADMIN')
+    `, [numericId, rawIdentifier, rawIdentifier.toUpperCase(), rawIdentifier, organizerId, req.user.role || '']);
+
     if (!event) {
       req.session.flash = { error: 'Event not found.' };
       return res.redirect('/organizer/dashboard');
     }
 
+    const eventId = event.id;
     const vResult = await verificationEngine.executeAutomatedVerification(event, eventId);
 
     await db.execute(`
@@ -555,17 +578,17 @@ router.post('/events/:id/reverify', async (req, res) => {
       vResult.trustLevel,
       `[Autonomous Dual-AI] ${vResult.decisionSummary} (Score: ${vResult.compositeScore}%)`,
       eventId,
-      organizerId
+      event.organizer_id
     ]);
 
     req.session.flash = {
       success: `Dual-AI Re-evaluation complete! Outcome: ${vResult.verificationStatus} (${vResult.decisionSummary})`
     };
-    res.redirect(`/organizer/events/${eventId}/verification`);
+    res.redirect(`/organizer/events/${event.tracking_code || event.slug || event.id}/verification`);
   } catch (err) {
     console.error('[Re-verify Error]:', err);
     req.session.flash = { error: 'Re-verification failed.' };
-    res.redirect(`/organizer/events/${eventId}/verification`);
+    res.redirect(`/organizer/events/${rawIdentifier}/verification`);
   }
 });
 
