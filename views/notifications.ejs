@@ -133,7 +133,10 @@
                             </form>
                         <% } %>
 
-                        <form action="/notifications/<%= n.id %>/delete" method="POST" class="inline" onsubmit="return confirm('Remove this notification?');">
+                        <form action="/notifications/<%= n.id %>/delete" method="POST" class="inline" 
+                              data-confirm="Remove this notification from your inbox?" 
+                              data-confirm-title="Delete Notification" 
+                              data-confirm-button="Delete">
                             <button type="submit" class="w-8 h-8 rounded-xl bg-white border border-slate-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 text-slate-400 flex items-center justify-center text-xs transition-colors cursor-pointer" title="Delete">
                                 <i class="fas fa-trash-can"></i>
                             </button>

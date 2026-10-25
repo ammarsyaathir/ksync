@@ -1750,7 +1750,7 @@ function handleAiPosterFileSelect(input) {
 
 function setAiSelectedFile(file) {
     if (!file || !file.type.startsWith('image/')) {
-        alert('Please choose a valid image file (JPG, PNG, WebP).');
+        window.showToast({ message: 'Please choose a valid image file (JPG, PNG, WebP).', type: 'warning' });
         return;
     }
     selectedAiFile = file;

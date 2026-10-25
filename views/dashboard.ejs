@@ -392,20 +392,28 @@
         setInterval(updateCountdown, 1000);
     }
 
-    async function removeSavedDashboard(eventId, btn) {
-        if (!confirm('Remove this event from your saved wishlist?')) return;
-        try {
-            const res = await fetch(`/api/events/${eventId}/save`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
-            const data = await res.json();
-            if (data.status === 'success') {
-                location.reload();
+    function removeSavedDashboard(eventId, btn) {
+        window.showConfirmModal({
+            title: 'Remove from Wishlist',
+            message: 'Remove this event from your saved wishlist?',
+            confirmText: 'Remove',
+            confirmType: 'danger',
+            onConfirm: async function() {
+                try {
+                    const res = await fetch(`/api/events/${eventId}/save`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const data = await res.json();
+                    if (data.status === 'success') {
+                        window.showToast({ message: 'Event removed from wishlist.', type: 'info' });
+                        setTimeout(() => location.reload(), 500);
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
             }
-        } catch (e) {
-            console.error(e);
-        }
+        });
     }
 </script>
 

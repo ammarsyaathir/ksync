@@ -409,29 +409,37 @@
             if (data.status === 'success') {
                 window.location.reload();
             } else {
-                alert(data.message || 'Failed to stamp passport');
+                window.showToast({ message: data.message || 'Failed to stamp passport', type: 'error' });
                 btn.disabled = false;
                 btn.textContent = 'Stamp My Passport';
             }
         } catch (err) {
             console.error('Stamp error:', err);
-            alert('Failed to stamp passport');
+            window.showToast({ message: 'Failed to stamp passport', type: 'error' });
             btn.disabled = false;
             btn.textContent = 'Stamp My Passport';
         }
     }
 
-    async function deleteStamp(stampId) {
-        if (!confirm('Are you sure you want to remove this concert stamp from your passport?')) return;
-        try {
-            const res = await fetch(`/api/passport/stamp/${stampId}`, { method: 'DELETE' });
-            const data = await res.json();
-            if (data.status === 'success') {
-                window.location.reload();
+    function deleteStamp(stampId) {
+        window.showConfirmModal({
+            title: 'Remove Concert Stamp',
+            message: 'Are you sure you want to remove this concert stamp from your passport?',
+            confirmText: 'Remove Stamp',
+            confirmType: 'danger',
+            onConfirm: async function() {
+                try {
+                    const res = await fetch(`/api/passport/stamp/${stampId}`, { method: 'DELETE' });
+                    const data = await res.json();
+                    if (data.status === 'success') {
+                        window.showToast({ message: 'Stamp removed successfully.', type: 'info' });
+                        setTimeout(() => window.location.reload(), 400);
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
             }
-        } catch (e) {
-            console.error(e);
-        }
+        });
     }
 
     function copyPassportLink() {
@@ -443,8 +451,9 @@
                 text.textContent = 'Link Copied!';
                 setTimeout(() => text.textContent = original, 2000);
             }
+            window.showToast({ message: 'Passport share link copied to clipboard!', type: 'success' });
         }).catch(() => {
-            alert('Passport link: ' + url);
+            window.showToast({ message: 'Passport link: ' + url, type: 'info' });
         });
     }
 </script>

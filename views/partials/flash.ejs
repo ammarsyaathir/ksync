@@ -1,29 +1,222 @@
 <% const flashMsg = (typeof flash !== 'undefined' && flash) ? flash : {}; %>
-<% if (flashMsg.success || flashMsg.error || flashMsg.warning || flashMsg.info) { %>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-    <% if (flashMsg.success) { %>
-      <div class="p-4 mb-3 text-sm text-emerald-800 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center shadow-sm">
-        <i class="fas fa-check-circle text-emerald-500 text-lg me-3"></i>
-        <div class="font-medium"><%= flashMsg.success %></div>
+<% 
+  const hasFlash = Boolean(flashMsg.success || flashMsg.error || flashMsg.warning || flashMsg.info);
+  let flashType = 'info';
+  let flashTitle = 'Notification';
+  let flashText = '';
+  let iconClass = 'fa-circle-info text-blue-500';
+  let badgeBg = 'bg-blue-50 border-blue-200 text-blue-700';
+  let barBg = 'bg-blue-500';
+
+  if (flashMsg.success) {
+    flashType = 'success';
+    flashText = flashMsg.success;
+    flashTitle = flashText.toLowerCase().includes('welcome') ? 'Welcome Back' : 'Success';
+    iconClass = 'fa-circle-check text-emerald-500';
+    badgeBg = 'bg-emerald-50 border-emerald-200 text-emerald-700';
+    barBg = 'bg-emerald-500';
+  } else if (flashMsg.error) {
+    flashType = 'error';
+    flashText = flashMsg.error;
+    flashTitle = 'Attention Required';
+    iconClass = 'fa-circle-exclamation text-rose-500';
+    badgeBg = 'bg-rose-50 border-rose-200 text-rose-700';
+    barBg = 'bg-rose-500';
+  } else if (flashMsg.warning) {
+    flashType = 'warning';
+    flashText = flashMsg.warning;
+    flashTitle = 'Warning';
+    iconClass = 'fa-triangle-exclamation text-amber-500';
+    badgeBg = 'bg-amber-50 border-amber-200 text-amber-700';
+    barBg = 'bg-amber-500';
+  } else if (flashMsg.info) {
+    flashType = 'info';
+    flashText = flashMsg.info;
+    flashTitle = 'Notice';
+    iconClass = 'fa-circle-info text-blue-500';
+    badgeBg = 'bg-blue-50 border-blue-200 text-blue-700';
+    barBg = 'bg-blue-500';
+  }
+%>
+
+<!-- Global Floating Toast Container -->
+<div id="ksync-toast-container" class="fixed top-5 left-1/2 -translate-x-1/2 z-[99999] w-[92%] max-w-md pointer-events-none flex flex-col items-center gap-3" aria-live="polite">
+  <% if (hasFlash) { %>
+    <div id="ksync-server-toast" 
+         class="pointer-events-auto w-full bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-2xl border border-slate-200/90 flex items-start gap-3.5 relative overflow-hidden transition-all duration-300 transform translate-y-0 opacity-100 hover:shadow-xl group"
+         role="alert">
+      <!-- Icon Accent Badge -->
+      <div class="w-9 h-9 rounded-xl <%= badgeBg %> border flex items-center justify-center shrink-0 text-base shadow-xs">
+        <i class="fas <%= iconClass %>"></i>
       </div>
-    <% } %>
-    <% if (flashMsg.error) { %>
-      <div class="p-4 mb-3 text-sm text-rose-800 rounded-xl bg-rose-50 border border-rose-200 flex items-center shadow-sm">
-        <i class="fas fa-exclamation-circle text-rose-500 text-lg me-3"></i>
-        <div class="font-medium"><%= flashMsg.error %></div>
+
+      <!-- Text Content -->
+      <div class="flex-1 min-w-0 pr-6">
+        <div class="text-[11px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+          <span><%= flashTitle %></span>
+          <span class="inline-block w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+          <span class="text-[10px] text-slate-400 font-mono">auto-dismiss</span>
+        </div>
+        <div class="text-xs sm:text-sm font-bold text-slate-800 mt-0.5 leading-snug break-words">
+          <%= flashText %>
+        </div>
       </div>
-    <% } %>
-    <% if (flashMsg.warning) { %>
-      <div class="p-4 mb-3 text-sm text-amber-800 rounded-xl bg-amber-50 border border-amber-200 flex items-center shadow-sm">
-        <i class="fas fa-exclamation-triangle text-amber-500 text-lg me-3"></i>
-        <div class="font-medium"><%= flashMsg.warning %></div>
-      </div>
-    <% } %>
-    <% if (flashMsg.info) { %>
-      <div class="p-4 mb-3 text-sm text-blue-800 rounded-xl bg-blue-50 border border-blue-200 flex items-center shadow-sm">
-        <i class="fas fa-info-circle text-blue-500 text-lg me-3"></i>
-        <div class="font-medium"><%= flashMsg.info %></div>
-      </div>
-    <% } %>
-  </div>
-<% } %>
+
+      <!-- Manual Close Button -->
+      <button type="button" 
+              onclick="window.dismissToast('ksync-server-toast')"
+              class="absolute top-3 right-3 text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+              aria-label="Close notification">
+        <i class="fas fa-times text-xs"></i>
+      </button>
+
+      <!-- 3-Second Visual Progress Indicator Bar -->
+      <div class="absolute bottom-0 left-0 h-1 <%= barBg %> transition-all" id="ksync-toast-progress" style="width: 100%;"></div>
+    </div>
+  <% } %>
+</div>
+
+<style>
+  @keyframes toastProgress {
+    from { width: 100%; }
+    to { width: 0%; }
+  }
+  .toast-progress-active {
+    animation: toastProgress 3000ms linear forwards;
+  }
+</style>
+
+<script>
+  (function() {
+    // Dismiss helper
+    window.dismissToast = function(toastId) {
+      const el = typeof toastId === 'string' ? document.getElementById(toastId) : toastId;
+      if (!el) return;
+      el.style.transition = 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)';
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(-14px) scale(0.96)';
+      setTimeout(function() {
+        if (el && el.parentNode) el.parentNode.removeChild(el);
+      }, 350);
+    };
+
+    // Auto-dismiss the initial server flash after exactly 3000ms
+    const serverToast = document.getElementById('ksync-server-toast');
+    if (serverToast) {
+      const progressBar = document.getElementById('ksync-toast-progress');
+      if (progressBar) progressBar.classList.add('toast-progress-active');
+
+      let timer = setTimeout(function() {
+        window.dismissToast(serverToast);
+      }, 3000);
+
+      // Pause on hover, resume on mouse leave
+      serverToast.addEventListener('mouseenter', function() {
+        clearTimeout(timer);
+        if (progressBar) progressBar.style.animationPlayState = 'paused';
+      });
+      serverToast.addEventListener('mouseleave', function() {
+        if (progressBar) progressBar.style.animationPlayState = 'running';
+        timer = setTimeout(function() {
+          window.dismissToast(serverToast);
+        }, 1200);
+      });
+    }
+
+    // Global client-side toast helper
+    window.showToast = function(options) {
+      const container = document.getElementById('ksync-toast-container') || (function() {
+        const c = document.createElement('div');
+        c.id = 'ksync-toast-container';
+        c.className = 'fixed top-5 left-1/2 -translate-x-1/2 z-[99999] w-[92%] max-w-md pointer-events-none flex flex-col items-center gap-3';
+        document.body.appendChild(c);
+        return c;
+      })();
+
+      const opts = typeof options === 'string' ? { message: options } : (options || {});
+      const message = opts.message || opts.text || '';
+      const type = opts.type || 'info';
+      const duration = Number(opts.duration) || 3000;
+      let title = opts.title || 'Notification';
+      let icon = 'fa-circle-info text-blue-500';
+      let badge = 'bg-blue-50 border-blue-200 text-blue-700';
+      let bar = 'bg-blue-500';
+
+      if (type === 'success') {
+        title = opts.title || (message.toLowerCase().includes('welcome') ? 'Welcome Back' : 'Success');
+        icon = 'fa-circle-check text-emerald-500';
+        badge = 'bg-emerald-50 border-emerald-200 text-emerald-700';
+        bar = 'bg-emerald-500';
+      } else if (type === 'error') {
+        title = opts.title || 'Attention Required';
+        icon = 'fa-circle-exclamation text-rose-500';
+        badge = 'bg-rose-50 border-rose-200 text-rose-700';
+        bar = 'bg-rose-500';
+      } else if (type === 'warning') {
+        title = opts.title || 'Warning';
+        icon = 'fa-triangle-exclamation text-amber-500';
+        badge = 'bg-amber-50 border-amber-200 text-amber-700';
+        bar = 'bg-amber-500';
+      }
+
+      const toastId = 'toast-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+      const toast = document.createElement('div');
+      toast.id = toastId;
+      toast.className = 'pointer-events-auto w-full bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-2xl border border-slate-200/90 flex items-start gap-3.5 relative overflow-hidden transition-all duration-300 transform -translate-y-3 opacity-0 hover:shadow-xl group';
+      toast.setAttribute('role', 'alert');
+
+      toast.innerHTML = `
+        <div class="w-9 h-9 rounded-xl ${badge} border flex items-center justify-center shrink-0 text-base shadow-xs">
+          <i class="fas ${icon}"></i>
+        </div>
+        <div class="flex-1 min-w-0 pr-6">
+          <div class="text-[11px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+            <span>${title}</span>
+            <span class="inline-block w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+            <span class="text-[10px] text-slate-400 font-mono">auto-dismiss</span>
+          </div>
+          <div class="text-xs sm:text-sm font-bold text-slate-800 mt-0.5 leading-snug break-words">
+            ${message}
+          </div>
+        </div>
+        <button type="button" 
+                onclick="window.dismissToast('${toastId}')"
+                class="absolute top-3 right-3 text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+                aria-label="Close">
+          <i class="fas fa-times text-xs"></i>
+        </button>
+        <div class="absolute bottom-0 left-0 h-1 ${bar}" style="width: 100%; animation: toastProgress ${duration}ms linear forwards;"></div>
+      `;
+
+      container.appendChild(toast);
+
+      // Trigger entrance transition next frame
+      requestAnimationFrame(function() {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
+      });
+
+      // Auto-dismiss after duration (default 3000ms)
+      let timer = setTimeout(function() {
+        window.dismissToast(toast);
+      }, duration);
+
+      toast.addEventListener('mouseenter', function() { clearTimeout(timer); });
+      toast.addEventListener('mouseleave', function() {
+        timer = setTimeout(function() { window.dismissToast(toast); }, 1200);
+      });
+
+      return toast;
+    };
+
+    // Override browser native alert() to use showToast so "localhost:9000 says" NEVER shows
+    window.alert = function(msg) {
+      if (typeof msg === 'undefined') msg = '';
+      window.showToast({
+        message: String(msg),
+        type: String(msg).toLowerCase().includes('error') || String(msg).toLowerCase().includes('fail') ? 'error' : 'info',
+        duration: 3500
+      });
+    };
+  })();
+</script>

@@ -1036,15 +1036,15 @@
             });
             const data = await res.json();
             if (res.ok) {
-                alert('Update broadcasted successfully into the event discussion!');
+                window.showToast({ message: 'Update broadcasted successfully into the event discussion!', type: 'success' });
                 closeUpdateModal();
                 textarea.value = '';
             } else {
-                alert(data.message || 'Failed to post update.');
+                window.showToast({ message: data.message || 'Failed to post update.', type: 'error' });
             }
         } catch (err) {
             console.error('Error posting update:', err);
-            alert('Network error while posting update.');
+            window.showToast({ message: 'Network error while posting update.', type: 'error' });
         } finally {
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-bullhorn text-xs text-pink-400"></i> Broadcast Update';

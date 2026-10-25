@@ -1,8 +1,6 @@
 <%- include('../partials/header', { title: 'User Accounts & Access Control | K-Sync Admin' }) %>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-  <%- include('../partials/flash') %>
-
   <!-- Admin Command Subnav Ribbon -->
   <%- include('admin-nav', { activeTab: 'users', pageTitle: 'User Accounts & Access Control' }) %>
 
@@ -232,7 +230,11 @@
                     </form>
 
                     <!-- Delete Account -->
-                    <form action="/admin/users/delete" method="POST" onsubmit="return confirm('Permanently delete account for @<%= u.username %>? This action is irreversible.')" class="inline">
+                    <form action="/admin/users/delete" method="POST" 
+                          data-confirm="Permanently delete account for @<%= u.username %>? This action is irreversible."
+                          data-confirm-title="Delete User Account"
+                          data-confirm-button="Delete Account"
+                          class="inline">
                       <input type="hidden" name="id" value="<%= u.id %>">
                       <button type="submit" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer" title="Delete User">
                         <i class="fas fa-trash-can text-xs"></i>

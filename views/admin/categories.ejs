@@ -1,7 +1,6 @@
 <%- include('../partials/header', { title: 'Manage Categories | K-Sync Admin' }) %>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-    <%- include('../partials/flash') %>
     <%- include('admin-nav', { activeTab: 'categories', pageTitle: 'Taxonomy & Event Categories' }) %>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
@@ -118,7 +117,11 @@
                                     </span>
                                 </td>
                                 <td class="p-3.5 text-right">
-                                    <form action="/admin/categories/delete" method="POST" onsubmit="return confirm('Delete this category? Events linked to it will remain.')" class="inline">
+                                    <form action="/admin/categories/delete" method="POST" 
+                                          data-confirm="Delete this category? Events linked to it will remain intact."
+                                          data-confirm-title="Delete Category"
+                                          data-confirm-button="Delete Category"
+                                          class="inline">
                                         <input type="hidden" name="id" value="<%= c.id %>">
                                         <button type="submit" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-all cursor-pointer" title="Delete Category">
                                             <i class="fas fa-trash-can text-xs"></i>

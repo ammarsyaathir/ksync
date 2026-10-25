@@ -1,8 +1,6 @@
 <%- include('../partials/header', { title: 'Talent Directory & Lineups | K-Sync Admin' }) %>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-  <%- include('../partials/flash') %>
-
   <!-- Admin Command Subnav Ribbon -->
   <%- include('admin-nav', { activeTab: 'artists', pageTitle: 'Talent Directory & Lineup Hub' }) %>
 
@@ -237,7 +235,11 @@
               </a>
 
               <!-- Delete Artist -->
-              <form action="/admin/artists/delete" method="POST" onsubmit="return confirm('Permanently delete <%= a.name %> and all associated members?')" class="inline">
+              <form action="/admin/artists/delete" method="POST" 
+                    data-confirm="Permanently delete <%= a.name.replace(/'/g, "\\'") %> and all associated members and discography?"
+                    data-confirm-title="Delete Artist"
+                    data-confirm-button="Delete Artist"
+                    class="inline">
                 <input type="hidden" name="id" value="<%= a.id %>">
                 <button type="submit" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer" title="Delete Artist">
                   <i class="fas fa-trash-can text-xs"></i>
@@ -663,7 +665,11 @@ function renderMembersList(members) {
                 class="p-1.5 text-slate-600 hover:text-violet-700 hover:bg-violet-100 rounded-lg transition-colors cursor-pointer" title="Edit Member">
           <i class="fas fa-user-pen text-xs"></i>
         </button>
-        <form action="/admin/members/delete" method="POST" onsubmit="return confirm('Remove ${m.stage_name} from lineup?')" class="inline">
+        <form action="/admin/members/delete" method="POST" 
+              data-confirm="Remove ${m.stage_name} from lineup?"
+              data-confirm-title="Remove Lineup Member"
+              data-confirm-button="Remove Member"
+              class="inline">
           <input type="hidden" name="id" value="${m.id}">
           <button type="submit" class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Delete Member">
             <i class="fas fa-trash-can text-xs"></i>

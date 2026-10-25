@@ -75,20 +75,28 @@
 </div>
 
 <script>
-    async function removeSaved(eventId) {
-        if (!confirm('Remove this event from your saved bookmarks?')) return;
-        try {
-            const res = await fetch(`/api/events/${eventId}/save`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
-            const data = await res.json();
-            if (data.status === 'success') {
-                location.reload();
+    function removeSaved(eventId) {
+        window.showConfirmModal({
+            title: 'Remove Bookmark',
+            message: 'Remove this event from your saved bookmarks?',
+            confirmText: 'Remove Bookmark',
+            confirmType: 'danger',
+            onConfirm: async function() {
+                try {
+                    const res = await fetch(`/api/events/${eventId}/save`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const data = await res.json();
+                    if (data.status === 'success') {
+                        window.showToast({ message: 'Event removed from bookmarks.', type: 'info' });
+                        setTimeout(() => location.reload(), 500);
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
             }
-        } catch (e) {
-            console.error(e);
-        }
+        });
     }
 </script>
 

@@ -1419,7 +1419,7 @@
                 window.location.hash = 'discussion';
                 window.location.reload();
             } else {
-                alert(data.message || 'Error posting comment');
+                window.showToast({ message: data.message || 'Error posting comment', type: 'error' });
                 if (btn) {
                     btn.disabled = false;
                     btn.classList.remove('opacity-50');
@@ -1427,7 +1427,7 @@
             }
         } catch (err) {
             console.error('Comment submission error:', err);
-            alert('Failed to post comment. Please try again.');
+            window.showToast({ message: 'Failed to post comment. Please try again.', type: 'error' });
             if (btn) {
                 btn.disabled = false;
                 btn.classList.remove('opacity-50');
@@ -1435,35 +1435,41 @@
         }
     }
 
-    async function deleteComment(messageId) {
-        if (!confirm('Are you sure you want to delete this comment?')) return;
-
-        try {
-            const res = await fetch(`/api/chat/${messageId}`, {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' }
-            });
-            const data = await res.json();
-            if (data.status === 'success') {
-                const el = document.getElementById(`comment-${messageId}`);
-                if (el) {
-                    el.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
-                    el.style.opacity = '0';
-                    el.style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        window.location.hash = 'discussion';
-                        window.location.reload();
-                    }, 250);
-                } else {
-                    window.location.reload();
+    function deleteComment(messageId) {
+        window.showConfirmModal({
+            title: 'Delete Comment',
+            message: 'Are you sure you want to delete this comment? This action cannot be undone.',
+            confirmText: 'Delete Comment',
+            confirmType: 'danger',
+            onConfirm: async function() {
+                try {
+                    const res = await fetch(`/api/chat/${messageId}`, {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const data = await res.json();
+                    if (data.status === 'success') {
+                        const el = document.getElementById(`comment-${messageId}`);
+                        if (el) {
+                            el.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+                            el.style.opacity = '0';
+                            el.style.transform = 'scale(0.95)';
+                            setTimeout(() => {
+                                window.location.hash = 'discussion';
+                                window.location.reload();
+                            }, 250);
+                        } else {
+                            window.location.reload();
+                        }
+                    } else {
+                        window.showToast({ message: data.message || 'Unable to delete comment.', type: 'error' });
+                    }
+                } catch (err) {
+                    console.error('Delete comment error:', err);
+                    window.showToast({ message: 'Network error while deleting comment.', type: 'error' });
                 }
-            } else {
-                alert(data.message || 'Unable to delete comment.');
             }
-        } catch (err) {
-            console.error('Delete comment error:', err);
-            alert('Network error while deleting comment.');
-        }
+        });
     }
 
     function showToast(msg) {
