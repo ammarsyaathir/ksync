@@ -1,0 +1,368 @@
+<%- include('../partials/header', { title: 'My Events | K-Sync Malaysia' }) %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 min-w-0 max-w-full">
+    <!-- Top Header -->
+    <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+                My events
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-600 mt-1 max-w-3xl leading-relaxed">
+                The working list for <strong class="text-slate-800"><%= organizer.organization_name || organizer.full_name %></strong>. Filter by what needs a fix, open a verification report, or post an update to the fans who saved an event.
+            </p>
+        </div>
+
+        <!-- Top Right Controls -->
+        <div class="flex items-center gap-2.5 shrink-0">
+            <a href="/organizer/events/lookup" class="px-4 py-2.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold shadow-xs transition-all flex items-center gap-2">
+                <i class="fas fa-magnifying-glass text-slate-500 text-xs"></i>
+                <span>Track submission</span>
+            </a>
+            <a href="/organizer/events/new" class="px-5 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold shadow-xs transition-all flex items-center gap-2">
+                <i class="fas fa-paper-plane text-pink-400 text-xs"></i>
+                <span>Submit event</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Sub-banner: Standing & Back to Workspace (Comp 2) -->
+    <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-xs mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div class="flex items-center gap-2.5">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-800 border border-slate-200">
+                <i class="fas fa-users text-pink-500 text-xs"></i>
+                <%= organizer.organization_type || 'Community organiser' %>
+            </span>
+            <span class="text-slate-500 hidden sm:inline">
+                <%= organizer.organization_type || 'Community organiser' %>. Verification is optional and separate from each listing check.
+            </span>
+        </div>
+
+        <a href="/organizer/dashboard" class="text-xs font-bold text-slate-800 hover:text-purple-600 transition-colors flex items-center gap-1.5 shrink-0">
+            <span>Back to workspace</span>
+            <i class="fas fa-arrow-right text-[10px]"></i>
+        </a>
+    </div>
+
+    <!-- 5 KPI Metrics Bar (Comp 2) -->
+    <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-xs mb-8">
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
+            <!-- TOTAL -->
+            <div class="px-3">
+                <div class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">TOTAL</div>
+                <div class="text-2xl sm:text-3xl font-black text-slate-900 mt-1"><%= stats.total %></div>
+            </div>
+
+            <!-- LIVE -->
+            <div class="px-3 pt-3 sm:pt-0">
+                <div class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">LIVE</div>
+                <div class="text-2xl sm:text-3xl font-black text-slate-900 mt-1"><%= stats.live %></div>
+            </div>
+
+            <!-- NEEDS ACTION -->
+            <div class="px-3 pt-3 sm:pt-0">
+                <div class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider text-amber-600">NEEDS ACTION</div>
+                <div class="text-2xl sm:text-3xl font-black text-amber-600 mt-1"><%= stats.needsAction %></div>
+            </div>
+
+            <!-- AVG. SCORE -->
+            <div class="px-3 pt-3 sm:pt-0">
+                <div class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">AVG. SCORE</div>
+                <div class="text-2xl sm:text-3xl font-black text-slate-900 mt-1"><%= stats.avgScore %></div>
+            </div>
+
+            <!-- FAN INTEREST -->
+            <div class="px-3 pt-3 sm:pt-0 col-span-2 sm:col-span-1">
+                <div class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">FAN INTEREST</div>
+                <div class="text-xl sm:text-2xl font-black text-slate-900 mt-1">
+                    <%= stats.totalSaves %> <span class="text-xs font-bold text-slate-400">saves</span>
+                </div>
+                <div class="text-[11px] text-slate-500 font-medium mt-0.5">
+                    <%= stats.totalUpvotes %> upvotes &middot; <%= stats.totalReplies %> replies
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container: Your Listings -->
+    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-6">
+        <div>
+            <h2 class="text-xl font-black text-slate-900 tracking-tight">
+                Your listings
+            </h2>
+            <p class="text-xs text-slate-500 mt-0.5">
+                <%= events.length %> <%= events.length === 1 ? 'listing' : 'listings' %> matching current filter.
+            </p>
+        </div>
+
+        <!-- Filter Tabs + Search Controls (Comp 2) -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <!-- Tabs -->
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs font-bold">
+                <a href="/organizer/events?tab=all" 
+                   class="px-3.5 py-1.5 rounded-full whitespace-nowrap transition-all <%= currentTab === 'all' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' %>">
+                    All <span class="text-[10px] opacity-75 font-mono"><%= stats.total %></span>
+                </a>
+                <a href="/organizer/events?tab=live" 
+                   class="px-3.5 py-1.5 rounded-full whitespace-nowrap transition-all <%= currentTab === 'live' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' %>">
+                    Live <span class="text-[10px] opacity-75 font-mono"><%= stats.live %></span>
+                </a>
+                <a href="/organizer/events?tab=action" 
+                   class="px-3.5 py-1.5 rounded-full whitespace-nowrap transition-all <%= currentTab === 'action' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' %>">
+                    Needs action <span class="text-[10px] opacity-75 font-mono"><%= stats.needsAction %></span>
+                </a>
+                <a href="/organizer/events?tab=review" 
+                   class="px-3.5 py-1.5 rounded-full whitespace-nowrap transition-all <%= currentTab === 'review' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' %>">
+                    In review <span class="text-[10px] opacity-75 font-mono"><%= stats.inReview %></span>
+                </a>
+                <a href="/organizer/events?tab=past" 
+                   class="px-3.5 py-1.5 rounded-full whitespace-nowrap transition-all <%= currentTab === 'past' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' %>">
+                    Past <span class="text-[10px] opacity-75 font-mono"><%= stats.past %></span>
+                </a>
+            </div>
+
+            <!-- Search Form -->
+            <form action="/organizer/events" method="GET" class="flex items-center gap-2">
+                <input type="hidden" name="tab" value="<%= currentTab %>">
+                <div class="relative flex items-center">
+                    <i class="fas fa-magnifying-glass absolute left-3.5 text-slate-400 text-xs"></i>
+                    <input type="text" 
+                           name="search" 
+                           value="<%= searchQuery %>" 
+                           placeholder="Event, artist, venue or reference" 
+                           class="w-full sm:w-64 pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-xs text-slate-900 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/30">
+                </div>
+                <button type="submit" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition-all">
+                    Search
+                </button>
+            </form>
+        </div>
+
+        <!-- Event Listing Cards (Comp 2) -->
+        <% if (events.length > 0) { %>
+            <div class="space-y-4">
+                <% events.forEach(ev => { 
+                    const isPublished = ev.verification_status === 'VERIFIED';
+                    const isHeld = ev.verification_status !== 'VERIFIED';
+                    const trackingCode = ev.tracking_code || ('KS-2026-' + ev.id);
+                    const verificationUrl = `/organizer/events/${trackingCode}/verification`;
+                    const publicUrl = `/events/${ev.slug || ev.id}`;
+                %>
+                    <div class="p-5 sm:p-6 rounded-3xl border <%= isHeld ? 'border-amber-200 bg-amber-50/20' : 'border-slate-200 bg-white' %> shadow-xs flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 transition-all hover:border-slate-300">
+                        <!-- Left: Poster + Details -->
+                        <div class="flex flex-col sm:flex-row items-start gap-4 sm:gap-5 min-w-0 flex-1">
+                            <!-- Poster Thumbnail -->
+                            <div class="relative shrink-0">
+                                <% if (ev.poster_image) { %>
+                                    <img src="<%= ev.poster_image %>" alt="<%= ev.event_name %>" class="w-20 h-28 sm:w-24 sm:h-32 object-cover rounded-2xl border border-slate-200 shadow-sm shrink-0">
+                                <% } else { %>
+                                    <div class="w-20 h-28 sm:w-24 sm:h-32 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 border border-slate-200">
+                                        <i class="fas fa-image text-xl"></i>
+                                    </div>
+                                <% } %>
+                            </div>
+
+                            <!-- Details Column -->
+                            <div class="min-w-0 flex-1 space-y-2">
+                                <!-- Badges -->
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <% if (isPublished) { %>
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                            Published
+                                        </span>
+                                    <% } else { %>
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                                            <i class="fas fa-shield-halved text-[9px]"></i>
+                                            Held by automated checks
+                                        </span>
+                                    <% } %>
+
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                                        <i class="far fa-calendar text-[9px]"></i>
+                                        <%= ev.event_status || 'Upcoming' %>
+                                    </span>
+                                </div>
+
+                                <!-- Big Title -->
+                                <h3 class="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-snug">
+                                    <%= ev.event_name %>
+                                </h3>
+
+                                <!-- Date & Venue Metadata -->
+                                <div class="flex items-center gap-3 text-xs text-slate-500 flex-wrap">
+                                    <span class="flex items-center gap-1">
+                                        <i class="far fa-calendar text-slate-400"></i>
+                                        <%= helpers.formatDate(ev.event_date) %>
+                                    </span>
+                                    <span>&middot;</span>
+                                    <span class="flex items-center gap-1">
+                                        <i class="fas fa-location-dot text-rose-500 text-[10px]"></i>
+                                        <%= ev.venue_name %>, <%= ev.city %>
+                                    </span>
+                                    <span>&middot;</span>
+                                    <span class="flex items-center gap-1">
+                                        <i class="fas fa-user-group text-slate-400 text-[10px]"></i>
+                                        <%= ev.artist_name || 'Various artists' %>
+                                    </span>
+                                </div>
+
+                                <!-- Verification Score & Fan Counters (Comp 2) -->
+                                <div class="flex items-center gap-3 text-xs text-slate-600 flex-wrap pt-1 font-medium">
+                                    <div>
+                                        Verification score: <strong class="text-slate-900 font-extrabold"><%= ev.verification_score %>/100</strong>
+                                    </div>
+                                    <span>&middot;</span>
+                                    <div class="flex items-center gap-1">
+                                        <i class="far fa-bookmark text-purple-500"></i>
+                                        <span><%= ev.save_count || 0 %> saves</span>
+                                    </div>
+                                    <span>&middot;</span>
+                                    <div class="flex items-center gap-1">
+                                        <i class="far fa-thumbs-up text-pink-500"></i>
+                                        <span><%= ev.upvote_count || 0 %> upvotes</span>
+                                    </div>
+                                    <span>&middot;</span>
+                                    <div class="flex items-center gap-1">
+                                        <i class="far fa-comment text-slate-400"></i>
+                                        <span><%= ev.comment_count || 0 %> replies</span>
+                                    </div>
+                                    <span>&middot;</span>
+                                    <span class="font-mono text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
+                                        <%= trackingCode %>
+                                    </span>
+                                </div>
+
+                                <!-- Held Alert Banner (if applicable) -->
+                                <% if (isHeld) { %>
+                                    <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-1 mt-2">
+                                        <div class="font-bold flex items-center gap-1.5">
+                                            <i class="fas fa-circle-exclamation text-amber-600"></i>
+                                            <span>Automated verification held this listing (score <%= ev.verification_score %>/100).</span>
+                                        </div>
+                                        <p class="text-[11px] text-amber-800 leading-relaxed">
+                                            <%= ev.admin_verification_notes || 'Failed checks: Official page matches the event; AI consensus: evidence supports the listing. Publishing requires hard gates to pass.' %>
+                                        </p>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <!-- Right: Action Buttons Stack (Comp 2) -->
+                        <div class="flex flex-col sm:flex-row lg:flex-col items-stretch sm:items-center lg:items-stretch gap-2 shrink-0 w-full sm:w-auto min-w-[170px]">
+                            <!-- Button 1: Verification Report -->
+                            <a href="<%= verificationUrl %>" 
+                               class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition-all flex items-center justify-center gap-2">
+                                <i class="fas fa-chart-simple text-xs"></i>
+                                <span>Verification report</span>
+                            </a>
+
+                            <!-- Button 2: View Public Page -->
+                            <a href="<%= publicUrl %>" 
+                               target="_blank" 
+                               class="px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all flex items-center justify-center gap-2">
+                                <i class="fas fa-arrow-up-right-from-square text-xs text-slate-400"></i>
+                                <span>View public page</span>
+                            </a>
+
+                            <!-- Button 3: Post Update (Modal trigger) -->
+                            <button type="button" 
+                                    onclick="openBroadcastModal('<%= ev.id %>', '<%= ev.event_name.replace(/'/g, "\\'") %>')" 
+                                    class="px-4 py-2.5 rounded-xl border border-pink-200 bg-pink-50 hover:bg-pink-100 text-pink-700 text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer">
+                                <i class="fas fa-bullhorn text-xs text-pink-500"></i>
+                                <span>Post update</span>
+                            </button>
+
+                            <!-- Edit Listing -->
+                            <a href="/organizer/events/<%= ev.id %>/edit" 
+                               class="px-4 py-2 rounded-xl text-slate-500 hover:text-slate-800 text-xs font-bold transition-colors flex items-center justify-center gap-1.5">
+                                <i class="fas fa-pen-to-square text-[11px]"></i>
+                                <span>Edit details</span>
+                            </a>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <div class="py-12 text-center space-y-3">
+                <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto text-2xl">
+                    <i class="far fa-calendar-xmark"></i>
+                </div>
+                <h3 class="font-extrabold text-base text-slate-900">No listings found</h3>
+                <p class="text-xs text-slate-500 max-w-sm mx-auto">
+                    No event listings match the current criteria. You can clear the search filter or submit a new listing.
+                </p>
+                <div class="pt-2">
+                    <a href="/organizer/events/new" class="px-5 py-2.5 rounded-full bg-slate-900 text-white text-xs font-extrabold shadow-xs inline-flex items-center gap-2">
+                        <i class="fas fa-paper-plane text-pink-400"></i>
+                        <span>Submit new event</span>
+                    </a>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<!-- Broadcast Event Update Modal (Comp 2) -->
+<div id="broadcastModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <i class="fas fa-bullhorn text-pink-600"></i>
+                <span>Post Official Event Update</span>
+            </h3>
+            <button type="button" onclick="closeBroadcastModal()" class="text-slate-400 hover:text-slate-600 text-lg cursor-pointer">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="p-3 bg-purple-50 rounded-2xl border border-purple-200 text-xs text-purple-900 font-semibold" id="modalEventTitle">
+            <!-- Populated dynamically -->
+        </div>
+
+        <p class="text-xs text-slate-600 leading-relaxed">
+            Announce door opening schedules, entry requirements, photocard tier redemption booths, or soundcheck updates. This will be pinned into the event discussion with an official <strong>Organizer</strong> badge.
+        </p>
+
+        <form id="broadcastForm" method="POST" class="space-y-4 text-xs">
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Update Heading</label>
+                <input type="text" name="update_title" required placeholder="e.g. Venue Doors Open at 4:30 PM & Photocard Counter Location" class="w-full p-2.5 rounded-xl border border-slate-200 font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Update Message Details</label>
+                <textarea name="update_description" rows="4" required placeholder="Provide clear instructions for fans attending your event..." class="w-full p-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
+            </div>
+
+            <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                <button type="button" onclick="closeBroadcastModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold">
+                    Cancel
+                </button>
+                <button type="submit" class="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold shadow-xs flex items-center gap-2">
+                    <i class="fas fa-paper-plane text-pink-400 text-xs"></i>
+                    <span>Broadcast Update</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openBroadcastModal(eventId, eventName) {
+        const modal = document.getElementById('broadcastModal');
+        const titleEl = document.getElementById('modalEventTitle');
+        const form = document.getElementById('broadcastForm');
+        if (modal && form) {
+            form.action = `/organizer/events/${eventId}/update`;
+            if (titleEl) titleEl.textContent = `Broadcasting update for: ${eventName}`;
+            modal.classList.remove('hidden');
+        }
+    }
+
+    function closeBroadcastModal() {
+        const modal = document.getElementById('broadcastModal');
+        if (modal) modal.classList.add('hidden');
+    }
+</script>
+
+<%- include('../partials/footer') %>

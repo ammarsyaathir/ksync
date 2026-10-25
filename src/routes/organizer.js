@@ -18,33 +18,103 @@ router.use(requireAuth);
 router.use(requireOrganizer);
 
 // ============================================================================
-// 1. ORGANIZER DASHBOARD (GET /organizer & GET /organizer/dashboard)
+// 1. ORGANIZER WORKSPACE (GET /organizer & GET /organizer/dashboard)
 // ============================================================================
 router.get(['/', '/dashboard'], async (req, res) => {
   const organizerId = req.user.id;
 
   try {
-    // 1. Summary Metrics for this Organizer
-    const totalRow = await db.getOne(
-      "SELECT count(id) as count FROM events WHERE organizer_id = ?",
-      [organizerId]
-    );
-    const verifiedRow = await db.getOne(
-      "SELECT count(id) as count FROM events WHERE organizer_id = ? AND verification_status = 'VERIFIED'",
-      [organizerId]
-    );
-    const pendingRow = await db.getOne(
-      "SELECT count(id) as count FROM events WHERE organizer_id = ? AND verification_status IN ('PENDING', 'NEEDS_MORE_EVIDENCE')",
-      [organizerId]
-    );
-    const flaggedRow = await db.getOne(
-      "SELECT count(id) as count FROM events WHERE organizer_id = ? AND verification_status IN ('FLAGGED', 'REJECTED')",
-      [organizerId]
-    );
-
-    // 2. Fetch all events created by this Organizer
+    // 1. Fetch all events created by this Organizer with live interaction counters
     const events = await db.query(`
-      SELECT e.*, a.name as artist_name, c.name as category_name, c.badge_color
+      SELECT e.*, a.name as artist_name, a.slug as artist_slug, c.name as category_name, c.badge_color,
+        (SELECT COUNT(id) FROM event_recommendations r WHERE r.event_id = e.id) as upvote_count,
+        (SELECT COUNT(id) FROM saved_events s WHERE s.event_id = e.id) as save_count,
+        (SELECT COUNT(id) FROM event_chat_messages m WHERE m.event_id = e.id) as comment_count
+      FROM events e
+      LEFT JOIN artists a ON e.artist_id = a.id
+      LEFT JOIN event_categories c ON e.category_id = c.id
+      WHERE e.organizer_id = ?
+      ORDER BY e.event_date ASC
+    `, [organizerId]);
+
+    // Extract score heuristics
+    events.forEach(ev => {
+      let score = 80;
+      if (ev.admin_verification_notes) {
+        const match = ev.admin_verification_notes.match(/Score:\s*(\d+)%/i);
+        if (match) score = parseInt(match[1], 10);
+      }
+      ev.verification_score = score;
+    });
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    const liveListings = events.filter(e => e.verification_status === 'VERIFIED' && e.event_status !== 'CANCELLED');
+    const needsActionListings = events.filter(e => ['FLAGGED', 'NEEDS_MORE_EVIDENCE', 'REJECTED'].includes(e.verification_status));
+    const inReviewListings = events.filter(e => e.verification_status === 'PENDING');
+    
+    const totalSaves = events.reduce((acc, e) => acc + (e.save_count || 0), 0);
+    const totalUpvotes = events.reduce((acc, e) => acc + (e.upvote_count || 0), 0);
+    const totalReplies = events.reduce((acc, e) => acc + (e.comment_count || 0), 0);
+
+    // Next upcoming on calendar
+    const upcomingFuture = events.filter(e => e.event_date >= todayStr);
+    const nextEvent = upcomingFuture.length > 0 ? upcomingFuture[0] : (events.length > 0 ? events[0] : null);
+
+    // Attention events (Needs action)
+    const attentionEvents = needsActionListings.concat(inReviewListings);
+
+    // Upcoming listings (next 4)
+    const upcomingListings = upcomingFuture.length > 0 ? upcomingFuture.slice(0, 4) : events.slice(0, 4);
+
+    // Recent fan replies across organizer events
+    const recentComments = await db.query(`
+      SELECT m.*, u.username, u.full_name, u.profile_image, e.event_name, e.slug as event_slug, e.tracking_code
+      FROM event_chat_messages m
+      JOIN events e ON m.event_id = e.id
+      LEFT JOIN users u ON m.user_id = u.id
+      WHERE e.organizer_id = ?
+      ORDER BY m.created_at DESC
+      LIMIT 5
+    `, [organizerId]);
+
+    res.render('organizer/dashboard', {
+      stats: {
+        total: events.length,
+        live: liveListings.length,
+        needsAction: needsActionListings.length,
+        inReview: inReviewListings.length,
+        totalSaves,
+        totalUpvotes,
+        totalReplies
+      },
+      nextEvent,
+      attentionEvents,
+      upcomingListings,
+      recentComments,
+      events,
+      organizer: req.user,
+      helpers
+    });
+  } catch (err) {
+    console.error('[Organizer Dashboard Error]:', err);
+    res.status(500).send('Error loading organizer workspace');
+  }
+});
+
+// ============================================================================
+// 1.5 MY EVENTS (GET /organizer/events) - Dedicated Listings Hub (Comp 2)
+// ============================================================================
+router.get('/events', async (req, res) => {
+  const organizerId = req.user.id;
+  const tab = (req.query.tab || 'all').toLowerCase();
+  const search = (req.query.search || '').trim().toLowerCase();
+
+  try {
+    const events = await db.query(`
+      SELECT e.*, a.name as artist_name, a.slug as artist_slug, c.name as category_name, c.badge_color,
+        (SELECT COUNT(id) FROM event_recommendations r WHERE r.event_id = e.id) as upvote_count,
+        (SELECT COUNT(id) FROM saved_events s WHERE s.event_id = e.id) as save_count,
+        (SELECT COUNT(id) FROM event_chat_messages m WHERE m.event_id = e.id) as comment_count
       FROM events e
       LEFT JOIN artists a ON e.artist_id = a.id
       LEFT JOIN event_categories c ON e.category_id = c.id
@@ -52,20 +122,174 @@ router.get(['/', '/dashboard'], async (req, res) => {
       ORDER BY e.created_at DESC
     `, [organizerId]);
 
-    res.render('organizer/dashboard', {
+    // Extract score heuristics
+    events.forEach(ev => {
+      let score = 80;
+      if (ev.admin_verification_notes) {
+        const match = ev.admin_verification_notes.match(/Score:\s*(\d+)%/i);
+        if (match) score = parseInt(match[1], 10);
+      }
+      ev.verification_score = score;
+    });
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    const liveListings = events.filter(e => e.verification_status === 'VERIFIED' && e.event_status !== 'CANCELLED');
+    const needsActionListings = events.filter(e => ['FLAGGED', 'NEEDS_MORE_EVIDENCE', 'REJECTED'].includes(e.verification_status));
+    const inReviewListings = events.filter(e => e.verification_status === 'PENDING');
+    const pastListings = events.filter(e => e.event_date < todayStr || e.event_status === 'COMPLETED');
+
+    const totalSaves = events.reduce((acc, e) => acc + (e.save_count || 0), 0);
+    const totalUpvotes = events.reduce((acc, e) => acc + (e.upvote_count || 0), 0);
+    const totalReplies = events.reduce((acc, e) => acc + (e.comment_count || 0), 0);
+    const avgScore = events.length > 0
+      ? Math.round(events.reduce((acc, e) => acc + (e.verification_score || 80), 0) / events.length)
+      : 0;
+
+    let filteredEvents = events;
+    if (tab === 'live') {
+      filteredEvents = liveListings;
+    } else if (tab === 'action') {
+      filteredEvents = needsActionListings;
+    } else if (tab === 'review') {
+      filteredEvents = inReviewListings;
+    } else if (tab === 'past') {
+      filteredEvents = pastListings;
+    }
+
+    if (search) {
+      filteredEvents = filteredEvents.filter(e => 
+        (e.event_name && e.event_name.toLowerCase().includes(search)) ||
+        (e.artist_name && e.artist_name.toLowerCase().includes(search)) ||
+        (e.venue_name && e.venue_name.toLowerCase().includes(search)) ||
+        (e.tracking_code && e.tracking_code.toLowerCase().includes(search))
+      );
+    }
+
+    res.render('organizer/events', {
       stats: {
-        total: totalRow ? totalRow.count : 0,
-        verified: verifiedRow ? verifiedRow.count : 0,
-        pending: pendingRow ? pendingRow.count : 0,
-        flagged: flaggedRow ? flaggedRow.count : 0
+        total: events.length,
+        live: liveListings.length,
+        needsAction: needsActionListings.length,
+        inReview: inReviewListings.length,
+        past: pastListings.length,
+        avgScore,
+        totalSaves,
+        totalUpvotes,
+        totalReplies
       },
-      events,
+      currentTab: tab,
+      searchQuery: search,
+      events: filteredEvents,
       organizer: req.user,
       helpers
     });
   } catch (err) {
-    console.error('[Organizer Dashboard Error]:', err);
-    res.status(500).send('Error loading organizer dashboard');
+    console.error('[Organizer Events Hub Error]:', err);
+    res.status(500).send('Error loading events management');
+  }
+});
+
+// ============================================================================
+// 1.8 POST EVENT LOGISTICAL UPDATE (POST /organizer/events/:id/update)
+// ============================================================================
+router.post('/events/:id/update', async (req, res) => {
+  const rawIdentifier = String(req.params.id).trim();
+  const isNumeric = /^\d+$/.test(rawIdentifier);
+  const numericId = isNumeric ? Number(rawIdentifier) : -1;
+  const organizerId = req.user.id;
+  const { update_title, update_description, message } = req.body;
+
+  const content = (update_description || message || update_title || '').trim();
+  const title = (update_title || 'Official Organizer Notice').trim();
+
+  if (!content) {
+    req.session.flash = { error: 'Please enter an update message.' };
+    return res.redirect('back');
+  }
+
+  try {
+    const event = await db.getOne(`
+      SELECT * FROM events 
+      WHERE (id = ? OR tracking_code = ? OR UPPER(tracking_code) = ? OR slug = ?)
+        AND (organizer_id = ? OR ? = 'ADMIN')
+    `, [numericId, rawIdentifier, rawIdentifier.toUpperCase(), rawIdentifier, organizerId, req.user.role || '']);
+
+    if (!event) {
+      req.session.flash = { error: 'Event not found or permission denied.' };
+      return res.redirect('/organizer/events');
+    }
+
+    // 1. Insert into event_updates
+    await db.execute(`
+      INSERT INTO event_updates (event_id, created_by, update_title, update_description, update_type)
+      VALUES (?, ?, ?, ?, ?)
+    `, [event.id, organizerId, title, content, 'Logistical Update']);
+
+    // 2. Broadcast into event_chat_messages discussion thread with [Official Notice]
+    await db.execute(`
+      INSERT INTO event_chat_messages (event_id, user_id, message)
+      VALUES (?, ?, ?)
+    `, [event.id, organizerId, `[Official Notice] ${content}`]);
+
+    await logActivity(
+      organizerId,
+      'POST_EVENT_UPDATE',
+      'events',
+      event.id,
+      `Posted update for '${event.event_name}': ${title}`,
+      req.ip
+    );
+
+    req.session.flash = { success: `Official update broadcasted for '${event.event_name}'!` };
+    res.redirect('/organizer/events');
+  } catch (err) {
+    console.error('[Post Event Update Error]:', err);
+    req.session.flash = { error: 'Failed to broadcast update.' };
+    res.redirect('back');
+  }
+});
+
+// ============================================================================
+// 1.9 UPDATE ORGANIZER PROFILE & LOGO (POST /organizer/profile)
+// ============================================================================
+router.post('/profile', upload.single('profile_image_file'), async (req, res) => {
+  const organizerId = req.user.id;
+  const { organization_name, organization_type, bio, social_handle, social_url, profile_image_url } = req.body;
+  let profile_image = req.user.profile_image;
+
+  if (req.file) {
+    profile_image = `/uploads/${req.file.filename}`;
+  } else if (profile_image_url && profile_image_url.trim()) {
+    profile_image = profile_image_url.trim();
+  }
+
+  try {
+    await db.execute(`
+      UPDATE users SET
+        organization_name = ?,
+        organization_type = ?,
+        bio = ?,
+        social_handle = ?,
+        social_url = ?,
+        profile_image = ?,
+        updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `, [
+      organization_name ? organization_name.trim() : req.user.organization_name,
+      organization_type ? organization_type.trim() : req.user.organization_type,
+      bio ? bio.trim() : req.user.bio,
+      social_handle ? social_handle.trim() : req.user.social_handle,
+      social_url ? social_url.trim() : req.user.social_url,
+      profile_image,
+      organizerId
+    ]);
+
+    req.session.flash = { success: 'Organizer workspace profile updated successfully!' };
+    res.redirect('/organizer/dashboard');
+  } catch (err) {
+    console.error('[Update Organizer Profile Error]:', err);
+    req.session.flash = { error: 'Failed to update profile.' };
+    res.redirect('/organizer/dashboard');
   }
 });
 
