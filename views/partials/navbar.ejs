@@ -35,37 +35,33 @@
 
             <!-- Desktop Navigation Links (Actor-Tailored with Tactile Floating Pills) -->
             <nav class="hidden md:flex items-center space-x-1 lg:space-x-1.5" aria-label="Main Navigation">
-                <a href="/" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all press-tactile cursor-pointer <%= path === '/' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-900/5' %>">
-                    <span>Home</span>
-                </a>
-                <a href="/events" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer <%= (path === '/events' || path.startsWith('/events/')) && path !== '/events/radar' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-900/5' %>">
-                    <i class="fas fa-compass text-xs text-slate-400"></i>
-                    <span>Discover</span>
-                </a>
-
                 <% if (userRole === 'organizer') { %>
-                    <!-- Organizer-Only Controls: Streamlined & Accessible (Matching Workspace Comp) -->
+                    <!-- Organizer-Only Controls: Exactly 3 Core Links + Plus Submit Icon -->
                     <a href="/organizer/dashboard" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer <%= path === '/organizer' || path === '/organizer/dashboard' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-900/5' %>">
                         <span class="w-2 h-2 rounded-full <%= path === '/organizer' || path === '/organizer/dashboard' ? 'bg-emerald-400 animate-pulse' : 'bg-slate-400' %>"></span>
                         <span>Dashboard</span>
                     </a>
                     <a href="/organizer/events" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer <%= path.startsWith('/organizer/events') && path !== '/organizer/events/new' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-900/5' %>">
-                        <i class="fas fa-list text-xs text-purple-500"></i>
-                        <span>My events</span>
+                        <i class="fas fa-list-check text-xs text-purple-500"></i>
+                        <span>My Events</span>
                     </a>
-                    <a href="/organizer/events/new" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer bg-slate-900 hover:bg-slate-800 text-white shadow-xs">
-                        <i class="fas fa-paper-plane text-xs text-pink-400"></i>
-                        <span>Submit</span>
+                    <a href="/organizer/events/new" class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer bg-slate-900 hover:bg-slate-800 text-white shadow-xs">
+                        <i class="fas fa-plus text-xs text-[#c6f03d]"></i>
+                        <span>Submit Event</span>
                     </a>
-                    <a href="/artists" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer <%= path.startsWith('/artists') ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-900/5' %>">
-                        <i class="fas fa-microphone-lines text-xs text-indigo-500"></i>
-                        <span>Artists</span>
-                    </a>
-                    <a href="/events/radar" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer <%= path === '/events/radar' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-900/5' %>">
-                        <i class="fas fa-satellite-dish text-xs text-pink-500"></i>
-                        <span>Radar</span>
+                    <div class="h-4 w-px bg-slate-200 mx-1"></div>
+                    <a href="/events" target="_blank" class="px-3 py-2 rounded-xl text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-slate-100 flex items-center space-x-1 transition-colors">
+                        <i class="fas fa-arrow-up-right-from-square text-[10px] text-slate-400"></i>
+                        <span>Public View</span>
                     </a>
                 <% } else if (userRole === 'admin') { %>
+                    <a href="/" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all press-tactile cursor-pointer <%= path === '/' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-900/5' %>">
+                        <span>Home</span>
+                    </a>
+                    <a href="/events" class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 press-tactile cursor-pointer <%= (path === '/events' || path.startsWith('/events/')) && path !== '/events/radar' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-900/5' %>">
+                        <i class="fas fa-compass text-xs text-slate-400"></i>
+                        <span>Discover</span>
+                    </a>
                     <!-- Admin Controls: Comprehensive, Clean & Responsive -->
                     <a href="/admin" class="px-3 py-2 rounded-xl text-xs font-bold flex items-center space-x-1.5 press-tactile cursor-pointer <%= path === '/admin' ? 'bg-purple-900 text-white shadow-xs' : 'bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200' %>">
                         <i class="fas fa-chart-line text-xs <%= path === '/admin' ? 'text-purple-300' : 'text-purple-600' %>"></i>
@@ -177,13 +173,17 @@
                                 <div class="text-xs font-bold text-slate-900 truncate">@<%= user.username %></div>
                             </div>
                             <% if (userRole === 'organizer') { %>
-                                <a href="/organizer/dashboard" class="flex items-center px-4 py-2 text-xs font-bold text-emerald-800 hover:bg-emerald-50">
+                                <a href="/organizer/dashboard" class="flex items-center px-4 py-2 text-xs font-bold text-slate-900 hover:bg-slate-50">
                                     <i class="fas fa-gauge w-5 text-emerald-600"></i>
-                                    <span>Organizer Portal</span>
+                                    <span>Organizer Dashboard</span>
                                 </a>
-                                <a href="/submit-event" class="flex items-center px-4 py-2 text-xs font-bold text-slate-800 hover:bg-slate-50">
-                                    <i class="fas fa-plus w-5 text-pink-500"></i>
-                                    <span>Publish Concert</span>
+                                <a href="/organizer/events" class="flex items-center px-4 py-2 text-xs font-bold text-slate-900 hover:bg-slate-50">
+                                    <i class="fas fa-list-check w-5 text-purple-600"></i>
+                                    <span>My Events</span>
+                                </a>
+                                <a href="/organizer/events/new" class="flex items-center px-4 py-2 text-xs font-bold text-slate-900 hover:bg-slate-50">
+                                    <i class="fas fa-plus w-5 text-[#c6f03d] bg-slate-900 rounded-sm p-0.5"></i>
+                                    <span>Submit Event</span>
                                 </a>
                                 <a href="/profile" class="flex items-center px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50">
                                     <i class="fas fa-building w-5 text-slate-400"></i>
@@ -259,7 +259,7 @@
     <!-- Mobile Hamburger Menu Dropdown (Matching Frosted Glass Card) -->
     <div id="mobile-menu-dropdown" class="hidden md:hidden max-w-7xl mx-auto glass-dropdown rounded-2xl sm:rounded-3xl p-4 mt-2 space-y-1 shadow-2xl transition-all">
         <% if (userRole === 'organizer') { %>
-            <!-- Organizer Mobile Links -->
+            <!-- Organizer Mobile Links: Exactly 3 Core Links + Public View -->
             <div class="pb-2 mb-2 border-b border-slate-100 flex items-center justify-between">
                 <div>
                     <div class="text-[10px] font-black uppercase tracking-wider text-emerald-700">Organizer Mode</div>
@@ -267,26 +267,24 @@
                 </div>
                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">HOST</span>
             </div>
-            <a href="/" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path === '/' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
-                <i class="fas fa-house w-4 text-slate-400"></i>
-                <span>Home</span>
-            </a>
-            <a href="/events" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path === '/events' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
-                <i class="fas fa-compass w-4 text-slate-400"></i>
-                <span>Discover Events</span>
-            </a>
             <a href="/organizer/dashboard" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path === '/organizer' || path === '/organizer/dashboard' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
                 <i class="fas fa-gauge w-4 text-emerald-500"></i>
-                <span>Workspace Dashboard</span>
+                <span>Dashboard</span>
             </a>
             <a href="/organizer/events" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold <%= path.startsWith('/organizer/events') && path !== '/organizer/events/new' ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>">
-                <i class="fas fa-list w-4 text-purple-500"></i>
+                <i class="fas fa-list-check w-4 text-purple-500"></i>
                 <span>My Events</span>
             </a>
             <a href="/organizer/events/new" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-white">
-                <i class="fas fa-paper-plane w-4 text-pink-400"></i>
+                <i class="fas fa-plus w-4 text-[#c6f03d]"></i>
                 <span>Submit Event</span>
             </a>
+            <div class="pt-2 border-t border-slate-100">
+                <a href="/events" target="_blank" class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-medium text-slate-500 hover:bg-slate-50">
+                    <i class="fas fa-arrow-up-right-from-square w-4 text-slate-400"></i>
+                    <span>Public View</span>
+                </a>
+            </div>
         <% } else if (userRole === 'admin') { %>
             <!-- Admin Mobile Links -->
             <div class="pb-2 mb-2 border-b border-slate-100 flex items-center justify-between">
