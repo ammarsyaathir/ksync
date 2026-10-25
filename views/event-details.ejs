@@ -148,87 +148,116 @@
                     <%= event.event_name %>
                 </h1>
 
-                <!-- Key Details Stack (Date, Time, Venue, Artist, Host) -->
-                <div class="bg-slate-50/80 rounded-2xl p-4 sm:p-5 border border-slate-200/80 space-y-3 text-xs sm:text-sm">
+                <!-- Live Synchronized Countdown Timer Card -->
+                <div class="bg-gradient-to-r from-slate-950 via-purple-950 to-slate-900 rounded-2xl p-4 sm:p-5 border border-purple-500/20 shadow-lg text-white">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="relative flex h-2.5 w-2.5">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-pink-500"></span>
+                            </span>
+                            <span class="text-xs font-black uppercase tracking-wider text-pink-400">Live Countdown to Showtime</span>
+                        </div>
+                        <span class="text-[11px] text-slate-400 font-medium font-mono">MYT (UTC+8)</span>
+                    </div>
+                    <div id="countdown-timer" class="grid grid-cols-4 gap-2 sm:gap-3 text-center">
+                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-2.5 border border-white/10">
+                            <div id="cd-days" class="text-xl sm:text-2xl font-black text-white font-mono">00</div>
+                            <div class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-300 mt-0.5">Days</div>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-2.5 border border-white/10">
+                            <div id="cd-hours" class="text-xl sm:text-2xl font-black text-white font-mono">00</div>
+                            <div class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-300 mt-0.5">Hours</div>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-2.5 border border-white/10">
+                            <div id="cd-minutes" class="text-xl sm:text-2xl font-black text-white font-mono">00</div>
+                            <div class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-300 mt-0.5">Mins</div>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-2.5 border border-white/10">
+                            <div id="cd-seconds" class="text-xl sm:text-2xl font-black text-pink-400 font-mono">00</div>
+                            <div class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-pink-300 mt-0.5">Secs</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Details Stack (Clean, uncluttered, focused) -->
+                <div class="bg-slate-50/90 rounded-2xl p-4 sm:p-5 border border-slate-200/80 space-y-3.5 text-xs sm:text-sm">
                     <!-- 1. Date & Time -->
-                    <div class="flex items-start gap-3">
-                        <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-xs shrink-0 mt-0.5">
-                            <i class="far fa-calendar-days"></i>
-                        </div>
-                        <div class="min-w-0">
-                            <div class="font-extrabold text-slate-900">
-                                <%= helpers.formatDate(event.event_date) %>
-                                <% if (event.start_time) { %>
-                                    <span class="text-slate-500 font-medium"> &bull; <%= helpers.formatTime(event.start_time) %> <%= event.end_time ? '– ' + helpers.formatTime(event.end_time) : '' %></span>
-                                <% } %>
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-xs shrink-0">
+                                <i class="far fa-calendar-days"></i>
                             </div>
-                            <div class="text-[11px] text-slate-500 mt-0.5 flex items-center gap-2">
-                                <button onclick="openCalendarModal()" class="text-purple-600 hover:text-purple-700 font-bold hover:underline flex items-center gap-1 cursor-pointer">
-                                    <i class="far fa-calendar-plus text-[10px]"></i>
-                                    <span>Export to Calendar (.ics / Google)</span>
-                                </button>
+                            <div class="min-w-0">
+                                <div class="font-extrabold text-slate-900 truncate">
+                                    <%= helpers.formatDate(event.event_date) %>
+                                    <% if (event.start_time) { %>
+                                        <span class="text-slate-500 font-medium"> &bull; <%= helpers.formatTime(event.start_time) %> <%= event.end_time ? '– ' + helpers.formatTime(event.end_time) : '' %></span>
+                                    <% } %>
+                                </div>
                             </div>
                         </div>
+                        <button onclick="openCalendarModal()" class="shrink-0 px-2.5 py-1 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-[11px] font-bold flex items-center gap-1.5 cursor-pointer transition-colors" title="Export Calendar (.ics / Google)">
+                            <i class="far fa-calendar-plus text-[10px]"></i>
+                            <span>Export Calendar</span>
+                        </button>
                     </div>
 
                     <!-- 2. Venue & Transit -->
-                    <div class="flex items-start gap-3">
-                        <div class="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center text-xs shrink-0 mt-0.5">
-                            <i class="fas fa-location-dot"></i>
-                        </div>
-                        <div class="min-w-0">
-                            <div class="font-extrabold text-slate-900">
-                                <%= event.venue_name %>, <%= event.city %>
+                    <div class="flex items-center justify-between gap-3 pt-2 border-t border-slate-200/60">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center text-xs shrink-0">
+                                <i class="fas fa-location-dot"></i>
                             </div>
-                            <div class="text-[11px] text-slate-500 mt-0.5 flex items-center gap-2">
-                                <a href="https://www.google.com/maps/search/?api=1&query=<%= encodeURIComponent(event.venue_name + ' ' + (event.city || 'Malaysia')) %>" 
-                                   target="_blank" rel="noopener noreferrer" 
-                                   class="text-rose-600 hover:text-rose-700 font-bold hover:underline flex items-center gap-1">
-                                    <i class="fas fa-map-location-dot text-[10px]"></i>
-                                    <span>Open Venue Map & Transit Route</span>
-                                    <i class="fas fa-arrow-up-right-from-square text-[8px]"></i>
-                                </a>
+                            <div class="min-w-0">
+                                <div class="font-extrabold text-slate-900 truncate">
+                                    <%= event.venue_name %>, <%= event.city %>
+                                </div>
                             </div>
                         </div>
+                        <a href="https://maps.google.com/maps?q=<%= encodeURIComponent(event.venue_name + ' ' + (event.city || 'Malaysia')) %>" 
+                           target="_blank" rel="noopener noreferrer" 
+                           class="shrink-0 px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-[11px] font-bold flex items-center gap-1.5 transition-colors">
+                            <i class="fas fa-map-location-dot text-[10px]"></i>
+                            <span>Venue Map ↗</span>
+                        </a>
                     </div>
 
                     <!-- 3. Artist & Performer -->
-                    <div class="flex items-start gap-3">
-                        <div class="w-8 h-8 rounded-xl bg-pink-100 text-pink-700 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                    <div class="flex items-center gap-3 pt-2 border-t border-slate-200/60">
+                        <div class="w-8 h-8 rounded-xl bg-pink-100 text-pink-700 flex items-center justify-center text-xs shrink-0">
                             <i class="fas fa-microphone-lines"></i>
                         </div>
-                        <div class="min-w-0">
-                            <div class="font-extrabold text-slate-900 flex items-center gap-1.5">
-                                <span><%= event.artist_name || 'Multiple Artists' %></span>
+                        <div class="min-w-0 flex-1 flex items-center justify-between gap-2">
+                            <div class="font-extrabold text-slate-900 truncate">
                                 <% if (event.artist_slug) { %>
-                                    <a href="/artists/<%= event.artist_slug %>" class="text-xs font-bold text-pink-600 hover:underline">
-                                        (View Artist &rarr;)
+                                    <a href="/artists/<%= event.artist_slug %>" class="hover:text-pink-600 transition-colors inline-flex items-center gap-1.5">
+                                        <span><%= event.artist_name || 'Multiple Artists' %></span>
+                                        <i class="fas fa-arrow-up-right-from-square text-[9px] text-slate-400"></i>
                                     </a>
+                                <% } else { %>
+                                    <span><%= event.artist_name || 'Multiple Artists' %></span>
                                 <% } %>
                             </div>
-                            <div class="text-[11px] text-slate-500 mt-0.5">
-                                Official Line-Up &bull; Normalized Profiles
-                            </div>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Lineup</span>
                         </div>
                     </div>
 
                     <!-- 4. Organizer / Host -->
-                    <div class="flex items-start gap-3">
-                        <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs shrink-0 mt-0.5">
+                    <div class="flex items-center gap-3 pt-2 border-t border-slate-200/60">
+                        <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs shrink-0">
                             <i class="fas fa-shield-check"></i>
                         </div>
-                        <div class="min-w-0">
-                            <div class="font-extrabold text-slate-900 flex items-center gap-1.5">
+                        <div class="min-w-0 flex-1 flex items-center justify-between gap-2">
+                            <div class="font-extrabold text-slate-900 truncate flex items-center gap-1.5">
                                 <span><%= displayOrgName %></span>
                                 <% if (orgSocialLink) { %>
-                                    <a href="<%= orgSocialLink %>" target="_blank" rel="noopener noreferrer" class="text-[11px] text-purple-600 hover:underline">
-                                        <i class="fas fa-link text-[9px]"></i>
+                                    <a href="<%= orgSocialLink %>" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-purple-600 text-xs" title="Official Links">
+                                        <i class="fas fa-link"></i>
                                     </a>
                                 <% } %>
                             </div>
-                            <div class="text-[11px] text-slate-500 mt-0.5">
-                                Verified Event Host &bull; Anti-Scalp Certified
-                            </div>
+                            <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Verified Host</span>
                         </div>
                     </div>
                 </div>
@@ -838,78 +867,35 @@
                         <div>
                             <div class="font-bold text-slate-900"><%= event.venue_name %></div>
                             <div class="text-slate-500 text-[11px]"><%= event.address ? event.address + ', ' : '' %><%= event.city %>, <%= event.state %></div>
-                            <% const mapUrl = event.map_link || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(event.venue_name + ' ' + (event.city || 'Malaysia'))); %>
-                            <a href="<%= mapUrl %>" target="_blank" rel="noopener noreferrer" class="text-pink-600 font-bold hover:underline inline-flex items-center gap-1 mt-1.5 press-tactile">
-                                <i class="fas fa-arrow-up-right-from-square text-[10px]"></i> Open in Google Maps ↗
-                            </a>
+                            <% const mapUrl = event.map_link || ('https://maps.google.com/?q=' + mapQuery); %>
+                            <div class="text-[11px] text-slate-400 mt-1">
+                                Verified Venue Destination
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Interactive Venue Map Explorer -->
+                    <!-- Google Maps Default Display -->
                     <div class="mt-4 pt-4 border-t border-slate-100">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-[11px] font-black text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                                <i class="fas fa-map-location-dot text-rose-500"></i> Interactive Venue Map
+                        <div class="flex items-center justify-between mb-2.5">
+                            <span class="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fas fa-map-location-dot text-rose-500"></i> Google Maps
                             </span>
-                            <a href="https://maps.google.com/?q=<%= mapQuery %>" target="_blank" rel="noopener noreferrer" class="text-[11px] font-bold text-pink-600 hover:underline flex items-center gap-1 press-tactile">
-                                <span>Directions</span>
-                                <i class="fas fa-arrow-up-right-from-square text-[9px]"></i>
+                            <a href="https://maps.google.com/?q=<%= mapQuery %>" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-pink-600 hover:text-pink-700 flex items-center gap-1 press-tactile">
+                                <span>Open in Google Maps ↗</span>
                             </a>
                         </div>
-                        <div class="rounded-2xl overflow-hidden border border-slate-200 shadow-xs h-56 bg-slate-100 relative">
-                            <!-- Guaranteed Render Map via CARTO Basemaps & Leaflet -->
-                            <div id="venue-carto-map" class="w-full h-full z-10"></div>
+                        <div class="rounded-2xl overflow-hidden border border-slate-200 shadow-sm h-64 bg-slate-100 relative">
+                            <!-- Native Google Maps Default Display Embed -->
+                            <iframe 
+                                src="https://maps.google.com/maps?q=<%= encodeURIComponent(event.venue_name + ' ' + (event.city || 'Malaysia')) %>&t=m&z=15&output=embed&iwloc=near" 
+                                class="w-full h-full border-0" 
+                                loading="lazy" 
+                                referrerpolicy="no-referrer-when-downgrade" 
+                                allowfullscreen 
+                                title="Google Maps - <%= event.venue_name %>">
+                            </iframe>
                         </div>
                     </div>
-                    <script>
-                        document.addEventListener('DOMContentLoaded', () => {
-                            const mapContainer = document.getElementById('venue-carto-map');
-                            if (!mapContainer || typeof L === 'undefined') return;
-
-                            try {
-                                const venueCoords = [<%= venueCoords[0] %>, <%= venueCoords[1] %>];
-                                const vMap = L.map('venue-carto-map', {
-                                    center: venueCoords,
-                                    zoom: 15,
-                                    zoomControl: true,
-                                    attributionControl: false
-                                });
-
-                                const cartoKey = "<%= typeof cartoApiKey !== 'undefined' ? cartoApiKey : 'cb1_4rvy_1_933f092a5de2104f28a689ca' %>";
-                                L.tileLayer(`https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${cartoKey}`, {
-                                    maxZoom: 19,
-                                    subdomains: 'abcd'
-                                }).addTo(vMap);
-
-                                const customIcon = L.divIcon({
-                                    className: 'venue-marker-pin',
-                                    html: `
-                                        <div style="transform: translate(-50%, -50%);">
-                                            <div style="width: 32px; height: 32px; border-radius: 12px; background: #0f172a; border: 2px solid #ec4899; box-shadow: 0 4px 14px rgba(236,72,153,0.4); display: flex; align-items: center; justify-content: center; color: white;">
-                                                <i class="fas fa-location-dot" style="color: #f472b6; font-size: 14px;"></i>
-                                            </div>
-                                        </div>
-                                    `,
-                                    iconSize: [32, 32],
-                                    iconAnchor: [16, 16]
-                                });
-
-                                L.marker(venueCoords, { icon: customIcon }).addTo(vMap)
-                                    .bindPopup(`
-                                        <div style="padding: 4px; font-family: ui-sans-serif, system-ui, sans-serif; min-width: 180px;">
-                                            <strong style="font-size: 13px; color: #0f172a;"><%= event.venue_name.replace(/"/g, '\\"') %></strong>
-                                            <p style="font-size: 11px; color: #64748b; margin: 4px 0;"><%= (event.address ? event.address + ', ' : '') + event.city %></p>
-                                            <a href="https://maps.google.com/?q=<%= mapQuery %>" target="_blank" rel="noopener noreferrer" style="font-size: 11px; font-weight: bold; color: #db2777; text-decoration: none;">Open in Google Maps ↗</a>
-                                        </div>
-                                    `)
-                                    .openPopup();
-
-                                setTimeout(() => { vMap.invalidateSize(); }, 300);
-                            } catch (e) {
-                                console.error('Venue map error:', e);
-                            }
-                        });
-                    </script>
                 </div>
 
                 <% if (event.transit_info) { %>
@@ -1590,9 +1576,15 @@
     }
 
     // Live Synchronized Countdown Timer
-    const eventDateStr = "<%= event.event_date instanceof Date ? event.event_date.toISOString().split('T')[0] : event.event_date %>";
-    const startTimeStr = "<%= event.start_time || '18:00:00' %>";
-    const targetTime = new Date(`${eventDateStr}T${startTimeStr}`).getTime();
+    const rawDateStr = "<%= event.event_date instanceof Date ? event.event_date.toISOString().split('T')[0] : (event.event_date || '') %>";
+    const eventDateStr = rawDateStr.split('T')[0].split(' ')[0];
+    let startTimeStr = "<%= event.start_time || '18:00:00' %>".trim();
+    if (startTimeStr.length === 5) startTimeStr += ':00';
+
+    let targetTime = new Date(`${eventDateStr}T${startTimeStr}`).getTime();
+    if (isNaN(targetTime)) {
+        targetTime = new Date(`${eventDateStr} ${startTimeStr}`).getTime();
+    }
 
     function updateCountdown() {
         const now = Date.now();
