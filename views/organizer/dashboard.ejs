@@ -199,63 +199,92 @@
                     const monthShort = d.toLocaleString('en-US', { month: 'short' }).toUpperCase() || 'DEC';
                     const isVerified = nextEvent.verification_status === 'VERIFIED';
                 %>
-                    <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-                        <!-- Poster Thumbnail & Date & Details -->
-                        <div class="flex items-center gap-3.5 min-w-0">
-                            <!-- Date Badge -->
-                            <div class="w-12 h-13 rounded-2xl bg-[#c6f03d] text-slate-950 flex flex-col items-center justify-center font-black shrink-0 leading-none shadow-xs">
-                                <span class="text-base"><%= dayNum %></span>
-                                <span class="text-[9px] uppercase tracking-wider mt-0.5"><%= monthShort %></span>
-                            </div>
-
+                    <div class="flex flex-col sm:flex-row items-start gap-4">
+                        <!-- Poster with overlaid Date Badge (Strict fixed dimensions, never expands or breaks layout) -->
+                        <div class="relative shrink-0">
                             <% if (nextEvent.poster_image) { %>
-                                <img src="<%= nextEvent.poster_image %>" alt="<%= nextEvent.event_name %>" class="w-13 h-13 rounded-2xl object-cover border border-slate-200 shrink-0">
+                                <img src="<%= nextEvent.poster_image %>" 
+                                     alt="<%= nextEvent.event_name %>" 
+                                     class="w-24 h-28 sm:w-28 sm:h-32 rounded-2xl object-cover border border-slate-200 shadow-xs">
+                            <% } else { %>
+                                <div class="w-24 h-28 sm:w-28 sm:h-32 rounded-2xl bg-gradient-to-br from-purple-900 to-slate-900 flex flex-col items-center justify-center text-white p-2 text-center border border-slate-800 shadow-xs">
+                                    <i class="fas fa-music text-xl text-purple-400 mb-1"></i>
+                                    <span class="text-[10px] font-bold text-slate-300 line-clamp-2"><%= nextEvent.event_name %></span>
+                                </div>
                             <% } %>
-
-                            <div class="min-w-0 space-y-1">
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <% if (isVerified) { %>
-                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                            Published &middot; <%= nextEvent.verification_score %>/100
-                                        </span>
-                                    <% } else { %>
-                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-50 text-amber-700 border border-amber-200">
-                                            <i class="fas fa-shield-halved text-[9px]"></i>
-                                            Held for Checks &middot; <%= nextEvent.verification_score %>/100
-                                        </span>
-                                    <% } %>
-                                    <span class="text-[10px] font-mono text-slate-400">
-                                        <%= nextEvent.tracking_code || ('KS-' + nextEvent.id) %>
-                                    </span>
-                                </div>
-
-                                <h4 class="font-extrabold text-base text-slate-900 truncate leading-snug" title="<%= nextEvent.event_name %>">
-                                    <%= nextEvent.event_name %>
-                                </h4>
-
-                                <div class="text-xs text-slate-500 truncate flex items-center gap-2">
-                                    <span class="text-slate-700 font-semibold"><%= nextEvent.artist_name || 'BTS' %></span>
-                                    <span>&bull;</span>
-                                    <span class="flex items-center gap-1">
-                                        <i class="fas fa-location-dot text-rose-500 text-[10px]"></i>
-                                        <%= nextEvent.venue_name %>, <%= nextEvent.city %>
-                                    </span>
-                                </div>
+                            <div class="absolute -top-2 -left-2 w-11 h-12 rounded-xl bg-[#c6f03d] text-slate-950 flex flex-col items-center justify-center font-black leading-none shadow-md border-2 border-white">
+                                <span class="text-sm"><%= dayNum %></span>
+                                <span class="text-[8px] uppercase tracking-wider text-slate-900"><%= monthShort %></span>
                             </div>
                         </div>
 
-                        <!-- Live Fan Counts on This Event -->
-                        <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center w-full sm:w-auto gap-1 text-xs shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                            <div class="flex items-center gap-3 text-[11px] font-bold text-slate-600">
-                                <span title="Total upvotes on this event" class="text-pink-600 flex items-center gap-1">
-                                    <i class="fas fa-thumbs-up text-xs"></i> <%= nextEvent.upvote_count || 0 %>
+                        <!-- Right: Event Information & Live Engagement -->
+                        <div class="flex-1 min-w-0 space-y-1.5">
+                            <!-- Status Badge & Tracking Code -->
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <% if (isVerified) { %>
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                        Published
+                                    </span>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                                        Upcoming
+                                    </span>
+                                <% } else { %>
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                        <i class="fas fa-shield-halved text-[9px]"></i>
+                                        Held by automated checks
+                                    </span>
+                                <% } %>
+                                <span class="text-[10px] font-mono text-slate-400 bg-slate-50 px-2 py-0.5 rounded-md border border-slate-200">
+                                    <%= nextEvent.tracking_code || ('KS-' + nextEvent.id) %>
                                 </span>
-                                <span title="Bookmarks" class="text-purple-600 flex items-center gap-1">
-                                    <i class="fas fa-bookmark text-xs"></i> <%= nextEvent.save_count || 0 %>
+                            </div>
+
+                            <!-- Event Title -->
+                            <h4 class="font-black text-base sm:text-lg text-slate-900 leading-snug line-clamp-2" title="<%= nextEvent.event_name %>">
+                                <%= nextEvent.event_name %>
+                            </h4>
+
+                            <!-- Metadata (Date, Venue, Artist) -->
+                            <div class="text-xs text-slate-600 flex items-center gap-2 flex-wrap">
+                                <span class="font-semibold text-slate-800">
+                                    <i class="far fa-calendar text-slate-400 me-1"></i>
+                                    <%= helpers.formatDate(nextEvent.event_date) %>
                                 </span>
-                                <span title="Comments" class="text-indigo-600 flex items-center gap-1">
-                                    <i class="fas fa-comments text-xs"></i> <%= nextEvent.comment_count || 0 %>
+                                <span class="text-slate-300">&bull;</span>
+                                <span class="truncate">
+                                    <i class="fas fa-location-dot text-rose-500 me-1 text-[11px]"></i>
+                                    <%= nextEvent.venue_name %>, <%= nextEvent.city %>
+                                </span>
+                                <% if (nextEvent.artist_name) { %>
+                                    <span class="text-slate-300">&bull;</span>
+                                    <span class="text-purple-700 font-semibold truncate">
+                                        <i class="fas fa-microphone-lines text-purple-500 me-1 text-[11px]"></i>
+                                        <%= nextEvent.artist_name %>
+                                    </span>
+                                <% } %>
+                            </div>
+
+                            <!-- Engagement Stats & Verification Score Strip -->
+                            <div class="pt-2 flex items-center gap-3 text-xs flex-wrap text-slate-500 border-t border-slate-100 mt-2">
+                                <span class="font-bold text-slate-800">
+                                    Verification score: <strong class="text-slate-900 font-black"><%= nextEvent.verification_score %>/100</strong>
+                                </span>
+                                <span class="text-slate-300">&bull;</span>
+                                <span class="text-pink-600 font-bold flex items-center gap-1" title="Total upvotes">
+                                    <i class="fas fa-thumbs-up text-xs"></i>
+                                    <%= nextEvent.upvote_count || 0 %> upvotes
+                                </span>
+                                <span class="text-slate-300">&bull;</span>
+                                <span class="text-purple-600 font-bold flex items-center gap-1" title="Bookmarks">
+                                    <i class="fas fa-bookmark text-xs"></i>
+                                    <%= nextEvent.save_count || 0 %> saves
+                                </span>
+                                <span class="text-slate-300">&bull;</span>
+                                <span class="text-indigo-600 font-bold flex items-center gap-1" title="Replies">
+                                    <i class="fas fa-comments text-xs"></i>
+                                    <%= nextEvent.comment_count || 0 %> replies
                                 </span>
                             </div>
                         </div>
@@ -269,13 +298,13 @@
                                 onclick="openBroadcastModal(this.dataset.eventId, this.dataset.eventName)" 
                                 class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-black transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer">
                             <i class="fas fa-bullhorn text-xs"></i>
-                            <span>Post Update to Attendees</span>
+                            <span>Post update</span>
                         </button>
 
                         <a href="/organizer/events/<%= nextEvent.tracking_code || nextEvent.slug || nextEvent.id %>/verification" 
-                           class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-all flex items-center gap-1.5">
-                            <i class="fas fa-shield-halved text-purple-600 text-xs"></i>
-                            <span>Verification Breakdown</span>
+                           class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-2xs">
+                            <i class="fas fa-shield-halved text-purple-400 text-xs"></i>
+                            <span>Verification report</span>
                         </a>
 
                         <% if (isVerified) { %>
@@ -290,7 +319,7 @@
                         <a href="/organizer/events/<%= nextEvent.id %>/edit" 
                            class="px-3.5 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-all flex items-center gap-1.5 ms-auto">
                             <i class="fas fa-pen text-[10px] text-slate-400"></i>
-                            <span>Edit Listing</span>
+                            <span>Edit details</span>
                         </a>
                     </div>
                 <% } else { %>
