@@ -21,7 +21,12 @@
     }
     .blueprint-box {
       border: 1.5px dashed #94a3b8;
-      background: rgba(241, 245, 249, 0.7);
+      background: rgba(241, 245, 249, 0.75);
+    }
+    .blueprint-card {
+      border: 1.5px solid #cbd5e1;
+      background: #ffffff;
+      border-radius: 1.25rem;
     }
     .wire-badge {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -58,7 +63,7 @@
               <span class="font-black text-base tracking-tight text-slate-900">K-SYNC MY</span>
               <span class="wire-badge px-2 py-0.5 rounded-md bg-purple-100 text-purple-800 font-bold border border-purple-200">MASTER SUITE &bull; 30 PAGES</span>
             </div>
-            <p class="text-[11px] text-slate-500 font-medium">Complete System Wireframe Architecture & Figma Design Blueprint</p>
+            <p class="text-[11px] text-slate-500 font-medium">80%+ High-Fidelity DOM Blueprint & Figma Vector Export</p>
           </div>
         </div>
 
@@ -104,46 +109,46 @@
       <span class="wire-badge text-slate-400 uppercase font-bold shrink-0 me-1">Jump to Page:</span>
       
       <!-- Public Section Buttons -->
-      <button onclick="showScreen('page-home')" class="page-link-btn public-btn px-2.5 py-1 rounded-lg bg-white border border-purple-300 text-purple-700 font-bold whitespace-nowrap shadow-xs">1. Homepage</button>
-      <button onclick="showScreen('page-events')" class="page-link-btn public-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">2. Events Catalog</button>
-      <button onclick="showScreen('page-radar')" class="page-link-btn public-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">3. Event Radar & Transit</button>
-      <button onclick="showScreen('page-event-detail')" class="page-link-btn public-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">4. Event Detail & Trust</button>
-      <button onclick="showScreen('page-artists')" class="page-link-btn public-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">5. Artists Directory</button>
-      <button onclick="showScreen('page-artist-detail')" class="page-link-btn public-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">6. Artist & Lineup</button>
-      <button onclick="showScreen('page-check-sub')" class="page-link-btn public-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">7. Track Submission</button>
+      <button onclick="showScreen('page-home')" id="btn-page-home" class="page-link-btn public-btn px-2.5 py-1 rounded-lg bg-white border border-purple-300 text-purple-700 font-bold whitespace-nowrap shadow-xs">1. Homepage</button>
+      <button onclick="showScreen('page-events')" id="btn-page-events" class="page-link-btn public-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">2. Events Catalog</button>
+      <button onclick="showScreen('page-radar')" id="btn-page-radar" class="page-link-btn public-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">3. Event Radar & Transit</button>
+      <button onclick="showScreen('page-event-detail')" id="btn-page-event-detail" class="page-link-btn public-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">4. Event Detail & Trust</button>
+      <button onclick="showScreen('page-artists')" id="btn-page-artists" class="page-link-btn public-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">5. Artists Directory</button>
+      <button onclick="showScreen('page-artist-detail')" id="btn-page-artist-detail" class="page-link-btn public-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">6. Artist & Lineup</button>
+      <button onclick="showScreen('page-check-sub')" id="btn-page-check-sub" class="page-link-btn public-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">7. Track Submission</button>
 
       <!-- Auth Section Buttons -->
-      <button onclick="showScreen('page-login')" class="page-link-btn auth-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">8. Sign In</button>
-      <button onclick="showScreen('page-register')" class="page-link-btn auth-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">9. Register</button>
-      <button onclick="showScreen('page-otp')" class="page-link-btn auth-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">10. Email OTP</button>
-      <button onclick="showScreen('page-reset-pass')" class="page-link-btn auth-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">11. Reset Password</button>
+      <button onclick="showScreen('page-login')" id="btn-page-login" class="page-link-btn auth-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">8. Sign In</button>
+      <button onclick="showScreen('page-register')" id="btn-page-register" class="page-link-btn auth-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">9. Register</button>
+      <button onclick="showScreen('page-otp')" id="btn-page-otp" class="page-link-btn auth-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">10. Email OTP</button>
+      <button onclick="showScreen('page-reset-pass')" id="btn-page-reset-pass" class="page-link-btn auth-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">11. Reset Password</button>
 
       <!-- Fan Section Buttons -->
-      <button onclick="showScreen('page-fan-dash')" class="page-link-btn fan-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">12. Fan Hub</button>
-      <button onclick="showScreen('page-saved')" class="page-link-btn fan-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">13. Saved Wishlist</button>
-      <button onclick="showScreen('page-notifications')" class="page-link-btn fan-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">14. Notifications & Profile</button>
+      <button onclick="showScreen('page-fan-dash')" id="btn-page-fan-dash" class="page-link-btn fan-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">12. Fan Hub</button>
+      <button onclick="showScreen('page-saved')" id="btn-page-saved" class="page-link-btn fan-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">13. Saved Wishlist</button>
+      <button onclick="showScreen('page-notifications')" id="btn-page-notifications" class="page-link-btn fan-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">14. Notifications & Profile</button>
 
       <!-- Organizer Section Buttons -->
-      <button onclick="showScreen('page-org-dash')" class="page-link-btn org-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">15. Organizer Studio</button>
-      <button onclick="showScreen('page-org-events')" class="page-link-btn org-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">16. My Events</button>
-      <button onclick="showScreen('page-org-submit')" class="page-link-btn org-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">17. AI Poster Scanner</button>
-      <button onclick="showScreen('page-org-audit')" class="page-link-btn org-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">18. Verification Breakdown</button>
+      <button onclick="showScreen('page-org-dash')" id="btn-page-org-dash" class="page-link-btn org-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">15. Organizer Studio</button>
+      <button onclick="showScreen('page-org-events')" id="btn-page-org-events" class="page-link-btn org-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">16. My Events</button>
+      <button onclick="showScreen('page-org-submit')" id="btn-page-org-submit" class="page-link-btn org-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">17. AI Poster Scanner</button>
+      <button onclick="showScreen('page-org-audit')" id="btn-page-org-audit" class="page-link-btn org-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">18. Verification Breakdown</button>
 
       <!-- Admin Section Buttons -->
-      <button onclick="showScreen('page-admin-dash')" class="page-link-btn admin-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">19. Admin Executive</button>
-      <button onclick="showScreen('page-admin-events')" class="page-link-btn admin-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">20. Admin Events</button>
-      <button onclick="showScreen('page-admin-verifications')" class="page-link-btn admin-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">21. Admin Verifications</button>
-      <button onclick="showScreen('page-admin-artists')" class="page-link-btn admin-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">22. Admin Lineups</button>
-      <button onclick="showScreen('page-admin-reports')" class="page-link-btn admin-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">23. Anti-Scam Reports</button>
-      <button onclick="showScreen('page-admin-users')" class="page-link-btn admin-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">24. Admin Users & RBAC</button>
-      <button onclick="showScreen('page-admin-venues')" class="page-link-btn admin-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">25. Venues & Transit</button>
-      <button onclick="showScreen('page-admin-categories')" class="page-link-btn admin-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">26. Categories</button>
-      <button onclick="showScreen('page-admin-logs')" class="page-link-btn admin-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">27. Audit Logs</button>
+      <button onclick="showScreen('page-admin-dash')" id="btn-page-admin-dash" class="page-link-btn admin-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">19. Admin Executive</button>
+      <button onclick="showScreen('page-admin-events')" id="btn-page-admin-events" class="page-link-btn admin-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">20. Admin Events</button>
+      <button onclick="showScreen('page-admin-verifications')" id="btn-page-admin-verifications" class="page-link-btn admin-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">21. Admin Verifications</button>
+      <button onclick="showScreen('page-admin-artists')" id="btn-page-admin-artists" class="page-link-btn admin-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">22. Admin Lineups</button>
+      <button onclick="showScreen('page-admin-reports')" id="btn-page-admin-reports" class="page-link-btn admin-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">23. Anti-Scam Reports</button>
+      <button onclick="showScreen('page-admin-users')" id="btn-page-admin-users" class="page-link-btn admin-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">24. Admin Users & RBAC</button>
+      <button onclick="showScreen('page-admin-venues')" id="btn-page-admin-venues" class="page-link-btn admin-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">25. Venues & Transit</button>
+      <button onclick="showScreen('page-admin-categories')" id="btn-page-admin-categories" class="page-link-btn admin-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">26. Categories</button>
+      <button onclick="showScreen('page-admin-logs')" id="btn-page-admin-logs" class="page-link-btn admin-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">27. Audit Logs</button>
 
       <!-- Legal Section Buttons -->
-      <button onclick="showScreen('page-guidelines')" class="page-link-btn legal-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">28. Community Guidelines</button>
-      <button onclick="showScreen('page-verification-policy')" class="page-link-btn legal-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">29. Verification Policy</button>
-      <button onclick="showScreen('page-privacy')" class="page-link-btn legal-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">30. Privacy Policy</button>
+      <button onclick="showScreen('page-guidelines')" id="btn-page-guidelines" class="page-link-btn legal-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">28. Community Guidelines</button>
+      <button onclick="showScreen('page-verification-policy')" id="btn-page-verification-policy" class="page-link-btn legal-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">29. Verification Policy</button>
+      <button onclick="showScreen('page-privacy')" id="btn-page-privacy" class="page-link-btn legal-btn px-2.5 py-1 rounded-lg hover:bg-white text-slate-700 whitespace-nowrap">30. Privacy Policy</button>
     </div>
   </header>
 
@@ -160,7 +165,7 @@
         </div>
         <h1 id="active-screen-title" class="text-2xl font-black text-slate-900 tracking-tight">1. Homepage Wireframe</h1>
         <p id="active-screen-desc" class="text-xs text-slate-600 max-w-3xl leading-relaxed">
-          Public portal entry point with live event ticker, category filter chips, search input, and Malaysian verified concert listings.
+          Public portal entry point with GoLive cinematic hero carousel, capsule search bar, category filter chips, verified concert cards, and public transit radar teaser.
         </p>
       </div>
 
@@ -176,57 +181,222 @@
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/</span>
-          <span>PAGE 01 / 30</span>
+          <span>PAGE 01 / 30 &bull; PUBLIC DISCOVERY</span>
         </div>
-        <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="bg-slate-900 text-white rounded-3xl p-8 relative overflow-hidden space-y-4">
-            <span class="wire-badge px-2.5 py-1 rounded-md bg-purple-500/20 text-purple-300 border border-purple-500/30 font-bold">
-              K-POP EVENT VERIFICATION HUB & COMMUNITY
-            </span>
-            <h2 class="text-3xl sm:text-4xl font-black tracking-tight leading-tight max-w-2xl">
-              Discover Every K-Pop Concert, Fan Meet & Cafe Event in Malaysia.
-            </h2>
-            <p class="text-xs text-slate-400 max-w-xl">
-              100% verified listings. Zero scalper scams. Direct public transit navigation to Axiata Arena, Bukit Jalil, and Zepp KL.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-3 max-w-xl pt-2">
-              <input type="text" disabled placeholder="Search artist, venue, or event..." class="flex-1 px-4 py-3 rounded-2xl bg-white/10 border border-white/20 text-xs text-white placeholder-slate-400">
-              <button disabled class="px-6 py-3 rounded-2xl bg-purple-600 font-bold text-xs">Search Shows</button>
+        
+        <div class="p-6 sm:p-8 space-y-8 bg-slate-50/50 grid-pattern">
+          
+          <!-- Mock Public Header / Navbar -->
+          <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black text-xs">KS</div>
+              <span class="font-black text-sm tracking-tight text-slate-900">K-SYNC MALAYSIA</span>
+            </div>
+            <div class="hidden md:flex items-center space-x-4 text-xs font-bold text-slate-600">
+              <span class="text-purple-600">Discover</span>
+              <span>Events Radar</span>
+              <span>Artists Directory</span>
+              <span>Submit Event</span>
+            </div>
+            <div class="flex items-center space-x-2 text-xs font-bold">
+              <span class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700">Wishlist (4)</span>
+              <span class="px-3 py-1.5 rounded-xl bg-slate-900 text-white">Sign In</span>
             </div>
           </div>
-          <div class="flex items-center gap-2 overflow-x-auto text-xs font-bold">
-            <span class="px-4 py-2 rounded-xl bg-slate-900 text-white shadow-xs">All Events (24)</span>
-            <span class="px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700">Concerts (12)</span>
-            <span class="px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700">Fan Meetings (5)</span>
-            <span class="px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700">Cupsleeve Cafes (4)</span>
-            <span class="px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700">Random Dance (3)</span>
+
+          <!-- GoLive Cinematic Hero Carousel -->
+          <div class="bg-slate-950 text-white rounded-3xl p-8 relative overflow-hidden space-y-4 shadow-xl border border-slate-800">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border border-emerald-400 text-emerald-300 bg-emerald-950/50">
+                  CONCERT
+                </span>
+                <span class="text-xs font-bold text-rose-400 flex items-center gap-1">
+                  <i class="fas fa-arrow-trend-up text-[10px]"></i> TRENDING
+                </span>
+                <span class="text-xs font-bold text-emerald-400 flex items-center gap-1">
+                  <i class="fas fa-circle text-[7px] animate-pulse"></i> ON SALE NOW
+                </span>
+              </div>
+              <div class="text-right hidden sm:block">
+                <span class="text-[10px] font-mono text-slate-400 uppercase">UP NEXT IN MALAYSIA</span>
+                <div class="text-xs font-bold text-slate-200">TWICE 5TH WORLD TOUR (May 2026)</div>
+              </div>
+            </div>
+
+            <div class="space-y-2 max-w-2xl pt-2">
+              <h2 class="text-3xl sm:text-5xl font-black tracking-tight leading-none uppercase">
+                SEVENTEEN [RIGHT HERE] WORLD TOUR
+              </h2>
+              <p class="text-xs sm:text-sm text-slate-300 font-medium">
+                Axiata Arena Bukit Jalil &bull; Saturday, 15 February 2026 &bull; Direct LRT Sri Petaling Access
+              </p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3 pt-4">
+              <button disabled class="px-5 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs shadow-md">
+                View Concert Details & Forensics
+              </button>
+              <button disabled class="px-4 py-2.5 rounded-xl bg-white/10 text-white font-bold text-xs border border-white/20">
+                Official GoLive Ticket Whitelist
+              </button>
+            </div>
+
+            <!-- Slide Indicator Controls -->
+            <div class="flex items-center justify-between pt-4 border-t border-white/10 text-xs text-slate-400">
+              <div class="flex items-center gap-2">
+                <span class="w-8 h-1 bg-cyan-400 rounded-full"></span>
+                <span class="w-3 h-1 bg-white/30 rounded-full"></span>
+                <span class="w-3 h-1 bg-white/30 rounded-full"></span>
+                <span class="w-3 h-1 bg-white/30 rounded-full"></span>
+              </div>
+              <span>Slide 1 of 4 &bull; Auto-rotation 6s</span>
+            </div>
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white rounded-3xl p-4 border border-slate-300 space-y-3">
-              <div class="blueprint-box h-44 rounded-2xl flex items-center justify-center text-xs font-bold text-slate-500">Concert Poster Comp</div>
-              <div class="space-y-1">
-                <span class="wire-badge text-purple-700 font-bold">CONCERT &bull; SEVENTEEN</span>
-                <h3 class="font-black text-sm text-slate-900">[RIGHT HERE] WORLD TOUR IN KL</h3>
-                <p class="text-xs text-slate-500">National Stadium Bukit Jalil &bull; LRT Sri Petaling</p>
+
+          <!-- Capsule Search Command Bar & Categories -->
+          <div class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-xs space-y-4">
+            <div class="flex flex-col sm:flex-row gap-3">
+              <div class="relative flex-1">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" disabled placeholder="Search artist (e.g. SEVENTEEN), venue, or event..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-3 text-xs font-medium text-slate-700">
               </div>
+              <button disabled class="px-6 py-3 bg-slate-900 text-white rounded-2xl text-xs font-black">
+                Search Malaysian Shows
+              </button>
             </div>
-            <div class="bg-white rounded-3xl p-4 border border-slate-300 space-y-3">
-              <div class="blueprint-box h-44 rounded-2xl flex items-center justify-center text-xs font-bold text-slate-500">Cupsleeve Cafe Comp</div>
-              <div class="space-y-1">
-                <span class="wire-badge text-pink-700 font-bold">CUPSLEEVE &bull; TWICE SANA</span>
-                <h3 class="font-black text-sm text-slate-900">Sana 28th Birthday Cafe Project</h3>
-                <p class="text-xs text-slate-500">VCR Cafe, Bukit Bintang &bull; MRT Kajang Line</p>
-              </div>
-            </div>
-            <div class="bg-white rounded-3xl p-4 border border-slate-300 space-y-3">
-              <div class="blueprint-box h-44 rounded-2xl flex items-center justify-center text-xs font-bold text-slate-500">RPD Flashmob Comp</div>
-              <div class="space-y-1">
-                <span class="wire-badge text-indigo-700 font-bold">RPD &bull; MULTI-FANDOM</span>
-                <h3 class="font-black text-sm text-slate-900">KL Random Play Dance Autumn Edition</h3>
-                <p class="text-xs text-slate-500">Central Market Concourse &bull; LRT Pasar Seni</p>
-              </div>
+
+            <div class="flex items-center gap-2 overflow-x-auto text-xs font-bold pt-1">
+              <span class="px-4 py-2 rounded-xl bg-slate-900 text-white shrink-0">All Events (24)</span>
+              <span class="px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 shrink-0">Concerts (12)</span>
+              <span class="px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 shrink-0">Fan Meetings (5)</span>
+              <span class="px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 shrink-0">Cupsleeve Cafes (4)</span>
+              <span class="px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 shrink-0">Random Play Dance (3)</span>
             </div>
           </div>
+
+          <!-- Featured 3-Column Concert Cards Grid -->
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="font-black text-lg text-slate-900">Featured Verified Malaysian Shows</h3>
+                <p class="text-xs text-slate-500">Every event audited through our 4-Step Forensic Protocol</p>
+              </div>
+              <span class="text-xs font-bold text-purple-700">View All 24 Shows &rarr;</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              
+              <!-- Card 1 -->
+              <div class="bg-white rounded-3xl p-4 border border-slate-300 space-y-3 shadow-xs">
+                <div class="blueprint-box h-48 rounded-2xl flex flex-col items-center justify-center text-xs font-bold text-slate-500 relative">
+                  <i class="fas fa-ticket text-2xl text-purple-400 mb-1"></i>
+                  <span>Concert Poster Comp</span>
+                  <span class="absolute top-3 left-3 wire-badge px-2 py-0.5 rounded bg-emerald-500 text-white font-bold">98% TRUST SCORE</span>
+                  <span class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 border flex items-center justify-center text-rose-500"><i class="fas fa-heart text-xs"></i></span>
+                </div>
+                <div class="space-y-1.5">
+                  <div class="flex items-center justify-between text-[11px]">
+                    <span class="wire-badge font-bold text-purple-700 uppercase">CONCERT &bull; HYBE</span>
+                    <span class="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded">GoLive Asia</span>
+                  </div>
+                  <h4 class="font-black text-sm text-slate-900">SEVENTEEN [RIGHT HERE] WORLD TOUR</h4>
+                  <p class="text-xs text-slate-500 flex items-center gap-1">
+                    <i class="fas fa-location-dot text-rose-500 text-[10px]"></i> Axiata Arena &bull; LRT Sri Petaling
+                  </p>
+                  <p class="text-xs text-slate-500 flex items-center gap-1">
+                    <i class="far fa-calendar text-slate-400 text-[10px]"></i> 15 Feb 2026 &bull; RM298 - RM1,088
+                  </p>
+                </div>
+                <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                  <span class="text-xs font-bold text-purple-600">View Forensics</span>
+                  <button disabled class="px-3 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold">Get Tickets</button>
+                </div>
+              </div>
+
+              <!-- Card 2 -->
+              <div class="bg-white rounded-3xl p-4 border border-slate-300 space-y-3 shadow-xs">
+                <div class="blueprint-box h-48 rounded-2xl flex flex-col items-center justify-center text-xs font-bold text-slate-500 relative">
+                  <i class="fas fa-ticket text-2xl text-pink-400 mb-1"></i>
+                  <span>Concert Poster Comp</span>
+                  <span class="absolute top-3 left-3 wire-badge px-2 py-0.5 rounded bg-emerald-500 text-white font-bold">99% TRUST SCORE</span>
+                  <span class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 border flex items-center justify-center text-slate-400"><i class="far fa-heart text-xs"></i></span>
+                </div>
+                <div class="space-y-1.5">
+                  <div class="flex items-center justify-between text-[11px]">
+                    <span class="wire-badge font-bold text-pink-700 uppercase">CONCERT &bull; JYP</span>
+                    <span class="text-blue-700 font-bold bg-blue-50 px-2 py-0.5 rounded">BookMyShow</span>
+                  </div>
+                  <h4 class="font-black text-sm text-slate-900">TWICE 5TH WORLD TOUR 'READY TO BE'</h4>
+                  <p class="text-xs text-slate-500 flex items-center gap-1">
+                    <i class="fas fa-location-dot text-rose-500 text-[10px]"></i> National Stadium Bukit Jalil
+                  </p>
+                  <p class="text-xs text-slate-500 flex items-center gap-1">
+                    <i class="far fa-calendar text-slate-400 text-[10px]"></i> 10 May 2026 &bull; RM328 - RM1,288
+                  </p>
+                </div>
+                <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                  <span class="text-xs font-bold text-pink-600">View Forensics</span>
+                  <button disabled class="px-3 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold">Get Tickets</button>
+                </div>
+              </div>
+
+              <!-- Card 3 -->
+              <div class="bg-white rounded-3xl p-4 border border-slate-300 space-y-3 shadow-xs">
+                <div class="blueprint-box h-48 rounded-2xl flex flex-col items-center justify-center text-xs font-bold text-slate-500 relative">
+                  <i class="fas fa-ticket text-2xl text-indigo-400 mb-1"></i>
+                  <span>Concert Poster Comp</span>
+                  <span class="absolute top-3 left-3 wire-badge px-2 py-0.5 rounded bg-emerald-500 text-white font-bold">97% TRUST SCORE</span>
+                  <span class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 border flex items-center justify-center text-slate-400"><i class="far fa-heart text-xs"></i></span>
+                </div>
+                <div class="space-y-1.5">
+                  <div class="flex items-center justify-between text-[11px]">
+                    <span class="wire-badge font-bold text-indigo-700 uppercase">CONCERT &bull; SM ENT</span>
+                    <span class="text-indigo-700 font-bold bg-indigo-50 px-2 py-0.5 rounded">Ticket2U</span>
+                  </div>
+                  <h4 class="font-black text-sm text-slate-900">aespa LIVE TOUR - SYNK : PARALLEL LINE</h4>
+                  <p class="text-xs text-slate-500 flex items-center gap-1">
+                    <i class="fas fa-location-dot text-rose-500 text-[10px]"></i> Zepp Kuala Lumpur &bull; Hang Tuah
+                  </p>
+                  <p class="text-xs text-slate-500 flex items-center gap-1">
+                    <i class="far fa-calendar text-slate-400 text-[10px]"></i> 22 Mar 2026 &bull; RM388 - RM988
+                  </p>
+                </div>
+                <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                  <span class="text-xs font-bold text-indigo-600">View Forensics</span>
+                  <button disabled class="px-3 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold">Get Tickets</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Live Public Transit Radar Teaser -->
+          <div class="bg-gradient-to-r from-purple-900 to-indigo-950 text-white rounded-3xl p-6 border border-purple-800 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="space-y-1">
+              <span class="wire-badge text-cyan-300 font-bold uppercase"><i class="fas fa-radar me-1"></i> GEOSPATIAL TRANSIT RADAR</span>
+              <h3 class="font-black text-xl">Never Miss a Train Home After the Encore</h3>
+              <p class="text-xs text-slate-300 max-w-xl">
+                Real-time LRT Sri Petaling, LRT Kelana Jaya & MRT route guides, late-night station operations, and parking maps for Axiata Arena & Bukit Jalil.
+              </p>
+            </div>
+            <button disabled class="px-5 py-3 rounded-2xl bg-cyan-400 text-slate-950 font-black text-xs shrink-0 shadow-lg">
+              Launch 360° Transit Radar
+            </button>
+          </div>
+
+          <!-- Ticketing Whitelist Ticker & Footer -->
+          <div class="pt-4 border-t border-slate-200 text-center space-y-2 text-xs text-slate-500">
+            <div class="font-bold uppercase tracking-wider text-slate-400 text-[11px]">Official Whitelisted Malaysian Partners:</div>
+            <div class="flex flex-wrap items-center justify-center gap-6 font-bold text-slate-600">
+              <span>GoLive Asia</span> &bull;
+              <span>BookMyShow Malaysia</span> &bull;
+              <span>Ticket2U</span> &bull;
+              <span>Live Nation Malaysia</span> &bull;
+              <span>Star Planet</span>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -236,22 +406,142 @@
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/events</span>
-          <span>PAGE 02 / 30</span>
+          <span>PAGE 02 / 30 &bull; MASTER CATALOG</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white rounded-3xl p-6 border border-slate-300">
+          
+          <!-- Catalog Header Banner -->
+          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-6">
             <div>
-              <span class="wire-badge text-purple-600 font-bold uppercase">DIRECTORY & CATALOG</span>
-              <h2 class="text-2xl font-black text-slate-900">All Malaysian K-Pop Shows</h2>
-              <p class="text-xs text-slate-500">Filtered by verified ticketing partners (GoLive Asia, BookMyShow, Ticket2U)</p>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="wire-badge px-2.5 py-0.5 rounded bg-slate-900 text-white font-bold">DIRECTORY</span>
+                <span class="wire-badge px-2.5 py-0.5 rounded bg-pink-100 text-pink-700 font-bold">MALAYSIA</span>
+              </div>
+              <h1 class="text-3xl font-black text-slate-900 tracking-tight">Discover K-Pop Events</h1>
+              <p class="text-xs text-slate-600 max-w-xl">
+                Filter and track verified concerts, fan meetings, and cupsleeve gatherings across Malaysia.
+              </p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="px-3.5 py-2 rounded-xl text-xs font-bold bg-purple-600 text-white"><i class="fas fa-radar me-1"></i> 360° Radar</span>
+              <span class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-900 text-white">24 Listings</span>
             </div>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-white p-4 rounded-2xl border border-slate-200 text-xs">
-            <select disabled class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold"><option>All Categories</option></select>
-            <select disabled class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold"><option>All Venues (KL/Selangor)</option></select>
-            <select disabled class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold"><option>Upcoming Dates</option></select>
-            <input type="text" disabled placeholder="Filter artist name..." class="p-2.5 rounded-xl border border-slate-200 bg-slate-50">
+
+          <!-- Quick Artist Filter Strip -->
+          <div class="space-y-2">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Quick Filter by Artist:</span>
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs font-bold">
+              <span class="px-4 py-1.5 rounded-full bg-slate-900 text-white shrink-0">All Artists</span>
+              <span class="px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 shrink-0">SEVENTEEN (3)</span>
+              <span class="px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 shrink-0">TWICE (2)</span>
+              <span class="px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 shrink-0">aespa (1)</span>
+              <span class="px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 shrink-0">ENHYPEN (2)</span>
+              <span class="px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 shrink-0">Stray Kids (2)</span>
+              <span class="px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 shrink-0">NewJeans (1)</span>
+              <span class="px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 shrink-0">IVE (1)</span>
+            </div>
           </div>
+
+          <!-- 5-Column Filter Controls Bar -->
+          <div class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-xs">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
+              <div class="lg:col-span-2 relative">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" disabled placeholder="Search event, artist, or venue..." class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-2.5 font-medium">
+              </div>
+              <select disabled class="bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 font-bold text-slate-700">
+                <option>All Categories</option>
+                <option>Concerts (12)</option>
+                <option>Fan Meetings (5)</option>
+                <option>Cupsleeve Cafes (4)</option>
+                <option>Random Dance (3)</option>
+              </select>
+              <select disabled class="bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 font-bold text-slate-700">
+                <option>All Locations (Klang Valley)</option>
+                <option>Axiata Arena Bukit Jalil</option>
+                <option>National Stadium Bukit Jalil</option>
+                <option>Zepp Kuala Lumpur</option>
+                <option>Mega Star Arena</option>
+              </select>
+              <button disabled class="w-full py-2.5 bg-slate-900 text-white rounded-2xl font-black">
+                Apply Filters
+              </button>
+            </div>
+          </div>
+
+          <!-- 3-Column Catalog Cards Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- 6 Event Cards -->
+            <div class="bg-white rounded-3xl p-4 border border-slate-300 space-y-3">
+              <div class="blueprint-box h-44 rounded-2xl flex items-center justify-center text-xs font-bold text-slate-500">Concert Poster Comp</div>
+              <div class="space-y-1">
+                <span class="wire-badge text-purple-700 font-bold uppercase">CONCERT &bull; HYBE</span>
+                <h3 class="font-black text-sm text-slate-900">SEVENTEEN [RIGHT HERE] WORLD TOUR</h3>
+                <p class="text-xs text-slate-500">Axiata Arena &bull; 15 Feb 2026 &bull; LRT Sri Petaling</p>
+                <p class="text-xs font-bold text-emerald-600">GoLive Asia Whitelisted</p>
+              </div>
+            </div>
+            <div class="bg-white rounded-3xl p-4 border border-slate-300 space-y-3">
+              <div class="blueprint-box h-44 rounded-2xl flex items-center justify-center text-xs font-bold text-slate-500">Concert Poster Comp</div>
+              <div class="space-y-1">
+                <span class="wire-badge text-pink-700 font-bold uppercase">CONCERT &bull; JYP</span>
+                <h3 class="font-black text-sm text-slate-900">TWICE 5TH WORLD TOUR 'READY TO BE'</h3>
+                <p class="text-xs text-slate-500">National Stadium Bukit Jalil &bull; 10 May 2026</p>
+                <p class="text-xs font-bold text-emerald-600">BookMyShow Whitelisted</p>
+              </div>
+            </div>
+            <div class="bg-white rounded-3xl p-4 border border-slate-300 space-y-3">
+              <div class="blueprint-box h-44 rounded-2xl flex items-center justify-center text-xs font-bold text-slate-500">Concert Poster Comp</div>
+              <div class="space-y-1">
+                <span class="wire-badge text-indigo-700 font-bold uppercase">CONCERT &bull; SM</span>
+                <h3 class="font-black text-sm text-slate-900">aespa LIVE TOUR - SYNK : PARALLEL LINE</h3>
+                <p class="text-xs text-slate-500">Zepp Kuala Lumpur &bull; 22 Mar 2026 &bull; Hang Tuah</p>
+                <p class="text-xs font-bold text-emerald-600">Ticket2U Whitelisted</p>
+              </div>
+            </div>
+            <div class="bg-white rounded-3xl p-4 border border-slate-300 space-y-3">
+              <div class="blueprint-box h-44 rounded-2xl flex items-center justify-center text-xs font-bold text-slate-500">Fan Meet Comp</div>
+              <div class="space-y-1">
+                <span class="wire-badge text-amber-700 font-bold uppercase">FAN MEET &bull; BELIFT</span>
+                <h3 class="font-black text-sm text-slate-900">ENHYPEN 'FATE PLUS' TOUR IN KL</h3>
+                <p class="text-xs text-slate-500">Mega Star Arena &bull; 04 Apr 2026 &bull; Bukit Bintang</p>
+                <p class="text-xs font-bold text-emerald-600">GoLive Asia Whitelisted</p>
+              </div>
+            </div>
+            <div class="bg-white rounded-3xl p-4 border border-slate-300 space-y-3">
+              <div class="blueprint-box h-44 rounded-2xl flex items-center justify-center text-xs font-bold text-slate-500">Cupsleeve Comp</div>
+              <div class="space-y-1">
+                <span class="wire-badge text-pink-700 font-bold uppercase">CUPSLEEVE &bull; FAN PROJECT</span>
+                <h3 class="font-black text-sm text-slate-900">Sana 28th Birthday Cafe Project</h3>
+                <p class="text-xs text-slate-500">VCR Cafe Bukit Bintang &bull; 28 Dec 2026</p>
+                <p class="text-xs font-bold text-purple-600">Community Verified</p>
+              </div>
+            </div>
+            <div class="bg-white rounded-3xl p-4 border border-slate-300 space-y-3">
+              <div class="blueprint-box h-44 rounded-2xl flex items-center justify-center text-xs font-bold text-slate-500">RPD Comp</div>
+              <div class="space-y-1">
+                <span class="wire-badge text-indigo-700 font-bold uppercase">RPD &bull; COMMUNITY</span>
+                <h3 class="font-black text-sm text-slate-900">KL Random Play Dance Autumn 2026</h3>
+                <p class="text-xs text-slate-500">Central Market Concourse &bull; LRT Pasar Seni</p>
+                <p class="text-xs font-bold text-purple-600">Free Admission</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pagination Bar -->
+          <div class="flex items-center justify-between border-t border-slate-200 pt-4 text-xs font-bold text-slate-500">
+            <span>Showing 1 to 6 of 24 verified listings</span>
+            <div class="flex items-center gap-1">
+              <span class="px-3 py-1.5 rounded-lg bg-slate-900 text-white">1</span>
+              <span class="px-3 py-1.5 rounded-lg bg-white border text-slate-700">2</span>
+              <span class="px-3 py-1.5 rounded-lg bg-white border text-slate-700">3</span>
+              <span class="px-3 py-1.5 rounded-lg bg-white border text-slate-700">4</span>
+              <span class="px-3 py-1.5 rounded-lg bg-white border text-slate-700">Next &rarr;</span>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -261,38 +551,252 @@
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/events/radar</span>
-          <span>PAGE 03 / 30</span>
+          <span>PAGE 03 / 30 &bull; TRANSIT RADAR</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
+          
           <div class="bg-white rounded-3xl p-6 border border-slate-300 space-y-2">
             <span class="wire-badge text-blue-700 font-bold uppercase"><i class="fas fa-radar me-1"></i> GEOSPATIAL TRANSIT RADAR</span>
             <h2 class="text-2xl font-black text-slate-900">Malaysian Venue Clusters & LRT/MRT Navigation</h2>
+            <p class="text-xs text-slate-600">Direct station transit links, walking routes, and crowd dispersal guides for major concert hubs.</p>
           </div>
-          <div class="blueprint-box h-96 rounded-3xl flex flex-col items-center justify-center p-6 text-center">
-            <i class="fas fa-map-location-dot text-4xl text-blue-500 mb-2"></i>
-            <span class="font-black text-sm text-slate-900">CARTO / Google Maps Basemap Integration</span>
-            <span class="text-xs text-slate-500 mt-1">Bukit Jalil, Axiata Arena, Zepp KL transit directions</span>
+
+          <!-- Split Layout: Left Directory & Right Basemap Canvas -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left: Venue Directory -->
+            <div class="space-y-3">
+              <h3 class="font-black text-sm text-slate-900">Select Concert Venue:</h3>
+              
+              <div class="bg-white p-4 rounded-2xl border-2 border-purple-500 space-y-1 shadow-xs">
+                <div class="flex items-center justify-between">
+                  <span class="font-black text-sm text-slate-900">Axiata Arena</span>
+                  <span class="wire-badge px-2 py-0.5 rounded bg-purple-100 text-purple-700 font-bold">16,000 CAP</span>
+                </div>
+                <p class="text-xs text-slate-500">Bukit Jalil, KL &bull; LRT Sri Petaling (Exit B)</p>
+                <div class="flex items-center gap-2 pt-1 text-[11px] font-bold text-slate-600">
+                  <span class="px-2 py-0.5 rounded bg-slate-100">350m Walk</span>
+                  <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700">3 Shows Listed</span>
+                </div>
+              </div>
+
+              <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-black text-sm text-slate-900">National Stadium Bukit Jalil</span>
+                  <span class="wire-badge px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-bold">87,000 CAP</span>
+                </div>
+                <p class="text-xs text-slate-500">Bukit Jalil, KL &bull; LRT Sri Petaling</p>
+                <div class="flex items-center gap-2 pt-1 text-[11px] font-bold text-slate-600">
+                  <span class="px-2 py-0.5 rounded bg-slate-100">500m Walk</span>
+                  <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700">2 Shows Listed</span>
+                </div>
+              </div>
+
+              <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-black text-sm text-slate-900">Zepp Kuala Lumpur</span>
+                  <span class="wire-badge px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-bold">2,500 CAP</span>
+                </div>
+                <p class="text-xs text-slate-500">BBCC, KL &bull; LRT/Monorail Hang Tuah</p>
+                <div class="flex items-center gap-2 pt-1 text-[11px] font-bold text-slate-600">
+                  <span class="px-2 py-0.5 rounded bg-slate-100">Direct Linkway</span>
+                  <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700">4 Shows Listed</span>
+                </div>
+              </div>
+
+              <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-black text-sm text-slate-900">Mega Star Arena</span>
+                  <span class="wire-badge px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-bold">5,000 CAP</span>
+                </div>
+                <p class="text-xs text-slate-500">Sungei Wang Plaza &bull; MRT Bukit Bintang</p>
+                <div class="flex items-center gap-2 pt-1 text-[11px] font-bold text-slate-600">
+                  <span class="px-2 py-0.5 rounded bg-slate-100">250m Walk</span>
+                  <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700">2 Shows Listed</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Interactive Map Canvas & Transit Step-by-Step Directions -->
+            <div class="lg:col-span-2 space-y-4">
+              <div class="blueprint-box h-80 rounded-3xl flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
+                <div class="absolute inset-0 bg-blue-500/5"></div>
+                <i class="fas fa-map-location-dot text-4xl text-blue-500 mb-2 z-10"></i>
+                <span class="font-black text-sm text-slate-900 z-10">Interactive Leaflet / CARTO Basemap Engine</span>
+                <span class="text-xs text-slate-500 mt-1 max-w-sm z-10">
+                  Real-time venue coordinates with LRT Sri Petaling route overlay & pedestrian walking vectors.
+                </span>
+                <div class="absolute bottom-3 left-3 bg-white/90 px-3 py-1.5 rounded-xl border text-[11px] font-bold text-slate-700">
+                  Pin Selected: Axiata Arena (3.0583° N, 101.6917° E)
+                </div>
+              </div>
+
+              <!-- Transit Step-by-Step Drawer -->
+              <div class="bg-white rounded-3xl p-6 border border-slate-300 space-y-3">
+                <h4 class="font-black text-sm text-slate-900 flex items-center gap-2">
+                  <i class="fas fa-train-subway text-purple-600"></i> Step-by-Step Transit Route to Axiata Arena
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                  <div class="p-3 rounded-2xl bg-slate-50 border space-y-1">
+                    <span class="wire-badge font-bold text-purple-700">STEP 1: BOARD TRAIN</span>
+                    <p class="text-slate-700 font-medium">Board LRT Sri Petaling Line (Direction: Putra Heights).</p>
+                  </div>
+                  <div class="p-3 rounded-2xl bg-slate-50 border space-y-1">
+                    <span class="wire-badge font-bold text-purple-700">STEP 2: ALIGHT STATION</span>
+                    <p class="text-slate-700 font-medium">Alight at <strong>Bukit Jalil LRT Station (SP17)</strong>, take Exit B.</p>
+                  </div>
+                  <div class="p-3 rounded-2xl bg-slate-50 border space-y-1">
+                    <span class="wire-badge font-bold text-purple-700">STEP 3: WALKWAY</span>
+                    <p class="text-slate-700 font-medium">Follow covered pedestrian ramp 350m straight into Plaza Gate 1.</p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
           </div>
+
         </div>
       </div>
     </div>
 
-    <!-- 4. EVENT DETAILS & TRUST -->
+    <!-- 4. EVENT DETAILS & FORENSIC TRUST -->
     <div id="page-event-detail" class="page-screen space-y-6">
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/events/68</span>
-          <span>PAGE 04 / 30</span>
+          <span>PAGE 04 / 30 &bull; EVENT DETAILS & FORENSICS</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="blueprint-box h-80 rounded-3xl flex items-center justify-center text-xs font-bold text-slate-500">Concert Poster Comp</div>
-            <div class="lg:col-span-2 bg-white rounded-3xl p-6 border border-slate-300 space-y-3">
-              <span class="wire-badge px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold">AI SCORE: 98% (LEGITIMATE)</span>
-              <h2 class="text-2xl font-black text-slate-900">SEVENTEEN [RIGHT HERE] WORLD TOUR IN KL</h2>
-              <p class="text-xs text-slate-500">Official Ticketing: GoLive Asia &bull; Venue: Axiata Arena Bukit Jalil</p>
+          
+          <!-- Event Header Banner -->
+          <div class="bg-slate-950 text-white rounded-3xl p-6 sm:p-8 border border-slate-800 space-y-3">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="wire-badge px-3 py-1 rounded-full bg-emerald-500 text-white font-bold">AI AUDIT: 98% LEGITIMATE</span>
+              <span class="wire-badge px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 font-bold">HYBE &bull; PLEDIS ENT</span>
+            </div>
+            <h1 class="text-2xl sm:text-4xl font-black uppercase tracking-tight">
+              SEVENTEEN [RIGHT HERE] WORLD TOUR IN KL
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-300 font-medium">
+              Saturday, 15 February 2026 &bull; 7:30 PM MYT &bull; Axiata Arena Bukit Jalil, Kuala Lumpur
+            </p>
+          </div>
+
+          <!-- 4-Step Forensic Trust Scorecard -->
+          <div class="bg-white rounded-3xl p-6 border-2 border-emerald-500 space-y-4 shadow-sm">
+            <div class="flex items-center justify-between border-b pb-3">
+              <div class="flex items-center gap-2">
+                <i class="fas fa-shield-halved text-xl text-emerald-600"></i>
+                <h3 class="font-black text-base text-slate-900">4-Step Forensic Trust Scorecard</h3>
+              </div>
+              <span class="wire-badge px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold">OVERALL SCORE: 98/100</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+              <div class="p-3 rounded-2xl bg-emerald-50/50 border border-emerald-200 space-y-1">
+                <span class="wire-badge font-bold text-emerald-800">1. SSM REGISTRATION</span>
+                <p class="font-bold text-slate-900">Live Nation (M) Sdn Bhd</p>
+                <p class="text-[11px] text-emerald-700">&check; SSM 201801029384 Verified</p>
+              </div>
+              <div class="p-3 rounded-2xl bg-emerald-50/50 border border-emerald-200 space-y-1">
+                <span class="wire-badge font-bold text-emerald-800">2. VENUE CONTRACT</span>
+                <p class="font-bold text-slate-900">Axiata Arena Bukit Jalil</p>
+                <p class="text-[11px] text-emerald-700">&check; Hall Slot Match Confirmed</p>
+              </div>
+              <div class="p-3 rounded-2xl bg-emerald-50/50 border border-emerald-200 space-y-1">
+                <span class="wire-badge font-bold text-emerald-800">3. TICKETING WHITELIST</span>
+                <p class="font-bold text-slate-900">golive-asia.com</p>
+                <p class="text-[11px] text-emerald-700">&check; Whitelisted Malaysian Partner</p>
+              </div>
+              <div class="p-3 rounded-2xl bg-emerald-50/50 border border-emerald-200 space-y-1">
+                <span class="wire-badge font-bold text-emerald-800">4. GEMINI AI VISION</span>
+                <p class="font-bold text-slate-900">Multimodal Poster Match</p>
+                <p class="text-[11px] text-emerald-700">&check; 98% Match Official Tour</p>
+              </div>
             </div>
           </div>
+
+          <!-- Main Event Content & Ticketing Sidebar -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left 2 Cols: Poster, Overview, Tiers -->
+            <div class="lg:col-span-2 space-y-6">
+              <div class="blueprint-box h-80 rounded-3xl flex items-center justify-center text-xs font-bold text-slate-500">
+                Official Concert Poster High-Res Canvas
+              </div>
+
+              <!-- Ticket Pricing Tiers Table -->
+              <div class="bg-white rounded-3xl p-6 border border-slate-300 space-y-3">
+                <h4 class="font-black text-sm text-slate-900">Official Ticket Pricing Tiers</h4>
+                <div class="overflow-x-auto text-xs">
+                  <table class="w-full text-left">
+                    <thead class="bg-slate-50 border-b text-slate-500 font-bold">
+                      <tr>
+                        <th class="py-2 px-3">TIER</th>
+                        <th class="py-2 px-3">SECTION</th>
+                        <th class="py-2 px-3">PRICE (MYR)</th>
+                        <th class="py-2 px-3">STATUS</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                      <tr><td class="py-2 px-3 font-bold">CAT 1 VIP</td><td class="py-2 px-3">Soundcheck Standing</td><td class="py-2 px-3">RM 1,088</td><td class="py-2 px-3 text-rose-600 font-bold">Low Queue</td></tr>
+                      <tr><td class="py-2 px-3 font-bold">CAT 2</td><td class="py-2 px-3">General Standing</td><td class="py-2 px-3">RM 888</td><td class="py-2 px-3 text-emerald-600 font-bold">Available</td></tr>
+                      <tr><td class="py-2 px-3 font-bold">CAT 3</td><td class="py-2 px-3">Lower Tier Seated</td><td class="py-2 px-3">RM 688</td><td class="py-2 px-3 text-emerald-600 font-bold">Available</td></tr>
+                      <tr><td class="py-2 px-3 font-bold">CAT 4</td><td class="py-2 px-3">Upper Tier Seated</td><td class="py-2 px-3">RM 388</td><td class="py-2 px-3 text-emerald-600 font-bold">Available</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right 1 Col: Buy Tickets CTA, Anti-Scam Notice & Wishlist -->
+            <div class="space-y-4">
+              <div class="bg-white rounded-3xl p-6 border border-slate-300 space-y-4 shadow-sm">
+                <span class="wire-badge px-2.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">VERIFIED TICKET LINK</span>
+                <div class="space-y-1">
+                  <div class="text-xs text-slate-500">Official Ticket Provider:</div>
+                  <div class="text-base font-black text-slate-900">GoLive Asia (golive-asia.com)</div>
+                </div>
+                <button disabled class="w-full py-3 rounded-2xl bg-purple-600 text-white font-bold text-xs shadow-md">
+                  Buy Official Tickets Now &rarr;
+                </button>
+                <button disabled class="w-full py-2.5 rounded-2xl bg-slate-100 text-slate-700 font-bold text-xs border">
+                  &hearts; Save to Wishlist
+                </button>
+
+                <!-- Anti-Scalper Warning Box -->
+                <div class="p-3 rounded-2xl bg-rose-50 border border-rose-200 space-y-1 text-xs">
+                  <div class="font-bold text-rose-800 flex items-center gap-1">
+                    <i class="fas fa-triangle-exclamation"></i> Anti-Scalping Advisory
+                  </div>
+                  <p class="text-[11px] text-rose-700">
+                    Never purchase tickets via Telegram or Twitter DMs. K-Sync only whitelists official ticketing partner checkouts.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Community Fan Discussion Comments -->
+          <div class="bg-white rounded-3xl p-6 border border-slate-300 space-y-4">
+            <h4 class="font-black text-sm text-slate-900 flex items-center gap-2">
+              <i class="far fa-comments text-purple-600"></i> Fan Q&A & Community Discussion (24 Comments)
+            </h4>
+            <div class="space-y-3 text-xs">
+              <div class="p-3 rounded-2xl bg-slate-50 border space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-slate-900">@carat_kl &bull; 2h ago</span>
+                  <span class="text-slate-400">Report</span>
+                </div>
+                <p class="text-slate-700">Does anyone know if Soundcheck entry starts at 3:00 PM for Axiata Arena?</p>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -302,16 +806,79 @@
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/artists</span>
-          <span>PAGE 05 / 30</span>
+          <span>PAGE 05 / 30 &bull; TALENT DIRECTORY</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <h2 class="text-2xl font-black text-slate-900">58 Active Groups & Soloists</h2>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-white p-4 rounded-3xl border text-center font-bold text-sm">SEVENTEEN</div>
-            <div class="bg-white p-4 rounded-3xl border text-center font-bold text-sm">TWICE</div>
-            <div class="bg-white p-4 rounded-3xl border text-center font-bold text-sm">ENHYPEN</div>
-            <div class="bg-white p-4 rounded-3xl border text-center font-bold text-sm">aespa</div>
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+            <div>
+              <h1 class="text-2xl font-black text-slate-900 tracking-tight">Official Talent Directory (58 Artists)</h1>
+              <p class="text-xs text-slate-500">Complete rosters, normalized biodata profiles, and Malaysian concert history.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <input type="text" disabled placeholder="Search artist or member name..." class="p-2.5 rounded-xl border bg-white text-xs">
+            </div>
           </div>
+
+          <!-- Agency & Group Type Filters -->
+          <div class="flex flex-wrap items-center gap-2 text-xs font-bold">
+            <span class="px-4 py-1.5 rounded-full bg-slate-900 text-white">All (58)</span>
+            <span class="px-4 py-1.5 rounded-full bg-white border text-slate-700">Boy Groups (22)</span>
+            <span class="px-4 py-1.5 rounded-full bg-white border text-slate-700">Girl Groups (24)</span>
+            <span class="px-4 py-1.5 rounded-full bg-white border text-slate-700">Soloists (12)</span>
+            <span class="border-l border-slate-300 h-4 mx-2"></span>
+            <span class="px-3 py-1 rounded-xl bg-purple-100 text-purple-700">HYBE</span>
+            <span class="px-3 py-1 rounded-xl bg-slate-100 text-slate-700">SM Ent</span>
+            <span class="px-3 py-1 rounded-xl bg-slate-100 text-slate-700">JYP Ent</span>
+            <span class="px-3 py-1 rounded-xl bg-slate-100 text-slate-700">YG Ent</span>
+          </div>
+
+          <!-- 4-Column Artists Grid -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            
+            <div class="bg-white rounded-3xl p-4 border border-slate-300 space-y-2 text-center shadow-xs">
+              <div class="blueprint-box w-20 h-20 rounded-full mx-auto flex items-center justify-center font-bold text-xs text-slate-400">SVT</div>
+              <h4 class="font-black text-sm text-slate-900">SEVENTEEN</h4>
+              <p class="text-[11px] text-slate-400">세븐틴 &bull; Pledis / HYBE</p>
+              <div class="flex items-center justify-center gap-1 text-[10px] font-bold">
+                <span class="px-2 py-0.5 rounded bg-purple-50 text-purple-700">13 Members</span>
+                <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700">1 Show</span>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-4 border border-slate-300 space-y-2 text-center shadow-xs">
+              <div class="blueprint-box w-20 h-20 rounded-full mx-auto flex items-center justify-center font-bold text-xs text-slate-400">TW</div>
+              <h4 class="font-black text-sm text-slate-900">TWICE</h4>
+              <p class="text-[11px] text-slate-400">트와이스 &bull; JYP Ent</p>
+              <div class="flex items-center justify-center gap-1 text-[10px] font-bold">
+                <span class="px-2 py-0.5 rounded bg-pink-50 text-pink-700">9 Members</span>
+                <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700">1 Show</span>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-4 border border-slate-300 space-y-2 text-center shadow-xs">
+              <div class="blueprint-box w-20 h-20 rounded-full mx-auto flex items-center justify-center font-bold text-xs text-slate-400">AES</div>
+              <h4 class="font-black text-sm text-slate-900">aespa</h4>
+              <p class="text-[11px] text-slate-400">에스파 &bull; SM Ent</p>
+              <div class="flex items-center justify-center gap-1 text-[10px] font-bold">
+                <span class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700">4 Members</span>
+                <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700">1 Show</span>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-4 border border-slate-300 space-y-2 text-center shadow-xs">
+              <div class="blueprint-box w-20 h-20 rounded-full mx-auto flex items-center justify-center font-bold text-xs text-slate-400">EN</div>
+              <h4 class="font-black text-sm text-slate-900">ENHYPEN</h4>
+              <p class="text-[11px] text-slate-400">엔하이픈 &bull; BELIFT</p>
+              <div class="flex items-center justify-center gap-1 text-[10px] font-bold">
+                <span class="px-2 py-0.5 rounded bg-amber-50 text-amber-700">7 Members</span>
+                <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700">1 Show</span>
+              </div>
+            </div>
+
+          </div>
+
         </div>
       </div>
     </div>
@@ -321,16 +888,73 @@
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/artists/seventeen</span>
-          <span>PAGE 06 / 30</span>
+          <span>PAGE 06 / 30 &bull; ARTIST & LINEUP</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <h2 class="text-2xl font-black text-slate-900">SEVENTEEN (13 Members Normalized)</h2>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-            <div class="bg-white p-3 rounded-2xl border font-bold">S.COUPS (Leader)</div>
-            <div class="bg-white p-3 rounded-2xl border font-bold">JEONGHAN (Vocal)</div>
-            <div class="bg-white p-3 rounded-2xl border font-bold">JOSHUA (Vocal)</div>
-            <div class="bg-white p-3 rounded-2xl border font-bold">HOSHI (Performance)</div>
+          
+          <!-- Artist Header Banner -->
+          <div class="bg-slate-950 text-white rounded-3xl p-6 sm:p-8 border border-slate-800 space-y-3">
+            <div class="flex items-center gap-3">
+              <div class="blueprint-box w-16 h-16 rounded-2xl flex items-center justify-center font-bold text-xs">SVT</div>
+              <div>
+                <h1 class="text-3xl font-black">SEVENTEEN (세븐틴)</h1>
+                <p class="text-xs text-slate-300">Pledis Entertainment (HYBE) &bull; Debut: May 26, 2015 &bull; Fandom: CARAT</p>
+              </div>
+            </div>
           </div>
+
+          <!-- 13 Members Normalized Biodata Grid -->
+          <div class="bg-white rounded-3xl p-6 border border-slate-300 space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="font-black text-base text-slate-900">Official 13-Member Normalized Biodata</h3>
+              <span class="wire-badge px-2.5 py-0.5 rounded bg-purple-100 text-purple-700 font-bold">13 PROFILES</span>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 text-xs">
+              <div class="p-3 rounded-2xl bg-slate-50 border space-y-1">
+                <span class="wire-badge font-bold text-purple-700">LEADER</span>
+                <p class="font-bold text-slate-900">S.COUPS</p>
+                <p class="text-[11px] text-slate-500">Choi Seungcheol &bull; 1995 &bull; ISTP</p>
+              </div>
+              <div class="p-3 rounded-2xl bg-slate-50 border space-y-1">
+                <span class="wire-badge font-bold text-pink-700">VOCAL TEAM</span>
+                <p class="font-bold text-slate-900">JEONGHAN</p>
+                <p class="text-[11px] text-slate-500">Yoon Jeonghan &bull; 1995 &bull; ISFJ</p>
+              </div>
+              <div class="p-3 rounded-2xl bg-slate-50 border space-y-1">
+                <span class="wire-badge font-bold text-pink-700">VOCAL TEAM</span>
+                <p class="font-bold text-slate-900">JOSHUA</p>
+                <p class="text-[11px] text-slate-500">Hong Jisoo &bull; 1995 &bull; ENFJ</p>
+              </div>
+              <div class="p-3 rounded-2xl bg-slate-50 border space-y-1">
+                <span class="wire-badge font-bold text-indigo-700">PERFORMANCE</span>
+                <p class="font-bold text-slate-900">JUN</p>
+                <p class="text-[11px] text-slate-500">Wen Junhui &bull; 1996 &bull; INFP</p>
+              </div>
+              <div class="p-3 rounded-2xl bg-slate-50 border space-y-1">
+                <span class="wire-badge font-bold text-indigo-700">PERFORMANCE</span>
+                <p class="font-bold text-slate-900">HOSHI</p>
+                <p class="text-[11px] text-slate-500">Kwon Soonyoung &bull; 1996 &bull; INTJ</p>
+              </div>
+              <div class="p-3 rounded-2xl bg-slate-50 border space-y-1">
+                <span class="wire-badge font-bold text-purple-700">HIP-HOP TEAM</span>
+                <p class="font-bold text-slate-900">WONWOO</p>
+                <p class="text-[11px] text-slate-500">Jeon Wonwoo &bull; 1996 &bull; INFJ</p>
+              </div>
+              <div class="p-3 rounded-2xl bg-slate-50 border space-y-1">
+                <span class="wire-badge font-bold text-pink-700">PRODUCER</span>
+                <p class="font-bold text-slate-900">WOOZI</p>
+                <p class="text-[11px] text-slate-500">Lee Jihoon &bull; 1996 &bull; INTJ</p>
+              </div>
+              <div class="p-3 rounded-2xl bg-slate-50 border space-y-1">
+                <span class="wire-badge font-bold text-pink-700">MAIN VOCAL</span>
+                <p class="font-bold text-slate-900">DK</p>
+                <p class="text-[11px] text-slate-500">Lee Seokmin &bull; 1997 &bull; INFP</p>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -340,30 +964,106 @@
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/check-submission</span>
-          <span>PAGE 07 / 30</span>
+          <span>PAGE 07 / 30 &bull; TRACK SUBMISSION</span>
         </div>
-        <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern text-center">
-          <h2 class="text-xl font-black text-slate-900">Track Event Submission Status</h2>
-          <div class="max-w-md mx-auto p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800">
-            Tracking Code KSYNC-84920-MY &bull; Status: APPROVED (98% Trust Score)
+        
+        <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
+          
+          <div class="max-w-xl mx-auto bg-white rounded-3xl p-6 border border-slate-300 shadow-xs space-y-4 text-center">
+            <h2 class="text-xl font-black text-slate-900">Track Event Submission Status</h2>
+            <p class="text-xs text-slate-500">Enter your 10-character submission tracking code received upon submission.</p>
+            <div class="flex gap-2">
+              <input type="text" disabled value="KSYNC-84920-MY" class="flex-1 p-3 rounded-2xl border bg-slate-50 font-mono text-xs text-center font-bold">
+              <button disabled class="px-5 py-3 rounded-2xl bg-slate-900 text-white font-bold text-xs">Track Status</button>
+            </div>
           </div>
+
+          <!-- 4-Stage Stepper Progress Tracker -->
+          <div class="max-w-2xl mx-auto bg-white rounded-3xl p-6 border border-slate-300 space-y-4">
+            <div class="flex items-center justify-between text-xs font-bold border-b pb-3">
+              <span>Tracking Code: KSYNC-84920-MY</span>
+              <span class="wire-badge px-2.5 py-0.5 rounded bg-emerald-100 text-emerald-800">APPROVED & PUBLISHED</span>
+            </div>
+
+            <div class="grid grid-cols-4 gap-2 text-center text-xs">
+              <div class="p-2 rounded-xl bg-emerald-50 border border-emerald-200 font-bold text-emerald-800">1. Received</div>
+              <div class="p-2 rounded-xl bg-emerald-50 border border-emerald-200 font-bold text-emerald-800">2. SSM Check</div>
+              <div class="p-2 rounded-xl bg-emerald-50 border border-emerald-200 font-bold text-emerald-800">3. Whitelist</div>
+              <div class="p-2 rounded-xl bg-emerald-50 border border-emerald-200 font-bold text-emerald-800">4. Live Catalog</div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-slate-50 border space-y-1 text-xs">
+              <div class="font-bold text-slate-900">SEVENTEEN [RIGHT HERE] WORLD TOUR IN KL</div>
+              <p class="text-slate-500">Submitted by: Live Nation Malaysia &bull; Forensic Trust Score: 98% High</p>
+              <p class="text-emerald-700 font-bold pt-1">&check; Event successfully published to public directory on 24 Oct 2026.</p>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
 
-    <!-- 8. LOGIN SCREEN -->
+    <!-- 8. SIGN IN SCREEN -->
     <div id="page-login" class="page-screen space-y-6">
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/login</span>
-          <span>PAGE 08 / 30</span>
+          <span>PAGE 08 / 30 &bull; AUTHENTICATION</span>
         </div>
-        <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="max-w-md mx-auto bg-white rounded-3xl p-6 border border-slate-300 space-y-3">
-            <h2 class="text-xl font-black text-center text-slate-900">Sign In to K-Sync</h2>
-            <input type="text" disabled value="fan@ksync.my" class="w-full p-2.5 rounded-xl border bg-slate-50 text-xs">
-            <input type="password" disabled value="••••••••" class="w-full p-2.5 rounded-xl border bg-slate-50 text-xs">
-            <button disabled class="w-full py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs">Sign In</button>
+        
+        <div class="p-6 sm:p-12 bg-slate-50/50 grid-pattern flex justify-center">
+          <div class="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 border border-slate-300 shadow-sm space-y-5">
+            
+            <div class="text-center space-y-1">
+              <div class="w-10 h-10 rounded-2xl bg-slate-900 text-white flex items-center justify-center font-black text-sm mx-auto mb-2">KS</div>
+              <h2 class="text-2xl font-black text-slate-900">Sign In to K-Sync</h2>
+              <p class="text-xs text-slate-500">Access verified concert wishlists & organizer tools</p>
+            </div>
+
+            <!-- Role Selector Tabs -->
+            <div class="flex p-1 bg-slate-100 rounded-2xl text-xs font-bold text-center">
+              <span class="flex-1 py-2 rounded-xl bg-white text-purple-700 shadow-xs">Fan Account</span>
+              <span class="flex-1 py-2 rounded-xl text-slate-500">Event Organizer</span>
+            </div>
+
+            <div class="space-y-3 text-xs">
+              <div class="space-y-1">
+                <label class="font-bold text-slate-700">Email Address</label>
+                <input type="text" disabled value="sarah@carat.my" class="w-full p-3 rounded-2xl border bg-slate-50 text-slate-900 font-medium">
+              </div>
+
+              <div class="space-y-1">
+                <div class="flex justify-between">
+                  <label class="font-bold text-slate-700">Password</label>
+                  <span class="text-purple-600 font-bold">Forgot?</span>
+                </div>
+                <input type="password" disabled value="••••••••••••" class="w-full p-3 rounded-2xl border bg-slate-50 text-slate-900">
+              </div>
+
+              <div class="flex items-center justify-between pt-1">
+                <label class="flex items-center gap-2 text-slate-600">
+                  <input type="checkbox" checked disabled class="rounded"> Remember this device
+                </label>
+              </div>
+
+              <button disabled class="w-full py-3 rounded-2xl bg-slate-900 text-white font-black text-xs shadow-md">
+                Sign In to Account
+              </button>
+
+              <div class="relative flex items-center justify-center py-2">
+                <div class="border-t border-slate-200 w-full"></div>
+                <span class="bg-white px-2 text-[10px] text-slate-400 font-bold uppercase absolute">OR</span>
+              </div>
+
+              <button disabled class="w-full py-2.5 rounded-2xl bg-white border border-slate-200 font-bold text-slate-700 flex items-center justify-center gap-2">
+                <i class="fab fa-google text-rose-500"></i> Continue with Google
+              </button>
+            </div>
+
+            <div class="text-center text-xs text-slate-500 pt-2 border-t">
+              Don't have an account? <span class="font-bold text-purple-600">Register as Fan or Promoter</span>
+            </div>
+
           </div>
         </div>
       </div>
@@ -374,72 +1074,235 @@
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/register</span>
-          <span>PAGE 09 / 30</span>
+          <span>PAGE 09 / 30 &bull; AUTHENTICATION</span>
         </div>
-        <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="max-w-md mx-auto bg-white rounded-3xl p-6 border border-slate-300 space-y-3">
-            <h2 class="text-xl font-black text-center text-slate-900">Register as Fan or Organizer</h2>
-            <input type="text" disabled placeholder="Full Name" class="w-full p-2.5 rounded-xl border bg-slate-50 text-xs">
-            <input type="text" disabled placeholder="Email Address" class="w-full p-2.5 rounded-xl border bg-slate-50 text-xs">
-            <button disabled class="w-full py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs">Register</button>
+        
+        <div class="p-6 sm:p-12 bg-slate-50/50 grid-pattern flex justify-center">
+          <div class="w-full max-w-lg bg-white rounded-3xl p-6 sm:p-8 border border-slate-300 shadow-sm space-y-5">
+            
+            <div class="text-center space-y-1">
+              <h2 class="text-2xl font-black text-slate-900">Create K-Sync Account</h2>
+              <p class="text-xs text-slate-500">Select your role to start tracking or hosting events</p>
+            </div>
+
+            <!-- Role Selector Radio Blocks -->
+            <div class="grid grid-cols-2 gap-3 text-xs">
+              <div class="p-3.5 rounded-2xl border-2 border-purple-600 bg-purple-50/30 space-y-1">
+                <span class="wire-badge font-bold text-purple-700">FAN ACCOUNT</span>
+                <p class="text-[11px] text-slate-600">Track concerts, save wishlist, set transit radar alerts.</p>
+              </div>
+              <div class="p-3.5 rounded-2xl border border-slate-200 space-y-1">
+                <span class="wire-badge font-bold text-slate-400">ORGANIZER</span>
+                <p class="text-[11px] text-slate-500">Submit verified concerts, cupsleeves, and fan meets.</p>
+              </div>
+            </div>
+
+            <div class="space-y-3 text-xs">
+              <div class="space-y-1">
+                <label class="font-bold text-slate-700">Full Name</label>
+                <input type="text" disabled placeholder="e.g. Sarah Tan" class="w-full p-2.5 rounded-2xl border bg-slate-50">
+              </div>
+
+              <div class="space-y-1">
+                <label class="font-bold text-slate-700">Email Address</label>
+                <input type="text" disabled placeholder="e.g. sarah@carat.my" class="w-full p-2.5 rounded-2xl border bg-slate-50">
+              </div>
+
+              <div class="grid grid-cols-2 gap-2">
+                <div class="space-y-1">
+                  <label class="font-bold text-slate-700">Password</label>
+                  <input type="password" disabled value="••••••••" class="w-full p-2.5 rounded-2xl border bg-slate-50">
+                </div>
+                <div class="space-y-1">
+                  <label class="font-bold text-slate-700">Confirm Password</label>
+                  <input type="password" disabled value="••••••••" class="w-full p-2.5 rounded-2xl border bg-slate-50">
+                </div>
+              </div>
+
+              <label class="flex items-center gap-2 text-[11px] text-slate-600 pt-1">
+                <input type="checkbox" checked disabled class="rounded"> I agree to the Community Guidelines & Event Verification Policy
+              </label>
+
+              <button disabled class="w-full py-3 rounded-2xl bg-purple-600 text-white font-black text-xs shadow-md">
+                Create My Account
+              </button>
+            </div>
+
+            <div class="text-center text-xs text-slate-500 pt-2 border-t">
+              Already have an account? <span class="font-bold text-purple-600">Sign In</span>
+            </div>
+
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 10. EMAIL OTP -->
+    <!-- 10. EMAIL LOGIN OTP -->
     <div id="page-otp" class="page-screen space-y-6">
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/login-otp</span>
-          <span>PAGE 10 / 30</span>
+          <span>PAGE 10 / 30 &bull; TWO-FACTOR AUTH</span>
         </div>
-        <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern text-center">
-          <h2 class="text-xl font-black text-slate-900">Enter 6-Digit Email Code</h2>
-          <div class="flex justify-center gap-2 max-w-xs mx-auto">
-            <div class="w-10 h-10 border rounded-xl flex items-center justify-center font-bold">4</div>
-            <div class="w-10 h-10 border rounded-xl flex items-center justify-center font-bold">8</div>
-            <div class="w-10 h-10 border rounded-xl flex items-center justify-center font-bold">2</div>
-            <div class="w-10 h-10 border rounded-xl flex items-center justify-center font-bold">9</div>
-            <div class="w-10 h-10 border rounded-xl flex items-center justify-center font-bold">1</div>
-            <div class="w-10 h-10 border rounded-xl flex items-center justify-center font-bold">0</div>
+        
+        <div class="p-6 sm:p-12 bg-slate-50/50 grid-pattern flex justify-center">
+          <div class="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 border border-slate-300 shadow-sm space-y-5 text-center">
+            
+            <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl mx-auto">
+              <i class="fas fa-shield-halved"></i>
+            </div>
+
+            <div class="space-y-1">
+              <h2 class="text-2xl font-black text-slate-900">Email Verification Code</h2>
+              <p class="text-xs text-slate-500 max-w-xs mx-auto">
+                We've sent a 6-digit one-time code to <strong>sarah@carat.my</strong>.
+              </p>
+            </div>
+
+            <!-- 6 Discrete Digit Boxes -->
+            <div class="flex justify-center gap-2 max-w-xs mx-auto py-2">
+              <div class="w-11 h-12 border-2 border-purple-600 bg-purple-50 rounded-2xl flex items-center justify-center font-black text-base text-slate-900">4</div>
+              <div class="w-11 h-12 border-2 border-purple-600 bg-purple-50 rounded-2xl flex items-center justify-center font-black text-base text-slate-900">8</div>
+              <div class="w-11 h-12 border-2 border-purple-600 bg-purple-50 rounded-2xl flex items-center justify-center font-black text-base text-slate-900">2</div>
+              <div class="w-11 h-12 border-2 border-purple-600 bg-purple-50 rounded-2xl flex items-center justify-center font-black text-base text-slate-900">9</div>
+              <div class="w-11 h-12 border-2 border-purple-600 bg-purple-50 rounded-2xl flex items-center justify-center font-black text-base text-slate-900">1</div>
+              <div class="w-11 h-12 border-2 border-purple-600 bg-purple-50 rounded-2xl flex items-center justify-center font-black text-base text-slate-900">0</div>
+            </div>
+
+            <div class="text-xs text-slate-500">
+              Didn't receive code? <span class="font-mono text-purple-600 font-bold">Resend in 00:42</span>
+            </div>
+
+            <button disabled class="w-full py-3 rounded-2xl bg-slate-900 text-white font-black text-xs shadow-md">
+              Verify Code & Continue
+            </button>
+
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 11. RESET PASSWORD -->
+    <!-- 11. FORGOT / RESET PASSWORD -->
     <div id="page-reset-pass" class="page-screen space-y-6">
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/forgot-password</span>
-          <span>PAGE 11 / 30</span>
+          <span>PAGE 11 / 30 &bull; PASSWORD RECOVERY</span>
         </div>
-        <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="max-w-md mx-auto bg-white rounded-3xl p-6 border border-slate-300 space-y-3 text-center">
-            <h2 class="text-xl font-black text-slate-900">Forgot Password Recovery</h2>
-            <input type="text" disabled placeholder="Enter your email" class="w-full p-2.5 rounded-xl border bg-slate-50 text-xs">
-            <button disabled class="w-full py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs">Send Recovery Link</button>
+        
+        <div class="p-6 sm:p-12 bg-slate-50/50 grid-pattern flex justify-center">
+          <div class="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 border border-slate-300 shadow-sm space-y-5">
+            
+            <div class="text-center space-y-1">
+              <h2 class="text-2xl font-black text-slate-900">Reset Account Password</h2>
+              <p class="text-xs text-slate-500">Enter new secure password for your account</p>
+            </div>
+
+            <div class="space-y-3 text-xs">
+              <div class="space-y-1">
+                <label class="font-bold text-slate-700">New Password</label>
+                <input type="password" disabled value="••••••••••••" class="w-full p-2.5 rounded-2xl border bg-slate-50">
+              </div>
+
+              <div class="space-y-1">
+                <label class="font-bold text-slate-700">Confirm New Password</label>
+                <input type="password" disabled value="••••••••••••" class="w-full p-2.5 rounded-2xl border bg-slate-50">
+              </div>
+
+              <!-- Password Strength Meter -->
+              <div class="p-3 bg-slate-50 rounded-2xl border space-y-1 text-[11px]">
+                <div class="font-bold text-slate-700">Password Requirements:</div>
+                <div class="text-emerald-600">&check; Minimum 8 characters</div>
+                <div class="text-emerald-600">&check; At least 1 uppercase letter</div>
+                <div class="text-emerald-600">&check; At least 1 number or special character</div>
+              </div>
+
+              <button disabled class="w-full py-3 rounded-2xl bg-slate-900 text-white font-black text-xs shadow-md">
+                Update Password & Sign In
+              </button>
+            </div>
+
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 12. FAN HUB -->
+    <!-- 12. FAN COMMAND CENTER -->
     <div id="page-fan-dash" class="page-screen space-y-6">
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/dashboard</span>
-          <span>PAGE 12 / 30</span>
+          <span>PAGE 12 / 30 &bull; FAN COMMAND CENTER</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="bg-slate-900 text-white rounded-3xl p-6 flex justify-between items-center">
-            <div>
-              <span class="wire-badge text-pink-400 font-bold">FAN COMMAND CENTER</span>
-              <h2 class="text-2xl font-black">Welcome back, Sarah (@carat_kl)</h2>
+          
+          <!-- Fan Welcome Header -->
+          <div class="bg-slate-950 text-white rounded-3xl p-6 sm:p-8 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="space-y-1">
+              <span class="wire-badge text-pink-400 font-bold uppercase">FAN COMMAND CENTER</span>
+              <h2 class="text-2xl sm:text-3xl font-black">Welcome back, Sarah (@carat_kl)!</h2>
+              <div class="flex items-center gap-2 pt-1">
+                <span class="px-2.5 py-0.5 rounded-full bg-white/10 text-[11px] font-bold">Followed: SEVENTEEN, TWICE, aespa</span>
+              </div>
             </div>
-            <div class="text-right font-mono text-xs text-pink-300">14d : 08h : 42m to Next Show</div>
+            <div class="bg-white/10 p-4 rounded-2xl border border-white/10 text-right">
+              <span class="text-[10px] uppercase font-mono text-slate-400">NEXT SHOW COUNTDOWN</span>
+              <div class="text-xl font-black text-pink-400 font-mono">14d : 08h : 35m</div>
+              <div class="text-[11px] text-slate-300">SEVENTEEN @ Axiata Arena</div>
+            </div>
           </div>
+
+          <!-- 3 Fan Metric Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white p-5 rounded-3xl border border-slate-200 space-y-1">
+              <span class="wire-badge text-slate-400 uppercase font-bold">Saved Shows</span>
+              <div class="text-2xl font-black text-slate-900">4 Events</div>
+              <p class="text-xs text-slate-500">3 Concerts &bull; 1 Cupsleeve Cafe</p>
+            </div>
+            <div class="bg-white p-5 rounded-3xl border border-slate-200 space-y-1">
+              <span class="wire-badge text-purple-600 uppercase font-bold">Presale Alerts</span>
+              <div class="text-2xl font-black text-purple-700">2 Active</div>
+              <p class="text-xs text-slate-500">SMS & Email alert 24h prior</p>
+            </div>
+            <div class="bg-white p-5 rounded-3xl border border-slate-200 space-y-1">
+              <span class="wire-badge text-emerald-600 uppercase font-bold">Transit Radar</span>
+              <div class="text-2xl font-black text-emerald-700">LRT Route Set</div>
+              <p class="text-xs text-slate-500">Bukit Jalil Sri Petaling Line</p>
+            </div>
+          </div>
+
+          <!-- Upcoming Timeline -->
+          <div class="bg-white rounded-3xl p-6 border border-slate-300 space-y-4">
+            <h3 class="font-black text-base text-slate-900">My Upcoming Shows Timeline</h3>
+            <div class="space-y-3 text-xs">
+              
+              <div class="p-4 rounded-2xl bg-slate-50 border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="space-y-1">
+                  <span class="wire-badge px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">15 FEB 2026 &bull; 7:30 PM</span>
+                  <h4 class="font-black text-sm text-slate-900">SEVENTEEN [RIGHT HERE] WORLD TOUR</h4>
+                  <p class="text-slate-500">Axiata Arena Bukit Jalil &bull; GoLive Asia Ticket Whitelisted</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button disabled class="px-3 py-1.5 rounded-xl bg-purple-600 text-white font-bold">View Tickets</button>
+                  <button disabled class="px-3 py-1.5 rounded-xl bg-white border text-slate-700 font-bold">Transit Map</button>
+                </div>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-slate-50 border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="space-y-1">
+                  <span class="wire-badge px-2 py-0.5 rounded bg-pink-100 text-pink-800 font-bold">10 MAY 2026 &bull; 6:00 PM</span>
+                  <h4 class="font-black text-sm text-slate-900">TWICE 5TH WORLD TOUR 'READY TO BE'</h4>
+                  <p class="text-slate-500">National Stadium Bukit Jalil &bull; BookMyShow Whitelisted</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button disabled class="px-3 py-1.5 rounded-xl bg-slate-900 text-white font-bold">View Details</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -449,16 +1312,65 @@
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/saved</span>
-          <span>PAGE 13 / 30</span>
+          <span>PAGE 13 / 30 &bull; SAVED WISHLIST</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="bg-white rounded-3xl p-6 border space-y-2">
-            <h2 class="text-xl font-black text-slate-900">Saved Wishlist & Bookmarks</h2>
-            <div class="p-3 border rounded-xl flex justify-between items-center text-xs">
-              <div><strong>SEVENTEEN [RIGHT HERE] WORLD TOUR</strong> &bull; Axiata Arena</div>
-              <span class="text-purple-600 font-bold">Presale Alert Set</span>
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+            <div>
+              <h1 class="text-2xl font-black text-slate-900 tracking-tight">Saved Shows & Bookmarks</h1>
+              <p class="text-xs text-slate-500">Keep track of verified on-sale dates and ticket presales.</p>
             </div>
+            <button disabled class="px-4 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs flex items-center gap-1.5">
+              <i class="far fa-calendar-plus"></i> Export to Google Calendar
+            </button>
           </div>
+
+          <!-- Wishlist Items Table -->
+          <div class="bg-white rounded-3xl border border-slate-300 overflow-hidden shadow-xs">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 border-b text-slate-500 font-bold">
+                <tr>
+                  <th class="py-3 px-4">EVENT</th>
+                  <th class="py-3 px-4">VENUE</th>
+                  <th class="py-3 px-4">DATE</th>
+                  <th class="py-3 px-4">ALERT</th>
+                  <th class="py-3 px-4 text-right">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-3 px-4 font-bold text-slate-900">SEVENTEEN World Tour KL</td>
+                  <td class="py-3 px-4 text-slate-600">Axiata Arena</td>
+                  <td class="py-3 px-4 text-slate-600">15 Feb 2026</td>
+                  <td class="py-3 px-4 text-purple-600 font-bold">&check; 24h SMS Alert On</td>
+                  <td class="py-3 px-4 text-right">
+                    <button disabled class="px-3 py-1 rounded-lg bg-purple-600 text-white font-bold">Buy Tickets</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-bold text-slate-900">TWICE 'READY TO BE'</td>
+                  <td class="py-3 px-4 text-slate-600">National Stadium</td>
+                  <td class="py-3 px-4 text-slate-600">10 May 2026</td>
+                  <td class="py-3 px-4 text-purple-600 font-bold">&check; 24h SMS Alert On</td>
+                  <td class="py-3 px-4 text-right">
+                    <button disabled class="px-3 py-1 rounded-lg bg-slate-900 text-white font-bold">Buy Tickets</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-bold text-slate-900">aespa SYNK : PARALLEL LINE</td>
+                  <td class="py-3 px-4 text-slate-600">Zepp Kuala Lumpur</td>
+                  <td class="py-3 px-4 text-slate-600">22 Mar 2026</td>
+                  <td class="py-3 px-4 text-slate-400 font-bold">Off</td>
+                  <td class="py-3 px-4 text-right">
+                    <button disabled class="px-3 py-1 rounded-lg bg-slate-900 text-white font-bold">Buy Tickets</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
         </div>
       </div>
     </div>
@@ -468,128 +1380,584 @@
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/notifications</span>
-          <span>PAGE 14 / 30</span>
+          <span>PAGE 14 / 30 &bull; NOTIFICATIONS & PROFILE</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="bg-white rounded-3xl p-6 border space-y-2">
-            <h2 class="text-xl font-black text-slate-900">Notifications & Preferences</h2>
-            <div class="text-xs text-slate-600">Email alerts enabled for Tier-1 Stadium Concerts in Klang Valley.</div>
+          
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <!-- Left: Profile Settings -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-300 space-y-4">
+              <h3 class="font-black text-base text-slate-900">Fan Profile Settings</h3>
+              <div class="space-y-3 text-xs">
+                <div class="flex items-center gap-3">
+                  <div class="w-14 h-14 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-base">ST</div>
+                  <button disabled class="px-3 py-1.5 rounded-xl border text-xs font-bold text-slate-700">Change Avatar</button>
+                </div>
+                <div class="space-y-1">
+                  <label class="font-bold text-slate-700">Display Name</label>
+                  <input type="text" disabled value="Sarah Tan" class="w-full p-2.5 rounded-xl border bg-slate-50">
+                </div>
+                <div class="space-y-1">
+                  <label class="font-bold text-slate-700">Fan Handle</label>
+                  <input type="text" disabled value="@carat_kl" class="w-full p-2.5 rounded-xl border bg-slate-50 font-mono">
+                </div>
+                <div class="space-y-1">
+                  <label class="font-bold text-slate-700">Followed Artists</label>
+                  <div class="flex flex-wrap gap-1.5 pt-1">
+                    <span class="px-2.5 py-1 rounded-lg bg-purple-100 text-purple-700 font-bold">SEVENTEEN &times;</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-pink-100 text-pink-700 font-bold">TWICE &times;</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-indigo-100 text-indigo-700 font-bold">aespa &times;</span>
+                  </div>
+                </div>
+                <button disabled class="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold">Save Profile Changes</button>
+              </div>
+            </div>
+
+            <!-- Right: Notification Preferences & Feed -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-300 space-y-4">
+              <h3 class="font-black text-base text-slate-900">Notification Preferences</h3>
+              <div class="space-y-3 text-xs">
+                <label class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border">
+                  <span>New Concert Announcements in Malaysia</span>
+                  <input type="checkbox" checked disabled class="rounded">
+                </label>
+                <label class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border">
+                  <span>Verified Ticketing On-Sale Drops</span>
+                  <input type="checkbox" checked disabled class="rounded">
+                </label>
+                <label class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border">
+                  <span>Presale Alerts (24 Hours Prior)</span>
+                  <input type="checkbox" checked disabled class="rounded">
+                </label>
+                <label class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border">
+                  <span>Anti-Scalper & Scam Advisory Alerts</span>
+                  <input type="checkbox" checked disabled class="rounded">
+                </label>
+              </div>
+            </div>
+
           </div>
+
         </div>
       </div>
     </div>
 
-    <!-- 15. ORGANIZER STUDIO -->
+    <!-- 15. ORGANIZER STUDIO DASHBOARD -->
     <div id="page-org-dash" class="page-screen space-y-6">
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/organizer/dashboard</span>
-          <span>PAGE 15 / 30</span>
+          <span>PAGE 15 / 30 &bull; ORGANIZER STUDIO</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="bg-white rounded-3xl p-6 border space-y-3">
-            <h2 class="text-2xl font-black text-slate-900">Organizer Studio: Live Nation Malaysia</h2>
-            <div class="grid grid-cols-3 gap-3 text-center text-xs">
-              <div class="p-3 bg-slate-50 border rounded-xl"><div class="text-lg font-bold">2</div>Shows</div>
-              <div class="p-3 bg-slate-50 border rounded-xl"><div class="text-lg font-bold text-emerald-600">98%</div>Trust</div>
-              <div class="p-3 bg-slate-50 border rounded-xl"><div class="text-lg font-bold text-purple-600">14.2K</div>Saves</div>
+          
+          <!-- Organizer Header -->
+          <div class="bg-slate-950 text-white rounded-3xl p-6 sm:p-8 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="wire-badge px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold uppercase">
+                  &check; SSM VERIFIED PROMOTER TIER-1
+                </span>
+                <span class="text-xs font-mono text-slate-400">SSM 201801029384</span>
+              </div>
+              <h2 class="text-2xl sm:text-3xl font-black">Live Nation (Malaysia) Sdn Bhd</h2>
+              <p class="text-xs text-slate-400">Official Concert Promoter & Touring Agency</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button disabled class="px-5 py-3 rounded-2xl bg-purple-600 text-white font-bold text-xs shadow-md">
+                + Submit New K-Pop Event (AI-Assisted)
+              </button>
             </div>
           </div>
+
+          <!-- 4 KPI Metrics -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-5 rounded-3xl border border-slate-200 space-y-1">
+              <span class="wire-badge text-slate-400 uppercase font-bold">Total Submissions</span>
+              <div class="text-2xl font-black text-slate-900">6 Events</div>
+              <p class="text-xs text-slate-500">Lifetime catalog</p>
+            </div>
+            <div class="bg-white p-5 rounded-3xl border border-slate-200 space-y-1">
+              <span class="wire-badge text-emerald-600 uppercase font-bold">Live Approved</span>
+              <div class="text-2xl font-black text-emerald-700">4 Shows</div>
+              <p class="text-xs text-slate-500">Publicly visible</p>
+            </div>
+            <div class="bg-white p-5 rounded-3xl border border-slate-200 space-y-1">
+              <span class="wire-badge text-purple-600 uppercase font-bold">Avg Trust Score</span>
+              <div class="text-2xl font-black text-purple-700">97.2%</div>
+              <p class="text-xs text-slate-500">High legitimacy</p>
+            </div>
+            <div class="bg-white p-5 rounded-3xl border border-slate-200 space-y-1">
+              <span class="wire-badge text-pink-600 uppercase font-bold">Total Fan Saves</span>
+              <div class="text-2xl font-black text-pink-700">28.4K</div>
+              <p class="text-xs text-slate-500">Wishlist bookmarks</p>
+            </div>
+          </div>
+
+          <!-- Managed Submissions Table -->
+          <div class="bg-white rounded-3xl p-6 border border-slate-300 space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="font-black text-base text-slate-900">Recent Event Submissions</h3>
+              <span class="text-xs font-bold text-purple-600">View All 6 Events &rarr;</span>
+            </div>
+
+            <div class="overflow-x-auto text-xs">
+              <table class="w-full text-left">
+                <thead class="bg-slate-50 border-b text-slate-500 font-bold">
+                  <tr>
+                    <th class="py-2.5 px-3">EVENT TITLE</th>
+                    <th class="py-2.5 px-3">VENUE</th>
+                    <th class="py-2.5 px-3">DATE</th>
+                    <th class="py-2.5 px-3">AI TRUST SCORE</th>
+                    <th class="py-2.5 px-3">STATUS</th>
+                    <th class="py-2.5 px-3 text-right">ACTIONS</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  <tr>
+                    <td class="py-3 px-3 font-bold text-slate-900">SEVENTEEN [RIGHT HERE] WORLD TOUR</td>
+                    <td class="py-3 px-3 text-slate-600">Axiata Arena</td>
+                    <td class="py-3 px-3 text-slate-600">15 Feb 2026</td>
+                    <td class="py-3 px-3 text-emerald-600 font-bold">98% Match</td>
+                    <td class="py-3 px-3"><span class="wire-badge px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">APPROVED</span></td>
+                    <td class="py-3 px-3 text-right font-bold text-purple-600">Audit Report</td>
+                  </tr>
+                  <tr>
+                    <td class="py-3 px-3 font-bold text-slate-900">TWICE 5TH WORLD TOUR 'READY TO BE'</td>
+                    <td class="py-3 px-3 text-slate-600">National Stadium</td>
+                    <td class="py-3 px-3 text-slate-600">10 May 2026</td>
+                    <td class="py-3 px-3 text-emerald-600 font-bold">99% Match</td>
+                    <td class="py-3 px-3"><span class="wire-badge px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">APPROVED</span></td>
+                    <td class="py-3 px-3 text-right font-bold text-purple-600">Audit Report</td>
+                  </tr>
+                  <tr>
+                    <td class="py-3 px-3 font-bold text-slate-900">Stray Kids 'dominATE' World Tour</td>
+                    <td class="py-3 px-3 text-slate-600">National Stadium</td>
+                    <td class="py-3 px-3 text-slate-600">18 Jul 2026</td>
+                    <td class="py-3 px-3 text-amber-600 font-bold">96% Match</td>
+                    <td class="py-3 px-3"><span class="wire-badge px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold">PENDING AUDIT</span></td>
+                    <td class="py-3 px-3 text-right font-bold text-purple-600">Edit Submission</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
 
-    <!-- 16. ORGANIZER EVENTS -->
+    <!-- 16. ORGANIZER EVENTS LIST -->
     <div id="page-org-events" class="page-screen space-y-6">
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/organizer/events</span>
-          <span>PAGE 16 / 30</span>
+          <span>PAGE 16 / 30 &bull; MANAGED EVENTS</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="bg-white rounded-3xl p-6 border space-y-3">
-            <h2 class="text-xl font-black text-slate-900">Managed Event Submissions</h2>
-            <div class="p-3 border rounded-xl text-xs flex justify-between items-center">
-              <span>SEVENTEEN Tour KL (Axiata Arena)</span>
-              <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">APPROVED</span>
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+            <div>
+              <h1 class="text-2xl font-black text-slate-900 tracking-tight">Managed Event Submissions</h1>
+              <p class="text-xs text-slate-500">Track verification status, forensic audits, and public catalog visibility.</p>
             </div>
+            <button disabled class="px-4 py-2 rounded-xl bg-purple-600 text-white font-bold text-xs">+ Submit Event</button>
           </div>
+
+          <!-- Filter Toolbar -->
+          <div class="flex flex-wrap items-center justify-between gap-3 text-xs font-bold">
+            <div class="flex items-center gap-2">
+              <span class="px-3.5 py-1.5 rounded-full bg-slate-900 text-white">All (6)</span>
+              <span class="px-3.5 py-1.5 rounded-full bg-white border text-slate-700">Approved (4)</span>
+              <span class="px-3.5 py-1.5 rounded-full bg-white border text-slate-700">In Review (1)</span>
+              <span class="px-3.5 py-1.5 rounded-full bg-white border text-slate-700">Draft (1)</span>
+            </div>
+            <input type="text" disabled placeholder="Search submissions..." class="p-2 rounded-xl border bg-white">
+          </div>
+
+          <!-- Comprehensive Events Table -->
+          <div class="bg-white rounded-3xl border border-slate-300 overflow-hidden shadow-xs">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 border-b text-slate-500 font-bold">
+                <tr>
+                  <th class="py-3 px-4">POSTER</th>
+                  <th class="py-3 px-4">EVENT NAME</th>
+                  <th class="py-3 px-4">VENUE</th>
+                  <th class="py-3 px-4">DATE</th>
+                  <th class="py-3 px-4">FORENSIC SCORE</th>
+                  <th class="py-3 px-4">STATUS</th>
+                  <th class="py-3 px-4 text-right">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-2.5 px-4"><div class="w-8 h-10 rounded bg-slate-200 border"></div></td>
+                  <td class="py-2.5 px-4 font-bold text-slate-900">SEVENTEEN [RIGHT HERE] TOUR</td>
+                  <td class="py-2.5 px-4 text-slate-600">Axiata Arena</td>
+                  <td class="py-2.5 px-4 text-slate-600">15 Feb 2026</td>
+                  <td class="py-2.5 px-4 text-emerald-600 font-bold">98% High</td>
+                  <td class="py-2.5 px-4"><span class="wire-badge px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">LIVE</span></td>
+                  <td class="py-2.5 px-4 text-right text-purple-600 font-bold">View Public</td>
+                </tr>
+                <tr>
+                  <td class="py-2.5 px-4"><div class="w-8 h-10 rounded bg-slate-200 border"></div></td>
+                  <td class="py-2.5 px-4 font-bold text-slate-900">TWICE 'READY TO BE' TOUR</td>
+                  <td class="py-2.5 px-4 text-slate-600">National Stadium</td>
+                  <td class="py-2.5 px-4 text-slate-600">10 May 2026</td>
+                  <td class="py-2.5 px-4 text-emerald-600 font-bold">99% High</td>
+                  <td class="py-2.5 px-4"><span class="wire-badge px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">LIVE</span></td>
+                  <td class="py-2.5 px-4 text-right text-purple-600 font-bold">View Public</td>
+                </tr>
+                <tr>
+                  <td class="py-2.5 px-4"><div class="w-8 h-10 rounded bg-slate-200 border"></div></td>
+                  <td class="py-2.5 px-4 font-bold text-slate-900">Stray Kids 'dominATE' Tour</td>
+                  <td class="py-2.5 px-4 text-slate-600">National Stadium</td>
+                  <td class="py-2.5 px-4 text-slate-600">18 Jul 2026</td>
+                  <td class="py-2.5 px-4 text-amber-600 font-bold">96% High</td>
+                  <td class="py-2.5 px-4"><span class="wire-badge px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold">IN REVIEW</span></td>
+                  <td class="py-2.5 px-4 text-right text-purple-600 font-bold">Inspect</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
         </div>
       </div>
     </div>
 
-    <!-- 17. AI POSTER SCANNER -->
+    <!-- 17. ORGANIZER AI POSTER SCANNER -->
     <div id="page-org-submit" class="page-screen space-y-6">
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/organizer/events/new</span>
-          <span>PAGE 17 / 30</span>
+          <span>PAGE 17 / 30 &bull; AI POSTER SCANNER</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="blueprint-box h-64 rounded-3xl flex flex-col items-center justify-center p-4 text-center">
-              <i class="fas fa-wand-magic-sparkles text-2xl text-purple-600 mb-1"></i>
-              <div class="font-bold text-xs text-slate-900">Google Gemini AI Poster Scanner</div>
-              <div class="text-[10px] text-slate-400">Drag & Drop Concert Poster</div>
-            </div>
-            <div class="space-y-2 text-xs">
-              <input type="text" disabled value="SEVENTEEN WORLD TOUR IN KL" class="w-full p-2 border rounded-xl bg-slate-50 font-bold">
-              <input type="text" disabled value="Axiata Arena Bukit Jalil" class="w-full p-2 border rounded-xl bg-slate-50">
-              <input type="text" disabled value="https://golive-asia.com" class="w-full p-2 border rounded-xl bg-slate-50 font-mono">
-            </div>
+          
+          <div class="bg-white rounded-3xl p-6 border border-slate-300 space-y-1">
+            <span class="wire-badge text-purple-700 font-bold uppercase"><i class="fas fa-wand-magic-sparkles me-1"></i> GEMINI MULTIMODAL VISION SCANNER</span>
+            <h2 class="text-2xl font-black text-slate-900">AI-Assisted Concert Submission Form</h2>
+            <p class="text-xs text-slate-500">Upload tour announcement poster to automatically extract artist, venue, dates, and ticketing vendor.</p>
           </div>
+
+          <!-- Split: Left Vision Dropzone & Right Auto-Filled Form -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <!-- Left: Gemini Vision Dropzone -->
+            <div class="space-y-4">
+              <div class="blueprint-box h-72 rounded-3xl flex flex-col items-center justify-center p-6 text-center space-y-2">
+                <i class="fas fa-file-image text-3xl text-purple-600"></i>
+                <div class="font-black text-sm text-slate-900">Drag & Drop Concert Poster Here</div>
+                <div class="text-xs text-slate-500">PNG, JPG up to 10MB</div>
+                <span class="wire-badge px-3 py-1 rounded bg-purple-100 text-purple-700 font-bold">gemini-4-argon vision active</span>
+              </div>
+
+              <!-- Scanning Progress & Extraction Card -->
+              <div class="bg-white rounded-3xl p-5 border border-purple-200 space-y-2 text-xs">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-purple-700">&check; AI Extraction Complete (98% Confidence)</span>
+                  <span class="wire-badge text-slate-400">0.82s</span>
+                </div>
+                <div class="space-y-1 text-slate-600 bg-slate-50 p-3 rounded-2xl border">
+                  <div><strong>Detected Artist:</strong> SEVENTEEN (세븐틴)</div>
+                  <div><strong>Detected Dates:</strong> 15 February 2026, 7:30 PM</div>
+                  <div><strong>Detected Venue:</strong> Axiata Arena Bukit Jalil</div>
+                  <div><strong>Detected Partner:</strong> golive-asia.com</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Event Fields Form -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-300 space-y-3 text-xs">
+              <div class="space-y-1">
+                <label class="font-bold text-slate-700">Event Title</label>
+                <input type="text" disabled value="SEVENTEEN [RIGHT HERE] WORLD TOUR IN KL" class="w-full p-2.5 rounded-xl border bg-slate-50 font-bold">
+              </div>
+
+              <div class="grid grid-cols-2 gap-2">
+                <div class="space-y-1">
+                  <label class="font-bold text-slate-700">Category</label>
+                  <select disabled class="w-full p-2.5 rounded-xl border bg-slate-50 font-bold"><option>Concert</option></select>
+                </div>
+                <div class="space-y-1">
+                  <label class="font-bold text-slate-700">Venue</label>
+                  <select disabled class="w-full p-2.5 rounded-xl border bg-slate-50 font-bold"><option>Axiata Arena Bukit Jalil</option></select>
+                </div>
+              </div>
+
+              <div class="space-y-1">
+                <label class="font-bold text-slate-700">Official Ticketing URL</label>
+                <input type="text" disabled value="https://golive-asia.com/events/seventeen-2026" class="w-full p-2.5 rounded-xl border bg-slate-50 font-mono">
+                <span class="text-[11px] text-emerald-600 font-bold">&check; Whitelisted Domain: GoLive Asia</span>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2">
+                <div class="space-y-1">
+                  <label class="font-bold text-slate-700">Min Price (MYR)</label>
+                  <input type="text" disabled value="RM 298" class="w-full p-2.5 rounded-xl border bg-slate-50">
+                </div>
+                <div class="space-y-1">
+                  <label class="font-bold text-slate-700">Max Price (MYR)</label>
+                  <input type="text" disabled value="RM 1,088" class="w-full p-2.5 rounded-xl border bg-slate-50">
+                </div>
+              </div>
+
+              <button disabled class="w-full py-3 rounded-2xl bg-purple-600 text-white font-black text-xs shadow-md mt-2">
+                Submit for 4-Step Forensic Audit
+              </button>
+            </div>
+
+          </div>
+
         </div>
       </div>
     </div>
 
-    <!-- 18. VERIFICATION BREAKDOWN -->
+    <!-- 18. VERIFICATION AUDIT BREAKDOWN -->
     <div id="page-org-audit" class="page-screen space-y-6">
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/organizer/events/68/verification</span>
-          <span>PAGE 18 / 30</span>
+          <span>PAGE 18 / 30 &bull; FORENSIC BREAKDOWN</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="bg-white rounded-3xl p-6 border space-y-2">
-            <h2 class="text-xl font-black text-slate-900">4-Step Forensics Protocol Summary</h2>
-            <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800">
-              SSM Check &bull; Venue Permit Match &bull; Domain Whitelist &bull; AI Scoring (98%)
+          
+          <div class="bg-slate-950 text-white rounded-3xl p-6 border border-slate-800 flex items-center justify-between">
+            <div>
+              <span class="wire-badge text-emerald-400 font-bold">SUBMISSION AUDIT CERTIFICATE</span>
+              <h2 class="text-2xl font-black">Audit Certificate: KSYNC-84920-MY</h2>
+              <p class="text-xs text-slate-400">SEVENTEEN [RIGHT HERE] WORLD TOUR IN KL</p>
+            </div>
+            <div class="text-right">
+              <span class="text-3xl font-black text-emerald-400 font-mono">98/100</span>
+              <div class="text-[11px] text-slate-300">HIGH LEGITIMACY</div>
             </div>
           </div>
+
+          <!-- 4 Pillars Detail Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div class="bg-white p-5 rounded-3xl border border-slate-300 space-y-2">
+              <div class="flex justify-between font-bold">
+                <span class="text-purple-700">1. SSM & IDENTITY AUDIT</span>
+                <span class="text-emerald-600">100% PASS</span>
+              </div>
+              <p class="text-slate-600">Companies Commission of Malaysia verified: Live Nation (M) Sdn Bhd (201801029384).</p>
+            </div>
+            <div class="bg-white p-5 rounded-3xl border border-slate-300 space-y-2">
+              <div class="flex justify-between font-bold">
+                <span class="text-purple-700">2. VENUE BOOKING CONFIRMATION</span>
+                <span class="text-emerald-600">100% PASS</span>
+              </div>
+              <p class="text-slate-600">Axiata Arena hall slot reservation confirmed with Perbadanan Stadium Malaysia.</p>
+            </div>
+            <div class="bg-white p-5 rounded-3xl border border-slate-300 space-y-2">
+              <div class="flex justify-between font-bold">
+                <span class="text-purple-700">3. TICKETING WHITELIST PROTOCOL</span>
+                <span class="text-emerald-600">100% PASS</span>
+              </div>
+              <p class="text-slate-600">Domain golive-asia.com is on the Malaysian authorized ticketing provider registry.</p>
+            </div>
+            <div class="bg-white p-5 rounded-3xl border border-slate-300 space-y-2">
+              <div class="flex justify-between font-bold">
+                <span class="text-purple-700">4. GEMINI AI POSTER VISION</span>
+                <span class="text-emerald-600">92% PASS</span>
+              </div>
+              <p class="text-slate-600">Visual elements match official agency press kits from Pledis / Weverse schedule.</p>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
 
-    <!-- 19. ADMIN EXECUTIVE -->
+    <!-- 19. ADMIN EXECUTIVE DASHBOARD -->
     <div id="page-admin-dash" class="page-screen space-y-6">
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/admin</span>
-          <span>PAGE 19 / 30</span>
+          <span>PAGE 19 / 30 &bull; ADMIN EXECUTIVE</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-white p-4 rounded-2xl border"><div class="wire-badge text-slate-400">EVENTS</div><div class="text-2xl font-black">24</div></div>
-            <div class="bg-white p-4 rounded-2xl border"><div class="wire-badge text-amber-600">PENDING AUDIT</div><div class="text-2xl font-black text-amber-600">3</div></div>
-            <div class="bg-white p-4 rounded-2xl border"><div class="wire-badge text-slate-400">ARTISTS</div><div class="text-2xl font-black">58</div></div>
-            <div class="bg-white p-4 rounded-2xl border"><div class="wire-badge text-emerald-600">INCIDENTS</div><div class="text-2xl font-black text-emerald-600">0</div></div>
+          
+          <!-- Admin Command Subnav Ribbon -->
+          <div class="bg-slate-900 text-white rounded-2xl p-3 flex items-center justify-between overflow-x-auto text-xs font-bold gap-3">
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="px-3 py-1.5 rounded-xl bg-purple-600 text-white shadow-xs">Overview</span>
+              <span class="px-3 py-1.5 rounded-xl text-slate-300 hover:text-white">Events (24)</span>
+              <span class="px-3 py-1.5 rounded-xl text-slate-300 hover:text-white">Verifications (3)</span>
+              <span class="px-3 py-1.5 rounded-xl text-slate-300 hover:text-white">Artists (58)</span>
+              <span class="px-3 py-1.5 rounded-xl text-slate-300 hover:text-white">Reports (0)</span>
+              <span class="px-3 py-1.5 rounded-xl text-slate-300 hover:text-white">Users</span>
+              <span class="px-3 py-1.5 rounded-xl text-slate-300 hover:text-white">Venues</span>
+              <span class="px-3 py-1.5 rounded-xl text-slate-300 hover:text-white">Logs</span>
+            </div>
+            <span class="wire-badge text-emerald-400 shrink-0">&bull; SYSTEM HEALTHY</span>
           </div>
+
+          <!-- 4 Executive KPI Cards -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-5 rounded-3xl border border-slate-200 space-y-1">
+              <span class="wire-badge text-slate-400 uppercase font-bold">Total Events</span>
+              <div class="text-2xl font-black text-slate-900">24 Shows</div>
+              <p class="text-xs text-slate-500">100% Verified Listings</p>
+            </div>
+            <div class="bg-white p-5 rounded-3xl border border-slate-200 space-y-1">
+              <span class="wire-badge text-amber-600 uppercase font-bold">Pending Audit</span>
+              <div class="text-2xl font-black text-amber-600">3 Submissions</div>
+              <p class="text-xs text-amber-700 font-medium">Awaiting manual check</p>
+            </div>
+            <div class="bg-white p-5 rounded-3xl border border-slate-200 space-y-1">
+              <span class="wire-badge text-purple-600 uppercase font-bold">Registered Artists</span>
+              <div class="text-2xl font-black text-purple-700">58 Artists</div>
+              <p class="text-xs text-slate-500">284 Lineup Members</p>
+            </div>
+            <div class="bg-white p-5 rounded-3xl border border-slate-200 space-y-1">
+              <span class="wire-badge text-emerald-600 uppercase font-bold">Active Scam Reports</span>
+              <div class="text-2xl font-black text-emerald-600">0 Flags</div>
+              <p class="text-xs text-slate-500">Zero active incidents</p>
+            </div>
+          </div>
+
+          <!-- Urgent Verification Review Queue Table -->
+          <div class="bg-white rounded-3xl p-6 border border-slate-300 space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="font-black text-base text-slate-900 flex items-center gap-2">
+                <i class="fas fa-hourglass-half text-amber-500"></i> Urgent Verification Review Queue (Model 2)
+              </h3>
+              <span class="text-xs font-bold text-purple-600">Open Full Queue (3) &rarr;</span>
+            </div>
+
+            <div class="overflow-x-auto text-xs">
+              <table class="w-full text-left">
+                <thead class="bg-slate-50 border-b text-slate-500 font-bold">
+                  <tr>
+                    <th class="py-2.5 px-3">SUBMISSION ID</th>
+                    <th class="py-2.5 px-3">EVENT & ARTIST</th>
+                    <th class="py-2.5 px-3">ORGANIZER</th>
+                    <th class="py-2.5 px-3">AI TRUST SCORE</th>
+                    <th class="py-2.5 px-3">WHITELIST</th>
+                    <th class="py-2.5 px-3 text-right">DECISION</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  <tr>
+                    <td class="py-3 px-3 font-mono font-bold text-purple-700">KSYNC-84921-MY</td>
+                    <td class="py-3 px-3 font-bold text-slate-900">Stray Kids 'dominATE' World Tour</td>
+                    <td class="py-3 px-3 text-slate-600">Live Nation Malaysia</td>
+                    <td class="py-3 px-3 text-emerald-600 font-bold">96% Match</td>
+                    <td class="py-3 px-3 text-emerald-600">&check; golive-asia.com</td>
+                    <td class="py-3 px-3 text-right space-x-1">
+                      <button disabled class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-bold">Approve</button>
+                      <button disabled class="px-2.5 py-1 rounded-lg bg-rose-600 text-white font-bold">Reject</button>
+                      <button disabled class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-bold">Inspect</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="py-3 px-3 font-mono font-bold text-purple-700">KSYNC-84922-MY</td>
+                    <td class="py-3 px-3 font-bold text-slate-900">IVE 2nd World Tour in KL</td>
+                    <td class="py-3 px-3 text-slate-600">Star Planet Sdn Bhd</td>
+                    <td class="py-3 px-3 text-emerald-600 font-bold">94% Match</td>
+                    <td class="py-3 px-3 text-emerald-600">&check; bookmyshow.com</td>
+                    <td class="py-3 px-3 text-right space-x-1">
+                      <button disabled class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-bold">Approve</button>
+                      <button disabled class="px-2.5 py-1 rounded-lg bg-rose-600 text-white font-bold">Reject</button>
+                      <button disabled class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-bold">Inspect</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Real-time Security & Governance Audit Log Stream -->
+          <div class="bg-white rounded-3xl p-6 border border-slate-300 space-y-3">
+            <h4 class="font-black text-sm text-slate-900 flex items-center gap-2">
+              <i class="fas fa-list-check text-purple-600"></i> Real-Time Security & Governance Log Stream
+            </h4>
+            <div class="space-y-2 text-xs font-mono">
+              <div class="p-2.5 rounded-xl bg-slate-50 border flex justify-between">
+                <span>[2026-10-26 15:42 MYT] <strong>admin@ksync.my</strong> APPROVED Event #68 (SEVENTEEN Axiata Arena)</span>
+                <span class="text-slate-400">IP: 175.143.20.12</span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-slate-50 border flex justify-between">
+                <span>[2026-10-26 14:10 MYT] <strong>organizer@livenation.my</strong> SUBMITTED Event #19 for audit</span>
+                <span class="text-slate-400">IP: 210.195.45.88</span>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
 
-    <!-- 20. ADMIN EVENTS -->
+    <!-- 20. ADMIN EVENTS MANAGEMENT -->
     <div id="page-admin-events" class="page-screen space-y-6">
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/admin/events</span>
-          <span>PAGE 20 / 30</span>
+          <span>PAGE 20 / 30 &bull; ADMIN EVENTS</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="bg-white rounded-3xl p-6 border space-y-2">
-            <h2 class="text-xl font-black text-slate-900">Manage Events Master Catalog</h2>
-            <div class="text-xs text-slate-500">Status toggles (APPROVED, CANCELLED) with in-app confirmation modal.</div>
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+            <div>
+              <h1 class="text-2xl font-black text-slate-900 tracking-tight">Events Master Catalog Administration</h1>
+              <p class="text-xs text-slate-500">Publish, toggle cancellation states, edit ticketing links, or manage lineup links.</p>
+            </div>
+            <button disabled class="px-4 py-2 rounded-xl bg-purple-600 text-white font-bold text-xs">+ Create Event</button>
           </div>
+
+          <!-- Master Events Table -->
+          <div class="bg-white rounded-3xl border border-slate-300 overflow-hidden shadow-xs">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 border-b text-slate-500 font-bold">
+                <tr>
+                  <th class="py-3 px-4">ID</th>
+                  <th class="py-3 px-4">EVENT TITLE</th>
+                  <th class="py-3 px-4">ARTIST</th>
+                  <th class="py-3 px-4">VENUE</th>
+                  <th class="py-3 px-4">DATE</th>
+                  <th class="py-3 px-4">STATUS</th>
+                  <th class="py-3 px-4 text-right">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-3 px-4 font-mono font-bold">#68</td>
+                  <td class="py-3 px-4 font-bold text-slate-900">SEVENTEEN [RIGHT HERE] TOUR</td>
+                  <td class="py-3 px-4 text-slate-600">SEVENTEEN</td>
+                  <td class="py-3 px-4 text-slate-600">Axiata Arena</td>
+                  <td class="py-3 px-4 text-slate-600">15 Feb 2026</td>
+                  <td class="py-3 px-4"><span class="wire-badge px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">APPROVED</span></td>
+                  <td class="py-3 px-4 text-right space-x-1">
+                    <button disabled class="px-2.5 py-1 rounded-lg bg-slate-100 font-bold">Edit</button>
+                    <button disabled class="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 font-bold">Cancel</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-mono font-bold">#69</td>
+                  <td class="py-3 px-4 font-bold text-slate-900">TWICE 'READY TO BE' TOUR</td>
+                  <td class="py-3 px-4 text-slate-600">TWICE</td>
+                  <td class="py-3 px-4 text-slate-600">National Stadium</td>
+                  <td class="py-3 px-4 text-slate-600">10 May 2026</td>
+                  <td class="py-3 px-4"><span class="wire-badge px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">APPROVED</span></td>
+                  <td class="py-3 px-4 text-right space-x-1">
+                    <button disabled class="px-2.5 py-1 rounded-lg bg-slate-100 font-bold">Edit</button>
+                    <button disabled class="px-2.5 py-1 rounded-lg bg-rose-50 text-rose-700 font-bold">Cancel</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
         </div>
       </div>
     </div>
@@ -599,47 +1967,162 @@
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/admin/verifications</span>
-          <span>PAGE 21 / 30</span>
+          <span>PAGE 21 / 30 &bull; FORENSIC AUDITING</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="bg-white rounded-3xl p-6 border space-y-2">
-            <h2 class="text-xl font-black text-slate-900">Verification Center Review Queue</h2>
-            <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs">
-              3 Submissions awaiting forensic review (Approve / Reject actions).
+          
+          <div class="bg-slate-950 text-white rounded-3xl p-6 border border-slate-800 space-y-2">
+            <span class="wire-badge text-pink-400 font-bold uppercase">&bull; ANTI-SCAM FORENSIC PROTOCOL</span>
+            <h2 class="text-2xl font-black">Forensic Audit Protocol for Community Submissions</h2>
+            <p class="text-xs text-slate-300">Model 2 public submissions must clear SSM check, venue permit check, and domain whitelist check.</p>
+          </div>
+
+          <!-- Side-by-Side Verification Inspector -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white rounded-3xl p-6 border border-slate-300 space-y-3">
+              <h3 class="font-black text-sm text-slate-900">Submitted Event Artwork & Proofs</h3>
+              <div class="blueprint-box h-60 rounded-2xl flex items-center justify-center font-bold text-xs text-slate-400">
+                Uploaded Tour Poster Image Comp
+              </div>
+              <div class="p-3 bg-slate-50 rounded-2xl border text-xs space-y-1">
+                <div><strong>Organizer:</strong> Live Nation Malaysia (SSM 201801029384)</div>
+                <div><strong>Booking Receipt:</strong> Axiata_HallSlot_Ref4910.pdf (Verified)</div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 border border-slate-300 space-y-3 text-xs">
+              <h3 class="font-black text-sm text-slate-900">AI Extraction vs Domain Registry</h3>
+              <div class="space-y-2">
+                <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold">
+                  &check; golive-asia.com (Whitelisted Malaysian Partner)
+                </div>
+                <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold">
+                  &check; Venue: Axiata Arena (Hall Booking Matched)
+                </div>
+                <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold">
+                  &check; Gemini 4 Argon Vision Match: 96% Confidence
+                </div>
+              </div>
+
+              <!-- Decision Buttons -->
+              <div class="pt-4 border-t space-y-2">
+                <button disabled class="w-full py-2.5 rounded-2xl bg-emerald-600 text-white font-bold">Approve & Publish to Public Catalog</button>
+                <button disabled class="w-full py-2.5 rounded-2xl bg-rose-600 text-white font-bold">Reject Submission (Send Scam Notice)</button>
+              </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>
 
-    <!-- 22. ADMIN LINEUPS -->
+    <!-- 22. ADMIN TALENT DIRECTORY & LINEUPS -->
     <div id="page-admin-artists" class="page-screen space-y-6">
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/admin/artists</span>
-          <span>PAGE 22 / 30</span>
+          <span>PAGE 22 / 30 &bull; TALENT ROSTER</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="bg-white rounded-3xl p-6 border space-y-2">
-            <h2 class="text-xl font-black text-slate-900">Talent Directory & Normalized Lineup Hub</h2>
-            <div class="text-xs text-slate-500">Add artists and edit normalized members with stage names and MBTI.</div>
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+            <div>
+              <h1 class="text-2xl font-black text-slate-900 tracking-tight">Talent Directory & Lineup Hub</h1>
+              <p class="text-xs text-slate-500">Manage artist profiles, agencies, Hangul titles, and 13-member biodata rosters.</p>
+            </div>
+            <button disabled class="px-4 py-2 rounded-xl bg-purple-600 text-white font-bold text-xs">+ Add New Artist</button>
           </div>
+
+          <!-- Artists Table with Lineup Member Manager -->
+          <div class="bg-white rounded-3xl border border-slate-300 overflow-hidden shadow-xs">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 border-b text-slate-500 font-bold">
+                <tr>
+                  <th class="py-3 px-4">ARTIST NAME</th>
+                  <th class="py-3 px-4">HANGUL</th>
+                  <th class="py-3 px-4">AGENCY</th>
+                  <th class="py-3 px-4">TYPE</th>
+                  <th class="py-3 px-4">MEMBERS</th>
+                  <th class="py-3 px-4 text-right">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-3 px-4 font-bold text-slate-900">SEVENTEEN</td>
+                  <td class="py-3 px-4 text-slate-600">세븐틴</td>
+                  <td class="py-3 px-4 text-slate-600">Pledis / HYBE</td>
+                  <td class="py-3 px-4 text-slate-600">Boy Group</td>
+                  <td class="py-3 px-4 font-bold text-purple-600">13 Members</td>
+                  <td class="py-3 px-4 text-right space-x-1">
+                    <button disabled class="px-2.5 py-1 rounded-lg bg-purple-100 text-purple-700 font-bold">Manage 13 Members</button>
+                    <button disabled class="px-2.5 py-1 rounded-lg bg-slate-100 font-bold">Edit</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-bold text-slate-900">TWICE</td>
+                  <td class="py-3 px-4 text-slate-600">트와이스</td>
+                  <td class="py-3 px-4 text-slate-600">JYP Ent</td>
+                  <td class="py-3 px-4 text-slate-600">Girl Group</td>
+                  <td class="py-3 px-4 font-bold text-pink-600">9 Members</td>
+                  <td class="py-3 px-4 text-right space-x-1">
+                    <button disabled class="px-2.5 py-1 rounded-lg bg-pink-100 text-pink-700 font-bold">Manage 9 Members</button>
+                    <button disabled class="px-2.5 py-1 rounded-lg bg-slate-100 font-bold">Edit</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
         </div>
       </div>
     </div>
 
-    <!-- 23. ANTI-SCAM REPORTS -->
+    <!-- 23. ADMIN ANTI-SCAM REPORTS -->
     <div id="page-admin-reports" class="page-screen space-y-6">
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/admin/reports</span>
-          <span>PAGE 23 / 30</span>
+          <span>PAGE 23 / 30 &bull; ANTI-SCAM REPORTS</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="bg-white rounded-3xl p-6 border space-y-2">
-            <h2 class="text-xl font-black text-slate-900">Anti-Scam & Incident Moderation</h2>
-            <div class="p-3 rounded-xl bg-emerald-50 border text-emerald-800 text-xs">Zero unresolved incident reports.</div>
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+            <div>
+              <h1 class="text-2xl font-black text-slate-900 tracking-tight">Anti-Scam & Community Reports Center</h1>
+              <p class="text-xs text-slate-500">Review reported fraud listings, scalper resale links, or toxic user comments.</p>
+            </div>
+            <span class="wire-badge px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold">0 PENDING &bull; 14 RESOLVED</span>
           </div>
+
+          <!-- Reports Table -->
+          <div class="bg-white rounded-3xl border border-slate-300 overflow-hidden shadow-xs">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 border-b text-slate-500 font-bold">
+                <tr>
+                  <th class="py-3 px-4">REPORT ID</th>
+                  <th class="py-3 px-4">TARGET TYPE</th>
+                  <th class="py-3 px-4">REPORTER</th>
+                  <th class="py-3 px-4">REASON</th>
+                  <th class="py-3 px-4">STATUS</th>
+                  <th class="py-3 px-4 text-right">RESOLUTION</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-3 px-4 font-mono font-bold">#REP-401</td>
+                  <td class="py-3 px-4 font-bold text-slate-900">Event Ticket Link</td>
+                  <td class="py-3 px-4 text-slate-600">fan29@gmail.com</td>
+                  <td class="py-3 px-4 text-rose-600 font-bold">Telegram scalper resale DM</td>
+                  <td class="py-3 px-4"><span class="wire-badge px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">RESOLVED</span></td>
+                  <td class="py-3 px-4 text-right text-slate-500">Link Blocked</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
         </div>
       </div>
     </div>
@@ -649,61 +2132,250 @@
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/admin/users</span>
-          <span>PAGE 24 / 30</span>
+          <span>PAGE 24 / 30 &bull; USERS & RBAC</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="bg-white rounded-3xl p-6 border space-y-2">
-            <h2 class="text-xl font-black text-slate-900">User Accounts & Access Control</h2>
-            <div class="text-xs text-slate-500">Role assignment (FAN, ORGANIZER, ADMIN) and suspension controls.</div>
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+            <div>
+              <h1 class="text-2xl font-black text-slate-900 tracking-tight">User Management & Role-Based Access Control (RBAC)</h1>
+              <p class="text-xs text-slate-500">Manage fan accounts, verified promoter credentials, and admin permissions.</p>
+            </div>
+            <div class="flex gap-2">
+              <span class="px-3 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold">All Users (142)</span>
+              <span class="px-3 py-1.5 rounded-xl bg-white border text-xs font-bold text-slate-700">Organizers (11)</span>
+              <span class="px-3 py-1.5 rounded-xl bg-white border text-xs font-bold text-slate-700">Admins (3)</span>
+            </div>
           </div>
+
+          <!-- Users Table -->
+          <div class="bg-white rounded-3xl border border-slate-300 overflow-hidden shadow-xs">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 border-b text-slate-500 font-bold">
+                <tr>
+                  <th class="py-3 px-4">USER</th>
+                  <th class="py-3 px-4">EMAIL</th>
+                  <th class="py-3 px-4">ROLE</th>
+                  <th class="py-3 px-4">REGISTERED</th>
+                  <th class="py-3 px-4">STATUS</th>
+                  <th class="py-3 px-4 text-right">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-3 px-4 font-bold text-slate-900">Sarah Tan (@carat_kl)</td>
+                  <td class="py-3 px-4 text-slate-600">sarah@carat.my</td>
+                  <td class="py-3 px-4"><span class="wire-badge px-2 py-0.5 rounded bg-pink-100 text-pink-700 font-bold">FAN</span></td>
+                  <td class="py-3 px-4 text-slate-600">12 Oct 2026</td>
+                  <td class="py-3 px-4 text-emerald-600 font-bold">Active</td>
+                  <td class="py-3 px-4 text-right text-purple-600 font-bold">Edit Role</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-bold text-slate-900">Live Nation Malaysia</td>
+                  <td class="py-3 px-4 text-slate-600">promoter@livenation.my</td>
+                  <td class="py-3 px-4"><span class="wire-badge px-2 py-0.5 rounded bg-purple-100 text-purple-700 font-bold">ORGANIZER</span></td>
+                  <td class="py-3 px-4 text-slate-600">01 Sep 2026</td>
+                  <td class="py-3 px-4 text-emerald-600 font-bold">Active</td>
+                  <td class="py-3 px-4 text-right text-purple-600 font-bold">Edit Role</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-bold text-slate-900">System Admin</td>
+                  <td class="py-3 px-4 text-slate-600">admin@ksync.my</td>
+                  <td class="py-3 px-4"><span class="wire-badge px-2 py-0.5 rounded bg-slate-900 text-white font-bold">ADMIN</span></td>
+                  <td class="py-3 px-4 text-slate-600">01 Jan 2026</td>
+                  <td class="py-3 px-4 text-emerald-600 font-bold">Active</td>
+                  <td class="py-3 px-4 text-right text-purple-600 font-bold">Edit Role</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
         </div>
       </div>
     </div>
 
-    <!-- 25. VENUES & TRANSIT -->
+    <!-- 25. ADMIN VENUES & TRANSIT -->
     <div id="page-admin-venues" class="page-screen space-y-6">
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/admin/venues</span>
-          <span>PAGE 25 / 30</span>
+          <span>PAGE 25 / 30 &bull; VENUES & TRANSIT</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="bg-white rounded-3xl p-6 border space-y-2">
-            <h2 class="text-xl font-black text-slate-900">Manage Venues & Transit Hubs</h2>
-            <div class="text-xs text-slate-500">Axiata Arena, Stadium Bukit Jalil, Zepp KL geocodes and transit steps.</div>
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+            <div>
+              <h1 class="text-2xl font-black text-slate-900 tracking-tight">Venues & Public Transit Master Data</h1>
+              <p class="text-xs text-slate-500">Configure Malaysian concert halls, LRT/MRT stations, and walking distance guides.</p>
+            </div>
+            <button disabled class="px-4 py-2 rounded-xl bg-purple-600 text-white font-bold text-xs">+ Add New Venue</button>
           </div>
+
+          <div class="bg-white rounded-3xl border border-slate-300 overflow-hidden shadow-xs">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 border-b text-slate-500 font-bold">
+                <tr>
+                  <th class="py-3 px-4">VENUE NAME</th>
+                  <th class="py-3 px-4">CITY / STATE</th>
+                  <th class="py-3 px-4">CAPACITY</th>
+                  <th class="py-3 px-4">LRT / MRT STATION</th>
+                  <th class="py-3 px-4">WALKING TIME</th>
+                  <th class="py-3 px-4 text-right">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-3 px-4 font-bold text-slate-900">Axiata Arena</td>
+                  <td class="py-3 px-4 text-slate-600">Bukit Jalil, KL</td>
+                  <td class="py-3 px-4 text-slate-600">16,000</td>
+                  <td class="py-3 px-4 font-bold text-purple-700">LRT Sri Petaling (Exit B)</td>
+                  <td class="py-3 px-4 text-slate-600">5 mins (350m)</td>
+                  <td class="py-3 px-4 text-right text-purple-600 font-bold">Edit</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-bold text-slate-900">National Stadium Bukit Jalil</td>
+                  <td class="py-3 px-4 text-slate-600">Bukit Jalil, KL</td>
+                  <td class="py-3 px-4 text-slate-600">87,000</td>
+                  <td class="py-3 px-4 font-bold text-purple-700">LRT Sri Petaling</td>
+                  <td class="py-3 px-4 text-slate-600">8 mins (500m)</td>
+                  <td class="py-3 px-4 text-right text-purple-600 font-bold">Edit</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-bold text-slate-900">Zepp Kuala Lumpur</td>
+                  <td class="py-3 px-4 text-slate-600">Bukit Bintang, KL</td>
+                  <td class="py-3 px-4 text-slate-600">2,500</td>
+                  <td class="py-3 px-4 font-bold text-purple-700">LRT/Monorail Hang Tuah</td>
+                  <td class="py-3 px-4 text-slate-600">Direct Linkway</td>
+                  <td class="py-3 px-4 text-right text-purple-600 font-bold">Edit</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
         </div>
       </div>
     </div>
 
-    <!-- 26. CATEGORIES -->
+    <!-- 26. ADMIN CATEGORIES -->
     <div id="page-admin-categories" class="page-screen space-y-6">
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/admin/categories</span>
-          <span>PAGE 26 / 30</span>
+          <span>PAGE 26 / 30 &bull; TAXONOMY</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="bg-white rounded-3xl p-6 border space-y-2">
-            <h2 class="text-xl font-black text-slate-900">Taxonomy & Event Categories</h2>
-            <div class="text-xs text-slate-500">Concerts, Fan Meetings, Cupsleeves, RPD, Pop-up Exhibitions.</div>
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+            <div>
+              <h1 class="text-2xl font-black text-slate-900 tracking-tight">Event Categories & Taxonomy</h1>
+              <p class="text-xs text-slate-500">Configure event categories, color badges, and classification slugs.</p>
+            </div>
+            <button disabled class="px-4 py-2 rounded-xl bg-purple-600 text-white font-bold text-xs">+ Add Category</button>
           </div>
+
+          <div class="bg-white rounded-3xl border border-slate-300 overflow-hidden shadow-xs">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 border-b text-slate-500 font-bold">
+                <tr>
+                  <th class="py-3 px-4">CATEGORY NAME</th>
+                  <th class="py-3 px-4">SLUG</th>
+                  <th class="py-3 px-4">DESCRIPTION</th>
+                  <th class="py-3 px-4">ACTIVE SHOWS</th>
+                  <th class="py-3 px-4 text-right">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-3 px-4 font-bold text-slate-900">Concert</td>
+                  <td class="py-3 px-4 font-mono text-slate-500">concert</td>
+                  <td class="py-3 px-4 text-slate-600">Major stadium and arena tour productions</td>
+                  <td class="py-3 px-4 font-bold text-purple-600">12 Shows</td>
+                  <td class="py-3 px-4 text-right text-purple-600 font-bold">Edit</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-bold text-slate-900">Fan Meeting</td>
+                  <td class="py-3 px-4 font-mono text-slate-500">fan-meeting</td>
+                  <td class="py-3 px-4 text-slate-600">Artist intimate fan gatherings and Q&A sessions</td>
+                  <td class="py-3 px-4 font-bold text-purple-600">5 Shows</td>
+                  <td class="py-3 px-4 text-right text-purple-600 font-bold">Edit</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-bold text-slate-900">Cupsleeve Cafe</td>
+                  <td class="py-3 px-4 font-mono text-slate-500">cupsleeve</td>
+                  <td class="py-3 px-4 text-slate-600">Fan-organized birthday & debut anniversary cafe events</td>
+                  <td class="py-3 px-4 font-bold text-purple-600">4 Shows</td>
+                  <td class="py-3 px-4 text-right text-purple-600 font-bold">Edit</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
         </div>
       </div>
     </div>
 
-    <!-- 27. AUDIT LOGS -->
+    <!-- 27. ADMIN AUDIT LOGS -->
     <div id="page-admin-logs" class="page-screen space-y-6">
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/admin/logs</span>
-          <span>PAGE 27 / 30</span>
+          <span>PAGE 27 / 30 &bull; AUDIT TRAIL</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="bg-white rounded-3xl p-6 border space-y-2">
-            <h2 class="text-xl font-black text-slate-900">Security Audit Trail & Governance</h2>
-            <div class="text-xs font-mono text-slate-500">Immutable audit trail with IP address and action timestamps.</div>
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+            <div>
+              <h1 class="text-2xl font-black text-slate-900 tracking-tight">Security Audit Trail & Governance Logs</h1>
+              <p class="text-xs text-slate-500">Immutable governance records for approvals, status toggles, and role assignments.</p>
+            </div>
+            <button disabled class="px-4 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs">Export Audit CSV</button>
           </div>
+
+          <div class="bg-white rounded-3xl border border-slate-300 overflow-hidden shadow-xs">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-slate-50 border-b text-slate-500 font-bold font-sans">
+                <tr>
+                  <th class="py-3 px-4">LOG ID</th>
+                  <th class="py-3 px-4">TIMESTAMP</th>
+                  <th class="py-3 px-4">ACTOR</th>
+                  <th class="py-3 px-4">ACTION</th>
+                  <th class="py-3 px-4">TARGET</th>
+                  <th class="py-3 px-4 text-right">IP ADDRESS</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="py-3 px-4 font-bold text-purple-700">LOG-8910</td>
+                  <td class="py-3 px-4 text-slate-500">2026-10-26 15:42</td>
+                  <td class="py-3 px-4 font-bold text-slate-900">admin@ksync.my</td>
+                  <td class="py-3 px-4 text-emerald-600 font-bold">EVENT_APPROVED</td>
+                  <td class="py-3 px-4 text-slate-600">Event #68 (SEVENTEEN)</td>
+                  <td class="py-3 px-4 text-right text-slate-500">175.143.20.12</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-bold text-purple-700">LOG-8909</td>
+                  <td class="py-3 px-4 text-slate-500">2026-10-26 14:10</td>
+                  <td class="py-3 px-4 font-bold text-slate-900">organizer@livenation.my</td>
+                  <td class="py-3 px-4 text-blue-600 font-bold">SUBMISSION_CREATED</td>
+                  <td class="py-3 px-4 text-slate-600">Submission #19</td>
+                  <td class="py-3 px-4 text-right text-slate-500">210.195.45.88</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-bold text-purple-700">LOG-8908</td>
+                  <td class="py-3 px-4 text-slate-500">2026-10-26 12:05</td>
+                  <td class="py-3 px-4 font-bold text-slate-900">admin@ksync.my</td>
+                  <td class="py-3 px-4 text-purple-600 font-bold">ROLE_UPDATED</td>
+                  <td class="py-3 px-4 text-slate-600">User #42 &rarr; ORGANIZER</td>
+                  <td class="py-3 px-4 text-right text-slate-500">175.143.20.12</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
         </div>
       </div>
     </div>
@@ -713,12 +2385,24 @@
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/community-guidelines</span>
-          <span>PAGE 28 / 30</span>
+          <span>PAGE 28 / 30 &bull; LEGAL POLICIES</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="bg-white rounded-3xl p-6 border space-y-2">
-            <h2 class="text-xl font-black text-slate-900">Community Guidelines</h2>
-            <p class="text-xs text-slate-600">Anti-scalping rules, polite fandom camaraderie, and safe meetup procedures.</p>
+          <div class="max-w-3xl mx-auto bg-white rounded-3xl p-6 sm:p-8 border border-slate-300 space-y-4">
+            <h1 class="text-2xl font-black text-slate-900">K-Sync Malaysia Community Guidelines</h1>
+            <p class="text-xs text-slate-500">Standards of conduct for safe K-Pop event discovery, fan projects, and ticketing transparency.</p>
+            
+            <div class="space-y-3 text-xs text-slate-700 leading-relaxed border-t pt-4">
+              <h3 class="font-bold text-sm text-slate-900">1. Strict Anti-Scalping Policy</h3>
+              <p>K-Sync Malaysia strictly forbids unauthorized ticket markups, automated purchasing bots, or unverified peer-to-peer scalping links. Only whitelisted primary ticketing platforms (GoLive Asia, BookMyShow, Ticket2U) are permitted.</p>
+
+              <h3 class="font-bold text-sm text-slate-900">2. Respectful Fandom Camaraderie</h3>
+              <p>We maintain zero tolerance for cyberbullying, fandom harassment, or defamatory speech in event discussion threads and Q&A boards.</p>
+
+              <h3 class="font-bold text-sm text-slate-900">3. Safe Cupsleeve & Cafe Gatherings</h3>
+              <p>Fan project organizers must adhere to cafe venue etiquette, uphold minimum spend requirements, and respect public walkway safety.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -729,12 +2413,27 @@
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/event-verification-policy</span>
-          <span>PAGE 29 / 30</span>
+          <span>PAGE 29 / 30 &bull; LEGAL POLICIES</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="bg-white rounded-3xl p-6 border space-y-2">
-            <h2 class="text-xl font-black text-slate-900">Event Verification Policy</h2>
-            <p class="text-xs text-slate-600">Standard Operating Procedure (SOP) for Google Gemini AI automated verification.</p>
+          <div class="max-w-3xl mx-auto bg-white rounded-3xl p-6 sm:p-8 border border-slate-300 space-y-4">
+            <h1 class="text-2xl font-black text-slate-900">Event Verification Standard Operating Procedure (SOP)</h1>
+            <p class="text-xs text-slate-500">The 4-pillar forensic verification methodology applied to all Model 2 community submissions.</p>
+            
+            <div class="space-y-3 text-xs text-slate-700 leading-relaxed border-t pt-4">
+              <h3 class="font-bold text-sm text-slate-900">Pillar 1: Organizer Business Identity & SSM</h3>
+              <p>Promoters submitting major stadium and arena concerts must provide a valid Suruhanjaya Syarikat Malaysia (SSM) registration number cross-checked against business registries.</p>
+
+              <h3 class="font-bold text-sm text-slate-900">Pillar 2: Direct Venue Permit Match</h3>
+              <p>The event hall reservation slot must be authenticated with Malaysian venue operators (Axiata Arena, Stadium Malaysia, Zepp KL).</p>
+
+              <h3 class="font-bold text-sm text-slate-900">Pillar 3: Ticketing Whitelist Registry</h3>
+              <p>Outbound ticketing checkout URLs are validated against our Malaysian primary ticketing whitelist. Unverified Telegram or bank transfer DMs are automatically rejected.</p>
+
+              <h3 class="font-bold text-sm text-slate-900">Pillar 4: Google Gemini AI Multimodal Vision Auditing</h3>
+              <p>Concert artwork is analyzed via Gemini 4 Argon vision models to detect typography tampering, manipulated dates, or fake sponsor logos.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -745,12 +2444,24 @@
       <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
         <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between text-xs font-mono text-slate-500">
           <span>https://ksync.my/privacy-policy</span>
-          <span>PAGE 30 / 30</span>
+          <span>PAGE 30 / 30 &bull; LEGAL POLICIES</span>
         </div>
+        
         <div class="p-6 sm:p-8 space-y-6 bg-slate-50/50 grid-pattern">
-          <div class="bg-white rounded-3xl p-6 border space-y-2">
-            <h2 class="text-xl font-black text-slate-900">Privacy Policy (Malaysian PDPA 2010)</h2>
-            <p class="text-xs text-slate-600">Compliance with Malaysian data protection laws and secure cookie handling.</p>
+          <div class="max-w-3xl mx-auto bg-white rounded-3xl p-6 sm:p-8 border border-slate-300 space-y-4">
+            <h1 class="text-2xl font-black text-slate-900">Privacy Policy (Malaysian PDPA 2010)</h1>
+            <p class="text-xs text-slate-500">Compliance with the Personal Data Protection Act 2010 of Malaysia regarding account data and security.</p>
+            
+            <div class="space-y-3 text-xs text-slate-700 leading-relaxed border-t pt-4">
+              <h3 class="font-bold text-sm text-slate-900">1. Data We Collect</h3>
+              <p>We collect essential account information (display name, email address, password hashes), favorite bias artist preferences, and organizer business registration certificates for verification purposes.</p>
+
+              <h3 class="font-bold text-sm text-slate-900">2. Security & Data Protection</h3>
+              <p>All user passwords are encrypted using bcrypt hashing. Session cookies are protected with httpOnly and sameSite flags. We never sell user data to third-party brokers.</p>
+
+              <h3 class="font-bold text-sm text-slate-900">3. Contact Data Protection Officer</h3>
+              <p>For data inquiries or account deletion requests under PDPA 2010, please contact our compliance desk at <strong>privacy@ksync.my</strong>.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -759,6 +2470,39 @@
   </main>
 
   <script>
+    const SCREEN_META = {
+      'page-home': { badge: 'SECTION: PUBLIC DISCOVERY', route: '/', title: '1. Homepage Wireframe', desc: 'Public portal entry point with GoLive cinematic hero carousel, capsule search bar, category filter chips, verified concert cards, and public transit radar teaser.' },
+      'page-events': { badge: 'SECTION: PUBLIC DISCOVERY', route: '/events', title: '2. Events Master Catalog', desc: 'Directory with horizontal artist filter strip, 5-column filter controls bar, 3-column event grid with verified ticketing badges, and pagination.' },
+      'page-radar': { badge: 'SECTION: PUBLIC DISCOVERY', route: '/events/radar', title: '3. Event Radar & Transit', desc: 'Geospatial transit radar with Malaysian venue directory, interactive basemap canvas, and step-by-step LRT/MRT route directions.' },
+      'page-event-detail': { badge: 'SECTION: PUBLIC DISCOVERY', route: '/events/68', title: '4. Event Details & Forensics', desc: 'Concert details with 4-step forensic trust scorecard, ticket pricing tiers table, official GoLive purchase box, and fan Q&A comments.' },
+      'page-artists': { badge: 'SECTION: PUBLIC DISCOVERY', route: '/artists', title: '5. Artists Directory', desc: 'Official talent directory of 58 artists with group type tabs, agency filter pills, and 4-column card grid with member counts and show counts.' },
+      'page-artist-detail': { badge: 'SECTION: PUBLIC DISCOVERY', route: '/artists/seventeen', title: '6. Artist & Lineup Profile', desc: 'Artist profile header with banner, social links, and 13-member normalized biodata cards (stage name, position, birthdate, MBTI).' },
+      'page-check-sub': { badge: 'SECTION: PUBLIC DISCOVERY', route: '/check-submission', title: '7. Track Submission Status', desc: 'Public tracking search portal with 4-stage progress tracker and Gemini AI forensic breakdown report.' },
+      'page-login': { badge: 'SECTION: AUTHENTICATION', route: '/login', title: '8. Sign In Screen', desc: 'Split-card layout with Fan vs Organizer tabs, email and password inputs, remember me, forgot password, and Google OAuth button.' },
+      'page-register': { badge: 'SECTION: AUTHENTICATION', route: '/register', title: '9. Register Screen', desc: 'Account registration with Fan vs Organizer role selector, name, email, password, and organizer SSM company fields.' },
+      'page-otp': { badge: 'SECTION: AUTHENTICATION', route: '/login-otp', title: '10. Email OTP Verification', desc: 'Two-factor security card with 6 discrete numeric OTP code input boxes and resend countdown timer.' },
+      'page-reset-pass': { badge: 'SECTION: AUTHENTICATION', route: '/forgot-password', title: '11. Reset Password', desc: 'Password recovery card with email input, new password and confirm password fields, and strength checklist.' },
+      'page-fan-dash': { badge: 'SECTION: FAN HUB', route: '/dashboard', title: '12. Fan Command Center', desc: 'Fan header with handle @carat_kl, 3 metric cards, next show countdown timer, and upcoming concert timeline with transit pills.' },
+      'page-saved': { badge: 'SECTION: FAN HUB', route: '/saved', title: '13. Saved Wishlist', desc: 'Saved bookmarks table with on-sale reminder toggles, buy tickets buttons, and export to Google Calendar.' },
+      'page-notifications': { badge: 'SECTION: FAN HUB', route: '/notifications', title: '14. Notifications & Profile', desc: '2-column layout: Fan profile settings (avatar, handle, bio, favorite bias groups) + notification preference switches.' },
+      'page-org-dash': { badge: 'SECTION: ORGANIZER STUDIO', route: '/organizer/dashboard', title: '15. Organizer Studio Dashboard', desc: 'Live Nation Malaysia studio header, SSM badge, 4 KPI cards, + Submit Event CTA, managed submissions table, and compliance checklist.' },
+      'page-org-events': { badge: 'SECTION: ORGANIZER STUDIO', route: '/organizer/events', title: '16. Organizer Events Catalog', desc: 'Filter toolbar with status tabs, search input, and comprehensive submissions data table with trust score meters.' },
+      'page-org-submit': { badge: 'SECTION: ORGANIZER STUDIO', route: '/organizer/events/new', title: '17. AI Poster Scanner & Form', desc: 'Gemini Multimodal AI Vision Dropzone with scanning animation and extracted data card, auto-filled event submission form.' },
+      'page-org-audit': { badge: 'SECTION: ORGANIZER STUDIO', route: '/organizer/events/68/verification', title: '18. Verification Breakdown', desc: 'Forensic audit certificate with 98/100 score gauge, 4 pillar verification detail cards, and admin audit notes.' },
+      'page-admin-dash': { badge: 'SECTION: ADMIN COMMAND', route: '/admin', title: '19. Admin Executive Dashboard', desc: 'Command subnav ribbon, 4 primary KPI cards, urgent verification review queue table with one-click decision buttons, and security audit log stream.' },
+      'page-admin-events': { badge: 'SECTION: ADMIN COMMAND', route: '/admin/events', title: '20. Admin Events Management', desc: 'Master events data table with status toggles, edit links, and in-app cancellation confirmation modal.' },
+      'page-admin-verifications': { badge: 'SECTION: ADMIN COMMAND', route: '/admin/verifications', title: '21. Admin Verification Center', desc: 'Anti-scam forensic SOP banner, side-by-side comparison inspector (poster & proofs vs extracted data & whitelist), decision control box.' },
+      'page-admin-artists': { badge: 'SECTION: ADMIN COMMAND', route: '/admin/artists', title: '22. Talent Directory & Lineups', desc: 'Talent roster table with agency filters, Hangul names, and Manage 13 Members lineup management drawer.' },
+      'page-admin-reports': { badge: 'SECTION: ADMIN COMMAND', route: '/admin/reports', title: '23. Anti-Scam Reports Center', desc: 'Community fraud reports table with report categories, evidence links, and resolution action buttons.' },
+      'page-admin-users': { badge: 'SECTION: ADMIN COMMAND', route: '/admin/users', title: '24. Users Management & RBAC', desc: 'User accounts table with role filter tabs (Fan, Organizer, Admin), status badges, and role editing actions.' },
+      'page-admin-venues': { badge: 'SECTION: ADMIN COMMAND', route: '/admin/venues', title: '25. Venues & Transit Master Data', desc: 'Venues master table with capacity, nearest LRT/MRT stations, walking times, and map links.' },
+      'page-admin-categories': { badge: 'SECTION: ADMIN COMMAND', route: '/admin/categories', title: '26. Categories Taxonomy', desc: 'Event categories manager with slugs, descriptions, active show counts, and add category button.' },
+      'page-admin-logs': { badge: 'SECTION: ADMIN COMMAND', route: '/admin/logs', title: '27. Security Audit Trail', desc: 'Immutable security audit trail table with actor, action, timestamp, target resource, and IP address.' },
+      'page-guidelines': { badge: 'SECTION: LEGAL & COMPLIANCE', route: '/community-guidelines', title: '28. Community Guidelines', desc: 'Anti-scalping rules, polite fandom camaraderie, and cupsleeve gathering conduct.' },
+      'page-verification-policy': { badge: 'SECTION: LEGAL & COMPLIANCE', route: '/event-verification-policy', title: '29. Verification Policy', desc: 'Standard Operating Procedure (SOP) for Model 2 public submissions and 4-pillar forensic framework.' },
+      'page-privacy': { badge: 'SECTION: LEGAL & COMPLIANCE', route: '/privacy-policy', title: '30. Privacy Policy', desc: 'Compliance with Malaysian Personal Data Protection Act (PDPA 2010), data collection, and security.' }
+    };
+
     function showScreen(screenId) {
       document.querySelectorAll('.page-screen').forEach(el => el.classList.remove('active'));
       const activeEl = document.getElementById(screenId);
@@ -767,31 +2511,18 @@
       document.querySelectorAll('.page-link-btn').forEach(btn => {
         btn.classList.remove('bg-white', 'border-purple-300', 'text-purple-700', 'shadow-xs');
       });
-
-      const badge = document.getElementById('active-screen-badge');
-      const route = document.getElementById('active-screen-route');
-      const title = document.getElementById('active-screen-title');
-      const desc = document.getElementById('active-screen-desc');
-
-      if (screenId.startsWith('page-admin')) {
-        badge.textContent = 'SECTION: SYSTEM MAINTAINER (ADMIN)';
-        badge.className = 'wire-badge px-2.5 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-200 font-bold uppercase';
-      } else if (screenId.startsWith('page-org')) {
-        badge.textContent = 'SECTION: ORGANIZER STUDIO';
-        badge.className = 'wire-badge px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold uppercase';
-      } else if (screenId.startsWith('page-fan') || screenId === 'page-saved' || screenId === 'page-notifications') {
-        badge.textContent = 'SECTION: AUTHENTICATED FAN';
-        badge.className = 'wire-badge px-2.5 py-0.5 rounded-md bg-pink-50 text-pink-700 border border-pink-200 font-bold uppercase';
-      } else if (screenId.startsWith('page-login') || screenId.startsWith('page-register') || screenId.startsWith('page-otp') || screenId.startsWith('page-reset')) {
-        badge.textContent = 'SECTION: AUTHENTICATION';
-        badge.className = 'wire-badge px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-300 font-bold uppercase';
-      } else if (screenId === 'page-guidelines' || screenId === 'page-verification-policy' || screenId === 'page-privacy') {
-        badge.textContent = 'SECTION: LEGAL & COMPLIANCE';
-        badge.className = 'wire-badge px-2.5 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200 font-bold uppercase';
-      } else {
-        badge.textContent = 'SECTION: PUBLIC DISCOVERY';
-        badge.className = 'wire-badge px-2.5 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-200 font-bold uppercase';
+      const activeBtn = document.getElementById('btn-' + screenId);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-white', 'border-purple-300', 'text-purple-700', 'shadow-xs');
       }
+
+      const meta = SCREEN_META[screenId] || { badge: 'SECTION: PUBLIC', route: '/', title: 'Wireframe Screen', desc: '' };
+      document.getElementById('active-screen-badge').textContent = meta.badge;
+      document.getElementById('active-screen-route').textContent = 'Route: ' + meta.route;
+      document.getElementById('active-screen-title').textContent = meta.title;
+      document.getElementById('active-screen-desc').textContent = meta.desc;
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function filterSection(sec) {
