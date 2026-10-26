@@ -1,0 +1,1171 @@
+<!-- Same as artifact file, served directly from public/wireframes.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>K-Sync Malaysia — System Wireframe Architecture & Prototype</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --wire-bg: #F8FAFC;
+      --wire-surface: #FFFFFF;
+      --wire-border: #CBD5E1;
+      --wire-accent: #7C3AED;
+      --wire-text: #0F172A;
+      --wire-muted: #64748B;
+    }
+    .grid-pattern {
+      background-size: 24px 24px;
+      background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px);
+    }
+    .blueprint-box {
+      border: 1.5px dashed #94a3b8;
+      background: rgba(241, 245, 249, 0.6);
+    }
+    .wire-badge {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 11px;
+      letter-spacing: 0.05em;
+    }
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 min-h-screen font-sans antialiased">
+
+  <!-- Top App Navigation & Role Switcher Header -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Brand / Wireframe Identifier -->
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black text-sm shadow-xs">
+            <i class="fas fa-layer-group text-purple-400"></i>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="font-black text-base tracking-tight text-slate-900">K-SYNC MY</span>
+              <span class="wire-badge px-2 py-0.5 rounded-md bg-purple-100 text-purple-800 font-bold border border-purple-200">WIREFRAME V2.4</span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-medium">Proposed System UI Architecture & User Flows</p>
+          </div>
+        </div>
+
+        <!-- Actor View Selector Tabs -->
+        <div class="hidden md:flex items-center p-1 rounded-2xl bg-slate-100 border border-slate-200/80">
+          <button onclick="switchTab('guest')" id="btn-guest" class="role-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-purple-700 shadow-xs">
+            <i class="fas fa-compass me-1.5 text-purple-600"></i> Guest (Discovery)
+          </button>
+          <button onclick="switchTab('fan')" id="btn-fan" class="role-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
+            <i class="fas fa-heart me-1.5 text-pink-500"></i> Fan (Wishlist & Chat)
+          </button>
+          <button onclick="switchTab('organizer')" id="btn-organizer" class="role-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
+            <i class="fas fa-wand-magic-sparkles me-1.5 text-emerald-600"></i> Organizer (AI Scan)
+          </button>
+          <button onclick="switchTab('admin')" id="btn-admin" class="role-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
+            <i class="fas fa-shield-halved me-1.5 text-indigo-600"></i> System Admin
+          </button>
+          <button onclick="switchTab('figma')" id="btn-figma" class="role-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
+            <i class="fab fa-figma me-1.5 text-orange-500"></i> Figma Export
+          </button>
+        </div>
+
+        <!-- Utility Options -->
+        <div class="flex items-center space-x-2">
+          <button onclick="toggleAnnotations()" id="anno-toggle" class="px-3 py-1.5 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition-colors shadow-xs flex items-center gap-1.5">
+            <i class="fas fa-highlighter text-purple-600"></i>
+            <span id="anno-text">Hide Notes</span>
+          </button>
+          <button onclick="downloadWireframeSvg()" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-xs flex items-center gap-1.5">
+            <i class="fas fa-download text-xs text-pink-400"></i>
+            <span>Export SVG</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Actor Nav -->
+    <div class="md:hidden flex overflow-x-auto p-2 bg-slate-50 border-t border-slate-200 gap-1 text-xs">
+      <button onclick="switchTab('guest')" class="px-3 py-1 rounded-lg font-bold bg-white text-purple-700 whitespace-nowrap shadow-xs">Guest</button>
+      <button onclick="switchTab('fan')" class="px-3 py-1 rounded-lg font-bold text-slate-600 whitespace-nowrap">Fan</button>
+      <button onclick="switchTab('organizer')" class="px-3 py-1 rounded-lg font-bold text-slate-600 whitespace-nowrap">Organizer</button>
+      <button onclick="switchTab('admin')" class="px-3 py-1 rounded-lg font-bold text-slate-600 whitespace-nowrap">Admin</button>
+      <button onclick="switchTab('figma')" class="px-3 py-1 rounded-lg font-bold text-slate-600 whitespace-nowrap">Figma Export</button>
+    </div>
+  </header>
+
+  <!-- Main Viewport Canvas -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- ========================================================================= -->
+    <!-- TAB 1: GUEST / PUBLIC DISCOVERY WIREFRAME -->
+    <!-- ========================================================================= -->
+    <div id="tab-guest" class="tab-content active space-y-8">
+      
+      <!-- Flow Context Banner -->
+      <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="wire-badge px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-200 font-bold">ACTOR: PUBLIC / GUEST</span>
+            <span class="text-xs text-slate-400">&bull;</span>
+            <span class="text-xs text-slate-500 font-medium">Core Discovery & Legitimate Concert Tracking</span>
+          </div>
+          <h1 class="text-2xl font-black text-slate-900 tracking-tight mt-1">1. Public Discovery, Event Radar & Trust Breakdown</h1>
+          <p class="text-xs text-slate-600 mt-1 max-w-3xl leading-relaxed">
+            Wireframe layout for unauthenticated visitors. Features Malaysian concert radar, multi-venue transit links, category filters, and anti-scalper legitimacy breakdown.
+          </p>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <span class="wire-badge px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-semibold border border-slate-200">
+            <i class="fas fa-desktop me-1 text-slate-400"></i> Desktop 1280px + Mobile
+          </span>
+        </div>
+      </div>
+
+      <!-- WIREFRAME VIEWPORT 1: Discovery Homepage -->
+      <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
+        <!-- Mock Browser Top Bar -->
+        <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
+          <div class="flex items-center space-x-1.5">
+            <div class="w-3 h-3 rounded-full bg-slate-300"></div>
+            <div class="w-3 h-3 rounded-full bg-slate-300"></div>
+            <div class="w-3 h-3 rounded-full bg-slate-300"></div>
+          </div>
+          <div class="px-6 py-1 rounded-full bg-white border border-slate-200 text-xs font-mono text-slate-500 w-96 text-center truncate">
+            https://ksync.my/events
+          </div>
+          <div class="text-[11px] text-slate-400 font-mono">SCREEN: HOMEPAGE / DISCOVERY</div>
+        </div>
+
+        <!-- Wireframe Canvas Content -->
+        <div class="p-6 sm:p-8 space-y-8 bg-slate-50/50 grid-pattern">
+
+          <!-- Global Nav Wireframe -->
+          <div class="bg-white rounded-2xl p-4 border border-slate-300 shadow-xs flex items-center justify-between">
+            <div class="flex items-center space-x-6">
+              <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-black text-xs">K</div>
+                <span class="font-black text-sm tracking-tight">K-SYNC MY</span>
+              </div>
+              <div class="hidden md:flex items-center space-x-3 text-xs font-bold text-slate-600">
+                <span class="px-3 py-1.5 rounded-lg bg-slate-900 text-white">Home</span>
+                <span class="px-3 py-1.5 rounded-lg hover:bg-slate-100">Discover</span>
+                <span class="px-3 py-1.5 rounded-lg hover:bg-slate-100">Event Radar</span>
+                <span class="px-3 py-1.5 rounded-lg hover:bg-slate-100">Artists</span>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 bg-white">Sign In</span>
+              <span class="px-3.5 py-1.5 rounded-xl bg-purple-600 text-white text-xs font-bold">Register as Fan</span>
+            </div>
+          </div>
+
+          <!-- Hero Search & Filter Matrix -->
+          <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-300 shadow-xs space-y-5 relative">
+            <div class="annotation-note absolute -top-3.5 right-6 bg-purple-600 text-white px-3 py-0.5 rounded-full wire-badge shadow-xs">
+              UX PROMAX: PREDICTIVE DISCOVERY & QUICK CHIPS
+            </div>
+            
+            <div class="max-w-2xl space-y-2">
+              <div class="wire-badge text-purple-600 font-bold flex items-center gap-1.5">
+                <i class="fas fa-shield-check"></i> MALAYSIA CENTRALIZED K-POP EVENT HUB
+              </div>
+              <h2 class="text-3xl font-black text-slate-900 tracking-tight">Discover Verified K-Pop Concerts & Fan Gatherings</h2>
+              <p class="text-xs text-slate-500 leading-relaxed">
+                Zero scam listings. Multi-model forensic verification powered by Google Gemini AI and Malaysian transit integration.
+              </p>
+            </div>
+
+            <!-- Unified Search Input Wireframe -->
+            <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
+              <div class="flex-1 relative">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <i class="fas fa-search text-xs"></i>
+                </div>
+                <input type="text" disabled placeholder="Search SEVENTEEN, TWICE, Axiata Arena, Zepp KL..." 
+                       class="w-full pl-9 pr-4 py-3 rounded-2xl border border-slate-300 bg-slate-50 text-xs font-medium text-slate-700">
+              </div>
+              <select disabled class="px-4 py-3 rounded-2xl border border-slate-300 bg-slate-50 text-xs font-bold text-slate-700">
+                <option>All Venues (KL & Selangor)</option>
+                <option>Axiata Arena Bukit Jalil</option>
+                <option>Stadium Bukit Jalil</option>
+                <option>Zepp Kuala Lumpur</option>
+                <option>Mega Star Arena</option>
+              </select>
+              <button disabled class="px-6 py-3 rounded-2xl bg-slate-900 text-white text-xs font-black shadow-xs">
+                Filter Shows
+              </button>
+            </div>
+
+            <!-- Category Filter Chips -->
+            <div class="flex items-center gap-2 flex-wrap pt-1 text-xs">
+              <span class="text-slate-400 font-bold text-[11px] uppercase tracking-wider">Categories:</span>
+              <span class="px-3 py-1 rounded-full bg-slate-900 text-white font-bold text-[11px]">All (24)</span>
+              <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 font-bold text-[11px] border border-slate-200">Concerts (12)</span>
+              <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 font-bold text-[11px] border border-slate-200">Fan Meetings (5)</span>
+              <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 font-bold text-[11px] border border-slate-200">Cupsleeve Cafes (4)</span>
+              <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 font-bold text-[11px] border border-slate-200">Random Dance (3)</span>
+            </div>
+          </div>
+
+          <!-- Event Cards Catalog Grid -->
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <h3 class="font-black text-lg text-slate-900">Upcoming Live Gatherings in Kuala Lumpur</h3>
+                <span class="wire-badge px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-bold">100% VERIFIED</span>
+              </div>
+              <span class="text-xs text-purple-600 font-bold cursor-pointer">View On Event Radar &rarr;</span>
+            </div>
+
+            <!-- 3-Column Responsive Event Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              
+              <!-- Card 1: Verified Concert -->
+              <div class="bg-white rounded-3xl border border-slate-300 p-4 space-y-3 relative group hover:border-purple-400 transition-colors">
+                <div class="annotation-note absolute -top-2.5 left-4 bg-emerald-600 text-white px-2 py-0.5 rounded-md wire-badge">
+                  SCORE: 96/100 (TIER-1 VERIFIED)
+                </div>
+                <!-- Poster Wireframe Box -->
+                <div class="blueprint-box h-44 rounded-2xl flex flex-col items-center justify-center text-slate-400 p-4 text-center">
+                  <i class="fas fa-image text-2xl mb-1 text-slate-400"></i>
+                  <span class="text-xs font-bold text-slate-600">Event Poster (1080x1350)</span>
+                  <span class="text-[10px] text-slate-400">OCR & Gemini Forensics Scanned</span>
+                </div>
+                <!-- Metadata -->
+                <div class="space-y-1.5">
+                  <div class="flex items-center justify-between text-[11px]">
+                    <span class="font-bold text-purple-700 uppercase">Concert &bull; SEVENTEEN</span>
+                    <span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-black border border-emerald-200">VERIFIED</span>
+                  </div>
+                  <h4 class="font-black text-sm text-slate-900 leading-snug">SEVENTEEN [RIGHT HERE] WORLD TOUR IN BULIT JALIL</h4>
+                  <div class="text-xs text-slate-500 flex items-center gap-1.5">
+                    <i class="fas fa-location-dot text-slate-400"></i>
+                    <span>National Stadium Bukit Jalil, KL</span>
+                  </div>
+                  <div class="text-xs text-slate-500 flex items-center gap-1.5">
+                    <i class="fas fa-train text-slate-400"></i>
+                    <span class="text-emerald-700 font-medium">LRT Sri Petaling Line (Bukit Jalil Stn)</span>
+                  </div>
+                </div>
+                <!-- Actions -->
+                <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                  <span class="font-black text-xs text-slate-900">RM 298 - RM 1,098</span>
+                  <span class="px-3 py-1.5 rounded-xl bg-slate-900 text-white font-bold text-xs">View Details</span>
+                </div>
+              </div>
+
+              <!-- Card 2: Cupsleeve Gathering -->
+              <div class="bg-white rounded-3xl border border-slate-300 p-4 space-y-3 relative">
+                <div class="blueprint-box h-44 rounded-2xl flex flex-col items-center justify-center text-slate-400 p-4 text-center">
+                  <i class="fas fa-mug-hot text-2xl mb-1 text-slate-400"></i>
+                  <span class="text-xs font-bold text-slate-600">Cupsleeve Birthday Project</span>
+                  <span class="text-[10px] text-slate-400">Hostinger CDN Asset</span>
+                </div>
+                <div class="space-y-1.5">
+                  <div class="flex items-center justify-between text-[11px]">
+                    <span class="font-bold text-pink-700 uppercase">Cupsleeve &bull; TWICE SANA</span>
+                    <span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-black border border-emerald-200">VERIFIED</span>
+                  </div>
+                  <h4 class="font-black text-sm text-slate-900 leading-snug">Spring Blossom: Sana 28th Birthday Cafe Project</h4>
+                  <div class="text-xs text-slate-500 flex items-center gap-1.5">
+                    <i class="fas fa-location-dot text-slate-400"></i>
+                    <span>VCR Cafe, Bukit Bintang, KL</span>
+                  </div>
+                  <div class="text-xs text-slate-500 flex items-center gap-1.5">
+                    <i class="fas fa-train text-slate-400"></i>
+                    <span class="text-blue-700 font-medium">MRT Kajang Line (Hang Tuah / Bukit Bintang)</span>
+                  </div>
+                </div>
+                <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                  <span class="font-black text-xs text-slate-900">Free Entry (Order drink)</span>
+                  <span class="px-3 py-1.5 rounded-xl bg-slate-900 text-white font-bold text-xs">View Details</span>
+                </div>
+              </div>
+
+              <!-- Card 3: Random Play Dance -->
+              <div class="bg-white rounded-3xl border border-slate-300 p-4 space-y-3 relative">
+                <div class="blueprint-box h-44 rounded-2xl flex flex-col items-center justify-center text-slate-400 p-4 text-center">
+                  <i class="fas fa-music text-2xl mb-1 text-slate-400"></i>
+                  <span class="text-xs font-bold text-slate-600">Public RPD Flash Mob</span>
+                  <span class="text-[10px] text-slate-400">PDRM / Venue Permit Approved</span>
+                </div>
+                <div class="space-y-1.5">
+                  <div class="flex items-center justify-between text-[11px]">
+                    <span class="font-bold text-indigo-700 uppercase">RPD &bull; Multi-Fandom</span>
+                    <span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-black border border-emerald-200">VERIFIED</span>
+                  </div>
+                  <h4 class="font-black text-sm text-slate-900 leading-snug">KL K-Pop Random Play Dance Autumn Edition</h4>
+                  <div class="text-xs text-slate-500 flex items-center gap-1.5">
+                    <i class="fas fa-location-dot text-slate-400"></i>
+                    <span>Central Market Outdoor Concourse</span>
+                  </div>
+                  <div class="text-xs text-slate-500 flex items-center gap-1.5">
+                    <i class="fas fa-train text-slate-400"></i>
+                    <span class="text-emerald-700 font-medium">LRT Kelana Jaya (Pasar Seni Stn)</span>
+                  </div>
+                </div>
+                <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                  <span class="font-black text-xs text-slate-900">Free Participation</span>
+                  <span class="px-3 py-1.5 rounded-xl bg-slate-900 text-white font-bold text-xs">View Details</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Event Details Breakdown Wireframe Slice -->
+          <div class="bg-white rounded-3xl border border-slate-300 p-6 sm:p-8 space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+              <div>
+                <span class="wire-badge text-purple-600 font-bold uppercase">Screen Detail &bull; Single Event View</span>
+                <h3 class="text-xl font-black text-slate-900 mt-1">Multi-Tier Forensic Trust Inspector</h3>
+              </div>
+              <span class="wire-badge px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold">
+                <i class="fas fa-shield-check me-1"></i> AI TRUST SCORE: 98%
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <!-- Left: Poster + Ticket Link -->
+              <div class="space-y-4">
+                <div class="blueprint-box h-72 rounded-2xl flex flex-col items-center justify-center p-4 text-center">
+                  <i class="fas fa-ticket text-3xl mb-2 text-purple-400"></i>
+                  <span class="font-bold text-xs text-slate-700">Official Concert Comp</span>
+                  <span class="text-[10px] text-slate-400">Ticketing: GoLive Asia / BookMyShow</span>
+                </div>
+                <button disabled class="w-full py-3 rounded-2xl bg-purple-600 text-white font-black text-xs shadow-md">
+                  <i class="fas fa-ticket me-1.5"></i> Purchase Official Ticket
+                </button>
+              </div>
+
+              <!-- Center & Right: Trust Breakdown & Transit -->
+              <div class="lg:col-span-2 space-y-4">
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-2">
+                  <span class="wire-badge text-slate-600 font-bold">4-STEP VERIFICATION PROTOCOL FORENSICS:</span>
+                  <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div class="p-2.5 rounded-xl bg-white border border-slate-200 flex items-center gap-2">
+                      <i class="fas fa-check-circle text-emerald-500"></i>
+                      <span><strong>Domain Legality:</strong> golive-asia.com whitelist</span>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-white border border-slate-200 flex items-center gap-2">
+                      <i class="fas fa-check-circle text-emerald-500"></i>
+                      <span><strong>Venue Match:</strong> Axiata Arena Booking ID Confirmed</span>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-white border border-slate-200 flex items-center gap-2">
+                      <i class="fas fa-check-circle text-emerald-500"></i>
+                      <span><strong>Organizer Identity:</strong> Live Nation Malaysia SSM</span>
+                    </div>
+                    <div class="p-2.5 rounded-xl bg-white border border-slate-200 flex items-center gap-2">
+                      <i class="fas fa-check-circle text-emerald-500"></i>
+                      <span><strong>AI Forensic Scan:</strong> No scalper anomaly detected</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Transit Route Info Box -->
+                <div class="bg-blue-50/60 rounded-2xl p-4 border border-blue-200 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="wire-badge text-blue-900 font-bold"><i class="fas fa-route me-1"></i> PUBLIC TRANSIT & ROUTE MAP</span>
+                    <span class="text-xs font-bold text-blue-700">Bukit Jalil Hub</span>
+                  </div>
+                  <p class="text-xs text-slate-600 leading-relaxed">
+                    Take LRT Sri Petaling Line to Bukit Jalil Station (Exit B). Direct 350m covered pedestrian walkway into Stadium Gate A. Grab pickup zone dedicated at Car Park C.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 2: FAN (AUTHENTICATED) WIREFRAME -->
+    <!-- ========================================================================= -->
+    <div id="tab-fan" class="tab-content space-y-8">
+      
+      <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="wire-badge px-2 py-0.5 rounded-md bg-pink-50 text-pink-700 border border-pink-200 font-bold">ACTOR: AUTHENTICATED FAN</span>
+            <span class="text-xs text-slate-400">&bull;</span>
+            <span class="text-xs text-slate-500 font-medium">Personalized Hub, Saved Wishlist & Moderated Discussion</span>
+          </div>
+          <h1 class="text-2xl font-black text-slate-900 tracking-tight mt-1">2. Fan Command Center & Discussion System</h1>
+          <p class="text-xs text-slate-600 mt-1 max-w-3xl leading-relaxed">
+            Wireframe layout for signed-in fans. Focuses on concert countdown timers, bookmarked wishlist management, and safe spam-moderated community discussion.
+          </p>
+        </div>
+        <div class="wire-badge px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-semibold border border-slate-200">
+          <i class="fas fa-user-check me-1 text-pink-500"></i> Role: FAN (Passport Omitted)
+        </div>
+      </div>
+
+      <!-- WIREFRAME VIEWPORT 2: Fan Dashboard -->
+      <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
+        <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
+          <div class="flex items-center space-x-1.5">
+            <div class="w-3 h-3 rounded-full bg-slate-300"></div>
+            <div class="w-3 h-3 rounded-full bg-slate-300"></div>
+            <div class="w-3 h-3 rounded-full bg-slate-300"></div>
+          </div>
+          <div class="px-6 py-1 rounded-full bg-white border border-slate-200 text-xs font-mono text-slate-500 w-96 text-center truncate">
+            https://ksync.my/dashboard
+          </div>
+          <div class="text-[11px] text-slate-400 font-mono">SCREEN: FAN HUB / SAVED EVENTS</div>
+        </div>
+
+        <div class="p-6 sm:p-8 space-y-8 bg-slate-50/50 grid-pattern">
+
+          <!-- Fan Header Ribbon Wireframe -->
+          <div class="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="space-y-1.5">
+              <span class="wire-badge px-2.5 py-1 rounded-md bg-pink-500/20 text-pink-300 border border-pink-500/30 font-bold">
+                FAN COMMAND CENTER
+              </span>
+              <h2 class="text-2xl sm:text-3xl font-black tracking-tight">Welcome back, Sarah (@carat_kl)!</h2>
+              <p class="text-xs text-slate-400">Tracking 3 upcoming shows in Malaysia &bull; 0 scam alerts &bull; Klang Valley Transit Ready</p>
+            </div>
+            <!-- Quick Countdown Ticker Pill -->
+            <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 text-center shrink-0">
+              <div class="text-[10px] uppercase font-bold text-pink-300 tracking-wider">Next Live Show</div>
+              <div class="text-xl font-black text-white font-mono mt-0.5">14d : 08h : 42m</div>
+              <div class="text-[10px] text-slate-300">SEVENTEEN @ Bukit Jalil</div>
+            </div>
+          </div>
+
+          <!-- Two-Column Layout: Wishlist vs Discussion -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left 2 Cols: My Saved Wishlist Wireframe -->
+            <div class="lg:col-span-2 space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <h3 class="font-black text-base text-slate-900">Saved Wishlist & Bookmarks</h3>
+                  <span class="wire-badge px-2 py-0.5 rounded-full bg-slate-200 text-slate-800 font-bold">3 Events</span>
+                </div>
+                <div class="text-xs text-slate-500">Real-time status updates</div>
+              </div>
+
+              <!-- Wishlist Item 1 -->
+              <div class="bg-white rounded-2xl p-4 border border-slate-300 shadow-xs flex items-center justify-between gap-4">
+                <div class="flex items-center space-x-3.5 min-w-0">
+                  <div class="blueprint-box w-16 h-16 rounded-xl flex items-center justify-center shrink-0 text-slate-400">
+                    <i class="fas fa-image text-xs"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <span class="wire-badge text-purple-700 font-bold">CONCERT &bull; 24 NOV 2026</span>
+                    <h4 class="font-black text-sm text-slate-900 truncate">SEVENTEEN [RIGHT HERE] WORLD TOUR</h4>
+                    <div class="text-xs text-slate-500 truncate">Axiata Arena &bull; Cat 1 VIP Presale Tracked</div>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2 shrink-0">
+                  <button disabled class="px-3 py-1.5 rounded-xl bg-purple-50 text-purple-700 font-bold text-xs border border-purple-200">
+                    View
+                  </button>
+                  <button disabled class="p-2 rounded-xl text-rose-500 hover:bg-rose-50 border border-slate-200">
+                    <i class="fas fa-trash-can text-xs"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Wishlist Item 2 -->
+              <div class="bg-white rounded-2xl p-4 border border-slate-300 shadow-xs flex items-center justify-between gap-4">
+                <div class="flex items-center space-x-3.5 min-w-0">
+                  <div class="blueprint-box w-16 h-16 rounded-xl flex items-center justify-center shrink-0 text-slate-400">
+                    <i class="fas fa-mug-hot text-xs"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <span class="wire-badge text-pink-700 font-bold">CUPSLEEVE &bull; 29 DEC 2026</span>
+                    <h4 class="font-black text-sm text-slate-900 truncate">Sana 28th Birthday Cafe Event</h4>
+                    <div class="text-xs text-slate-500 truncate">VCR Bukit Bintang &bull; 11:00 AM - 6:00 PM</div>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2 shrink-0">
+                  <button disabled class="px-3 py-1.5 rounded-xl bg-purple-50 text-purple-700 font-bold text-xs border border-purple-200">
+                    View
+                  </button>
+                  <button disabled class="p-2 rounded-xl text-rose-500 hover:bg-rose-50 border border-slate-200">
+                    <i class="fas fa-trash-can text-xs"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Col: Event Discussion & Anti-Scam Rules -->
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <h3 class="font-black text-base text-slate-900">Live Event Discussion</h3>
+                <span class="wire-badge px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold">
+                  MODERATED
+                </span>
+              </div>
+
+              <!-- Discussion Thread Box Wireframe -->
+              <div class="bg-white rounded-3xl p-5 border border-slate-300 shadow-xs space-y-4">
+                
+                <!-- Anti-Scalper Notice -->
+                <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900 flex items-start gap-2">
+                  <i class="fas fa-triangle-exclamation text-amber-600 mt-0.5"></i>
+                  <span>No unauthorized ticket resale or scalping permitted. Violators will face immediate ban and IC report.</span>
+                </div>
+
+                <!-- Comment Input -->
+                <div class="space-y-2">
+                  <textarea disabled rows="2" placeholder="Ask about concert carpooling, queues, lightsticks..." 
+                            class="w-full p-3 rounded-xl border border-slate-300 bg-slate-50 text-xs text-slate-700 resize-none"></textarea>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[10px] text-slate-400">Press enter to send</span>
+                    <button disabled class="px-3.5 py-1.5 rounded-xl bg-slate-900 text-white font-bold text-xs">Post</button>
+                  </div>
+                </div>
+
+                <!-- Sample Comment 1 (Verified Attendee) -->
+                <div class="space-y-2 border-t border-slate-100 pt-3">
+                  <div class="flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-1.5 font-bold text-slate-800">
+                      <span>@malaysian_carat</span>
+                      <span class="text-[10px] px-1.5 py-0.2 rounded bg-purple-100 text-purple-700 font-bold">ATTENDEE</span>
+                    </div>
+                    <span class="text-[10px] text-slate-400">10m ago</span>
+                  </div>
+                  <p class="text-xs text-slate-600 leading-relaxed">
+                    Does anyone know if LRT Bukit Jalil operational hours will be extended past 11:30 PM for concert night?
+                  </p>
+                  <!-- 1-Level Reply Preview -->
+                  <div class="pl-3 border-l-2 border-purple-300 ml-1 space-y-1 mt-2">
+                    <div class="flex items-center gap-1.5 text-[11px] font-bold text-slate-700">
+                      <span>@rapidkl_helper</span>
+                      <span class="text-[9px] px-1 rounded bg-emerald-100 text-emerald-800 font-bold">INFO</span>
+                    </div>
+                    <p class="text-[11px] text-slate-600">
+                      Yes! RapidKL announced train service will extend to 1:00 AM on concert night.
+                    </p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 3: ORGANIZER / HOST WIREFRAME -->
+    <!-- ========================================================================= -->
+    <div id="tab-organizer" class="tab-content space-y-8">
+      
+      <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="wire-badge px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold">ACTOR: EVENT ORGANIZER / FANCLUB</span>
+            <span class="text-xs text-slate-400">&bull;</span>
+            <span class="text-xs text-slate-500 font-medium">Event Publishing & Multimodal Gemini AI Poster Extraction</span>
+          </div>
+          <h1 class="text-2xl font-black text-slate-900 tracking-tight mt-1">3. Organizer Studio & AI Scanner Submission Form</h1>
+          <p class="text-xs text-slate-600 mt-1 max-w-3xl leading-relaxed">
+            Wireframe for event promoters, fanbases, and concert organizers. Features instant OCR poster scanning with Google Gemini AI to auto-populate venue, dates, artists, and ticketing.
+          </p>
+        </div>
+        <div class="wire-badge px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-semibold border border-slate-200">
+          <i class="fas fa-wand-magic-sparkles me-1 text-emerald-600"></i> OpenRouter Gemini 4 Argon Powered
+        </div>
+      </div>
+
+      <!-- WIREFRAME VIEWPORT 3: Organizer Submission Form with AI Scanner Drawer -->
+      <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
+        <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
+          <div class="flex items-center space-x-1.5">
+            <div class="w-3 h-3 rounded-full bg-slate-300"></div>
+            <div class="w-3 h-3 rounded-full bg-slate-300"></div>
+            <div class="w-3 h-3 rounded-full bg-slate-300"></div>
+          </div>
+          <div class="px-6 py-1 rounded-full bg-white border border-slate-200 text-xs font-mono text-slate-500 w-96 text-center truncate">
+            https://ksync.my/organizer/events/new
+          </div>
+          <div class="text-[11px] text-slate-400 font-mono">SCREEN: SUBMIT EVENT & AI SCANNER</div>
+        </div>
+
+        <div class="p-6 sm:p-8 space-y-8 bg-slate-50/50 grid-pattern">
+
+          <!-- AI Assistant Banner Callout -->
+          <div class="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-950 text-white rounded-3xl p-6 shadow-xl border border-purple-500/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="space-y-1">
+              <span class="wire-badge px-2.5 py-0.5 rounded-md bg-pink-500/20 text-pink-300 border border-pink-500/40 font-bold">
+                PROMAX FORENSIC SCANNER
+              </span>
+              <h2 class="text-xl font-black tracking-tight">Drop your concert poster & let Gemini AI extract fields in 3s</h2>
+              <p class="text-xs text-slate-300">Auto-identifies Artist Lineup, Malaysian Venue ID, Dates, and Official Ticketing links.</p>
+            </div>
+            <button disabled class="px-5 py-2.5 rounded-xl bg-purple-500 text-white text-xs font-black shadow-lg shadow-purple-500/25 shrink-0 flex items-center gap-2">
+              <i class="fas fa-wand-magic-sparkles text-xs"></i>
+              <span>Activate AI Scanner Drawer</span>
+            </button>
+          </div>
+
+          <!-- Submission Layout: 2 Columns (AI Scanner & Form Fields) -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left 1 Col: AI Poster Dropzone & Extraction Card -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-300 shadow-xs space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="wire-badge text-purple-700 font-bold uppercase">Poster Upload & Vision</span>
+                <span class="wire-badge text-emerald-700 font-bold">OCR READY</span>
+              </div>
+
+              <!-- Upload Blueprint Zone -->
+              <div class="blueprint-box h-64 rounded-2xl flex flex-col items-center justify-center p-6 text-center cursor-pointer border-purple-300 hover:bg-purple-50/30 transition-colors">
+                <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-xl mb-2">
+                  <i class="fas fa-cloud-arrow-up"></i>
+                </div>
+                <span class="font-black text-xs text-slate-900">Drag & Drop Concert Poster</span>
+                <span class="text-[11px] text-slate-500 mt-0.5">PNG, JPG, WebP up to 10MB</span>
+                <div class="mt-3 px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[10px] font-mono border border-slate-200">
+                  Auto-invokes Gemini 4 Argon
+                </div>
+              </div>
+
+              <!-- Extracted Fields Checklist -->
+              <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
+                <span class="wire-badge text-slate-500 font-bold">AI EXTRACTION TELEMETRY:</span>
+                <div class="flex items-center justify-between text-slate-700">
+                  <span>Artist Recognition</span>
+                  <span class="text-emerald-600 font-bold"><i class="fas fa-check"></i> High Confidence</span>
+                </div>
+                <div class="flex items-center justify-between text-slate-700">
+                  <span>Venue Geocoding</span>
+                  <span class="text-emerald-600 font-bold"><i class="fas fa-check"></i> Axiata Arena</span>
+                </div>
+                <div class="flex items-center justify-between text-slate-700">
+                  <span>Show Dates</span>
+                  <span class="text-emerald-600 font-bold"><i class="fas fa-check"></i> 24-25 Oct 2026</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right 2 Cols: Structured Form Inputs -->
+            <div class="lg:col-span-2 bg-white rounded-3xl p-6 sm:p-8 border border-slate-300 shadow-xs space-y-5">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="font-black text-base text-slate-900">Event Publication Blueprint</h3>
+                <span class="wire-badge text-slate-400 font-bold">STEP 1 OF 2 &bull; DETAILS</span>
+              </div>
+
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Event Title *</label>
+                  <input type="text" disabled value="SEVENTEEN [RIGHT HERE] WORLD TOUR IN KUALA LUMPUR" 
+                         class="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-slate-50 text-xs font-semibold text-slate-800">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Category *</label>
+                    <select disabled class="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-slate-50 text-xs font-bold text-slate-800">
+                      <option>Concert (Tier 1 Stadium/Arena)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Venue Location *</label>
+                    <select disabled class="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-slate-50 text-xs font-bold text-slate-800">
+                      <option>Axiata Arena Bukit Jalil (Indoor, 16,000 capacity)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Start Date & Time *</label>
+                    <input type="text" disabled value="2026-10-24 18:00 (MYT)" 
+                           class="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-slate-50 text-xs font-mono text-slate-800">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Official Ticketing URL *</label>
+                    <input type="text" disabled value="https://golive-asia.com/events/seventeen-kl" 
+                           class="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-slate-50 text-xs font-mono text-slate-800">
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">SSM Registration / Organizer Evidence Link *</label>
+                  <input type="text" disabled value="https://drive.google.com/livenation-permit-evidence.pdf" 
+                         class="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-slate-50 text-xs font-mono text-slate-800">
+                </div>
+              </div>
+
+              <!-- Action Bar -->
+              <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                <button disabled class="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 bg-white">
+                  Save as Draft
+                </button>
+                <button disabled class="px-6 py-2.5 rounded-xl bg-purple-600 text-white text-xs font-black shadow-md flex items-center gap-2">
+                  <i class="fas fa-shield-check"></i>
+                  <span>Submit for Forensics Review</span>
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 4: SYSTEM ADMIN / MAINTAINER WIREFRAME -->
+    <!-- ========================================================================= -->
+    <div id="tab-admin" class="tab-content space-y-8">
+      
+      <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="wire-badge px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-200 font-bold">ACTOR: SYSTEM MAINTAINER (ADMIN)</span>
+            <span class="text-xs text-slate-400">&bull;</span>
+            <span class="text-xs text-slate-500 font-medium">Platform Command Center, Verifications Audit & Governance</span>
+          </div>
+          <h1 class="text-2xl font-black text-slate-900 tracking-tight mt-1">4. System Executive Command Center & Verification Center</h1>
+          <p class="text-xs text-slate-600 mt-1 max-w-3xl leading-relaxed">
+            Wireframe for platform administrators. Features high-elevation KPI telemetry, 4-step forensic approval queue, user access control, and anti-scam report audit.
+          </p>
+        </div>
+        <div class="wire-badge px-3 py-1.5 rounded-xl bg-purple-100 text-purple-800 font-bold border border-purple-200">
+          <i class="fas fa-lock me-1"></i> Role: ADMIN Privileged
+        </div>
+      </div>
+
+      <!-- WIREFRAME VIEWPORT 4: Admin Center -->
+      <div class="bg-white rounded-3xl border border-slate-300 shadow-sm overflow-hidden">
+        <div class="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
+          <div class="flex items-center space-x-1.5">
+            <div class="w-3 h-3 rounded-full bg-slate-300"></div>
+            <div class="w-3 h-3 rounded-full bg-slate-300"></div>
+            <div class="w-3 h-3 rounded-full bg-slate-300"></div>
+          </div>
+          <div class="px-6 py-1 rounded-full bg-white border border-slate-200 text-xs font-mono text-slate-500 w-96 text-center truncate">
+            https://ksync.my/admin
+          </div>
+          <div class="text-[11px] text-slate-400 font-mono">SCREEN: ADMIN COMMAND CENTER</div>
+        </div>
+
+        <div class="p-6 sm:p-8 space-y-8 bg-slate-50/50 grid-pattern">
+
+          <!-- Admin Subnav Ribbon Wireframe -->
+          <div class="bg-slate-950 text-white rounded-3xl p-6 border border-slate-800 shadow-xl space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="space-y-1">
+                <span class="wire-badge text-purple-400 font-bold uppercase">MALAYSIA HUB SENTINEL</span>
+                <h2 class="text-2xl font-black tracking-tight">System Executive Dashboard</h2>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="wire-badge px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block me-1 animate-pulse"></span> SYSTEM HEALTH 99.9%
+                </span>
+              </div>
+            </div>
+
+            <!-- Tab Pills -->
+            <div class="flex items-center gap-2 overflow-x-auto text-xs font-bold pt-2 border-t border-slate-800">
+              <span class="px-3.5 py-1.5 rounded-xl bg-purple-600 text-white">Dashboard</span>
+              <span class="px-3.5 py-1.5 rounded-xl text-slate-400 hover:text-white">Events (24)</span>
+              <span class="px-3.5 py-1.5 rounded-xl text-slate-400 hover:text-white">Verifications (3)</span>
+              <span class="px-3.5 py-1.5 rounded-xl text-slate-400 hover:text-white">Artists & Lineups</span>
+              <span class="px-3.5 py-1.5 rounded-xl text-slate-400 hover:text-white">Reports & Security</span>
+              <span class="px-3.5 py-1.5 rounded-xl text-slate-400 hover:text-white">Users & Roles</span>
+            </div>
+          </div>
+
+          <!-- 4 KPI Telemetry Cards -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white rounded-2xl p-4 border border-slate-300 shadow-xs space-y-1">
+              <span class="wire-badge text-slate-400 font-bold uppercase">TOTAL EVENTS</span>
+              <div class="text-2xl font-black text-slate-900 font-mono">24</div>
+              <div class="text-[11px] text-emerald-600 font-medium">+3 submitted today</div>
+            </div>
+            <div class="bg-white rounded-2xl p-4 border border-slate-300 shadow-xs space-y-1">
+              <span class="wire-badge text-amber-600 font-bold uppercase">PENDING AUDIT</span>
+              <div class="text-2xl font-black text-amber-600 font-mono">3</div>
+              <div class="text-[11px] text-slate-500 font-medium">Requires Admin Sign-off</div>
+            </div>
+            <div class="bg-white rounded-2xl p-4 border border-slate-300 shadow-xs space-y-1">
+              <span class="wire-badge text-slate-400 font-bold uppercase">ACTIVE ARTISTS</span>
+              <div class="text-2xl font-black text-slate-900 font-mono">58</div>
+              <div class="text-[11px] text-slate-500 font-medium">210 Lineup Members</div>
+            </div>
+            <div class="bg-white rounded-2xl p-4 border border-slate-300 shadow-xs space-y-1">
+              <span class="wire-badge text-slate-400 font-bold uppercase">FLAGGED REPORTS</span>
+              <div class="text-2xl font-black text-slate-900 font-mono">0</div>
+              <div class="text-[11px] text-emerald-600 font-medium">Zero open scalper scams</div>
+            </div>
+          </div>
+
+          <!-- Verification Queue Wireframe Table -->
+          <div class="bg-white rounded-3xl border border-slate-300 shadow-xs p-6 space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="font-black text-base text-slate-900">Pending Verification Queue</h3>
+                <p class="text-xs text-slate-500">Forensics score calculated via multi-model consensus</p>
+              </div>
+              <span class="wire-badge px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 border border-amber-200 font-bold">
+                3 Awaiting Review
+              </span>
+            </div>
+
+            <!-- Table Structure -->
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-slate-200 text-slate-400 uppercase wire-badge">
+                    <th class="py-2.5 px-3">Event & Artist</th>
+                    <th class="py-2.5 px-3">Organizer / Submitter</th>
+                    <th class="py-2.5 px-3">Venue Check</th>
+                    <th class="py-2.5 px-3">AI Score</th>
+                    <th class="py-2.5 px-3 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 font-medium">
+                  <tr>
+                    <td class="py-3 px-3">
+                      <div class="font-bold text-slate-900">ENHYPEN 'FATE PLUS' IN KL</div>
+                      <div class="text-[10px] text-slate-400">Concert &bull; 15 Nov 2026</div>
+                    </td>
+                    <td class="py-3 px-3">
+                      <div class="font-bold text-slate-700">Starline Entertainment</div>
+                      <div class="text-[10px] text-emerald-600">SSM Registered Org</div>
+                    </td>
+                    <td class="py-3 px-3 text-slate-700">Axiata Arena (Match)</td>
+                    <td class="py-3 px-3">
+                      <span class="px-2 py-0.5 rounded font-black text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        94%
+                      </span>
+                    </td>
+                    <td class="py-3 px-3 text-right">
+                      <div class="flex items-center justify-end gap-1.5">
+                        <button disabled class="px-3 py-1 rounded-lg bg-emerald-600 text-white font-bold text-xs">Approve</button>
+                        <button disabled class="px-3 py-1 rounded-lg bg-rose-50 text-rose-600 font-bold text-xs border border-rose-200">Reject</button>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td class="py-3 px-3">
+                      <div class="font-bold text-slate-900">Aespa Synk Parallel Line KL</div>
+                      <div class="text-[10px] text-slate-400">Concert &bull; 02 Dec 2026</div>
+                    </td>
+                    <td class="py-3 px-3">
+                      <div class="font-bold text-slate-700">IME Productions MY</div>
+                      <div class="text-[10px] text-emerald-600">Verified Promoter</div>
+                    </td>
+                    <td class="py-3 px-3 text-slate-700">Mega Star Arena (Match)</td>
+                    <td class="py-3 px-3">
+                      <span class="px-2 py-0.5 rounded font-black text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        98%
+                      </span>
+                    </td>
+                    <td class="py-3 px-3 text-right">
+                      <div class="flex items-center justify-end gap-1.5">
+                        <button disabled class="px-3 py-1 rounded-lg bg-emerald-600 text-white font-bold text-xs">Approve</button>
+                        <button disabled class="px-3 py-1 rounded-lg bg-rose-50 text-rose-600 font-bold text-xs border border-rose-200">Reject</button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 5: FIGMA EXPORT & SYSTEM DESIGN SPECS -->
+    <!-- ========================================================================= -->
+    <div id="tab-figma" class="tab-content space-y-8">
+      
+      <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="wire-badge px-2 py-0.5 rounded-md bg-orange-50 text-orange-700 border border-orange-200 font-bold">FIGMA OVERRIDE & COMPONENT SPECS</span>
+            <span class="text-xs text-slate-400">&bull;</span>
+            <span class="text-xs text-slate-500 font-medium">Design Tokens & Vector Blueprint</span>
+          </div>
+          <h1 class="text-2xl font-black text-slate-900 tracking-tight mt-1">5. Figma Import Guide & Design Token Mapping</h1>
+          <p class="text-xs text-slate-600 mt-1 max-w-3xl leading-relaxed">
+            Ready-to-use vector SVG frames and CSS custom properties so you or your designers can import, style, and override every screen in Figma without starting from scratch.
+          </p>
+        </div>
+        <button onclick="downloadWireframeSvg()" class="px-4 py-2 rounded-xl bg-orange-600 text-white text-xs font-black shadow-lg shadow-orange-600/25 shrink-0 flex items-center gap-2">
+          <i class="fab fa-figma text-xs"></i>
+          <span>Download All Frames as SVG</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Instructions Card -->
+        <div class="bg-white rounded-3xl p-6 border border-slate-300 shadow-xs space-y-4">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center font-black text-sm">1</div>
+            <h3 class="font-black text-base text-slate-900">How to Open & Override in Figma</h3>
+          </div>
+          <ol class="space-y-3 text-xs text-slate-600 list-decimal pl-4 leading-relaxed font-medium">
+            <li>Click <strong>"Export SVG"</strong> or <strong>"Download All Frames as SVG"</strong> above.</li>
+            <li>In Figma, press <kbd class="px-1.5 py-0.5 rounded bg-slate-100 border text-slate-800 font-mono">Ctrl + O</kbd> (or drag & drop the downloaded <code class="text-purple-600">.svg</code> file onto your Figma canvas).</li>
+            <li>Right-click the imported group and choose <strong>Ungroup (<kbd>Ctrl + Shift + G</kbd>)</strong> to access individual vector wireframe layers.</li>
+            <li>Apply your brand typography (Inter, Plus Jakarta Sans) and color palette.</li>
+          </ol>
+        </div>
+
+        <!-- Design System Tokens Card -->
+        <div class="bg-white rounded-3xl p-6 border border-slate-300 shadow-xs space-y-4">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center font-black text-sm">2</div>
+            <h3 class="font-black text-base text-slate-900">K-Sync Malaysian Fandom Palette</h3>
+          </div>
+          <div class="grid grid-cols-2 gap-3 text-xs">
+            <div class="p-3 rounded-2xl border border-slate-200 flex items-center gap-2.5">
+              <div class="w-7 h-7 rounded-xl bg-[#7C3AED] shadow-xs"></div>
+              <div>
+                <div class="font-bold text-slate-900">Electric Purple</div>
+                <div class="text-[10px] text-slate-400 font-mono">#7C3AED &bull; Primary</div>
+              </div>
+            </div>
+            <div class="p-3 rounded-2xl border border-slate-200 flex items-center gap-2.5">
+              <div class="w-7 h-7 rounded-xl bg-[#EC4899] shadow-xs"></div>
+              <div>
+                <div class="font-bold text-slate-900">K-Pop Pink</div>
+                <div class="text-[10px] text-slate-400 font-mono">#EC4899 &bull; Accent</div>
+              </div>
+            </div>
+            <div class="p-3 rounded-2xl border border-slate-200 flex items-center gap-2.5">
+              <div class="w-7 h-7 rounded-xl bg-[#10B981] shadow-xs"></div>
+              <div>
+                <div class="font-bold text-slate-900">Sentinel Emerald</div>
+                <div class="text-[10px] text-slate-400 font-mono">#10B981 &bull; Verified</div>
+              </div>
+            </div>
+            <div class="p-3 rounded-2xl border border-slate-200 flex items-center gap-2.5">
+              <div class="w-7 h-7 rounded-xl bg-[#0F172A] shadow-xs"></div>
+              <div>
+                <div class="font-bold text-slate-900">Deep Slate 950</div>
+                <div class="text-[10px] text-slate-400 font-mono">#0F172A &bull; Surfaces</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Interactive Logic & SVG Generator -->
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      const activeEl = document.getElementById('tab-' + tabId);
+      if (activeEl) activeEl.classList.add('active');
+
+      document.querySelectorAll('.role-btn').forEach(btn => {
+        btn.classList.remove('bg-white', 'text-purple-700', 'shadow-xs');
+        btn.classList.add('text-slate-600');
+      });
+
+      const activeBtn = document.getElementById('btn-' + tabId);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-white', 'text-purple-700', 'shadow-xs');
+        activeBtn.classList.remove('text-slate-600');
+      }
+    }
+
+    let notesVisible = true;
+    function toggleAnnotations() {
+      notesVisible = !notesVisible;
+      document.querySelectorAll('.annotation-note').forEach(el => {
+        el.style.display = notesVisible ? 'block' : 'none';
+      });
+      document.getElementById('anno-text').textContent = notesVisible ? 'Hide Notes' : 'Show Notes';
+    }
+
+    // Function to generate and trigger download of clean SVG Wireframe boards for Figma import
+    function downloadWireframeSvg() {
+      const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1200" width="1600" height="1200" style="background:#f8fafc; font-family:system-ui, -apple-system, sans-serif;">
+  <defs>
+    <style>
+      .title { font-size: 24px; font-weight: 800; fill: #0f172a; }
+      .subtitle { font-size: 13px; font-weight: 600; fill: #64748b; }
+      .box { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; rx: 16; }
+      .box-dashed { fill: #f1f5f9; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 4 4; rx: 12; }
+      .badge { font-size: 11px; font-weight: 700; fill: #7c3aed; }
+      .btn { fill: #0f172a; rx: 10; }
+      .btn-text { font-size: 12px; font-weight: 700; fill: #ffffff; text-anchor: middle; }
+    </style>
+  </defs>
+
+  <!-- Frame Header -->
+  <text x="50" y="55" class="title">K-Sync Malaysia — Master Wireframe Boards</text>
+  <text x="50" y="80" class="subtitle">System Architecture Blueprint: Guest, Fan, Organizer, Admin (Vector Imported into Figma)</text>
+
+  <!-- Board 1: Guest Discovery -->
+  <g transform="translate(50, 110)">
+    <rect width="720" height="480" class="box" />
+    <rect width="720" height="40" fill="#f1f5f9" rx="16" />
+    <text x="25" y="25" class="subtitle">1. Guest Discovery &amp; Concert Radar (https://ksync.my/events)</text>
+    
+    <!-- Hero Box -->
+    <rect x="25" y="55" width="670" height="110" class="box-dashed" />
+    <text x="45" y="95" class="title" font-size="18">Discover Verified K-Pop Concerts in Malaysia</text>
+    <text x="45" y="125" class="subtitle">Search SEVENTEEN, TWICE, Axiata Arena | Categories: Concerts, Fan Meetings, Cupsleeves</text>
+    
+    <!-- 3 Event Cards -->
+    <rect x="25" y="180" width="210" height="270" class="box" />
+    <rect x="40" y="195" width="180" height="110" class="box-dashed" />
+    <text x="40" y="330" font-size="13" font-weight="700" fill="#0f172a">SEVENTEEN Tour</text>
+    <text x="40" y="350" font-size="11" fill="#64748b">Axiata Arena &bull; 96% Verified</text>
+    <rect x="40" y="390" width="180" height="35" class="btn" />
+    <text x="130" y="412" class="btn-text">View Details</text>
+
+    <rect x="255" y="180" width="210" height="270" class="box" />
+    <rect x="270" y="195" width="180" height="110" class="box-dashed" />
+    <text x="270" y="330" font-size="13" font-weight="700" fill="#0f172a">Sana Birthday Cafe</text>
+    <text x="270" y="350" font-size="11" fill="#64748b">VCR Bukit Bintang &bull; Cupsleeve</text>
+    <rect x="270" y="390" width="180" height="35" class="btn" />
+    <text x="360" y="412" class="btn-text">View Details</text>
+
+    <rect x="485" y="180" width="210" height="270" class="box" />
+    <rect x="500" y="195" width="180" height="110" class="box-dashed" />
+    <text x="500" y="330" font-size="13" font-weight="700" fill="#0f172a">KL Random Dance</text>
+    <text x="500" y="350" font-size="11" fill="#64748b">Pasar Seni Hub &bull; Free</text>
+    <rect x="500" y="390" width="180" height="35" class="btn" />
+    <text x="590" y="412" class="btn-text">View Details</text>
+  </g>
+
+  <!-- Board 2: Fan Dashboard & Wishlist -->
+  <g transform="translate(810, 110)">
+    <rect width="740" height="480" class="box" />
+    <rect width="740" height="40" fill="#f1f5f9" rx="16" />
+    <text x="25" y="25" class="subtitle">2. Fan Command Center &amp; Discussion (https://ksync.my/dashboard)</text>
+
+    <!-- Welcome Ribbon -->
+    <rect x="25" y="55" width="690" height="90" fill="#0f172a" rx="16" />
+    <text x="45" y="95" font-size="18" font-weight="800" fill="#ffffff">Welcome back, Fan (@carat_kl)</text>
+    <text x="45" y="120" font-size="12" fill="#94a3b8">Tracking 3 Wishlist Shows &bull; Next: SEVENTEEN (14 Days)</text>
+
+    <!-- Wishlist items -->
+    <rect x="25" y="160" width="420" height="85" class="box" />
+    <text x="45" y="190" font-size="13" font-weight="700" fill="#0f172a">SEVENTEEN [RIGHT HERE] WORLD TOUR</text>
+    <text x="45" y="210" font-size="11" fill="#64748b">Axiata Arena &bull; Cat 1 VIP Presale Alert Active</text>
+
+    <rect x="25" y="260" width="420" height="85" class="box" />
+    <text x="45" y="290" font-size="13" font-weight="700" fill="#0f172a">Sana Birthday Cupsleeve Cafe</text>
+    <text x="45" y="310" font-size="11" fill="#64748b">VCR Bukit Bintang &bull; 11:00 AM</text>
+
+    <!-- Discussion slice -->
+    <rect x="465" y="160" width="250" height="290" class="box" />
+    <text x="485" y="190" font-size="13" font-weight="700" fill="#0f172a">Moderated Chat</text>
+    <rect x="485" y="205" width="210" height="60" fill="#f8fafc" stroke="#e2e8f0" rx="8" />
+    <text x="495" y="225" font-size="10" fill="#64748b">RapidKL train hours extension</text>
+    <text x="495" y="245" font-size="10" fill="#10b981">Verified: Open until 1:00 AM</text>
+  </g>
+
+  <!-- Board 3: Organizer AI Studio -->
+  <g transform="translate(50, 620)">
+    <rect width="720" height="520" class="box" />
+    <rect width="720" height="40" fill="#f1f5f9" rx="16" />
+    <text x="25" y="25" class="subtitle">3. Organizer Studio &amp; Gemini AI Scanner (https://ksync.my/organizer/events/new)</text>
+
+    <!-- Poster Scanner Dropzone -->
+    <rect x="25" y="60" width="240" height="300" class="box-dashed" />
+    <text x="145" y="180" font-size="13" font-weight="700" fill="#7c3aed" text-anchor="middle">Gemini AI Poster Scanner</text>
+    <text x="145" y="205" font-size="11" fill="#64748b" text-anchor="middle">Drag &amp; Drop Poster (10MB)</text>
+
+    <!-- Form Inputs -->
+    <rect x="285" y="60" width="410" height="45" class="box" />
+    <text x="300" y="88" font-size="12" fill="#0f172a">Title: SEVENTEEN [RIGHT HERE] TOUR IN KL</text>
+
+    <rect x="285" y="120" width="410" height="45" class="box" />
+    <text x="300" y="148" font-size="12" fill="#0f172a">Venue: Axiata Arena Bukit Jalil (16,000 Capacity)</text>
+
+    <rect x="285" y="180" width="410" height="45" class="box" />
+    <text x="300" y="208" font-size="12" fill="#0f172a">Ticketing: https://golive-asia.com/events/seventeen</text>
+
+    <rect x="285" y="240" width="410" height="45" class="box" />
+    <text x="300" y="268" font-size="12" fill="#0f172a">SSM Evidence: Live Nation Malaysia SSM Cert.pdf</text>
+
+    <rect x="285" y="310" width="410" height="45" fill="#7c3aed" rx="12" />
+    <text x="490" y="338" class="btn-text">Submit Event for AI Forensics</text>
+  </g>
+
+  <!-- Board 4: System Admin Command Center -->
+  <g transform="translate(810, 620)">
+    <rect width="740" height="520" class="box" />
+    <rect width="740" height="40" fill="#f1f5f9" rx="16" />
+    <text x="25" y="25" class="subtitle">4. Admin Command Center &amp; Verification Queue (https://ksync.my/admin)</text>
+
+    <!-- 4 Metrics -->
+    <rect x="25" y="60" width="160" height="75" class="box" />
+    <text x="40" y="85" font-size="11" fill="#64748b">TOTAL EVENTS</text>
+    <text x="40" y="115" font-size="20" font-weight="800" fill="#0f172a">24</text>
+
+    <rect x="200" y="60" width="160" height="75" class="box" />
+    <text x="215" y="85" font-size="11" fill="#d97706">PENDING AUDIT</text>
+    <text x="215" y="115" font-size="20" font-weight="800" fill="#d97706">3</text>
+
+    <rect x="375" y="60" width="160" height="75" class="box" />
+    <text x="390" y="85" font-size="11" fill="#64748b">ARTISTS</text>
+    <text x="390" y="115" font-size="20" font-weight="800" fill="#0f172a">58</text>
+
+    <rect x="550" y="60" width="165" height="75" class="box" />
+    <text x="565" y="85" font-size="11" fill="#10b981">SYSTEM HEALTH</text>
+    <text x="565" y="115" font-size="20" font-weight="800" fill="#10b981">100%</text>
+
+    <!-- Audit Queue Table Wireframe -->
+    <rect x="25" y="155" width="690" height="280" class="box" />
+    <text x="45" y="185" font-size="14" font-weight="800" fill="#0f172a">Forensic Verification Review Queue</text>
+    <line x1="25" y1="200" x2="715" y2="200" stroke="#cbd5e1" stroke-width="1" />
+    
+    <text x="45" y="230" font-size="12" font-weight="700" fill="#0f172a">ENHYPEN 'FATE PLUS' IN KL</text>
+    <text x="45" y="248" font-size="11" fill="#64748b">Starline Ent &bull; Axiata Arena &bull; Score: 94%</text>
+    <rect x="560" y="220" width="70" height="28" fill="#10b981" rx="6" />
+    <text x="595" y="238" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">Approve</text>
+
+    <line x1="25" y1="270" x2="715" y2="270" stroke="#f1f5f9" stroke-width="1" />
+
+    <text x="45" y="300" font-size="12" font-weight="700" fill="#0f172a">Aespa Synk Parallel Line KL</text>
+    <text x="45" y="318" font-size="11" fill="#64748b">IME Productions &bull; Mega Star Arena &bull; Score: 98%</text>
+    <rect x="560" y="290" width="70" height="28" fill="#10b981" rx="6" />
+    <text x="595" y="308" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">Approve</text>
+  </g>
+</svg>`;
+
+      const blob = new Blob([svgContent], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'ksync_malaysia_wireframe_boards.svg';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
