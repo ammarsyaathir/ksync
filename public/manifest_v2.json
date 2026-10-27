@@ -1,0 +1,323 @@
+{
+  "version": "2.0",
+  "title": "K-Sync Malaysia Low-Fidelity Paper-Based Storyboard",
+  "total_screens": 28,
+  "total_modules": 7,
+  "formats": {
+    "single_screen": {
+      "file": "storyboard_v2_single_screen.html",
+      "pages": 28,
+      "aspect_ratio": "2000x1350 (A4/16:9 Landscape)",
+      "description": "1 Screen Per Page with deep granular wireframe view & flow annotations"
+    },
+    "four_screens_per_page": {
+      "file": "storyboard_v2_4screens_per_page.html",
+      "pages": 7,
+      "aspect_ratio": "4200x2970 (A3 Landscape 420x297mm)",
+      "description": "4 Screens Per Page grouped by functional sub-modules with workflow arrows"
+    }
+  },
+  "modules": [
+    {
+      "part_num": 1,
+      "title": "Module 1: Authentication & Access Control",
+      "description": "User registration for Fan & Organiser, multi-role credential login gateway, and error/lockout states.",
+      "screens": [
+        {
+          "id": "S01",
+          "title": "Register Account (Fan Member)",
+          "actor": "Guest / Fan",
+          "endpoint": "GET/POST /register",
+          "status": "IMPLEMENTED",
+          "desc": "Public visitor signs up with Email, Google OAuth, Display Name, City & Transit preference.",
+          "flow": "Submit valid form -> S03 Login or S07 Fan Command Center"
+        },
+        {
+          "id": "S02",
+          "title": "Register Account (Organiser / Promoter)",
+          "actor": "Guest / Promoter",
+          "endpoint": "GET/POST /register?role=organizer",
+          "status": "IMPLEMENTED",
+          "desc": "Promoter registers with SSM legal company number, PIC contact, and uploaded SSM certificate PDF.",
+          "flow": "Submit SSM proof -> Undergoes automated business verification -> S18 Studio"
+        },
+        {
+          "id": "S03",
+          "title": "Multi-Role Login Gateway",
+          "actor": "Guest / All Roles",
+          "endpoint": "GET/POST /login",
+          "status": "IMPLEMENTED",
+          "desc": "Single login gateway with role tabs (Fan, Organiser, System Admin), Google OAuth, and remember-me session.",
+          "flow": "Evaluates authenticated role: Fan -> S05/S08, Organiser -> S18, Admin -> S27"
+        },
+        {
+          "id": "S04",
+          "title": "Invalid Login & Lockout Protection",
+          "actor": "Guest / Security",
+          "endpoint": "POST /login (Failed)",
+          "status": "IMPLEMENTED",
+          "desc": "Non-blocking security feedback: error alert banner, 3-attempt lockout warning, and 3-second auto-dismissing toast.",
+          "flow": "User corrects credentials or clicks 'Forgot Password' -> S03"
+        }
+      ]
+    },
+    {
+      "part_num": 2,
+      "title": "Module 2: User Profile & Preferences",
+      "description": "User profile management, RapidKL transit corridor preferences, and accessible logout confirmation.",
+      "screens": [
+        {
+          "id": "S05",
+          "title": "User Profile & Account Settings",
+          "actor": "Authenticated Fan",
+          "endpoint": "GET/POST /profile",
+          "status": "IMPLEMENTED",
+          "desc": "Profile card with avatar, role badge, email verification standing, bio, and city location fields.",
+          "flow": "Save changes -> Updates user session; Navigation to transit preferences -> S06"
+        },
+        {
+          "id": "S06",
+          "title": "Transit Preferences & Safety Alerts",
+          "actor": "Authenticated Fan",
+          "endpoint": "POST /profile/preferences",
+          "status": "IMPLEMENTED",
+          "desc": "RapidKL LRT Sri Petaling & MRT line selection, concert night departure reminders, and anti-scam warnings.",
+          "flow": "Preferences saved -> Dynamically annotates Event Radar and concert detail pages"
+        },
+        {
+          "id": "S07",
+          "title": "Security Settings & Logout Modal",
+          "actor": "Authenticated Fan",
+          "endpoint": "POST /profile/security, POST /logout",
+          "status": "IMPLEMENTED",
+          "desc": "Password update, 2FA toggle, and centered accessible confirmation modal for session logout.",
+          "flow": "Confirm Logout -> Invalidates server cookie session -> Redirects to Landing (S08)"
+        },
+        {
+          "id": "S08",
+          "title": "Public Landing Page",
+          "actor": "Public Guest / Fan",
+          "endpoint": "GET /",
+          "status": "IMPLEMENTED",
+          "desc": "Hero section, quick search bar, artist chips, featured concert carousel with trust badges, and category cards.",
+          "flow": "Search/Category click -> S09 Browse; Featured event click -> S11 Details"
+        }
+      ]
+    },
+    {
+      "part_num": 3,
+      "title": "Module 3: Public Discovery & Event Radar",
+      "description": "Search and multi-criteria filters, interactive transit radar, and comprehensive event dossiers.",
+      "screens": [
+        {
+          "id": "S09",
+          "title": "Browse Events Directory & Filter",
+          "actor": "Public Guest / Fan",
+          "endpoint": "GET /events",
+          "status": "IMPLEMENTED",
+          "desc": "Chronological concert directory with Category, Location (KL/Selangor), Artist, and Date filters.",
+          "flow": "Click event card -> S11 Details; Click 'Radar View' -> S10 Radar"
+        },
+        {
+          "id": "S10",
+          "title": "Event Radar & Public Transit Navigation",
+          "actor": "Public Guest / Fan",
+          "endpoint": "GET /events/radar",
+          "status": "IMPLEMENTED",
+          "desc": "Interactive spatial venue matrix with RapidKL LRT Sri Petaling (Bukit Jalil PH5), MRT Kajang line, and walkway guide.",
+          "flow": "Select venue cluster -> Highlights upcoming concerts; 'Open Maps' -> Outbound navigation"
+        },
+        {
+          "id": "S11",
+          "title": "Event Details & Forensic Trust Dossier",
+          "actor": "Public Guest / Fan",
+          "endpoint": "GET /events/:id",
+          "status": "IMPLEMENTED",
+          "desc": "Concert schedule, live countdown timer, ticket tiers, RapidKL transit directions, and 4-step forensic trust scorecard.",
+          "flow": "Click ticket button -> S12 Handshake; Scroll down -> S15 Community Discussion"
+        },
+        {
+          "id": "S12",
+          "title": "Outbound Official Handshakes",
+          "actor": "Public Guest / Fan",
+          "endpoint": "GET /events/:id (Outbound)",
+          "status": "IMPLEMENTED",
+          "desc": "Security handshake modal before redirecting to official whitelisted seller (GoLive Asia), Google Maps, or Calendar export.",
+          "flow": "Proceed -> Opens whitelisted ticketing gateway; Cancel -> Returns to event page"
+        }
+      ]
+    },
+    {
+      "part_num": 4,
+      "title": "Module 4 & 5: Artist Profiles & Community Discussions",
+      "description": "K-Pop idol group rosters, member biodata, and event-anchored community discussions.",
+      "screens": [
+        {
+          "id": "S13",
+          "title": "Browse Artists Directory",
+          "actor": "Public Guest / Fan",
+          "endpoint": "GET /artists",
+          "status": "IMPLEMENTED",
+          "desc": "Search idol groups, soloists, and bands; filter by agency (HYBE, JYP, SM, YG) and debut year.",
+          "flow": "Click artist card -> S14 Artist Profile & Member Biodata"
+        },
+        {
+          "id": "S14",
+          "title": "Artist Profile & Member Biodata",
+          "actor": "Public Guest / Fan",
+          "endpoint": "GET /artists/:id",
+          "status": "IMPLEMENTED",
+          "desc": "Group background, debut history, complete member roster cards (stage name, role, photo), and linked Malaysian concert tour dates.",
+          "flow": "Click upcoming concert card -> S11 Event Details"
+        },
+        {
+          "id": "S15",
+          "title": "Event Discussion Board",
+          "actor": "Fan / Organiser / Guest",
+          "endpoint": "GET /events/:id#discussion",
+          "status": "IMPLEMENTED",
+          "desc": "Concert logistics Q&A, 1-level threaded discussions, author role badges (Fan, Organiser, Admin), and archived status.",
+          "flow": "Click '+ Post New Question' -> S16 Composer; Click 'Report' -> S17 Modal"
+        },
+        {
+          "id": "S16",
+          "title": "Post Comment & Reply Composer",
+          "actor": "Authenticated Fan",
+          "endpoint": "POST /api/chat/:eventId",
+          "status": "IMPLEMENTED",
+          "desc": "Comment composer with guidelines banner, 1-level reply indent, and anti-scalper immutability notice (no editing after posting).",
+          "flow": "Submit comment -> Appends to live discussion thread -> Visible to all fans"
+        }
+      ]
+    },
+    {
+      "part_num": 5,
+      "title": "Module 5 & 6: Discussion Actions & Organiser Studio",
+      "description": "Comment deletion, community scam reporting, and promoter studio management.",
+      "screens": [
+        {
+          "id": "S17",
+          "title": "Delete Comment & Report Suspicious Modal",
+          "actor": "Fan / Author",
+          "endpoint": "DELETE /api/chat/:id, POST /api/events/:id/report",
+          "status": "IMPLEMENTED",
+          "desc": "Author comment deletion confirmation modal and community scam reporting modal with reason, details, and evidence URL.",
+          "flow": "Submit report -> Enters S27 Admin Scam Reports Review Queue"
+        },
+        {
+          "id": "S18",
+          "title": "Organiser Studio Dashboard",
+          "actor": "Verified Promoter",
+          "endpoint": "GET /organizer/dashboard",
+          "status": "IMPLEMENTED",
+          "desc": "Promoter overview: SSM Tier-1 badge, 4 KPI stat cards, readiness checklists, and attention queue for held submissions.",
+          "flow": "Click '+ Create New Event' -> S20 Form; Click attention item -> S25 Fix"
+        },
+        {
+          "id": "S19",
+          "title": "Managed Events Directory",
+          "actor": "Verified Promoter",
+          "endpoint": "GET /organizer/events",
+          "status": "IMPLEMENTED",
+          "desc": "List of all promoter-submitted events showing operational status (Upcoming/Held), forensic trust meters, and action buttons.",
+          "flow": "Click 'Edit' -> S20/S25; Click 'Status' -> S26 Lifecycle Status Management"
+        },
+        {
+          "id": "S20",
+          "title": "Create Event Form",
+          "actor": "Verified Promoter",
+          "endpoint": "GET/POST /submit-event",
+          "status": "IMPLEMENTED",
+          "desc": "Event creation form: title, category, date/time, venue selector, ticket tier pricing builder, and mandatory evidence URLs.",
+          "flow": "Submit details -> S21 Poster Upload & Gemini Multimodal OCR"
+        }
+      ]
+    },
+    {
+      "part_num": 6,
+      "title": "Module 6 & 7: AI Vision & Forensic Verification Pipeline",
+      "description": "Poster multimodal OCR, automated 4-step forensic verification, and scored publishing outcome.",
+      "screens": [
+        {
+          "id": "S21",
+          "title": "Poster Upload & Gemini Multimodal AI OCR",
+          "actor": "Verified Promoter",
+          "endpoint": "POST /api/events/scan-poster",
+          "status": "IMPLEMENTED",
+          "desc": "Poster dropzone, Gemini Vision scanning animation, and auto-extracted field suggestions with confirm/edit toggles.",
+          "flow": "Confirm fields -> S22 Automated Verification Engine"
+        },
+        {
+          "id": "S22",
+          "title": "Automated 4-Step Pipeline Processing",
+          "actor": "Autonomous Engine",
+          "endpoint": "Services: verificationEngine.js",
+          "status": "IMPLEMENTED",
+          "desc": "Real-time stepper showing Step 1 SSM check -> Step 2 Venue confirmation -> Step 3 Whitelist check -> Step 4 Gemini OCR consensus.",
+          "flow": "Processing reaches 100% -> S23 Evidence & Score Breakdown"
+        },
+        {
+          "id": "S23",
+          "title": "Forensic Evidence & Whitelist Inspection",
+          "actor": "Autonomous Engine",
+          "endpoint": "GET /events/:id/verification",
+          "status": "IMPLEMENTED",
+          "desc": "14-point audit score breakdown: SSM entity match (+25), venue tenancy (+25), ticketing whitelist (+30), duplicate check (+10).",
+          "flow": "Inspect score breakdown -> S24 Verification Decision Outcome"
+        },
+        {
+          "id": "S24",
+          "title": "AI Consensus Scorecard & Decision Outcome",
+          "actor": "Autonomous Engine",
+          "endpoint": "GET /events/:id/outcome",
+          "status": "IMPLEMENTED",
+          "desc": "Dual routing decision: >=90% Auto-Publishes live to Public Directory & Radar; <90% Held for remediation and Admin review.",
+          "flow": "If >=90% -> S09 Public Directory; If <90% -> S25 Remediation & S28 Admin Queue"
+        }
+      ]
+    },
+    {
+      "part_num": 7,
+      "title": "Module 8: Lifecycle Status Management & Admin Governance",
+      "description": "Listing remediation, operational status updates (UC025), and administrative platform governance.",
+      "screens": [
+        {
+          "id": "S25",
+          "title": "Organiser Edit & Resubmit Held Listing",
+          "actor": "Verified Promoter",
+          "endpoint": "GET/POST /events/:id/edit",
+          "status": "IMPLEMENTED",
+          "desc": "Remediation workbench for held events: replaces unverified Telegram links with authorized GoLive Asia URL and re-triggers AI audit.",
+          "flow": "Re-submit -> Re-triggers S22 pipeline -> Once >=90%, listing automatically goes live"
+        },
+        {
+          "id": "S26",
+          "title": "Event Lifecycle Status Management (UC025)",
+          "actor": "Verified Promoter",
+          "endpoint": "POST /events/:id/status",
+          "status": "IMPLEMENTED",
+          "desc": "Operational status selector (Upcoming, Postponed, Cancelled) with mandatory fan broadcast announcement note.",
+          "flow": "Broadcast status -> Instantly updates Fan Saved Events, Notifications, and Event Radar"
+        },
+        {
+          "id": "S27",
+          "title": "Admin Command Center & Executive Dashboard",
+          "actor": "System Administrator",
+          "endpoint": "GET /admin",
+          "status": "IMPLEMENTED",
+          "desc": "Executive oversight: 4 KPI cards (Total Events 24, Trust 98.4%, Queue 4, Alerts 2), review queue table, and real-time audit log.",
+          "flow": "Click 'Inspect' on queue item -> S28 Admin Verification Center"
+        },
+        {
+          "id": "S28",
+          "title": "Admin Verification Queue & Inspection Center",
+          "actor": "System Administrator",
+          "endpoint": "GET /admin/verifications",
+          "status": "IMPLEMENTED",
+          "desc": "Side-by-side inspection: Organizer submitted poster & SSM proof vs Gemini Multimodal OCR data, with Approve / Request Proof / Reject actions.",
+          "flow": "Approve -> Publishes to Public Directory; Reject -> Flags organizer and cancels submission"
+        }
+      ]
+    }
+  ]
+}
